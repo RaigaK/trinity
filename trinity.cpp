@@ -1,0 +1,317 @@
+#include "StdAfx.h"
+
+#include "blue/include/Blue.h"
+#include "BlueExposure/include/InterfaceDefinitions.cxx"
+#include "blue/include/Blue.cxx"
+#include "blue/include/IBluePython.h"
+
+#include "include/TrinityId.cxx"
+#include "include/ITr2DebugRenderer.h"
+
+#include "TriConstants.h"
+
+#include "Tr2Renderer.h"
+
+// creatable rendering types
+#include "TriDirect3D.h"
+#if APEX_ENABLED
+#include "Apex/Apex.h"
+#endif
+
+// constants to add to Python
+#include "TriConstants.h"
+
+#include "ALResultBlue.h"
+
+// stubbs for standar interfaces to register to Python
+#if BLUE_WITH_PYTHON
+#include "TriPythonThunkers.h"
+#endif
+#include "TriSettings.h"
+
+// constants
+#include "UI/Scancodes.h"
+#include "UI/UIChoosers.h"
+#include "Tr2TextureAtlasMan.h"
+#include "Font/Tr2FontManager.h"
+
+//gpu particle pool manager
+#include "Tr2GPUParticlePool.h"
+
+#if BINK_ENABLED
+#include "Bink.h"
+#endif
+
+#ifdef _WIN32
+#include "dxerr.h"
+#endif
+#include "TriError.h"
+
+#ifndef TRINITYNAME
+#error Please add TRINITYNAME=<PythonModuleName> to compiler preprocessor definitions (/D)
+#endif
+
+const char* BLUEMODULENAME = CCP_STRINGIZE( TRINITYNAME );
+
+const char* g_moduleName = "trinity";
+
+// reduce CRT link
+extern "C" void _setargv(){}
+extern "C" void _setenvp(){}
+
+#define BLUETHUNKREG(_Class) \
+	PyOS->RegisterThunker(_Class::Defs(), _Class::IID() );
+
+void* Tr2GrannyAllocate( const char* file, granny_int32x line, granny_uintaddrx alignment, granny_uintaddrx size, granny_int32x intent )
+{
+	return CCPAlignedMallocWithTracking( size, alignment, "Granny", file, line );
+}
+
+void Tr2GrannyDeallocate( const char* file, granny_int32x line, void* memory )
+{
+	return CCPAlignedFreeWithTracking( memory );
+}
+
+#if BINK_ENABLED
+void* __stdcall Tr2BinkAllocate( U32 size )
+{
+	return CCP_MALLOC( "Bink", size );
+}
+
+void __stdcall Tr2BinkFree( void* p )
+{
+	CCP_FREE( p );
+}
+#endif
+
+#if BLUE_WITH_PYTHON
+const char* InitializeForPython()
+{
+	const PyMethodDef dummyMethods[] = {0};
+
+	// put myself into python as a module
+	PyObject* module = Py_InitModule((char*)BLUEMODULENAME, (PyMethodDef*)dummyMethods);
+	PyObject* dict = PyModule_GetDict(module);
+
+	// Initialize trinity exceptions
+	TriError::CreateExceptionObjects(dict);
+	ALResultRegisterExceptions( dict );
+
+	// constants
+	AddTriConstants(dict);
+
+	// put UI into python as a separate module
+	PyObject* uiModule = Py_InitModule("triui", (PyMethodDef*)dummyMethods);
+	PyObject* uiDict = PyModule_GetDict(uiModule);
+
+	AddScancodesToDict(uiDict);
+	AddUIChoosersToDict(uiDict);
+
+	BLUE_REGISTER_THUNKER(ITriScalarFunction_Thunk::Defs(), ITriScalarFunction_Thunk::IID());
+	BLUE_REGISTER_THUNKER(ITriVectorFunction_Thunk::Defs(), ITriVectorFunction_Thunk::IID());
+	BLUE_REGISTER_THUNKER(ITriQuaternionFunction_Thunk::Defs(), ITriQuaternionFunction_Thunk::IID());
+	BLUE_REGISTER_THUNKER(ITriColorFunction_Thunk::Defs(), ITriColorFunction_Thunk::IID());
+	BLUE_REGISTER_THUNKER(ITriRenderObject_Thunk::Defs(), ITriRenderObject_Thunk::IID());
+
+	BlueRegisterToModule( module, BlueRegistration::GetClassRegs(), 
+						  BlueRegistration::GetFuncRegs(),
+						  BlueRegistration::GetEnumRegs(),
+						  BlueRegistration::GetTestRegs(),
+						  BlueRegistration::GetThunkerRegs());
+
+	BlueRegisterObjectsToModule( module, BlueRegistration::GetObjectRegs() );
+
+	PyModule_AddObject( module, "settings", BlueWrapObjectForPython(&Tr2Renderer::GetSettings()) );
+	PyModule_AddObject( module, "fontMan", BlueWrapObjectForPython( g_fontManager ) );
+
+	return NULL;
+}
+#endif
+
+extern bool g_isR10G10B10FormatInverted;
+
+static void StartDLL()
+{
+	CCP_LOG( "Trinity (%s) module starting", BLUEMODULENAME );
+	BeClasses->RegisterClasses( BlueRegistration::GetClassRegs() );
+
+#if( TRINITY_PLATFORM==TRINITY_DIRECTX9 )
+	g_isR10G10B10FormatInverted = true;
+#else
+	g_isR10G10B10FormatInverted = false;
+#endif
+
+	GrannySetAllocator( Tr2GrannyAllocate, Tr2GrannyDeallocate );
+#if BINK_ENABLED
+	BinkSetMemory( Tr2BinkAllocate, Tr2BinkFree );
+#endif
+
+	Tr2FontManager::Initialize();
+
+	Tr2Renderer::Initialize();
+}
+
+
+#ifdef _WIN32
+HINSTANCE gInstance = NULL;
+
+BOOL APIENTRY DllMain(HINSTANCE instance, DWORD reason, LPVOID)
+{
+	if (reason == DLL_PROCESS_ATTACH)
+	{
+		gInstance = instance;
+		DisableThreadLibraryCalls(gInstance);
+	}
+	else if (reason == DLL_PROCESS_DETACH)
+	{
+		;
+	}
+	return TRUE;
+}
+#endif
+
+#if BLUE_WITH_PYTHON
+
+//--------------------------------------------------------------------
+// inittrinity - python dll module entry function
+//--------------------------------------------------------------------
+extern "C" void
+#ifdef _MSC_VER
+	__declspec(dllexport)
+#endif
+CCP_CONCATENATE( init, TRINITYNAME ) ()
+{
+	StartDLL();
+	InitializeForPython();
+}
+
+#elif BLUE_WITH_LUA
+extern "C" int
+#if defined(_MSC_VER) || defined(__ORBIS__)
+	__declspec(dllexport)
+#endif
+CCP_CONCATENATE( luaopen_, TRINITYNAME ) ( lua_State* ls )
+{
+	StartDLL();
+
+	BlueRegisterClasses( ls, g_moduleName, BlueRegistration::GetClassRegs() );
+	BlueRegisterFunctions( ls, g_moduleName, BlueRegistration::GetFuncRegs() );
+	BlueRegisterObjectsToModule( ls, g_moduleName, BlueRegistration::GetObjectRegs() );
+
+	return 1;
+}
+
+#endif
+
+
+#ifndef _WIN32
+static void emptySignalHandler(int)
+{
+}
+#endif
+
+#if BLUE_WITH_PYTHON
+static PyObject* PyBreakInDebugger( PyObject* module, PyObject* args )
+{
+#ifdef _WIN32
+
+	char* context = NULL;
+	if( PyTuple_GET_SIZE(args) == 1 )
+	{
+		PyObject* o = PyTuple_GetItem( args, 0 );
+		if( PyString_Check( o ) )
+		{
+			context = PyString_AsString( o );
+			OutputDebugString( "Python Triggered Breakpoint: " );
+			OutputDebugString( context );
+			OutputDebugString( "\n" );
+		}
+	}	
+
+	__try 
+	{
+		// This breakpoint exception is used by several D3D return value checking functions
+		// If you get, here, go up the stack and see what D3D function failed
+		DebugBreak();
+	}
+	__except(GetExceptionCode() == EXCEPTION_BREAKPOINT ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH) 
+	{
+	}
+#else
+    struct sigaction action, oldAction;
+    memset( &action, 0, sizeof( action ) );
+    action.sa_handler = &emptySignalHandler;
+    sigaction( SIGTRAP, &action, &oldAction );
+    raise(SIGTRAP);
+    sigaction( SIGTRAP, &oldAction, &action );
+#endif
+
+	Py_RETURN_NONE;
+}
+MAP_FUNCTION( "BreakInDebugger", PyBreakInDebugger, "BreakInDebugger( [contextString] )\nBreaks in the debugger, if one is attached, allowing you to look at the program state at a point determined from Python." );
+#endif
+
+ITr2DebugRendererPtr g_debugRenderer;
+
+static void SetDebugRenderer( ITr2DebugRenderer* renderer )
+{
+	g_debugRenderer = renderer;
+}
+
+MAP_FUNCTION_AND_WRAP( "SetDebugRenderer", SetDebugRenderer, "Sets the debug renderer for Trinity" );
+
+static ITr2DebugRenderer* GetDebugRenderer()
+{
+	return g_debugRenderer;
+}
+
+MAP_FUNCTION_AND_WRAP( "GetDebugRenderer", GetDebugRenderer, "Returns the debug renderer for Trinity" );
+
+#if APEX_ENABLED
+
+extern Tr2Apex *g_Tr2Apex;
+
+static Tr2Apex* GetApex()
+{
+	if( !g_Tr2Apex )
+	{
+		BeClasses->CreateInstance( GetTr2ApexClsid(), BlueInterfaceIID<Tr2Apex>(), (void**)&g_Tr2Apex );
+	}
+
+	return g_Tr2Apex;
+}
+
+MAP_FUNCTION_AND_WRAP( "GetApex", GetApex, "Gets a global apex pointer" );
+
+#endif
+
+
+static const char* PyDXGetErrorString( int hr )
+{
+#ifdef _WIN32
+	return DXGetErrorString( hr );
+#else
+	return "";
+#endif
+}
+
+MAP_FUNCTION_AND_WRAP( "DXGetErrorString", PyDXGetErrorString, "Convert an D3D hr code to string" );
+
+static const char* PyDXGetErrorDescription( int hr )
+{
+#ifdef _WIN32
+	return DXGetErrorDescription( hr );
+#else
+	return "";
+#endif
+}
+
+MAP_FUNCTION_AND_WRAP( "DXGetErrorDescription", PyDXGetErrorDescription, "Convert an D3D hr code to an error description" );
+
+static const char* GetGrannyProductVersion()
+{
+	return GrannyProductVersion;
+}
+
+MAP_FUNCTION_AND_WRAP( "GetGrannyProductVersion", GetGrannyProductVersion, "Returns the 'GrannyProductVersion' string as defined by Granny" );
+

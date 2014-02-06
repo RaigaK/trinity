@@ -1,0 +1,522 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   January 2014
+//    Copyright: CCP 2014
+//
+
+#include "StdAfx.h"
+#include "Tr2DynamicRingBuffer.h"
+#include "TriSettingsRegistrar.h"
+
+bool g_ringBufferUseNoOverwrite = true;
+TRI_REGISTER_SETTING( "ringBufferUseNoOverwrite", g_ringBufferUseNoOverwrite );
+
+using namespace Tr2RenderContextEnum;
+
+Tr2DynamicRingBuffer::Tr2DynamicRingBuffer()
+	:m_regions( "Tr2DynamicRingBuffer::m_regions" ),
+	m_lastPutSucceeded( false ),
+	m_bufferSize( 0 ),
+	m_availableFences( "Tr2DynamicRingBuffer::m_availableFences" )
+{
+}
+
+Tr2DynamicRingBuffer::~Tr2DynamicRingBuffer()
+{
+	ReleaseResources( TRISTORAGE_ALL );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Puts new data into the buffer. If the data size is larget than the buffer size, the
+//   buffer is resized.  
+// Arguments:
+//   data - Pointer to data
+//   size - Size of data in bytes
+//   bufferOffset - (out) offset into the buffer in bytes where the data will reside
+//   renderContext - current render context
+// Return Value:
+//   success code
+// --------------------------------------------------------------------------------------
+ALResult Tr2DynamicRingBuffer::PutData( 
+	const void* data, 
+	uint32_t size, 
+	uint32_t& bufferOffset, 
+	Tr2RenderContext& renderContext )
+{
+	m_lastPutSucceeded = false;
+	TrimUnusedRegions( renderContext );
+
+	if( !size )
+	{
+		return S_OK;
+	}
+	if( !IsValid() )
+	{
+		return E_INVALIDCALL;
+	}
+	if( !UseNoOverwriteRegions() )
+	{
+		RemoveRegions( m_regions.begin(), m_regions.end() );
+		if( size > m_bufferSize )
+		{
+			CR_RETURN_HR( CreateBuffer( size ) );
+			m_bufferSize = size;
+		}
+		bufferOffset = 0;
+		return UpdateBuffer( data, 0, size, LOCK_WRITEONLY, renderContext );
+	}
+
+	LockType lockType;
+	if( !GetUnusedRegion( size, bufferOffset ) )
+	{
+		bufferOffset = 0;
+		lockType = LOCK_WRITEONLY;
+		RemoveRegions( m_regions.begin(), m_regions.end() );
+		if( m_bufferSize < size )
+		{
+			CR_RETURN_HR( CreateBuffer( size ) );
+			m_bufferSize = size;
+		}
+	}
+	else
+	{
+		lockType = LOCK_NO_OVERWRITE;
+	}
+
+	CR_RETURN_HR( UpdateBuffer( data, bufferOffset, size, lockType, renderContext ) );
+
+	BufferRegion region;
+	region.offset = bufferOffset;
+	region.length = size;
+	region.fence = AllocateFence();
+	m_regions.push_back( region );
+
+	m_lastPutSucceeded = true;
+
+	return S_OK;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Notifies the object that the data updated with the previous call to PutData is no
+//   longer needed.  
+// Arguments:
+//   renderContext - current render context
+// --------------------------------------------------------------------------------------
+void Tr2DynamicRingBuffer::DoneUsingData( Tr2RenderContext& renderContext )
+{
+	if( m_lastPutSucceeded )
+	{
+		if( !m_regions.empty() && m_regions.back().fence && FAILED( m_regions.back().fence->PutFence( renderContext ) ) )
+		{
+			m_regions.back().fence = nullptr;
+		}
+		m_lastPutSucceeded = false;
+	}
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Checks if the given region is still used by GPU.  
+// Arguments:
+//   region - Buffer region
+//   renderContext - current render context
+// Return value:
+//   true If the region is still in use
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2DynamicRingBuffer::IsRegionUsedByGpu( BufferRegion& region, Tr2RenderContext& renderContext )
+{
+	bool isReached = false;
+	return FAILED( region.fence->IsReached( isReached, renderContext) ) || !isReached;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Removes regions no longer used by GPU from m_regions vector.  
+// Arguments:
+//   renderContext - current render context
+// --------------------------------------------------------------------------------------
+void Tr2DynamicRingBuffer::TrimUnusedRegions( Tr2RenderContext& renderContext )
+{
+	auto used = m_regions.begin();
+	while( used != m_regions.end() )
+	{
+		if( IsRegionUsedByGpu( *used, renderContext ) )
+		{
+			break;
+		}
+		++used;
+	}
+	RemoveRegions( m_regions.begin(), used );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Finds the next unused region in the buffer.
+// Arguments:
+//   minSize - Minimum size of the region
+//   offset - (out) Offset into the buffer of the region start
+// Return value:
+//   true If the buffer contains an unused region of at least minSize bytes
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2DynamicRingBuffer::GetUnusedRegion( uint32_t minSize, uint32_t& offset )
+{
+	uint32_t totalSize = m_bufferSize;
+
+	if( m_regions.empty() )
+	{
+		offset = 0;
+		return minSize <= totalSize;
+	}
+
+	offset = m_regions.back().offset + m_regions.back().length;
+	uint32_t endOffset = m_regions.front().offset;
+	if( endOffset < offset )
+	{
+		if( minSize < totalSize - offset )
+		{
+			return true;
+		}
+		else if( minSize < endOffset )
+		{
+			offset = 0;
+			return true;
+		}
+		return false;
+	}
+	else
+	{
+		return endOffset >= offset + minSize;
+	}
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface. Releases GPU resources.
+// --------------------------------------------------------------------------------------
+void Tr2DynamicRingBuffer::ReleaseResources( TriStorage )
+{
+	RemoveRegions( m_regions.begin(), m_regions.end() );
+	for( auto it = m_availableFences.begin(); it != m_availableFences.end(); ++it )
+	{
+		delete *it;
+	}
+	m_availableFences.clear();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface.
+// Return value:
+//   true Always
+// --------------------------------------------------------------------------------------
+bool Tr2DynamicRingBuffer::OnPrepareResources()
+{
+	return true;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Either returns a cached unused fence or creates a new one.
+// Return value:
+//   A fence that can be used
+// --------------------------------------------------------------------------------------
+Tr2FenceAL* Tr2DynamicRingBuffer::AllocateFence()
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	if( m_availableFences.empty() )
+	{
+		Tr2FenceAL* fence = CCP_NEW( "Tr2DynamicRingBuffer::fence" ) Tr2FenceAL;
+		fence->Create( renderContext );
+		return fence;
+	}
+	else
+	{
+		Tr2FenceAL* fence = m_availableFences.back();
+		m_availableFences.pop_back();
+		return fence;
+	}
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Recycles a fence.
+// Arguments:
+//   fence - A fence to be recycled
+// --------------------------------------------------------------------------------------
+void Tr2DynamicRingBuffer::DeallocateFence( Tr2FenceAL* fence )
+{
+	m_availableFences.push_back( fence );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Removes region records from m_region vector and recycles its fences.
+// Arguments:
+//   begin - Iterator to the beginning of sequence to be removed
+//   end - Iterator to the end of sequence to be removed
+// --------------------------------------------------------------------------------------
+void Tr2DynamicRingBuffer::RemoveRegions( RegionVector::iterator begin, RegionVector::iterator end )
+{
+	for( auto it = begin; it != end; ++it )
+	{
+		DeallocateFence( it->fence );
+	}
+	m_regions.erase( begin, end );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Checks if the object should use a ring buffer pattern or fall back to the simple
+//   lock discard method. This depends on the platform and trinity setting.
+// Return value:
+//   true If the object should use ring buffer pattern
+//   false If the object should use simple discard locks
+// --------------------------------------------------------------------------------------
+bool Tr2DynamicRingBuffer::UseNoOverwriteRegions() const
+{
+#if TRINITY_PLATFORM == TRINITY_DIRECTX9
+	return false;
+#else
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	if( !renderContext.GetCaps().SupportsNoOverwriteLock() )
+	{
+		return false;
+	}
+	return g_ringBufferUseNoOverwrite;
+#endif
+}
+
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Creates a new ring vertex buffer.
+// Arguments:
+//   bufferSize - Vertex buffer size in bytes
+// Return Value:
+//   true If the buffer was successfully created
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingVertexBuffer::Create( uint32_t bufferSize )
+{
+	ReleaseResources( TRISTORAGE_ALL );
+	m_bufferSize = bufferSize;
+	return PrepareResources();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Check if the buffer is valid.
+// Return Value:
+//   true If the buffer is valid
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingVertexBuffer::IsValid() const
+{
+	return m_buffer.IsValid();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Returns the vertex buffer.
+// Return Value:
+//   Vertex buffer
+// --------------------------------------------------------------------------------------
+Tr2VertexBufferAL& Tr2RingVertexBuffer::GetBuffer()
+{
+	return m_buffer;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface. Releases GPU resources.
+// --------------------------------------------------------------------------------------
+void Tr2RingVertexBuffer::ReleaseResources( TriStorage s )
+{
+	m_buffer.Destroy();
+	Tr2DynamicRingBuffer::ReleaseResources( s );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Creates a vertex buffer.
+// Arguments:
+//   size - Size of the buffer in bytes
+// Return Value:
+//   AL result code
+// --------------------------------------------------------------------------------------
+ALResult Tr2RingVertexBuffer::CreateBuffer( uint32_t size )
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	m_buffer.Destroy();
+	return m_buffer.Create( size, USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, nullptr, renderContext );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Updates portion of the buffer with new data.
+// Arguments:
+//   data - Pointer to data
+//   offset - Offset into the buffer in bytes where the data needs to be stored
+//   size - Size of the data in bytes
+//   lockType - Type of buffer lock
+//   renderContext - Current render context
+// Return Value:
+//   AL result code
+// --------------------------------------------------------------------------------------
+ALResult Tr2RingVertexBuffer::UpdateBuffer( 
+	const void* data, 
+	uint32_t offset, 
+	uint32_t size, 
+	Tr2RenderContextEnum::LockType lockType, 
+	Tr2RenderContext& renderContext )
+{
+	void* bufferData = nullptr;
+	CR_RETURN_HR( m_buffer.Lock( offset, lockType == LOCK_WRITEONLY ? 0 : size, &bufferData, lockType, renderContext ) );
+	if( !bufferData )
+	{
+		return E_FAIL;
+	}
+	memcpy( bufferData, data, size );
+	return m_buffer.Unlock( renderContext );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface. Creates a vertex buffer.
+// Return value:
+//   true If successful
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingVertexBuffer::OnPrepareResources()
+{
+	Tr2DynamicRingBuffer::OnPrepareResources();
+	if( !m_bufferSize )
+	{
+		return true;
+	}
+	return SUCCEEDED( CreateBuffer( m_bufferSize ) );
+}
+
+
+Tr2RingIndexBuffer::Tr2RingIndexBuffer()
+	:m_bitCount( IB_32BIT )
+{
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Creates a new ring index buffer.
+// Arguments:
+//   numberOfIndices - Number of indices in the buffer
+//   bitCount - Type of indices
+// Return Value:
+//   true If the buffer was successfully created
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingIndexBuffer::Create( uint32_t numberOfIndices, Tr2RenderContextEnum::IndexBufferBitcount bitCount )
+{
+	ReleaseResources( TRISTORAGE_ALL );
+	m_bitCount = bitCount;
+	uint32_t indexSize = m_bitCount == IB_32BIT ? 4 : 2;
+	m_bufferSize = numberOfIndices * indexSize;
+	return PrepareResources();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Check if the buffer is valid.
+// Return Value:
+//   true If the buffer is valid
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingIndexBuffer::IsValid() const
+{
+	return m_buffer.IsValid();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Returns the index buffer.
+// Return Value:
+//   Index buffer
+// --------------------------------------------------------------------------------------
+Tr2IndexBufferAL& Tr2RingIndexBuffer::GetBuffer()
+{
+	return m_buffer;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface. Releases GPU resources.
+// --------------------------------------------------------------------------------------
+void Tr2RingIndexBuffer::ReleaseResources( TriStorage s )
+{
+	m_buffer.Destroy();
+	Tr2DynamicRingBuffer::ReleaseResources( s );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Creates an index buffer.
+// Arguments:
+//   size - Size of the buffer in bytes
+// Return Value:
+//   AL result code
+// --------------------------------------------------------------------------------------
+ALResult Tr2RingIndexBuffer::CreateBuffer( uint32_t size )
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	m_buffer.Destroy();
+	uint32_t indexSize = m_bitCount == IB_32BIT ? 4 : 2;
+	return m_buffer.Create( size / indexSize, USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, m_bitCount, nullptr, renderContext );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Updates portion of the buffer with new data.
+// Arguments:
+//   data - Pointer to data
+//   offset - Offset into the buffer in bytes where the data needs to be stored
+//   size - Size of the data in bytes
+//   lockType - Type of buffer lock
+//   renderContext - Current render context
+// Return Value:
+//   AL result code
+// --------------------------------------------------------------------------------------
+ALResult Tr2RingIndexBuffer::UpdateBuffer( 
+	const void* data, 
+	uint32_t offset, 
+	uint32_t size, 
+	Tr2RenderContextEnum::LockType lockType, 
+	Tr2RenderContext& renderContext )
+{
+	void* bufferData = nullptr;
+	CR_RETURN_HR( m_buffer.Lock( offset, lockType == LOCK_WRITEONLY ? 0 : size, &bufferData, lockType, renderContext ) );
+	if( !bufferData )
+	{
+		return E_FAIL;
+	}
+	memcpy( bufferData, data, size );
+	return m_buffer.Unlock( renderContext );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource interface. Creates an index buffer.
+// Return value:
+//   true If successful
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2RingIndexBuffer::OnPrepareResources()
+{
+	Tr2DynamicRingBuffer::OnPrepareResources();
+	if( !m_bufferSize )
+	{
+		return true;
+	}
+	return SUCCEEDED( CreateBuffer( m_bufferSize ) );
+}

@@ -1,0 +1,2403 @@
+#include "StdAfx.h"
+#include "Tr2Sprite2dScene.h"
+#include "TriDevice.h"
+#include "Tr2Renderer.h"
+#include "Tr2VariableStore.h"
+#include "Curves/TriCurveSet.h"
+#include "Tr2AtlasTexture.h"
+#include "Tr2Sprite2d.h"
+#include "TriProjection.h"
+#include "TriView.h"
+#include "Tr2TextureAtlasMan.h"
+#include "Tr2TextureAtlas.h"
+#include "RenderJob/TriRenderJob.h"
+#include "TriSettingsRegistrar.h"
+#include "include/ITr2DebugRenderer.h"
+
+#ifdef _WIN32
+#include "dxerr.h"
+#elif !defined(__ORBIS__) && !defined(__ANDROID__)
+#include "GLFW/glfw3.h"
+#endif
+
+using namespace Tr2RenderContextEnum;
+
+CCP_STATS_DECLARE( spriteSceneDrawCallCount,		"Trinity/SpriteScene/DrawCallCount",		true, CST_COUNTER_LOW, "Count of drawcalls for sprites" );
+CCP_STATS_DECLARE( spriteSceneDrawCallEmpty,		"Trinity/SpriteScene/DrawCallEmpty",		true, CST_COUNTER_LOW, "Count of empty drawcalls for sprites" );
+CCP_STATS_DECLARE( spriteSceneDrawCallTexture,		"Trinity/SpriteScene/DrawCallTexture",		true, CST_COUNTER_LOW, "Count of drawcalls caused by texture changing" );
+CCP_STATS_DECLARE( spriteSceneDrawCallEffect,		"Trinity/SpriteScene/DrawCallEffect",		true, CST_COUNTER_LOW, "Count of drawcalls caused by sprite effect changing" );
+
+CCP_STATS_DECLARE( spriteSceneTextureCount,			"Trinity/SpriteScene/TextureCount",			true, CST_COUNTER_LOW, "Textures used per frame" );
+CCP_STATS_DECLARE( spriteSceneTextureNotReady,		"Trinity/SpriteScene/TextureNotReady",		true, CST_COUNTER_LOW, "Sprites skipped due to its textures not being ready" );
+
+CCP_STATS_DECLARE( spriteSceneCount,				"Trinity/SpriteScene/Count",				true, CST_COUNTER_HIGH, "Count of sprites rendered per frame" );
+CCP_STATS_DECLARE( spriteSceneSpriteArea,			"Trinity/SpriteScene/SpriteArea",			true, CST_COUNTER_HIGH, "Area of sprites rendered per frame" );
+
+CCP_STATS_DECLARE( spriteSceneTransforms,			"Trinity/SpriteScene/Transforms",			true, CST_COUNTER_HIGH, "Count of nontrivial transform matrices per frame" );
+CCP_STATS_DECLARE( spriteSceneTransformSplits,		"Trinity/SpriteScene/TransformSplits",		true, CST_COUNTER_HIGH, "Number of times active transform count caused additional draw calls" );
+
+CCP_STATS_DECLARE( spriteSceneDisplayListsCreated,	"Trinity/SpriteScene/DisplayListsCreated",  true, CST_COUNTER_HIGH, "Number of display lists generated per frame" );
+CCP_STATS_DECLARE( spriteSceneDisplayListsUsed,		"Trinity/SpriteScene/DisplayListsUsed",		true, CST_COUNTER_HIGH, "Number of display lists used per frame" );
+
+CCP_STATS_DECLARED_ELSEWHERE( displayListVertexBufferSize );
+CCP_STATS_DECLARED_ELSEWHERE( displayListIndexBufferSize );
+
+static const int MAX_RETRIES_ON_LOCK_FAILURE = 10;
+
+
+static Tr2VertexDefinition s_vertexDesc;
+
+static const int SPRITE_COUNT_MAX = 65535 / 4;
+
+static const char* EFFECT_UBERSHADER_RESPATH =        "res:/Graphics/Effect/UI/UberShader.fx";
+static const char* EFFECT_RENDER_BLUR_RESPATH =        "res:/Graphics/Effect/UI/Blur.fx";
+
+static const char* EFFECT_RENDER_UBERSHADER_RESPATH_3D =     "res:/Graphics/Effect/UI/UberShader3d.fx";
+static const char* EFFECT_RENDER_BLUR_RESPATH_3D =     "res:/Graphics/Effect/UI/Blur3d.fx";
+
+static const unsigned int VB_ALIGNMENT = 16;
+static const unsigned int IB_ALIGNMENT = 16;
+
+Tr2Sprite2dScene::Tr2Sprite2dScene( IRoot* lockobj ) :
+	PARENTLOCK( m_children ),
+	PARENTLOCK( m_background ),
+	PARENTLOCK( m_curveSets ),
+	m_display( true ),
+	m_spriteEffect( TR2_SFX_FILL ),
+	m_blendMode( TR2_SBM_NONE ),
+	m_numTexturesUsed( 0 ),
+	m_translation( 0.0f, 0.0f, 0.0f ),
+	m_rotation( 0.0f, 0.0f, 0.0f, 1.0f ),
+	m_scaling( 1.0f, 1.0f, 1.0f ),
+	m_depth( 0.0f ),
+	m_depthMin( 0.0f ),
+	m_depthMax( 0.0f ),
+	m_displayWidth( 1.0f ),
+	m_displayHeight( 1.0f ),
+	m_pickState( TR2_SPS_ON ),
+	m_backgroundColor( 0x000000ff ),
+	m_color( 1.0f, 1.0f, 1.0f, 1.0f ),
+	m_accumulatedAlpha( 1.0f ),
+	m_drawWireFrame( false ),
+	m_clearBackground( false ),
+	m_clearFinishedCurveSets( false ),
+	m_transformStack( NULL ),
+	m_depthStack( NULL ),
+	m_clipStack( NULL ),
+	m_ignoreClip( false ),
+	m_currentVertexData( NULL ),
+	m_currentIndexData( NULL ),
+	m_vertexDecl( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
+	m_vertexCount( 0 ),
+	m_indexCount( 0 ),
+	m_isFullscreen( false ),
+	m_is2dRender( true ),
+	m_is2dPick( true ),
+	m_is2dRenderContext( true ),
+	m_stackOfStacks( "Tr2Sprite2dScene/m_stackOfStacks"),
+	m_defaultTextureFlash( 0 ),
+	m_defaultTextureUpdates( false ),
+	m_transformCurrent(0),
+	m_itemsRendered( 0 ),
+	m_maxItemsToRender( 0xffffffff ),
+	m_drawCallsRendered( 0 ),
+	m_maxDrawCallsToRender( 0xffffffff ),
+	m_captureDisplayList( nullptr ),
+	m_captureVertexDataSize( 0 ),
+	m_captureVertexDataCapacity( 0 ),
+	m_captureVertexData( nullptr ),
+	m_captureIndexDataSize( 0 ),
+	m_captureIndexDataCapacity( 0 ),
+	m_captureIndexData( nullptr ),
+	m_viewportSizeVar( "UIViewportSize", Vector4( 0.0f, 0.0f, 0.0f, 0.0f ) ),
+	m_dotVectorVar( "g_DotVector", Vector4( 0.0f, 0.0f, 0.0f, 1.0f ) ),
+	m_maxSpriteCount( 1024 ),
+	m_setLockFrequentlyFlag( true )
+{
+	m_transformStack = CCP_NEW( "Tr2Sprite2dScene/m_transformStack" ) TransformStack_t( "Tr2Sprite2dScene/m_transformStack" );
+	m_depthStack = CCP_NEW( "Tr2Sprite2dScene/m_depthStack" ) DepthStack_t( "Tr2Sprite2dScene/m_depthStack" );
+	m_clipStack = CCP_NEW( "Tr2Sprite2dScene/m_clipStack" ) ClipStack_t( "Tr2Sprite2dScene/m_clipStack" );
+
+	m_uberShader2d.CreateInstance();
+	m_uberShader2d->SetEffectPathName( EFFECT_UBERSHADER_RESPATH );
+
+	m_uberShader3d.CreateInstance();
+	m_uberShader3d->SetEffectPathName( EFFECT_RENDER_UBERSHADER_RESPATH_3D );
+
+	if( g_textureAtlasMan )
+	{
+		Tr2TextureAtlas* atlas = g_textureAtlasMan->FindAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM );
+		if( !atlas )
+		{
+			g_textureAtlasMan->AddAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM, 2048, 2048 );
+			atlas = g_textureAtlasMan->FindAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM );
+		}
+
+		CCP_ASSERT( atlas );
+	}
+
+	for( int i=0; i<TR2_SS_MAX_TRANSFORM_COUNT; ++i )
+	{
+		D3DXMatrixIdentity( &m_transformArray[i] );
+	}
+
+	for( unsigned int i = 0; i < s_textureMax; ++i )
+	{
+		m_texture[i] = nullptr;
+		char name[128];
+		sprintf_s( name, "g_texelSizeUI%u", i );
+		m_texelSizeVar[i].Register( name, Vector4( 0.0f, 0.0f, 0.0f, 0.0f ) );
+	}
+
+	for( int j=0; j<2; ++j )
+	{
+		m_textureSettings[j].useTransform = false;
+	}
+
+	m_captureVertexDataCapacity = 1024;
+	unsigned int vbSize = m_captureVertexDataCapacity * sizeof( Tr2Sprite2dD3DVertex );
+	m_captureVertexData = static_cast<Tr2Sprite2dD3DVertex*>( CCP_ALIGNED_MALLOC( "Tr2Sprite2dScene/m_captureVertexData", vbSize, VB_ALIGNMENT ) );
+
+	m_captureIndexDataCapacity = m_captureVertexDataCapacity + m_captureVertexDataCapacity / 2;
+	unsigned int ibSize = m_captureIndexDataCapacity * sizeof( unsigned int );
+	m_captureIndexData = static_cast<unsigned int*>( CCP_ALIGNED_MALLOC( "Tr2Sprite2dScene/m_captureIndexData", ibSize, IB_ALIGNMENT ) );
+}
+
+Tr2Sprite2dScene::~Tr2Sprite2dScene()
+{
+	m_captureIndexDataCapacity = 0;
+	CCP_ALIGNED_FREE( m_captureIndexData );
+	m_captureIndexData = nullptr;
+
+	m_captureVertexDataCapacity = 0;
+	CCP_ALIGNED_FREE( m_captureVertexData );
+	m_captureVertexData = nullptr;
+
+	CCP_ASSERT( m_transformStack->empty() );
+	CCP_DELETE( m_transformStack );
+	m_transformStack = NULL;
+
+	CCP_ASSERT( m_depthStack->empty() );
+	CCP_DELETE( m_depthStack );
+	m_depthStack = NULL;
+
+	CCP_ASSERT( m_clipStack->empty() );
+	CCP_DELETE( m_clipStack );
+	m_clipStack = NULL;
+}
+
+void Tr2Sprite2dScene::Update( Be::Time time )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( !m_display )
+	{
+		return;
+	}
+
+	Vector3 tmp = Tr2Renderer::GetViewLookAt();
+	Quaternion tweak(0.332621f,0.332621f,0.000000,0.882455f);
+	TriVectorRotateQuaternion(&tmp, &tmp, &tweak);
+
+	Vector4 tmpw( tmp.x, tmp.y, tmp.z, 1.0f );
+	m_dotVectorVar = tmpw;
+
+	for( TriCurveSetVector::const_iterator it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	{
+		(*it)->Update( TimeAsDouble( time ) );
+	}
+
+	if( m_clearFinishedCurveSets )
+	{
+		RemoveFinishedCurveSets();
+	}
+}
+
+void Tr2Sprite2dScene::Render( Tr2RenderContext& renderContext )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+	D3DPERF_EVENT( L"Tr2Sprite2dScene::Render" );
+
+	if( !m_display || !renderContext.IsValid() )
+	{
+		return;
+	}
+
+	bool isReady = PrepareResourcesForRender();
+	if( !isReady )
+	{
+		return;
+	}
+
+	// Flash default texture to make it easier to spot missing textures
+	FlashDefaultTexture();
+
+	m_lastViewMatrix = Tr2Renderer::GetViewTransform();
+	m_lastProjectionMatrix = Tr2Renderer::GetProjectionTransform();
+
+	DetermineWorldTransform();
+	DetermineViewportSize();
+
+	Tr2Renderer::PushDepthStencilBuffer( nullDS, renderContext );
+
+	PrepareRenderContextForRendering( renderContext );
+
+	PrepareStacksBeforeRender();
+
+	ResetBufferPointers();
+
+	m_itemsRendered = 0;
+	m_drawCallsRendered = 0;
+
+	for( ITr2SpriteObjectVector::reverse_iterator it = m_background.rbegin(); it != m_background.rend(); ++it )
+	{
+		(*it)->GatherSprites( this );
+	}
+	for( ITr2SpriteObjectVector::reverse_iterator it = m_children.rbegin(); it != m_children.rend(); ++it )
+	{
+		(*it)->GatherSprites( this );
+	}
+
+	CCP_ASSERT( !m_captureDisplayList );
+
+	IssueDrawCall();
+
+	PrepareRenderContextAfterRendering(renderContext);
+
+	CleanUpStacksAfterRender();
+
+	Tr2Renderer::PopDepthStencilBuffer( renderContext );
+
+	m_is2dRenderContext = m_is2dRender;
+}
+
+ITr2SpriteObject* Tr2Sprite2dScene::PickObject( int x, int y, const TriProjection* proj, const TriView* view, const TriViewport* vp )
+{
+	CCP_ASSERT( m_transformStack->empty() );
+
+	float finalX;
+	float finalY;
+	if( !m_is2dPick )
+	{
+		float fx,fy;
+		Vector3 startWorld;
+		Vector3 dirWorld;
+
+		gTriDev->ScreenToProjection( x, y, &fx, &fy, vp );
+
+		Matrix worldTransform;
+		D3DXMatrixTransformation( &worldTransform, NULL, NULL, &m_scaling, NULL, &m_rotation, &m_translation );
+
+		Matrix worldViewTransform;
+		Matrix viewTransform = view->GetTransform();
+		D3DXMatrixMultiply( &worldViewTransform, &worldTransform, &viewTransform );
+
+		Matrix worldViewProjectionTransform;
+		Matrix projectionTransform = proj->GetTransform();
+		D3DXMatrixMultiply( &worldViewProjectionTransform, &worldViewTransform, &projectionTransform );
+
+		Matrix invWorldViewProjectionTransform;
+		D3DXMatrixInverse( &invWorldViewProjectionTransform, NULL, &worldViewProjectionTransform );
+
+		Vector3 rayStart( fx, fy, 0.0f );
+		D3DXVec3TransformCoord( &rayStart, &rayStart, &invWorldViewProjectionTransform );
+
+		Vector3 rayEnd( fx, fy, 0.5f );
+		D3DXVec3TransformCoord( &rayEnd, &rayEnd, &invWorldViewProjectionTransform );
+
+		float slopeX = (rayEnd.z - rayStart.z) / (rayEnd.x - rayStart.x);
+		finalX = (slopeX * rayStart.x - rayStart.z) / slopeX;
+
+		float slopeY = (rayEnd.z - rayStart.z) / (rayEnd.y - rayStart.y);
+		finalY = (slopeY * rayStart.y - rayStart.z) / slopeY;
+
+		finalY = 1.0f - finalY;
+
+		if( m_is2dRender )
+		{
+			finalX *= m_displayWidth;
+			finalY *= m_displayHeight;
+			finalX += m_displayWidth / 2.0f;
+			finalY -= m_displayHeight / 2.0f;
+		}
+		else
+		{
+			// Rendering
+			finalX += m_displayWidth / 2.0f;
+			finalY += m_displayHeight / 2.0f;
+		}
+
+		extern ITr2DebugRendererPtr g_debugRenderer;
+		if( g_debugRenderer )
+		{
+			g_debugRenderer->DrawLine( rayStart, rayEnd );
+			g_debugRenderer->Printf( 50, 50, 0xffffffff, "%d, %d, %d, %d", vp->x, vp->y, vp->width, vp->height );
+			g_debugRenderer->Printf( 50, 60, 0xffffffff, "%4.2f, %4.2f, %4.2f", rayStart.x, rayStart.y, rayStart.z );
+			g_debugRenderer->Printf( 50, 70, 0xffffffff, "%4.2f, %4.2f, %4.2f", rayEnd.x, rayEnd.y, rayEnd.z );
+			g_debugRenderer->Printf( 50, 80, 0xffffffff, "%4.4f, %4.4f - %4.2f, %4.2f", fx, fy, finalX, finalY );
+		}
+
+	}
+	else
+	{
+		finalX = (float)x;
+		finalY = (float)y;
+	}
+
+	// Store the last pick pos for debugging purposes
+	m_lastPickPos.x = finalX;
+	m_lastPickPos.y = finalY;
+
+	ITr2SpriteObject* obj = NULL;
+
+	for( ITr2SpriteObjectVector::iterator it = m_children.begin(); it != m_children.end(); ++it )
+	{
+		obj = (*it)->PickPoint( finalX, finalY, this );
+		CCP_ASSERT( m_transformStack->empty() );
+		if( obj )
+		{
+			break;
+		}
+	}
+
+	return obj;
+}
+
+void Tr2Sprite2dScene::RenderDebugInfo( Tr2RenderContext& renderContext )
+{
+
+}
+
+void Tr2Sprite2dScene::PushTranslation( const Vector2& t )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	TransformStackEntry entry;
+	entry.isTranslationOnlySet = true;
+
+	if( m_transformStack->empty() )
+	{
+		entry.translation = t;
+		entry.isTranslationOnly = true;
+	}
+	else
+	{
+		const TransformStackEntry& top = m_transformStack->back();
+		if( top.isTranslationOnly )
+		{
+			entry.translation = t + top.translation;
+			entry.isTranslationOnly = true;
+		}
+		else
+		{
+			const Matrix& parent = m_transformStack->back().transform;
+
+			Matrix transform;
+			D3DXMatrixTranslation( &transform, t.x, t.y, 0.0f );
+			D3DXMatrixMultiply( &entry.transform, &transform, &parent );
+
+			entry.isTranslationOnly = false;
+		}
+	}
+
+	m_transformStack->push_back( entry );
+}
+
+void Tr2Sprite2dScene::PopTranslation()
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( !m_transformStack->empty() );
+	CCP_ASSERT( m_transformStack->back().isTranslationOnlySet );
+	m_transformStack->pop_back();
+}
+
+
+const Vector2& Tr2Sprite2dScene::GetTranslation() const
+{
+	if( m_transformStack->empty() )
+	{
+		static const Vector2 zero( 0.0f, 0.0f );
+		return zero;
+	}
+	else
+	{
+		CCP_ASSERT( m_transformStack->back().isTranslationOnlySet );
+
+		return m_transformStack->back().translation;
+	}
+}
+
+void Tr2Sprite2dScene::PushDepthRange( float depthMin, float depthMax )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( m_is2dRenderContext )
+	{
+		return;
+	}
+
+	CCP_ASSERT( depthMin >= -1.0f );
+	CCP_ASSERT( depthMin <= 1.0f );
+	CCP_ASSERT( depthMax >= -1.0f );
+	CCP_ASSERT( depthMax <= 1.0f );
+
+	// To simplify the code below the stack is primed with scene values for depth range
+	CCP_ASSERT( !m_depthStack->empty() );
+
+	// Relative range is from -1 to 1
+	float normDepthMin = 0.5f*(depthMin + 1.0f);
+	float normDepthMax = 0.5f*(depthMax + 1.0f);
+
+	const Vector2& currentDepthValues = m_depthStack->back();
+	float depthRange = currentDepthValues.y - currentDepthValues.x;
+	Vector2 range( currentDepthValues.x + depthRange * normDepthMin, currentDepthValues.x + depthRange * normDepthMax );
+	m_depthStack->push_back( range );
+}
+
+void Tr2Sprite2dScene::PopDepthRange()
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( m_is2dRenderContext )
+	{
+		return;
+	}
+
+	CCP_ASSERT( !m_depthStack->empty() );
+	m_depthStack->pop_back();
+}
+
+void Tr2Sprite2dScene::SetDepth( float depth )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( m_is2dRenderContext )
+	{
+		return;
+	}
+
+	const Vector2& currentDepthValues = m_depthStack->back();
+	float depthRange = currentDepthValues.y - currentDepthValues.x;
+	float normDepth = 0.5f*(depth + 1.0f);
+	m_depth = currentDepthValues.x + normDepth*depthRange;
+}
+
+void Tr2Sprite2dScene::PushTransform( const Matrix& m )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	TransformStackEntry entry;
+	entry.isTranslationOnly = false;
+	entry.isTranslationOnlySet = false;
+
+	if( m_transformStack->empty() )
+	{
+		entry.transform = m;
+	}
+	else
+	{
+		const TransformStackEntry& top = m_transformStack->back();
+		if( top.isTranslationOnly )
+		{
+			Matrix parent;
+			D3DXMatrixTranslation( &parent, top.translation.x, top.translation.y, 0.0f );
+			D3DXMatrixMultiply( &entry.transform, &m, &parent );
+		}
+		else
+		{
+			const Matrix& parent = m_transformStack->back().transform;
+			D3DXMatrixMultiply( &entry.transform, &m, &parent );
+		}
+	}
+
+	m_transformStack->push_back( entry );
+}
+
+void Tr2Sprite2dScene::PopTransform()
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( !m_transformStack->empty() );
+	CCP_ASSERT( !m_transformStack->back().isTranslationOnly );
+	m_transformStack->pop_back();
+}
+
+void Tr2Sprite2dScene::PushTransformAbsolute()
+{
+	TransformStackEntry entry;
+	entry.isTranslationOnly = true;
+	entry.isTranslationOnlySet = true;
+	entry.translation = Vector2( 0.0f, 0.0f );
+
+	m_transformStack->push_back( entry );
+}
+
+void Tr2Sprite2dScene::PopTransformAbsolute()
+{
+	CCP_ASSERT( !m_transformStack->empty() );
+	CCP_ASSERT( m_transformStack->back().isTranslationOnly );
+	CCP_ASSERT( m_transformStack->back().isTranslationOnlySet );
+
+	m_transformStack->pop_back();
+}
+
+void Tr2Sprite2dScene::PushClipRectangle( float x, float y, float width, float height )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( width >= 0.0f );
+	CCP_ASSERT( height >= 0.0f );
+
+	if( m_ignoreClip )
+	{
+		return;
+	}
+
+	// TODO: Implement for 3d rendering
+	if( !m_is2dRender )
+	{
+		return;
+	}
+
+	Tr2Sprite2dClipRect rect;
+
+	if( !m_transformStack->empty() )
+	{
+		const TransformStackEntry& top = m_transformStack->back();
+
+		if( top.isTranslationOnly )
+		{
+			rect.left = (x + top.translation.x);
+			rect.top = (y + top.translation.y);
+			rect.right = (rect.left + width);
+			rect.bottom = (rect.top + height);
+		}
+		else
+		{
+			const Matrix& transform = top.transform;
+
+			Vector4 corners[4];
+			for( int i=0; i<4; ++i ) {
+				corners[i] = Vector4(0.f,0.f,0.f,1.f);
+			}
+
+			corners[0].x = x;
+			corners[0].y = y;
+			corners[1].x = x + width;
+			corners[1].y = y;
+			corners[2].x = x + width;
+			corners[2].y = y + height;
+			corners[3].x = x;
+			corners[3].y = y + height;
+
+			XMVector4TransformStream( (XMFLOAT4*)corners,
+									  sizeof( Vector4 ),
+									  (const XMFLOAT4*)corners,
+									  sizeof( Vector4 ),
+									  4,
+									  transform );
+
+			float minX = FLT_MAX;
+			float maxX = -FLT_MAX;
+			float minY = FLT_MAX;
+			float maxY = -FLT_MAX;
+
+			for( int i = 0; i < 4; ++i )
+			{
+				if( corners[i].x < minX )
+				{
+					minX = corners[i].x;
+				}
+				if( corners[i].x > maxX )
+				{
+					maxX = corners[i].x;
+				}
+				if( corners[i].y < minY )
+				{
+					minY = corners[i].y;
+				}
+				if( corners[i].y > maxY )
+				{
+					maxY = corners[i].y;
+				}
+			}
+
+			rect.left = minX;
+			rect.top = minY;
+			rect.right = maxX;
+			rect.bottom = maxY;
+		}
+	}
+	else
+	{
+		rect.left = x;
+		rect.top = y;
+		rect.right = (rect.left + width);
+		rect.bottom = (rect.top + height);
+	}
+
+	if( !m_clipStack->empty() )
+	{
+		// We're already clipping - limit to a subrect within that rect
+		const Tr2Sprite2dClipRect& currentRect = m_clipStack->back();
+
+		if( rect.left < currentRect.left )
+		{
+			rect.left = currentRect.left;
+		}
+		if( rect.right > currentRect.right )
+		{
+			rect.right = currentRect.right;
+		}
+		if( rect.top < currentRect.top )
+		{
+			rect.top = currentRect.top;
+		}
+		if( rect.bottom > currentRect.bottom )
+		{
+			rect.bottom = currentRect.bottom;
+		}
+	}
+	m_clipStack->push_back( rect );
+}
+
+void Tr2Sprite2dScene::PopClipRectangle()
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( m_ignoreClip )
+	{
+		return;
+	}
+
+	// TODO: Implement for 3d rendering
+	if( !m_is2dRender )
+	{
+		return;
+	}
+
+	CCP_ASSERT( !m_clipStack->empty() );
+	m_clipStack->pop_back();
+}
+
+
+const Tr2Sprite2dClipRect& Tr2Sprite2dScene::GetClipRectangle() const
+{
+	CCP_ASSERT( !m_clipStack->empty() );
+
+	return m_clipStack->back();
+}
+
+void Tr2Sprite2dScene::SetTexture( unsigned ix, Tr2AtlasTexturePtr tex, Tr2Sprite2dTextureSettings settings )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_STATS_INC( spriteSceneTextureCount );
+
+	CCP_ASSERT( ix < 2 );
+
+#if !CCP_DEPLOY
+	if( !tex )
+	{
+		tex = m_defaultTexture;
+	}
+#endif
+
+	Tr2TextureAL* texAL = nullptr;
+	if( tex )
+	{
+		texAL = tex->GetTexture();
+	}
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	// Note that we can't assume that the same value for 'tex' results in the
+	// same D3D texture - the underlying texture may shift in the atlas.
+	if( !m_texture[ix] || texAL != m_texture[ix]->GetTexture() )
+	{
+		CCP_STATS_INC( spriteSceneDrawCallTexture );
+		IssueDrawCall();
+		m_texture[ix] = tex;
+		renderContext.m_esm.ApplyTexture( PIXEL_SHADER, ix, texAL ? *texAL : nullTX );
+		if( ix == 0 )
+		{
+			Vector4 texelSize;
+			if( texAL )
+			{
+				texelSize.x = 1.0f / texAL->GetWidth();
+				texelSize.y = 1.0f / texAL->GetHeight();
+			}
+			else
+			{
+				texelSize.x = 0.0f;
+				texelSize.y = 0.0f;
+			}
+			texelSize.z = 0.0f;
+			texelSize.w = 0.0f;
+			m_texelSizeVar[ix] = texelSize;
+		}
+	}
+
+	m_texture[ix] = tex;
+
+	TextureSetting& texSettings = m_textureSettings[ix];
+	if( tex )
+	{
+		tex->GetTextureWindow( texSettings.textureWindow );
+	}
+	else
+	{
+		texSettings.textureWindow = Vector4( 0.0f, 0.0f, 1.0f, 1.0f );
+	}
+
+	texSettings.repeatMode = (settings & S2D_TS_REPEAT_CLAMP) ? Tr2Sprite2dScene::TextureSetting::TR_Clamp :
+		(settings & S2D_TS_REPEAT_MIRROR) ? Tr2Sprite2dScene::TextureSetting::TR_Mirror : Tr2Sprite2dScene::TextureSetting::TR_Tile;
+
+	texSettings.tileX = (settings & S2D_TS_TILE_X) != 0;
+	texSettings.tileY = (settings & S2D_TS_TILE_Y) != 0;
+
+}
+
+void Tr2Sprite2dScene::SetTextureWindow( unsigned int ix, float x, float y, float width, float height )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( ix < 2 );
+
+	TextureSetting& texSettings = m_textureSettings[ix];
+	if( m_texture[ix] )
+	{
+		m_texture[ix]->CalcSubTextureWindow( texSettings.textureWindow, x, y, width, height );
+	}
+}
+
+void Tr2Sprite2dScene::SetTextureTransform( unsigned int ix, Matrix* m )
+{
+	//CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( ix < 2 );
+
+	if( m )
+	{
+		m_textureSettings[ix].useTransform = true;
+		m_textureSettings[ix].transform = *m;
+	}
+	else
+	{
+		m_textureSettings[ix].useTransform = false;
+	}
+}
+
+inline bool Tr2Sprite2dScene::TexturesReady() const
+{
+	for( int i = 0; i < m_numTexturesUsed; ++i )
+	{
+		if( !m_texture[i] )
+		{
+			return false;
+		}
+
+		if( !m_texture[i]->IsGood() )
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Tr2Sprite2dScene::PrepareSpriteVerts(
+	Tr2Sprite2dD3DVertex* destVerts,
+	const Vector2& pos,
+	float width,
+	float height
+	)
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( !TexturesReady() )
+	{
+		CCP_STATS_INC( spriteSceneTextureNotReady );
+		return false;
+	}
+
+	//texture coordinates
+	Vector2 uv[2][4];
+
+	SetSpriteVerticesUVs( uv, width, height );
+
+
+	//set vertex data
+	const Vector2 verts[4] = {
+		pos,
+		pos + Vector2( width, 0.f ),
+		pos + Vector2( width, height ),
+		pos + Vector2( 0.f, height )
+	};
+
+	{
+		//CCP_STATS_ZONE( __FUNCTION__ " vertices" );
+		for( int i=0; i<4; ++ i )
+		{
+			Tr2Sprite2dD3DVertex& vertex = destVerts[i];
+			vertex.position.x = verts[i].x;
+			vertex.position.y = verts[i].y;
+			vertex.position.z = m_depth;
+			vertex.color = m_color;
+			vertex.texCoord[0] = uv[0][i];
+			vertex.texCoord[1] = uv[1][i];
+			vertex.blendMode = m_blendMode;
+			vertex.spriteEffect = m_spriteEffect;
+			vertex.transformIndex = 0;
+			vertex.tileMode = m_tileMode;
+		}
+	}
+
+	return true;
+}
+
+bool Tr2Sprite2dScene::PrepareTriangleVerts( Tr2Sprite2dD3DVertex* destVerts, Tr2Sprite2dVertexBase* verts, unsigned int stride, unsigned int vertexCount )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	if( !TexturesReady() )
+	{
+		CCP_STATS_INC( spriteSceneTextureNotReady );
+		return false;
+	}
+
+	//
+	// First gather all data we're setting or using to adjust vertices, then iterate over
+	// all verts and set the data. It's very important that we only iterate once over
+	// the vertices and update their fields in the right order for optimal cache behavior.
+	//
+
+	//
+	// Gather data for texture windows, transformation
+	//
+	float repeat[2];
+
+	for( int twIx = 0; twIx < 2; ++twIx )
+	{
+		TextureSetting& texSettings = m_textureSettings[twIx];
+
+		repeat[twIx] = float(texSettings.repeatMode);
+	}
+
+	//
+	// Process the vertices into the vertex buffer
+	//
+
+	Tr2Sprite2dVertexBase* curVertex = verts;
+	for( unsigned int i = 0; i < vertexCount; ++i )
+	{
+		destVerts->position.x = curVertex->position.x;
+		destVerts->position.y = curVertex->position.y;
+		destVerts->position.z = curVertex->position.z;
+
+		destVerts->color.r = curVertex->color.r * m_color.r;
+		destVerts->color.g = curVertex->color.g * m_color.g;
+		destVerts->color.b = curVertex->color.b * m_color.b;
+		destVerts->color.a = curVertex->color.a * m_color.a;
+
+		for( int ix = 0; ix < m_numTexturesUsed; ++ix )
+		{
+			TextureSetting& texSettings = m_textureSettings[ix];
+
+			Vector2 dstUV;
+			if( texSettings.useTransform )
+			{
+				// Apply texture transformation
+				float x = curVertex->texCoord[ix].x;
+				float y = curVertex->texCoord[ix].y;
+				Vector4 uv( x, y, 0.0f, 1.0f );
+				D3DXVec4Transform( &uv, &uv, &texSettings.transform );
+				dstUV.x = uv.x * texSettings.textureWindow.z + texSettings.textureWindow.x;
+				dstUV.y = uv.y * texSettings.textureWindow.w + texSettings.textureWindow.y;
+			}
+			else
+			{
+				dstUV.x = curVertex->texCoord[ix].x * texSettings.textureWindow.z + texSettings.textureWindow.x;
+				dstUV.y = curVertex->texCoord[ix].y * texSettings.textureWindow.w + texSettings.textureWindow.y;
+			}
+			destVerts->texCoord[ix] = dstUV;
+		}
+
+		if( m_isAntiAliased )
+		{
+			destVerts->texCoord[0] = curVertex->texCoord[0];
+			destVerts->texCoord[1] = curVertex->texCoord[1];
+		}
+
+		destVerts->blendMode = m_blendMode;
+		destVerts->spriteEffect = m_spriteEffect;
+		destVerts->tileMode = m_tileMode;
+
+		destVerts->transformIndex = 0;
+
+		++destVerts;
+		curVertex = (Tr2Sprite2dVertexBase*)((uint8_t*)curVertex + stride);
+	}
+
+	return true;
+}
+
+void Tr2Sprite2dScene::RenderTriangleVerts( Tr2Sprite2dD3DVertex* verticesSrc, unsigned int vertexCount, unsigned short* indices, unsigned short indexCount )
+{
+	if( m_transformCurrent >= TR2_SS_MAX_TRANSFORM_COUNT-1 )
+	{
+		// Buffers are full, kick off what we've got
+		IssueDrawCall();
+	}
+
+	// Offset applied to indices
+	int vertexOffset;
+
+	bool canRender = EnsureBufferSpace( vertexCount, indexCount, vertexOffset );
+	if( !canRender )
+	{
+		return;
+	}
+
+	ProcessVertices( verticesSrc, vertexCount );
+	CopyIndicesWithOffset( indices, indexCount, vertexOffset );
+}
+
+void Tr2Sprite2dScene::RenderTriangleVerts( Tr2VertexBufferAL& verticesSrc, unsigned int vertexCount, Tr2IndexBufferAL& indices, unsigned short indexCount )
+{
+	CCP_ASSERT( !m_captureDisplayList );
+
+	bool effectOK = SelectEffect();
+
+	IssueDrawCall();
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	renderContext.m_esm.ApplyIndexBuffer( indices );
+	renderContext.m_esm.ApplyStreamSource( 0, verticesSrc, 0, sizeof( Tr2Sprite2dD3DVertex ) );
+
+	m_indexCount = indexCount;
+	m_vertexCount = vertexCount;
+
+	if( m_effect )
+	{
+		m_effect->Render( this, renderContext );
+	}
+
+	m_vertexCount = 0;
+
+	renderContext.m_esm.ApplyIndexBuffer( m_indexBuffer.GetBuffer() );
+}
+
+void Tr2Sprite2dScene::IssueDrawCall()
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	CCP_STATS_ZONE( __FUNCTION__ );
+	CCP_STATS_INC( spriteSceneDrawCallCount );
+
+	if( !m_indexCount )
+	{
+		CCP_STATS_INC( spriteSceneDrawCallEmpty );
+
+		return;
+	}
+
+	bool effectOK = SelectEffect();
+
+	if( m_captureDisplayList )
+	{
+		CCP_ASSERT( m_effect );
+
+		if( effectOK )
+		{
+			Tr2Sprite2dDisplayList::Entry entry;
+
+			entry.job = nullptr;
+
+			memcpy( entry.transformArray, m_transformArray, sizeof( m_transformArray ) );
+
+			entry.numVertices = m_captureVertexDataSize;
+			entry.primitiveCount = m_indexCount / 3;
+			entry.startIndex = m_captureStartIndex;
+			entry.texture0 = m_texture[0];
+			entry.texture1 = m_texture[1];
+			entry.effect = m_effect;
+			m_texelSizeVar[0].GetValue( entry.texelSize0 );
+			m_texelSizeVar[1].GetValue( entry.texelSize1 );
+			
+			//entry.vsConstantTable = m_vsConstantTable;
+			//entry.transformsHandle = m_transformsHandle;
+			entry.m_uiTransformsCb = &m_uiTransformsCb;
+
+			m_captureDisplayList->entries.push_back( entry );
+		}
+
+		m_vertexCount = 0;
+		m_indexCount = 0;
+		m_transformCurrent = 0;
+
+		m_captureStartIndex = m_captureIndexDataSize;
+		return;
+	}
+
+	++m_drawCallsRendered;
+
+	if( effectOK && (m_drawCallsRendered < m_maxDrawCallsToRender) )
+	{
+		uint32_t vertexBufferOffset;
+		if( FAILED( m_vertexBuffer.PutData( 
+			m_vertexBufferData.get(), 
+			m_vertexCount * sizeof( Tr2Sprite2dD3DVertex ),
+			vertexBufferOffset,
+			renderContext ) ) )
+		{
+			CCP_LOGERR( "Failed to update stream vertex buffer for UI" );
+		}
+		else
+		{
+			if( FAILED( m_indexBuffer.PutData( 
+				m_indexBufferData.get(),
+				m_indexCount * sizeof( uint32_t ),
+				m_drawCallStartIndex,
+				renderContext ) ) )
+			{
+				CCP_LOGERR( "Failed to update stream index buffer for UI" );
+			}
+			else
+			{
+				m_drawCallStartIndex /= sizeof( uint32_t );
+				renderContext.m_esm.ApplyStreamSource( 0, m_vertexBuffer.GetBuffer(), vertexBufferOffset, sizeof( Tr2Sprite2dD3DVertex ) );
+				m_effect->Render( this, renderContext );
+				m_indexBuffer.DoneUsingData( renderContext );
+			}
+			m_vertexBuffer.DoneUsingData( renderContext );
+		}
+
+		ResetBufferPointers();
+	}
+
+	m_vertexCount = 0;
+	m_indexCount = 0;
+	m_transformCurrent = 0;
+}
+
+void Tr2Sprite2dScene::SubmitGeometry( Tr2RenderContext& renderContext )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	// Error checking is done in IssueDrawCall - we won't get here unless the effect
+	// is valid, as well as the constant table and transforms handle.
+	Matrix transposedMatrixes[TR2_SS_MAX_TRANSFORM_COUNT];
+	for( unsigned i = 0; i < TR2_SS_MAX_TRANSFORM_COUNT; ++i )
+	{
+		D3DXMatrixTranspose( transposedMatrixes + i, m_transformArray + i );
+	}
+
+	bool result = FillAndSetConstants(	
+											m_uiTransformsCb, 
+											transposedMatrixes,
+											sizeof( transposedMatrixes[0] ) * TR2_SS_MAX_TRANSFORM_COUNT, 
+											VERTEX_SHADER,
+											Tr2Renderer::GetPerObjectVSGUIStartRegister(),
+											renderContext );
+
+	if( !result )
+	{
+		CCP_LOGWARN( "Tr2Sprite2dScene::SubmitGeometry - couldn't set VS constant" );
+	}
+
+	renderContext.SetTopology( TOP_TRIANGLES );
+	HRESULT hr = renderContext.DrawIndexedPrimitive( m_indexCount, m_drawCallStartIndex, m_indexCount / 3 );
+	if( FAILED( hr ) )
+	{
+		CCP_LOGWARN( "Tr2Sprite2dScene::SubmitGeometry - DrawIndexedPrimitive failed (0x%x)", hr );
+	}
+}
+
+void Tr2Sprite2dScene::ReleaseResources( TriStorage s )
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	m_uiTransformsCb.Destroy();
+
+	m_effect = nullptr;
+	m_defaultTexture = nullptr;
+
+	if( s & TRISTORAGE_MANAGEDMEMORY )
+	{
+		m_vertexDecl = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
+	}
+}
+
+bool Tr2Sprite2dScene::OnPrepareResources()
+{
+	if( m_vertexDecl == Tr2EffectStateManager::UNINITIALIZED_DECLARATION )
+	{
+		if( s_vertexDesc.empty() )
+		{
+			// This vertex declaration matches the Tr2Sprite2dD3DVertex defined in ITr2Sprite2dRenderer.h
+			s_vertexDesc.Add( s_vertexDesc.FLOAT32_3, s_vertexDesc.POSITION );
+			s_vertexDesc.Add( s_vertexDesc.FLOAT32_4, s_vertexDesc.COLOR );
+
+			// Texture coordinates, primary texture
+			s_vertexDesc.Add( s_vertexDesc.FLOAT32_2, s_vertexDesc.TEXCOORD, 0 );
+
+			// Texture coordinates, secondary texture
+			s_vertexDesc.Add( s_vertexDesc.FLOAT32_2, s_vertexDesc.TEXCOORD, 1 );
+
+			// Clip rect
+			s_vertexDesc.Add( s_vertexDesc.FLOAT32_4, s_vertexDesc.TEXCOORD, 2 );
+
+			// Matrix index
+			s_vertexDesc.Add( s_vertexDesc.UBYTE_4, s_vertexDesc.BLENDINDICES );
+		}
+
+		m_vertexDecl = Tr2EffectStateManager::GetVertexDeclarationHandle( s_vertexDesc );
+	}
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	Tr2RenderContextEnum::BufferUsage usageFlags = USAGE_CPU_WRITE;
+	if( m_setLockFrequentlyFlag )
+	{
+		usageFlags |= USAGE_LOCK_FREQUENTLY;
+	}
+
+	unsigned int ibSize = m_maxSpriteCount * 6 * sizeof( uint32_t );
+	unsigned int vbSize = m_maxSpriteCount * 4 * sizeof(Tr2Sprite2dD3DVertex);
+
+	if( !m_vertexBuffer.Create( vbSize ) )
+	{
+		CCP_LOGERR( "Tr2Sprite2dScene::OnPrepareResources failed to create streaming vertex buffer" );
+		return false;
+	}
+
+	if( !m_indexBuffer.Create( m_maxSpriteCount * 4, Tr2RenderContextEnum::IB_32BIT ) )
+	{
+		CCP_LOGERR( "Tr2Sprite2dScene::OnPrepareResources failed to create streaming index buffer" );
+		return false;
+	}
+
+	m_vertexBufferData.resize( "Tr2Sprite2dScene::m_vertexBufferData", vbSize );
+	if( m_vertexBufferData.empty() )
+	{
+		CCP_LOGERR( "Tr2Sprite2dScene::OnPrepareResources failed to allocate vertex buffer mirror" );
+		return false;
+	}
+
+	m_indexBufferData.resize( "Tr2Sprite2dScene::m_indexBufferData", ibSize );
+	if( m_indexBufferData.empty() )
+	{
+		CCP_LOGERR( "Tr2Sprite2dScene::OnPrepareResources failed to allocate index buffer mirror" );
+		return false;
+	}
+
+	// Ensure we have an atlas
+	CCP_ASSERT( g_textureAtlasMan );
+	Tr2TextureAtlas* atlas = g_textureAtlasMan->FindAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM );
+	if( !atlas )
+	{
+		g_textureAtlasMan->AddAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM, 2048, 2048 );
+		atlas = g_textureAtlasMan->FindAtlas( PIXEL_FORMAT_B8G8R8A8_UNORM );
+	}
+
+	CCP_ASSERT( atlas );
+
+	// Create the default texture. Use video because we need CPU write access
+	// to fill it with initial data.
+	atlas->CreateTexture( 2, 2, Tr2TextureAtlas::ATT_VIDEO, &m_defaultTexture );
+
+	if( m_defaultTexture )
+	{
+		//Make a little tiny deliberately ugly checker pattern
+		void *data = NULL;
+		unsigned pitch = 0;
+		if( m_defaultTexture->LockBuffer( data, pitch ) )
+		{
+			static const unsigned char defaultPixels[2][8] =
+			{
+				{ 0xff, 0x00, 0xff, 0x00, 0x00, 0xff, 0x00, 0xff },
+				{ 0x00, 0xff, 0x00, 0xff, 0xff, 0x00, 0xff, 0x00 }
+			};
+			memcpy( data, defaultPixels[0], 8 );
+			memcpy( (char*)data + pitch, defaultPixels[1], 8 );
+			m_defaultTexture->UnlockBuffer();
+		}
+	}
+
+	CCP_ASSERT( m_defaultTexture );
+
+	return true;
+}
+
+bool Tr2Sprite2dScene::IsInside( const Vector2& pointIn, const Vector2& topLeft, float width, float height, float radius )
+{
+	//local copy so we can manipulate it
+	//this makes non-translation transforms easier to implement
+	Vector4 point( (const float*)pointIn );
+
+	// Clip stack is in absolute coordinates. If a clip rectangle is set, we first
+	// look to see if the point is inside it.
+	if( !m_clipStack->empty() )
+	{
+		const Tr2Sprite2dClipRect& clipRect = m_clipStack->back();
+
+		if( point.x < clipRect.left )
+		{
+			return false;
+		}
+		if( point.x > clipRect.right )
+		{
+			return false;
+		}
+
+		if( point.y < clipRect.top )
+		{
+			return false;
+		}
+		if( point.y > clipRect.bottom )
+		{
+			return false;
+		}
+	}
+
+	float top;
+	float left;
+	float bottom;
+	float right;
+
+	if( m_transformStack->empty() )
+	{
+		left = topLeft.x;
+		top = topLeft.y;
+		right = left + width;
+		bottom = top + height;
+	}
+	else
+	{
+		const TransformStackEntry& topEntry = m_transformStack->back();
+
+		if( topEntry.isTranslationOnly )
+		{
+			left = topLeft.x + topEntry.translation.x;
+			top = topLeft.y + topEntry.translation.y;
+			right = left + width;
+			bottom = top + height;
+		}
+		else
+		{
+			left = topLeft.x;
+			top = topLeft.y;
+			right = left + width;
+			bottom = top + height;
+
+			const Matrix& transform = topEntry.transform;
+
+			//construct inverse, transform point by this, compare against
+			// untransformed bounding rectangle
+			Matrix inv;
+			D3DXMatrixInverse( &inv, NULL, &transform );
+
+			Vector4 point4( point.x, point.y, 0, 1 );
+			Vector4 transformed;
+			D3DXVec4Transform( &transformed, &point4, &inv );
+
+			point.x = transformed.x;
+			point.y = transformed.y;
+		}
+	}
+
+	if( point.x < left )
+	{
+		return false;
+	}
+	if( point.x > right )
+	{
+		return false;
+	}
+	if( point.y < top )
+	{
+		return false;
+	}
+	if( point.y > bottom )
+	{
+		return false;
+	}
+
+	if( radius != 0.0f )
+	{
+		float centerX = 0.5f * (right - left) + left;
+		float centerY = 0.5f * (bottom - top) + top;
+
+		float dX = centerX - point.x;
+		float dY = centerY - point.y;
+
+		if( radius > 0.0f )
+		{
+			if( dX*dX + dY*dY > radius*radius )
+			{
+				return false;
+			}
+		}
+		else if( radius == -1.0f )
+		{
+			float width = right - left;
+			float height = bottom - top;
+
+			float a, b;
+			if( width > height )
+			{
+				a = width * 0.5f;
+				b = height * 0.5f;
+			}
+			else
+			{
+				a = height * 0.5f;
+				b = width * 0.5f;
+			}
+
+			if( dX*dX/(a*a) + dY*dY/(b*b) > 1.0f )
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void Tr2Sprite2dScene::StartLayer( Tr2RenderTargetAL& rt )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	D3DPERF_EVENT( L"Tr2Sprite2dScene::StartLayer" );
+
+	// Finish outstanding rendering before changing render target
+	IssueDrawCall();
+
+	// A scene rendered in 3d renders in 2d within a layer
+	m_is2dRenderContext = true;
+
+	// Set the render target to the top level surface of the given texture
+	Tr2Renderer::PushRenderTarget( rt, renderContext );
+
+	Vector4 vpSize;
+	vpSize.x = (float)rt.GetWidth();
+	vpSize.y = (float)rt.GetHeight();
+	vpSize.z = 0.0f;
+	vpSize.w = 1.0f;
+	m_viewportSizeVar = vpSize;
+
+	// Coordinate transformation and clipping is reset - push the current stacks
+	// onto a stack for later retrieval when we end the layer. Remember that layers
+	// may be nested.
+	StackOfStacksEntry_t entry;
+	entry.transformStack = m_transformStack;
+	entry.clipStack = m_clipStack;
+	entry.renderTargetTexture = &rt;
+	m_stackOfStacks.push_back( entry );
+
+	m_transformStack = CCP_NEW( "Tr2Sprite2dScene/m_transformStack" ) TransformStack_t( "Tr2Sprite2dScene/m_transformStack" );
+	m_clipStack = CCP_NEW( "Tr2Sprite2dScene/m_clipStack" ) ClipStack_t( "Tr2Sprite2dScene/m_clipStack" );
+	m_clipStack->push_back( Tr2Sprite2dClipRect( 0.0f, 0.0f, vpSize.x, vpSize.y ) );
+
+	renderContext.SetRenderState( RS_SCISSORTESTENABLE, FALSE );
+
+}
+
+void Tr2Sprite2dScene::EndLayer( float x, float y, float width, float height )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	D3DPERF_EVENT( L"Tr2Sprite2dScene::EndLayer" );
+
+	CCP_ASSERT( m_transformStack->empty() );
+	CCP_DELETE( m_transformStack );
+
+	m_clipStack->pop_back();
+	CCP_ASSERT( m_clipStack->empty() );
+	CCP_DELETE( m_clipStack );
+
+	// Finish outstanding rendering before resetting render target
+	IssueDrawCall();
+
+	Tr2Renderer::PopRenderTarget( renderContext );
+
+	// Set the coordinate transformations and clipping to what it was before we started
+	// this layer.
+	const StackOfStacksEntry_t& entry = m_stackOfStacks.back();
+
+	m_transformStack = entry.transformStack;
+	m_clipStack = entry.clipStack;
+
+	// Render the layer into the current one as a sprite
+	renderContext.m_esm.ApplyTexture( PIXEL_SHADER, 0, entry.renderTargetTexture->GetTexture() );
+
+	// This will side-step the TexturesReady check in RenderSprite
+	m_texture[0] = m_defaultTexture;
+	m_texture[1] = nullptr;
+	
+	m_textureSettings[0].textureWindow = Vector4( 0.0f, 0.0f, 1.0f, 1.0f );
+	m_textureSettings[0].repeatMode = TextureSetting::TR_Tile;
+	m_textureSettings[0].tileX = false;
+	m_textureSettings[0].tileY = false;
+
+	SetColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	SetSpriteEffect( TR2_SFX_COPY );
+	SetTileMode( 0 );
+
+	Tr2Sprite2dD3DVertex vertices[4];
+	PrepareSpriteVerts( &vertices[0], Vector2( x, y ), width, height );
+
+	static unsigned short s_layerIndices[6] = { 0, 1, 3, 3, 1, 2 };
+	RenderTriangleVerts( &vertices[0], 4, s_layerIndices, 6 );
+
+	m_stackOfStacks.pop_back();
+
+	if( m_stackOfStacks.empty() )
+	{
+		// Once we exit the final layer the 2d render context is determined by the scene
+		m_is2dRenderContext = m_is2dRender;
+	}
+}
+
+void Tr2Sprite2dScene::SetColor( const Color& color )
+{
+	m_color = color;
+}
+
+bool Tr2Sprite2dScene::SelectEffect()
+{
+	Tr2Effect* newEffect;
+
+	newEffect = m_is2dRender ? m_uberShader2d : m_uberShader3d;
+
+	if( newEffect != m_effect )
+	{
+		m_effect = nullptr;
+
+		if( newEffect && newEffect->GetEffectRes() && newEffect->GetEffectRes()->IsGood() )
+		{
+#if( TRINITY_PLATFORM==TRINITY_DIRECTX11 || TRINITY_PLATFORM == TRINITY_ORBIS )
+			// In DX11 g_uiTransforms is in a separate constant buffer and is not exposed
+			// in constant table, so we just believe we have UI shader.
+			m_effect = newEffect;
+			return true;
+#else
+			const Tr2EffectConstantVector& constants = newEffect->GetEffectRes()->GetConstantTable( 0, VERTEX_SHADER );
+			bool foundHandle = false;
+			for( auto it = constants.begin(); it != constants.end(); ++it )
+			{
+				if( strcmp( it->name, "g_uiTransforms" ) == 0 )
+				{
+					m_transformsHandle = *it;
+					foundHandle = true;
+				}
+			}
+			if( foundHandle )
+			{
+				m_effect = newEffect;
+				return true;
+			}
+			else
+			{
+				CCP_LOGWARN( "Tr2Sprite2dScene::SubmitGeometry - couldn't get VS constant handle" );
+				return false;
+			}
+#endif
+		}
+		return false;
+	}
+
+	CCP_ASSERT( m_effect );
+
+	return true;
+}
+
+void Tr2Sprite2dScene::SetAccumulatedAlpha( float a )
+{
+	m_accumulatedAlpha = a;
+}
+
+float Tr2Sprite2dScene::GetAccumulatedAlpha() const
+{
+	return m_accumulatedAlpha;
+}
+
+void Tr2Sprite2dScene::RunJob( TriRenderJob* job )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( job );
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	IssueDrawCall();
+
+	if( m_captureDisplayList )
+	{
+		Tr2Sprite2dDisplayList::Entry entry;
+		entry.job = job;
+		entry.numVertices = 0;
+		entry.startIndex = 0;
+		entry.primitiveCount = 0;
+		entry.texture0 = nullptr;
+		entry.texture1 = nullptr;
+		entry.texelSize0 = Vector4( 0,0,0,0 );
+		entry.texelSize1 = Vector4( 0,0,0,0 );
+
+		m_captureDisplayList->entries.push_back( entry );
+	}
+	else
+	{
+		RunJobHelper(job);
+
+		// The render job may have set different textures - clear
+		// our state for texture settings
+		for( unsigned int i=0; i < s_textureMax; ++i )
+		{
+			m_texture[i] = nullptr;
+		}
+
+		renderContext.m_esm.ApplyIndexBuffer( m_indexBuffer.GetBuffer()  );
+	}
+}
+
+void Tr2Sprite2dScene::SetTileMode( uint8_t tileMode )
+{
+	tileMode &= S2D_TS_TILE_X | S2D_TS_TILE_Y;
+	m_tileMode = tileMode;
+}
+
+void Tr2Sprite2dScene::SetSpriteEffect( Tr2SpriteObjectEffect sfx )
+{
+	if( m_spriteEffect != sfx )
+	{
+		m_spriteEffect = sfx;
+
+		m_numTexturesUsed = 0;
+		m_isAntiAliased = false;
+
+		if( m_spriteEffect == TR2_SFX_FILL_AA )
+		{
+			m_isAntiAliased = true;
+		}
+
+		if( m_spriteEffect >= TR2_SFX_ONE_TEXTURE )
+		{
+			++m_numTexturesUsed;
+			if( m_spriteEffect >= TR2_SFX_TWO_TEXTURES )
+			{
+				++m_numTexturesUsed;
+			}
+		}
+	}
+}
+
+void Tr2Sprite2dScene::ProcessVertices( Tr2Sprite2dD3DVertex* verticesSrc, unsigned int vertexCount )
+{
+	if( !m_currentVertexData )
+	{
+		// It's possible we failed to lock the vertex buffer, better not to draw
+		// than to crash.
+		return;
+	}
+
+	//transform stack
+	Vector2 pos;
+	int transformIndex = 0;
+	{
+		if( m_transformStack->empty() )
+		{
+			pos = Vector2( 0.0f, 0.0f );
+		}
+		else
+		{
+			const TransformStackEntry& top = m_transformStack->back();
+
+			if( top.isTranslationOnly )
+			{
+				const Vector2& translation = top.translation;
+				pos = translation;
+			}
+			else
+			{
+				transformIndex = ++m_transformCurrent;
+				const Matrix& transform = top.transform;
+				CCP_STATS_INC( spriteSceneTransforms );
+				m_transformArray[ transformIndex ] = transform;
+				pos = Vector2( 0.0f, 0.0f );
+			}
+		}
+	}
+
+	memcpy( m_currentVertexData, verticesSrc, vertexCount * sizeof( Tr2Sprite2dD3DVertex ) );
+
+	if( (pos.x != 0.0f) || (pos.y != 0.0f) )
+	{
+		for( unsigned int i = 0; i < vertexCount; ++i )
+		{
+			Tr2Sprite2dD3DVertex& curVertex = m_currentVertexData[i];
+			curVertex.position.x += pos.x;
+			curVertex.position.y += pos.y;
+		}
+	}
+
+	if( m_accumulatedAlpha != 1.0f )
+	{
+		for( unsigned int i = 0; i < vertexCount; ++i )
+		{
+			Tr2Sprite2dD3DVertex& curVertex = m_currentVertexData[i];
+			curVertex.color.a *= m_accumulatedAlpha;
+		}
+	}
+
+	if( !m_is2dRenderContext )
+	{
+		for( unsigned int i = 0; i < vertexCount; ++i )
+		{
+			Tr2Sprite2dD3DVertex& curVertex = m_currentVertexData[i];
+			curVertex.position.z = m_depth;
+		}
+	}
+
+	if( transformIndex != 0 )
+	{
+		for( unsigned int i = 0; i < vertexCount; ++i )
+		{
+			Tr2Sprite2dD3DVertex& curVertex = m_currentVertexData[i];
+			curVertex.transformIndex = transformIndex;
+		}
+	}
+
+	{
+		const Tr2Sprite2dClipRect& clip = m_clipStack->back();
+
+		for( unsigned int i = 0; i < vertexCount; ++i )
+		{
+			Tr2Sprite2dD3DVertex& curVertex = m_currentVertexData[i];
+			curVertex.clipRect = clip;
+		}
+	}
+
+	m_currentVertexData += vertexCount;
+	m_vertexCount += vertexCount;
+}
+
+void Tr2Sprite2dScene::SetBlendmode( Tr2SpriteObjectBlendMode bm )
+{
+	m_blendMode = bm;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Description:
+//  Starts a display list capture for the given owner.
+// Arguments:
+//  owner - the owner of the display list. It will be queried for
+//          number of vertices in the display list.
+// Returns:
+//  Success or failure
+//
+// On success, EndCapture must be called to finalize the display list.
+//////////////////////////////////////////////////////////////////////////
+bool Tr2Sprite2dScene::StartCapture( ITr2SpriteObject* owner )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+	CCP_STATS_INC( spriteSceneDisplayListsCreated );
+
+	CCP_ASSERT( !m_captureDisplayList );
+
+	IssueDrawCall();
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	if( !m_captureVertexData || !m_captureIndexData )
+	{
+		CCP_LOGERR( "%s failed to allocate vertex or index data", __FUNCTION__ );
+		return false;
+	}
+
+	m_captureDisplayList = CCP_NEW( "Tr2Sprite2dScene/m_captureDisplayList" ) Tr2Sprite2dDisplayList( owner );
+
+	m_captureVertexDataSize = 0;
+	m_captureIndexDataSize = 0;
+
+	CCP_ASSERT( m_currentVertexData );
+	m_preCaptureVertexData = m_currentVertexData;
+	m_currentVertexData = m_captureVertexData;
+
+	CCP_ASSERT( m_currentIndexData );
+	m_preCaptureIndexData = m_currentIndexData;
+	m_currentIndexData = m_captureIndexData;
+
+	m_captureStartIndex = 0;
+
+	return true;
+}
+
+Tr2Sprite2dDisplayList* Tr2Sprite2dScene::EndCapture( Tr2Sprite2dDisplayList* previousDisplayList )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	CCP_ASSERT( m_captureDisplayList );
+	if( !m_captureDisplayList )
+	{
+		return nullptr;
+	}
+
+	IssueDrawCall();
+
+	HRESULT hr;
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	// Create a vertex buffer for capturing upcoming vertices. This is a static vertex buffer,
+	// even though it may be short-lived. Filling a vertex buffer in the managed pool is faster
+	// than if it were in the default pool so we use the managed pool.
+
+	unsigned int vbSize = m_captureVertexDataSize * sizeof( Tr2Sprite2dD3DVertex );
+	unsigned int ibSize = m_captureIndexDataSize * sizeof( unsigned int );
+
+	if( !vbSize || !ibSize )
+	{
+		ResetCapture();
+		return nullptr;
+	}
+
+	BufferUsage bufferUsage = USAGE_CPU_WRITE;
+
+	if( vbSize )
+	{
+		bool reusedVb = false;
+		if( previousDisplayList && previousDisplayList->vertexBuffer.IsValid() && 
+			previousDisplayList->vertexBuffer.GetTotalSizeInBytes() >= vbSize && previousDisplayList->vertexBuffer.GetTotalSizeInBytes() / 2 <= vbSize )
+		{
+			Tr2Sprite2dD3DVertex* bufferData = nullptr;
+			if( SUCCEEDED( previousDisplayList->vertexBuffer.Lock( bufferData, LOCK_WRITEONLY, renderContext ) ) && bufferData )
+			{
+				memcpy( bufferData, m_captureVertexData, vbSize );
+				if( SUCCEEDED( previousDisplayList->vertexBuffer.Unlock( renderContext ) ) )
+				{
+					m_captureDisplayList->vertexBuffer = std::move( previousDisplayList->vertexBuffer );
+					reusedVb = true;
+				}
+			}
+
+		}
+		if( !reusedVb )
+		{
+			vbSize = std::min( m_captureVertexDataCapacity, m_captureVertexDataSize + m_captureVertexDataSize / 4 ) * sizeof( Tr2Sprite2dD3DVertex );
+			hr = m_captureDisplayList->vertexBuffer.Create( vbSize, bufferUsage, m_captureVertexData, renderContext );
+			if( FAILED( hr ) )
+			{
+				CCP_LOGERR( "%s failed (%d) to create vertex buffer for %d vertices (%d KiB)", __FUNCTION__, hr, m_captureVertexDataSize, vbSize / 1024 );
+				ResetCapture();
+				return nullptr;
+			}
+			else
+			{
+				CCP_STATS_ADD( displayListVertexBufferSize, vbSize );
+			}
+		}
+	}
+
+	if( ibSize )
+	{
+		bool reusedIb = false;
+		if( previousDisplayList && previousDisplayList->indexBuffer.IsValid() && 
+			previousDisplayList->indexBuffer.GetTotalSizeInBytes() >= ibSize && previousDisplayList->indexBuffer.GetTotalSizeInBytes() / 2 <= ibSize )
+		{
+			unsigned int* bufferData = nullptr;
+			if( SUCCEEDED( previousDisplayList->indexBuffer.Lock( bufferData, LOCK_WRITEONLY, renderContext ) ) && bufferData )
+			{
+				memcpy( bufferData, m_captureIndexData, ibSize );
+				if( SUCCEEDED( previousDisplayList->indexBuffer.Unlock( renderContext ) ) )
+				{
+					m_captureDisplayList->indexBuffer = std::move( previousDisplayList->indexBuffer );
+					reusedIb = true;
+				}
+			}
+
+		}
+		if( !reusedIb )
+		{
+			m_captureIndexDataSize = std::min( m_captureIndexDataCapacity, m_captureIndexDataSize + m_captureIndexDataSize / 4 );
+			ibSize = m_captureIndexDataSize * sizeof( unsigned int );
+			hr = m_captureDisplayList->indexBuffer.Create( m_captureIndexDataSize, bufferUsage, IB_32BIT, m_captureIndexData, renderContext );
+
+			if( FAILED( hr ) )
+			{
+				CCP_LOGERR( "%s failed to create index buffer (%d); ibSize=%d", __FUNCTION__, hr, ibSize );
+				ResetCapture();
+				return nullptr;
+			}
+			else
+			{
+				CCP_STATS_ADD( displayListIndexBufferSize, ibSize );
+			}
+		}
+	}
+
+	Tr2Sprite2dDisplayList* dl = m_captureDisplayList;
+	m_captureDisplayList = nullptr;
+	
+	ResetCapture();
+
+	return dl;
+}
+
+void Tr2Sprite2dScene::ReplayCapture( Tr2Sprite2dDisplayList* dl )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	IssueDrawCall();
+
+	if( !dl->vertexBuffer.IsValid() || !dl->indexBuffer.IsValid() || dl->entries.empty() )
+	{
+		return;
+	}
+
+	CCP_STATS_INC( spriteSceneDisplayListsUsed );
+
+	renderContext.m_esm.ApplyIndexBuffer( dl->indexBuffer );
+	renderContext.m_esm.ApplyStreamSource( 0, dl->vertexBuffer, 0, sizeof( Tr2Sprite2dD3DVertex ) );
+
+	for( auto it = dl->entries.begin(); it != dl->entries.end(); ++it )
+	{
+		auto& entry = *it;
+
+		CCP_STATS_ADD( spriteSceneCount, entry.primitiveCount / 2 );
+
+		m_itemsRendered++;
+		if( m_itemsRendered >= m_maxItemsToRender )
+		{
+			continue;
+		}
+
+		if( entry.job )
+		{
+			RunJobHelper( entry.job );
+
+			renderContext.m_esm.ApplyIndexBuffer( dl->indexBuffer );
+			renderContext.m_esm.ApplyStreamSource( 0, dl->vertexBuffer, 0, sizeof( Tr2Sprite2dD3DVertex ) );
+		}
+		else
+		{
+			m_texelSizeVar[0] = entry.texelSize0;
+			m_texelSizeVar[1] = entry.texelSize1;
+			
+			renderContext.m_esm.ApplyTexture( PIXEL_SHADER, 0, ( entry.texture0 && entry.texture0->GetTexture() ) ? *entry.texture0->GetTexture() : nullTX );
+			renderContext.m_esm.ApplyTexture( PIXEL_SHADER, 1, ( entry.texture1 && entry.texture1->GetTexture() ) ? *entry.texture1->GetTexture() : nullTX );
+			
+			CCP_STATS_INC( spriteSceneDrawCallCount );
+
+			entry.effect->Render( &entry, renderContext );
+		}
+	}
+
+	for( unsigned int i=0; i < s_textureMax; ++i )
+	{
+		m_texture[i] = nullptr;
+	}
+
+	renderContext.m_esm.ApplyIndexBuffer( m_indexBuffer.GetBuffer() );
+}
+
+bool Tr2Sprite2dScene::IsCapturing() const
+{
+	return m_captureDisplayList != nullptr;
+}
+
+void Tr2Sprite2dScene::RunJobHelper( TriRenderJob* job )
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	renderContext.m_esm.EndManagedRendering();
+
+	// When rendering of this scene started, a NULL value was pushed
+	// for depth/stencil buffer. Pop it here, to get whatever was
+	// in use before back. The null value is pushed again after
+	// the job has finished.
+	Tr2Renderer::PopDepthStencilBuffer( renderContext );
+
+	Tr2Renderer::PushViewport();
+	job->Run( BeOS->GetCurrentFrameTime() );
+	Tr2Renderer::PopViewport();
+
+	Tr2Renderer::PushDepthStencilBuffer( nullDS, renderContext );
+
+	renderContext.m_esm.BeginManagedRendering();
+	renderContext.m_esm.ApplyStandardStates( Tr2EffectStateManager::RM_SPRITE2D );
+
+	renderContext.m_esm.ApplyVertexDeclaration( m_vertexDecl );
+}
+
+void Tr2Sprite2dScene::ResetBufferPointers()
+{
+	m_currentVertexData = reinterpret_cast<Tr2Sprite2dD3DVertex*>( m_vertexBufferData.get() );
+	m_currentIndexData = reinterpret_cast<uint32_t*>( m_indexBufferData.get() );
+}
+
+unsigned int Tr2Sprite2dScene::GetMaxVertexCountPerDrawCall()
+{
+	return m_maxSpriteCount * 4;
+}
+
+unsigned int Tr2Sprite2dScene::GetMaxIndexCountPerDrawCall()
+{
+	return m_maxSpriteCount * 6;
+}
+
+bool Tr2Sprite2dScene::OnModified( Be::Var* value )
+{
+	if( IsMatch( value, m_maxSpriteCount ) || IsMatch( value, m_setLockFrequentlyFlag ) )
+	{
+		if( m_maxSpriteCount > SPRITE_COUNT_MAX )
+		{
+			m_maxSpriteCount = SPRITE_COUNT_MAX;
+		}
+		ReleaseResources( TRISTORAGE_ALL );
+	}
+
+	return true;
+}
+
+void Tr2Sprite2dScene::ResetCapture()
+{
+	CCP_DELETE m_captureDisplayList;
+	m_captureDisplayList = nullptr;
+
+	m_captureVertexDataSize = 0;
+	m_captureIndexDataSize = 0;
+
+	m_currentVertexData = m_preCaptureVertexData;
+	CCP_ASSERT( m_currentVertexData );
+
+	m_currentIndexData = m_preCaptureIndexData;
+	CCP_ASSERT( m_currentIndexData );
+}
+
+void Tr2Sprite2dScene::FlashDefaultTexture()
+{
+	if( m_defaultTextureUpdates )
+	{
+		uint32_t pixelValue = 0xff000000;
+		pixelValue |= m_defaultTextureFlash << 16;
+		pixelValue |= m_defaultTextureFlash << 8;
+		pixelValue |= m_defaultTextureFlash;
+
+		m_defaultTextureFlash += 5;
+		m_defaultTextureFlash %= 255;
+
+		void* data = NULL;
+		unsigned int pitch;
+		m_defaultTexture->LockBuffer( data, pitch );
+
+		CCP_ASSERT( data );
+
+		uint32_t* pixels = (uint32_t*)data;
+		pixels[0] = pixelValue;
+		pixels[1] = pixelValue;
+		data = (void*)((uint8_t*)data + pitch);
+		pixels = (uint32_t*)data;
+		pixels[0] = pixelValue;
+		pixels[1] = pixelValue;
+
+		m_defaultTexture->UnlockBuffer();
+	}
+}
+
+void Tr2Sprite2dScene::RemoveFinishedCurveSets()
+{
+	// Remember, m_curveSets is a BlueList, must use Remove to get ref-count right.
+	for( ssize_t i = 0; i < m_curveSets.GetSize(); )
+	{
+		TriCurveSet* cs = m_curveSets[i];
+		if( !cs->IsPlaying() )
+		{
+			m_curveSets.Remove( i );
+		}
+		else
+		{
+			++i;
+		}
+	}
+}
+
+// Prepare required resources for rendering. If any of them are not ready
+// this function returns false, otherwise it returns true and rendering can
+// go forward.
+bool Tr2Sprite2dScene::PrepareResourcesForRender()
+{
+	// Prepare resources if we don't have valid index or vertex buffers
+	if( !m_indexBuffer.IsValid() || !m_vertexBuffer.IsValid() )
+	{
+		PrepareResources();
+	}
+
+	// Bail out if the buffers still aren't valid
+	if( !m_indexBuffer.IsValid() || !m_vertexBuffer.IsValid() )
+	{
+		return false;
+	}
+
+	if( m_uberShader2d->GetEffectRes()->IsLoading() )
+	{
+		// Effect is still loading - can't render any UI
+		return false;
+	}
+
+	if( !m_uberShader2d->GetEffectRes()->IsGood() )
+	{
+		// Effect load failed - can't render any UI
+		CCP_LOGERR( "%s: Effect used for rendering failed to load - attempting to reload", __FUNCTION__ );
+		m_uberShader2d->GetEffectRes()->Reload();
+		return false;
+	}
+
+	return true;
+}
+
+void Tr2Sprite2dScene::SetViewportSizeToVariableStore( float displayWidth, float displayHeight )
+{
+	Vector4 vpSize;
+	vpSize.x = displayWidth;
+	vpSize.y = displayHeight;
+	vpSize.z = m_is2dRender ? 1.0f : 0.0f;
+	vpSize.w = 1.0f;
+	m_viewportSizeVar = vpSize;
+}
+
+void Tr2Sprite2dScene::DetermineViewportSize()
+{
+	float displayWidth;
+	float displayHeight;
+
+	if( m_isFullscreen )
+	{
+		const TriViewport& vp = Tr2Renderer::GetViewport();
+		m_displayWidth = (float)vp.width;
+		m_displayHeight = (float)vp.height;
+
+		displayWidth = m_displayWidth;
+		displayHeight = m_displayHeight;
+	}
+	else
+	{
+		displayWidth = m_displayWidth;
+		displayHeight = m_displayHeight;
+	}
+
+	SetViewportSizeToVariableStore( displayWidth, displayHeight );
+}
+
+void Tr2Sprite2dScene::DetermineWorldTransform()
+{
+	Matrix worldTransform;
+
+	// 2d render context starts out as the global setting for the scene.
+	// In a 3d scene this switches to 2d if we hit a layer.
+	m_is2dRenderContext = m_is2dRender;
+	if( m_is2dRender )
+	{
+		worldTransform = Tr2Renderer::GetInverseViewTransform();
+	}
+	else
+	{
+		D3DXMatrixTransformation( &worldTransform, NULL, NULL, &m_scaling, NULL, &m_rotation, &m_translation );
+	}
+	Tr2Renderer::SetWorldTransform( worldTransform );
+}
+
+void Tr2Sprite2dScene::PrepareRenderContextForRendering( Tr2RenderContext &renderContext )
+{
+	renderContext.m_esm.BeginManagedRendering();
+	renderContext.m_esm.ApplyStandardStates( Tr2EffectStateManager::RM_SPRITE2D );
+
+	if( m_clearBackground )
+	{
+		renderContext.Clear( CLEARFLAGS_TARGET, m_backgroundColor, 0, 0 );
+	}
+
+	renderContext.m_esm.SetWireframeRendering( m_drawWireFrame );
+
+	renderContext.m_esm.ApplyVertexDeclaration( m_vertexDecl );
+	renderContext.m_esm.ApplyIndexBuffer( m_indexBuffer.GetBuffer() );
+}
+
+void Tr2Sprite2dScene::PrepareRenderContextAfterRendering( Tr2RenderContext &renderContext )
+{
+	renderContext.m_esm.EndManagedRendering();
+	renderContext.m_esm.SetWireframeRendering( false );
+
+	// EndManagedRendering clears textures set on device
+	for( unsigned int i = 0; i < s_textureMax; ++i )
+	{
+		m_texture[i] = nullptr;
+	}
+}
+
+void Tr2Sprite2dScene::PrepareStacksBeforeRender()
+{
+	CCP_ASSERT( m_depthStack->empty() );
+	CCP_ASSERT( m_clipStack->empty() );
+	CCP_ASSERT( m_transformStack->empty() );
+
+	m_depthStack->push_back( Vector2 ( m_depthMin, m_depthMax ) );
+	m_clipStack->push_back( Tr2Sprite2dClipRect( -FLT_MAX, -FLT_MAX, FLT_MAX, FLT_MAX ) );
+}
+
+void Tr2Sprite2dScene::CleanUpStacksAfterRender()
+{
+	m_depthStack->pop_back();
+	m_clipStack->pop_back();
+
+	CCP_ASSERT( m_depthStack->empty() );
+	CCP_ASSERT( m_clipStack->empty() );
+	CCP_ASSERT( m_transformStack->empty() );
+}
+
+void Tr2Sprite2dScene::SetSpriteVerticesUVs( Vector2 uv[2][4], float width, float height )
+{
+	for( int i=0; i < m_numTexturesUsed; ++i )
+	{
+		const TextureSetting& texSetting = m_textureSettings[i];
+
+		uv[i][0] = Vector2( 0.0f, 0.0f );
+		uv[i][1] = Vector2( 1.0f, 0.0f);
+		uv[i][2] = Vector2( 1.0f, 1.0f );
+		uv[i][3] = Vector2( 0.0f, 1.0f );
+
+		if( texSetting.tileX )
+		{
+			Tr2AtlasTexture* at = m_texture[i];
+
+			// TexturesReady at the start guarantees that at is not null
+			float rTexWidth = at->GetWidthReciprocal();
+			for( int j=0; j<4; ++j )
+			{
+				uv[i][j].x *= width * rTexWidth;
+			}
+		}
+		if( texSetting.tileY )
+		{
+			Tr2AtlasTexture* at = m_texture[i];
+
+			// TexturesReady at the start guarantees that at is not null
+			float rTexHeight = at->GetHeightReciprocal();
+			for( int j=0; j<4; ++j )
+			{
+				uv[i][j].y *= height * rTexHeight;
+			}
+		}
+
+		if( texSetting.useTransform )
+		{
+			for( int j=0; j<4; ++j )
+			{
+				Vector4 uvT( uv[i][j].x, uv[i][j].y, 0.f, 1.f );
+				D3DXVec4Transform( &uvT, &uvT, &texSetting.transform );
+				uv[i][j].x = uvT.x;
+				uv[i][j].y = uvT.y;
+			}
+		}
+
+		float offsetX = texSetting.textureWindow.x;
+		float offsetY = texSetting.textureWindow.y;
+		float scaleX = texSetting.textureWindow.z;
+		float scaleY = texSetting.textureWindow.w;
+
+		for( int j = 0; j < 4; ++j )
+		{
+			Vector2& currentUV = uv[i][j];
+			currentUV.x = currentUV.x * scaleX + offsetX;
+			currentUV.y = currentUV.y * scaleY + offsetY;
+		}
+	}
+}
+
+// Grow the vertex buffer used for capturing display lists. 'vertexCount' is the number
+// vertices that need to be added.
+void Tr2Sprite2dScene::GrowCaptureVertexBuffer( unsigned int vertexCount )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	m_captureVertexDataCapacity *= 2;
+	if( m_captureVertexDataSize + vertexCount >= m_captureVertexDataCapacity )
+	{
+		m_captureVertexDataCapacity = m_captureVertexDataSize + vertexCount;
+	}
+
+	unsigned int vbSize = m_captureVertexDataCapacity * sizeof( Tr2Sprite2dD3DVertex );
+	void* newCaptureVertexData = CCP_ALIGNED_MALLOC( 
+		"Tr2Sprite2dScene/m_captureVertexData", 
+		vbSize,
+		VB_ALIGNMENT );
+
+	if( newCaptureVertexData )
+	{
+		memcpy( newCaptureVertexData, m_captureVertexData, m_captureVertexDataSize * sizeof( Tr2Sprite2dD3DVertex ) );
+	}
+
+	CCP_ALIGNED_FREE( m_captureVertexData );
+	m_captureVertexData = static_cast<Tr2Sprite2dD3DVertex*>( newCaptureVertexData );
+	
+	CCP_ASSERT( m_captureVertexData );
+}
+
+// Grow the index buffer used for capturing display lists. 'indexCount' is the number
+// indices that need to be added.
+void Tr2Sprite2dScene::GrowCaptureIndexBuffer( unsigned short indexCount )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	m_captureIndexDataCapacity *= 2;
+	if( m_captureIndexDataSize + indexCount >= m_captureIndexDataCapacity )
+	{
+		m_captureIndexDataCapacity = m_captureIndexDataSize + indexCount;
+	}
+
+	unsigned int ibSize = m_captureIndexDataCapacity * sizeof( unsigned int );
+	void* newCaptureIndexData = CCP_ALIGNED_MALLOC( 
+		"Tr2Sprite2dScene/m_captureIndexData", 
+		ibSize,
+		IB_ALIGNMENT );
+
+	if( newCaptureIndexData )
+	{
+		memcpy( newCaptureIndexData, m_captureIndexData, m_captureIndexDataSize * sizeof( unsigned int ) );
+	}
+
+	CCP_ALIGNED_FREE( m_captureIndexData );
+	m_captureIndexData = static_cast<unsigned int*>( newCaptureIndexData );
+
+	CCP_ASSERT( m_captureIndexData );
+}
+
+// Copy indices to current index data, adding the given vertex offset
+void Tr2Sprite2dScene::CopyIndicesWithOffset( unsigned short* indices, unsigned short indexCount, int vertexOffset )
+{
+	unsigned short* curIndex = indices;
+	for( unsigned int i = 0; i < indexCount; ++i )
+	{
+		*m_currentIndexData = *curIndex + vertexOffset;
+		++m_currentIndexData;
+		++curIndex;
+	}
+
+	m_indexCount += indexCount;
+}
+
+bool Tr2Sprite2dScene::EnsureBufferSpace( unsigned int vertexCount, unsigned short indexCount, int &vertexOffset )
+{
+	if( m_captureDisplayList )
+	{
+		CCP_STATS_ZONE( __FUNCTION__ " capture" );
+
+		// Ensure we have enough space for vertices.
+		if( m_captureVertexDataSize + vertexCount >= m_captureVertexDataCapacity )
+		{
+			GrowCaptureVertexBuffer( vertexCount );
+
+			if( !m_captureVertexData )
+			{
+				return false;
+			}
+
+			m_currentVertexData = m_captureVertexData + m_captureVertexDataSize;
+		}
+
+		// Index count is estimated, allow the index buffer to grow as needed.
+		if( m_captureIndexDataSize + indexCount >= m_captureIndexDataCapacity )
+		{
+			GrowCaptureIndexBuffer( indexCount );
+
+			if( !m_captureIndexData )
+			{
+				return false;
+			}
+
+			m_currentIndexData = m_captureIndexData + m_captureIndexDataSize;
+		}
+
+		vertexOffset = m_captureVertexDataSize;
+		m_captureVertexDataSize += vertexCount;
+		m_captureIndexDataSize += indexCount;
+	}
+	else
+	{
+		CCP_STATS_INC( spriteSceneCount );
+
+		m_itemsRendered++;
+		if( m_itemsRendered >= m_maxItemsToRender )
+		{
+			return false;
+		}
+
+		if( (m_vertexCount + vertexCount >= m_maxSpriteCount * 4) || (m_indexCount + indexCount >= m_maxSpriteCount * 6) )
+		{
+			// Buffers are full, kick off what we've got
+			IssueDrawCall();
+		}
+
+		CCP_ASSERT( (m_vertexCount + vertexCount <= m_maxSpriteCount * 4) && (m_indexCount + indexCount <= m_maxSpriteCount * 6) );
+
+		vertexOffset = m_vertexCount;
+	}
+
+	// We have supposedly ensured above that there is room for vertices and indices being added.
+	// Nonetheless we have crash dumps that indicate we get here with a null pointer for either
+	// m_currentVertexData or m_currentIndexData. This could happen if locking vertex/index buffer
+	// failed - rather than crashing we ignore this batch and hope we are successful in locking
+	// the buffers later.
+	CCP_ASSERT( m_currentVertexData );
+	if( !m_currentVertexData )
+	{
+		return false;
+	}
+
+	CCP_ASSERT( m_currentIndexData );
+	if( !m_currentIndexData )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+#if BLUE_WITH_PYTHON
+static PyObject* PyGetCursorPos( PyObject* module, PyObject* args )
+{
+	if( !gTriDev )
+	{
+		Py_RETURN_NONE;
+	}
+
+	PyObject* tuple = PyTuple_New( 2 );
+
+	Tr2WindowHandle h = gTriDev->GetWindow();
+#ifdef _WIN32
+	POINT pt;
+	GetCursorPos( &pt );
+	ScreenToClient( h, &pt );
+
+	PyTuple_SET_ITEM( tuple, 0, PyInt_FromLong( pt.x ) );
+	PyTuple_SET_ITEM( tuple, 1, PyInt_FromLong( pt.y ) );
+#else
+    double x = 0, y = 0;
+    glfwGetCursorPos( reinterpret_cast<GLFWwindow*>( h ), &x, &y );
+	PyTuple_SET_ITEM( tuple, 0, PyInt_FromLong( int( x ) ) );
+	PyTuple_SET_ITEM( tuple, 1, PyInt_FromLong( int( y ) ) );
+#endif
+	return tuple;
+
+}
+
+MAP_FUNCTION( "GetCursorPos", PyGetCursorPos, "Gets current cursor position as a 2-tuple" );
+
+#endif

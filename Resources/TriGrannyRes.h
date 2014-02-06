@@ -1,0 +1,175 @@
+#pragma once
+#ifndef TriGrannyRes_H
+#define TriGrannyRes_H
+
+#include "granny.h"
+
+#include <vector>
+#include "blue/include/BlueAsyncRes.h"
+#include "blue/include/ICacheable.h"
+
+namespace Umbra
+{
+    class MeshModel;
+}
+
+
+#if BLUE_WITH_PYTHON
+class GrannyMaterialWrapper
+{
+public:
+	GrannyMaterialWrapper(granny_material * wrapee, unsigned int meshIndex, unsigned int areaIndex, PyObject * flatStringDictionary);
+	~GrannyMaterialWrapper();
+	PyObject * m_dictionary;
+	std::string m_name;
+	unsigned int m_meshIndex;
+	unsigned int m_areaIndex;
+};
+#endif
+
+
+
+BLUE_DECLARE( TriGeometryRes );
+BLUE_DECLARE( TriGrannyRes );
+
+// TriGrannyRes is used to load Granny files 'raw' - i.e. they are loaded without creating
+// any D3D resources. This is used, for example, when final geometry is constructed from
+// blendshapes.
+BLUE_CLASS( TriGrannyRes ):
+	public BlueAsyncRes,
+	public ICacheable
+{
+public:
+	EXPOSE_TO_BLUE();
+
+    TriGrannyRes( IRoot* lockobj = NULL );
+    ~TriGrannyRes();
+
+	//////////////////////////////////////////////////////////////////////////
+	// ICacheable
+	bool IsMemoryUsageKnown();
+	size_t GetMemoryUsage();
+
+    bool Load( const std::string& path );
+
+    granny_file* GetGrannyFile() const { return m_grannyFile; }
+	granny_skeleton* GetGrannySkeleton( int skeletonIx ) const;
+
+	// access the main vertices
+	granny_data_type_definition* GetGrannyVertexType( int meshIx ) const;
+	int GetVertexSize( int meshIx ) const;
+	int GetVertexComponentOffset( int meshIx, const char* componentName ) const;
+	granny_member_type GetVertexComponentType( int meshIx, const char* componentName ) const;
+
+	// access the blendshape-data "delta"-vertices
+	const granny_morph_target* GetBlendshape( int meshIx, const char* blendshapeName ) const;
+	
+	// Bake by mapping every morphtarget name to a mesh
+	typedef std::map<std::string, float> NameToWeightMap;
+	bool BakeBlendshape( unsigned int meshIx, const NameToWeightMap& nameToWeight, void* pVertexData, unsigned int vertexDataSize );
+
+	// Bake by providing a vector of weights that exactly matches the layout of morph targets
+	bool BakeBlendshape( unsigned int meshIx, const std::vector<float>& weights  , void* pVertexData, unsigned int vertexDataSize );
+
+	// Return a copy of all granny vertices for the given mesh index.
+	bool GetVertexPositions( unsigned meshIx, std::vector<float>& xyz );
+	// Weigh and sum the blend shapes for the given mesh index and with the given weights, but instead of applying the delta
+	// to the stored granny vertices, return the deltas explicitly in deltaXyz.
+	bool GetBlendDeltas( unsigned meshIx, const std::vector<float>& weights, std::vector<float>& deltaXyz );
+
+    static Umbra::MeshModel* CreateUmbraMeshFromGrannyMesh( granny_mesh* mesh, bool clockwise = false );
+	
+	bool SaveToGr2( const std::string& path );
+	bool ReorderEnlightenMeshes( void );
+	bool CreateShadowMesh( );
+
+#if defined(ENLIGHTEN_PRECOMPUTE_ENABLED)
+	bool CreateEnlightenPackedGeometry( const std::string& filename, unsigned guid, bool forceRebuild = false, float enlightenPixelSize = 1.0f );
+	bool ProjectEnlightenGeometry( const std::string& filename, TriGrannyRes &targetGeometry, unsigned guid, bool forceRebuild = false, float enlightenPixelSize = 1.0f );
+#endif
+
+	void SetGeometryHashesFromDatetimeAndGuid( unsigned int& hash1, unsigned int& hash2, unsigned guid );
+	bool HasExtendedData() const;
+	float GetEnlightenPixelSize( void ) const;
+	bool HasValidEnlightenData() const;
+	float GetMeshSurfaceArea( int meshIx ) const;
+	int GetEnlightenGuid( ) const;
+
+	int GetModelCount();
+	std::string GetModelName( unsigned int ix );
+
+	granny_file_info* ValidateFileInfo();
+	int GetMeshCount();
+	Be::Result<std::string> GetMeshAreaCount( unsigned int meshIx, int& count );
+	Be::Result<std::string> GetMeshName( unsigned int meshIx, std::string& name );
+	Be::Result<std::string> GetMeshMorphCount( unsigned int meshIx, int& count );
+	Be::Result<std::string> GetMeshMorphName( unsigned int meshIx, unsigned int morphIx, std::string& name );
+	Be::Result<std::string> GetAllMeshMorphNamesNoDigits( unsigned int meshIx, std::vector<std::string>& names );
+
+	int GetAnimationIndex( const std::string& name );
+	int GetAnimationCount();
+	std::string GetAnimationName( int ix );
+
+	float GetAnimationDuration( int ix );
+
+	int GetTransformTrackCount( int groupIdx );
+	std::string GetTransformTrackName( int groupIdx, int ix );
+	int GetVectorTrackCount( int groupIdx );
+	std::string GetVectorTrackName( int groupIdx, int ix );
+	std::string GetTrackGroupName( int groupIdx );
+	int GetTrackGroupCount();
+
+#if BLUE_WITH_PYTHON
+	PyObject * GetMaterialDictionaryForArea( int mesh, int area );
+	PyObject * GetMaterialDictionaryStringsForAllAreas();
+#endif
+
+	// Helper function for Python thunkers that accept a name or an index for a mesh
+#if BLUE_WITH_PYTHON
+	granny_mesh* GetMeshFromNameOrIndex( PyObject* meshId );
+#endif
+
+	Be::Result<std::string> CreateGeometryRes( TriGeometryRes** result );
+	Be::Result<std::string> BakeBlendshapeFromScript( unsigned int meshIx, const std::vector<float>& weights, TriGeometryRes* geom );
+
+protected:
+	// Gets the file info if available, reporting errors if not.
+	// checks animation index, returns null if out of bounds
+	granny_file_info* ValidateAnimationIx( int ix );
+
+	// Provide the functions that do the actual work of loading and preparing.
+    // The async management itself is done in TriAsyncLoadedResource.
+    virtual bool DoOpenStream();
+    virtual LoadingResult DoLoad();
+    virtual bool DoPrepare();
+    virtual void DoCloseStream();
+
+	const granny_mesh* GetGrannyMesh( int meshIx ) const;
+
+	void CollectGrannyMaterials();
+
+#if defined(ENLIGHTEN_PRECOMPUTE_ENABLED)
+	Enlighten::IPrecompInputMesh* CreateEnlightenInputMesh( int meshIx, granny_file_info* fi, bool copyChartUVFromPackedGeometry );
+#endif
+
+	bool BakeBlendshape( unsigned int meshIx, const std::vector<float>& weights  , void* pVertexData, unsigned int vertexDataSize, const NameToWeightMap* nameToWeight, bool deltaOnly );
+protected:
+	IBlueStreamPtr m_dataStream;
+	size_t m_dataSize;
+	size_t m_memoryUsage;
+	void* m_data;
+    granny_file* m_grannyFile;
+	granny_memory_arena *m_grannyArena;
+
+#if BLUE_WITH_PYTHON
+	std::unordered_map<unsigned int, GrannyMaterialWrapper*> m_meshAreaMaterials;
+	PyObject * m_allMaterialStringsDictionary; // a flat list of strings, so the pipeline doesn't have to make and query a mesh.
+#endif
+
+};
+
+TYPEDEF_BLUECLASS_WR_SHUTDOWN( TriGrannyRes );
+
+
+
+#endif // TriGrannyRes_H

@@ -1,0 +1,126 @@
+#pragma once
+#ifndef EveTransform_h
+#define EveTransform_h
+
+
+#include "Tr2Transform.h"
+#include "Tr2PerObjectData.h"
+#include "IEveSpaceObject2.h"
+#include "Tr2Renderer.h"
+#include "TriRenderBatch.h"
+#include "TriObserverLocal.h"
+
+#include "IEveTransform.h"
+#include "IWorldPosition.h"
+#include "Tr2GPUParticleEmitter.h"
+
+BLUE_DECLARE( Tr2ParticleSystem );
+BLUE_DECLARE_VECTOR( Tr2ParticleSystem );
+BLUE_DECLARE( Tr2ParticleSystem );
+BLUE_DECLARE_VECTOR( Tr2ParticleSystem );
+BLUE_DECLARE_INTERFACE( ITr2Emitter );
+BLUE_DECLARE_IVECTOR( ITr2Emitter );
+BLUE_DECLARE_INTERFACE( ITr2GenericEmitter );
+BLUE_DECLARE_IVECTOR( ITr2GenericEmitter );
+
+BLUE_DECLARE( EveTransform );
+BLUE_DECLARE_VECTOR( EveTransform );
+
+class EveTransform:
+	public Tr2Transform,
+	public IEveTransform,
+	public IEveSpaceObject2,
+	public ITr2Pickable,
+	public IWorldPosition
+{
+public:
+    EXPOSE_TO_BLUE();
+	using Tr2Transform::Lock;
+	using Tr2Transform::Unlock;
+
+    EveTransform( IRoot* lockobj = NULL );
+
+    virtual void UpdateViewDependentData( const Matrix& parentTransform );
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IEveSpaceObject2	
+	virtual void Update( EveUpdateContext& updateContext );
+	virtual void RenderDebugInfo( Tr2RenderContext& renderContext );
+	virtual void GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform );
+	virtual bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const;
+	virtual void UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const;
+	virtual void GetModelCenterWorldPosition( Vector3 &position, Be::Time t );
+	virtual void GetCurrentModelCenterWorldPosition( Vector3 &position );
+	virtual void UpdateWorldTransform( Be::Time time );
+	virtual bool GetLocalBoundingBox( Vector3 &min, Vector3 &max ) { return false; }
+	virtual void GetLocalToWorldTransform( Matrix &transform ) { D3DXMatrixIdentity( &transform ); }
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// ITr2Renderable - mostly implemented by Tr2Transform except for these
+	virtual Tr2PerObjectData* GetPerObjectData( ITriRenderBatchAccumulator* accumulator );
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IWorldPosition
+	/////////////////////////////////////////////////////////////////////////////////////
+	virtual const Vector3* GetWorldPosition();
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// ITr2Pickable
+	virtual IRoot* GetID() { return this->GetRawRoot(); }
+
+	// Low detail mesh
+	bool m_usingLowDetailMesh;
+	void SetLowDetail( bool b );
+	bool UsingLowDetail();
+
+	// EveTransforms can be under EveTransforms
+	PIEveTransformVector m_children;
+
+	// PlacementObservers
+	PTriObserverLocalVector m_observers;
+
+	// Generic particle system/emitter lists (Python-exposed)
+	PTr2ParticleSystemVector m_particleSystems;
+	PITr2GenericEmitterVector m_particleEmitters;
+
+	// GPU particles
+	PTr2GPUParticleEmitterVector m_particleEmittersGPU;
+	
+	LodLevel GetLODLevel() const;
+
+	void PlayCurveSets();
+protected:
+	bool m_debugShowBoundingBox;
+	bool m_debugRenderDebugInfoForChildren;
+	bool m_isVisible;
+	bool m_useLodLevel;
+	bool m_hideOnLowQuality;
+	LodLevel m_lodLevel;
+	
+	float m_visibilityThreshold;
+
+	Vector3 m_lastRelativePosition;
+	float m_lastDeltaTime;
+	float m_lastCurveUpdateDelta;
+};
+
+TYPEDEF_BLUECLASS( EveTransform );
+
+class EveBasicPerObjectData : public Tr2PerObjectData
+{
+public:
+	virtual void SetPerObjectDataToDevice( Tr2ConstantBufferAL** buffers, unsigned constantTypeMask, Tr2RenderContext& renderContext ) const
+	{
+		FillAndSetConstants(	*buffers[Tr2RenderContextEnum::CBUFFER_FFE],
+											&m_world, sizeof( m_world ) + sizeof( m_worldInverseTranspose ),
+											Tr2RenderContextEnum::VERTEX_SHADER,
+											Tr2Renderer::GetPerObjectVSFFEStartRegister(),
+											renderContext );
+	}
+
+	Matrix m_world;
+	Matrix m_worldInverseTranspose;
+};
+
+
+#endif //EveTransform_h

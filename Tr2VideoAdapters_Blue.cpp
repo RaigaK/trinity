@@ -1,0 +1,197 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   September 2012
+//    Copyright: CCP 2012
+//
+
+#include "StdAfx.h"
+#include "Tr2VideoAdapters.h"
+
+#ifdef _WIN32
+extern std::vector<HANDLE> g_D3DCreatedHeaps;
+#endif
+
+BLUE_DEFINE( Tr2VideoAdapters );
+BLUE_DEFINE( Tr2VideoAdapter );
+BLUE_DEFINE( Tr2DisplayMode );
+
+namespace
+{
+
+#ifdef _WIN32
+size_t GetD3DCreatedHeapCount()
+{	
+	return g_D3DCreatedHeaps.size();
+}
+
+ALResult GetD3DCreatedHeap( unsigned index, size_t& handle )
+{
+	if( index >= g_D3DCreatedHeaps.size() )
+	{
+		return E_INVALIDARG;
+	}
+
+	handle = (size_t)g_D3DCreatedHeaps[index];
+	return S_OK;
+}
+#endif
+
+}
+
+const Be::ClassInfo* Tr2VideoAdapter::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( Tr2VideoAdapter, "" )
+		MAP_INTERFACE( Tr2VideoAdapter )
+		
+		MAP_ATTRIBUTE( "index", m_index, "Video adapter index", Be::READ )
+		MAP_ATTRIBUTE( "driver", m_info.driver, "Video driver names", Be::READ )
+		MAP_ATTRIBUTE( "description", m_info.description, "Human-readable adapter name", Be::READ )
+		MAP_ATTRIBUTE( "deviceName", m_info.deviceName, "Adapter device name", Be::READ )
+		MAP_ATTRIBUTE( "driverVersion", m_info.driverVersion, "Video driver version", Be::READ )
+		MAP_ATTRIBUTE( "vendorID", m_info.vendorID, "Video adapter vendor ID", Be::READ )
+		MAP_ATTRIBUTE( "deviceID", m_info.deviceID, "Video adapter device ID", Be::READ )
+		MAP_ATTRIBUTE( "subSystemID", m_info.subSystemID, "Video adapter sub-system ID", Be::READ )
+		MAP_ATTRIBUTE( "revision", m_info.subSystemID, "", Be::READ )
+		MAP_PROPERTY_READONLY( "deviceIdentifier", GetDeviceIdentifierString, "Device identifier GUID as a string" )
+	EXPOSURE_END()
+}
+
+const Be::ClassInfo* Tr2DisplayMode::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( Tr2DisplayMode, "" )
+		MAP_INTERFACE( Tr2DisplayMode )
+		
+		MAP_ATTRIBUTE( "width", m_mode.width, "Back buffer width", Be::READ )
+		MAP_ATTRIBUTE( "height", m_mode.height, "Back buffer height", Be::READ )
+		MAP_ATTRIBUTE( "refreshRateNumerator", m_mode.refreshRateNumerator, "Refresh rate numenator", Be::READ )
+		MAP_ATTRIBUTE( "refreshRateDenominator", m_mode.refreshRateDenominator, "Refresh rate denumenator", Be::READ )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "format", m_mode.format, "Back buffer format", Be::READ | Be::ENUM, Tr2RenderContextEnum_PixelFormat_Chooser )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "scanlineOrdering", m_mode.scanlineOrdering, "Scanline ordering", Be::READ, Tr2RenderContextEnum_ScanlineOrdering_Chooser )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "scaling", m_mode.scaling, "Video scaling mode", Be::READ, Tr2RenderContextEnum_DisplayScaling_Chooser )
+	EXPOSURE_END()
+}
+
+const Be::ClassInfo* Tr2VideoAdapters::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( Tr2VideoAdapters, "" )
+		MAP_INTERFACE( Tr2VideoAdapters )
+
+		MAP_ATTRIBUTE( "DEFAULT_ADAPTER", DEFAULT_ADAPTER, "Index of default video adapter", Be::READ )
+		
+		MAP_METHOD_AND_WRAP( 
+			"GetAdapterCount", 
+			GetAdapterCount, 
+			"Returns number of video adapters in the system" )
+		MAP_METHOD_AND_WRAP( 
+			"GetAdapterInfo", 
+			GetAdapterInfo, 
+			"Returns video adapter information (as a Tr2VideoAdapter)."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index" )
+		MAP_METHOD_AND_WRAP( 
+			"GetCurrentDisplayMode", 
+			GetCurrentDisplayMode, 
+			"Returns current display mode information (as a Tr2DisplayMode) for video adapter."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index" )
+		MAP_METHOD_AND_WRAP( 
+			"GetDisplayModeCount", 
+			GetDisplayModeCount, 
+			"Returns number of supported display modes for video adapter and given back buffer format."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nformat - Back buffer format (member of trinity.PIXEL_FORMAT)" )
+		MAP_METHOD_AND_WRAP( 
+			"GetDisplayMode", 
+			GetDisplayMode, 
+			"Returns display mode information for video adapter and given back buffer format."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nformat - Back buffer format (member of trinity.PIXEL_FORMAT)"
+			"\nmodeIndex - Display mode index" )
+		MAP_METHOD_AND_WRAP( 
+			"GetRenderTargetMsaaSupport", 
+			GetRenderTargetMsaaSupport, 
+			"Returns number of MSAA quality levels supported by video adapter for"
+			"\ngiven render target format and number of MSAA samples (0 means MSAA is"
+			"\nnot supported for given combination)."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nformat - Render target format (member of trinity.PIXEL_FORMAT)"
+			"\nwindowed - Boolean: if the device is running in windowed or fullscreen mode"
+			"\nmsaaType - Number of MSAA samples" )
+		MAP_METHOD_AND_WRAP( 
+			"GetDepthStencilMsaaSupport", 
+			GetDepthStencilMsaaSupport, 
+			"Returns number of MSAA quality levels supported by video adapter for"
+			"\ngiven depth stencil format and number of MSAA samples (0 means MSAA is"
+			"\nnot supported for given combination)."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nformat - Depth stencil format (member of trinity.DEPTH_STENCIL_FORMAT)"
+			"\nwindowed - Boolean: if the device is running in windowed or fullscreen mode"
+			"\nmsaaType - Number of MSAA samples" )
+
+		MAP_METHOD_AND_WRAP( 
+			"GetShaderVersion", 
+			GetShaderVersion, 
+			"Returns maximum shader version supported by video adapter."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index" )
+		MAP_METHOD_AND_WRAP( 
+			"SupportsBackBufferFormat", 
+			SupportsBackBufferFormat, 
+			"Returns if the video adapter supports given back buffer format when running"
+			"\nin fullscreen or windowed mode."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nbackBufferFormat - Back buffer format (member of trinity.PIXEL_FORMAT)"
+			"\nwindowed - Boolean: if the device is running in windowed or fullscreen mode" )
+		MAP_METHOD_AND_WRAP( 
+			"SupportsRenderTargetFormat", 
+			SupportsRenderTargetFormat, 
+			"Returns if the video adapter supports given render target format when running"
+			"\nwith the given back buffer format."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nbackBufferFormat - Back buffer format (member of trinity.PIXEL_FORMAT)"
+			"\nformat - Render target format (member of trinity.PIXEL_FORMAT)" )
+		MAP_METHOD_AND_WRAP( 
+			"SupportsDepthStencilFormat", 
+			SupportsDepthStencilFormat, 
+			"Returns if the video adapter supports given depth stencil format when running"
+			"\nwith the given back buffer format."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index"
+			"\nbackBufferFormat - Back buffer format (member of trinity.PIXEL_FORMAT)"
+			"\nformat - Depth stencil format (member of trinity.DEPTH_STENCIL_FORMAT)" )
+		MAP_METHOD_AND_WRAP( 
+			"GetMaxTextureSize", 
+			GetMaxTextureSize, 
+			"Returns maximum texture size (width or height) supported by video adapter."
+			"\n"
+			"\nArguments:"
+			"\nindex - Video adapter index" )
+		MAP_METHOD_AND_WRAP( 
+			"Refresh", 
+			RefreshData, 
+			"Refreshes adapter information." )
+	EXPOSURE_END()
+}
+
+
+#ifdef _WIN32
+MAP_FUNCTION_AND_WRAP( "GetD3DCreatedHeapCount", GetD3DCreatedHeapCount, "" );
+
+MAP_FUNCTION_AND_WRAP( "GetD3DCreatedHeap", GetD3DCreatedHeap, "" );
+#endif

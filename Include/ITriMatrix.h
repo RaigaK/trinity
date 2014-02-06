@@ -1,0 +1,57 @@
+/* 
+	*************************************************************************
+
+	ITriMatrix.h
+
+	Author:    Hilmar Veigar Pétursson
+	Created:   September 2001
+	OS:        Win32
+	Project:   Trinity
+
+	Description:   
+
+		Interface for accessing Vectors that are used in Trinity
+
+
+	Dependencies:
+
+		Probably, ytbd.
+
+	(c) CCP 2000
+
+	*************************************************************************
+*/
+
+#ifndef _ITRIMATRIX_H_
+#define _ITRIMATRIX_H_
+
+#include <blue/include/Blue.h>
+
+BLUE_INTERFACE( ITriMatrix ) : public IRoot
+{
+	// Construction and data access
+	virtual void SetPivots(
+		float _11, float _12, float _13, float _14,
+		float _21, float _22, float _23, float _24,
+		float _31, float _32, float _33, float _34,
+		float _41, float _42, float _43, float _44
+		) = 0;
+
+	virtual void SetMatrix(
+		const Matrix* m
+		) = 0;
+
+	virtual const Matrix* GetMatrix(
+		) const =0;
+
+	virtual Matrix* CopyMatrix(
+		Matrix* in
+		) const =0;
+
+
+	// Math functions
+	virtual void Identity(
+		) = 0;
+};
+
+#endif

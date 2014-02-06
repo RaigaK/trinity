@@ -1,0 +1,381 @@
+#include "StdAfx.h"
+#include "EvePlanet.h"
+#include "EveTransform.h"
+#include "TriFrustum.h"
+#include "TriDevice.h"
+#include "TriSettingsRegistrar.h"
+#include "EveUpdateContext.h"
+#include "Utilities/ViewDistanceInfo.h"
+
+const float EvePlanet::SCALE = 1000000.0f;
+static int s_evePlanetTextureQuality = 0;
+
+// Temporary variables, should be set by whatever module controls fov
+const float FOV_MIN = 0.05f;
+
+// global spacescene thresholds for loding, options dependent
+extern float g_eveSpaceSceneMediumDetailThreshold;
+extern float g_eveSpaceSceneVisibilityThreshold;
+
+EvePlanet::EvePlanet( IRoot* lockobj ) :
+	PARENTLOCK( m_observers ),
+	m_display( true ),
+	m_update( true ),
+	m_resourcesReady( false ),
+	m_needResources( false ),
+	m_resourceActionPending( false ),
+	m_forceResourceLoading( false ),
+	m_scaling( 1.0f ),
+	m_radius( 1.0f ),
+	m_currentTextureSize( 0 ),
+	m_requiredTextureSize( 0 ),
+	m_warpMode( false )
+{
+	PrepareResources();
+}
+
+EvePlanet::~EvePlanet()
+{
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This function decides if we call the python callback to re-create all the
+//   textures that need baking. How the decision is made is rather complex.
+// Return value:
+//   Returns true if we need freshly updated resources
+// --------------------------------------------------------------------------------
+bool EvePlanet::RequiresResourceProcessing() const
+{
+	bool sizeReqChanged = ( m_requiredTextureSize > m_currentTextureSize ) || ( m_requiredTextureSize < m_currentTextureSize / 2 );
+
+	// On warp
+	if( m_warpMode )
+	{
+		if( m_forceResourceLoading )
+		{
+			return !m_resourcesReady || m_requiredTextureSize > m_currentTextureSize;
+		}
+		return false;
+	}
+	
+	return m_needResources && ( sizeReqChanged || !m_resourcesReady );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Main update method called every frame. Here we do all sorts of things: get
+//   the position/orientation of the underlying ball and the target ball. Update
+//   the meshes and call the python callback to bake new resources, if necessary!
+// Arguments:
+//   time - current game time
+// --------------------------------------------------------------------------------
+void EvePlanet::Update( EveUpdateContext& updateContext )
+{
+	if( !m_update )
+	{
+		return;
+	}
+	
+	if ( m_pythonResourceCallback && !m_resourceActionPending )
+	{
+		if( RequiresResourceProcessing() )
+		{
+			m_resourceActionPending = true;
+
+			m_currentTextureSize = m_requiredTextureSize;
+			if( !m_pythonResourceCallback.CallVoid( 1, m_requiredTextureSize ) )
+			{
+				m_resourceActionPending = false;
+#if BLUE_WITH_PYTHON
+				PyOS->PyFlushError("EvePlanet resource preparation(allocate) callback failed");
+#endif
+			}
+		}
+		else if(!(m_needResources || m_forceResourceLoading) && m_resourcesReady/* && !m_warpMode*/)
+		{
+			m_resourceActionPending = true;
+			m_currentTextureSize = 0;
+			if( !m_pythonResourceCallback.CallVoid( 0 ) )
+			{
+				m_resourceActionPending = false;
+#if BLUE_WITH_PYTHON
+				PyOS->PyFlushError("EvePlanet resource preparation(free) callback failed");
+#endif
+			}
+		}
+	}
+
+	// update position and rotation from ball
+	Quaternion rotation( 0.f, 0.f, 0.f, 1.f );
+	Vector3 translation( 0.f, 0.f, 0.f );
+	Be::Time time = updateContext.GetTime();
+
+	if( m_ballPosition )
+	{
+		m_ballPosition->Update( &translation, time );
+	}
+
+	if( m_ballRotation )
+	{
+		m_ballRotation->Update( &rotation, time );
+	}
+
+	// calculate worldmatrix
+	Vector3 scale( m_scaling, m_scaling, m_scaling );
+	D3DXMatrixTransformation( &m_worldTransform, NULL, NULL, &scale, NULL, &rotation, &translation );
+
+	// update models	
+	if( m_highDetail )
+	{
+		m_highDetail->Update( updateContext );
+	}
+	if( m_zOnlyModel )
+	{
+		m_zOnlyModel->Update( updateContext );
+	}
+
+	TriObserverLocalVector::iterator observersEnd = m_observers.end();
+	for( TriObserverLocalVector::iterator it = m_observers.begin(); it != observersEnd; ++it )
+	{
+		(*it)->Update( m_worldTransform );
+	}
+}
+
+const Vector3* EvePlanet::GetWorldPosition()
+{
+	return (Vector3*)&m_worldTransform._41;
+}
+
+void EvePlanet::ReleaseResources( TriStorage s )
+{
+	if( s & TRISTORAGE_VIDEOMEMORY )
+	{
+		// Textures should be created in default memory, so we need to mark them as not ready at this point.
+		m_resourcesReady = false;
+		m_needResources = false;
+	}
+}
+
+bool EvePlanet::OnPrepareResources()
+{
+	s_evePlanetTextureQuality = gTriDev->GetMipLevelSkipCount();
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Set the required texture size based on the pixel diameter.
+// Arguments:
+//   maxDiameter - maximum pixel diameter
+// Return value:
+//   Returns texture size
+// --------------------------------------------------------------------------------
+int EvePlanet::CalcRequiredTextureSize( float maxDiameter )
+{
+	int size = 32;
+
+	if( maxDiameter > 1024.f )
+	{
+		size = 2048;
+	}
+	else if( maxDiameter > 512.f )
+	{
+		size = 1024;
+	}
+	else if( maxDiameter > 256.f )
+	{
+		size = 512;
+	}
+	else if( maxDiameter > 128.f )
+	{
+		size = 256;
+	}
+	else if( maxDiameter > 64.f )
+	{
+		size = 128;
+	}
+	else if( maxDiameter > 32.f )
+	{
+		size = 64;
+	}
+	return size >> s_evePlanetTextureQuality;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Calculate the pixeldiameter of this planet sphere at a given position. Is used
+//   for loding decisions.
+// Arguments:
+//   scaledPlanetCenter - the position of the planet in the scaled system
+//   tanFOV - tan( FOV / 2 )
+// Return value:
+//   Returns the pixel diameter
+// --------------------------------------------------------------------------------
+float EvePlanet::EstimatePixelDiameterPos( const Vector3* scaledPlanetCenter, float tanFOV ) const
+{
+	// calc distance
+	Vector3 d( *scaledPlanetCenter - Tr2Renderer::GetViewPosition() );
+	float depth = D3DXVec3Length( &d );
+
+	return EstimatePixelDiameterDist( depth, tanFOV );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Calculate the pixeldiameter of this planet sphere at a given distance to the
+//   camera. Is used for loding decisions.
+// Arguments:
+//   sphere - return the bounding sphere data here
+// Return value:
+//   Returns the medium lod threshold for planets
+// --------------------------------------------------------------------------------
+float EvePlanet::EstimatePixelDiameterDist( float scaledDistance, float tanFOV ) const
+{
+	float halfWidthProjection = Tr2Renderer::GetViewport().width * 0.5f / tanFOV;
+
+	// get radius od 
+	float radius = m_radius / SCALE;
+
+	// clamp values close to zero and below
+	const float epsilon = 1e-5f;
+	if( scaledDistance < epsilon )
+	{
+		scaledDistance = epsilon; 
+	}
+
+	if( radius < epsilon )
+	{ 
+		return 0.0f;
+	}
+
+	float ratio = radius / scaledDistance;
+	return ratio * halfWidthProjection * 2.0f;
+}
+
+void EvePlanet::PrepareForWarp(float minDist, const Vector3& dest)
+{
+	Vector3* center = (Vector3*)&m_worldTransform._41;
+	m_warpMode = true;
+
+	float distEstimatedMinSize = EstimatePixelDiameterDist( minDist / SCALE, 1.f / Tr2Renderer::GetProjectionTransform()._11 );
+
+	if( distEstimatedMinSize > GetVisibilityThreshold() )
+	{
+		if ( distEstimatedMinSize > GetMediumDetailThreshold() )
+		{
+			m_requiredTextureSize = CalcRequiredTextureSize( distEstimatedMinSize );
+		}
+		else
+		{
+			m_requiredTextureSize = 64 >> s_evePlanetTextureQuality; // probably need better decision making here
+		}
+		
+		m_forceResourceLoading = true;
+	}
+}
+
+void EvePlanet::WarpStopped()
+{
+	m_warpMode = false;
+	m_forceResourceLoading = false;
+}
+
+void EvePlanet::GetZOnlyRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables )
+{
+	if( !m_display )
+	{
+		return;
+	}
+
+	if( m_zOnlyModel )
+	{
+		m_zOnlyModel->GetRenderables( frustum, renderables, m_worldTransform );
+	}
+}
+
+void EvePlanet::UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const
+{
+	if( !m_display )
+	{
+		return;
+	}
+
+	if( m_zOnlyModel )
+	{
+		m_zOnlyModel->UpdateViewDistanceInfo( frustum, viewDistance );
+	}
+}
+
+void EvePlanet::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& /*parentTransform*/ )
+{
+	if( !m_display )
+	{
+		return;
+	}
+
+	// get the center of the planet in scaled(!) space
+	Matrix planetScaleTransform;
+	D3DXMatrixScaling( &planetScaleTransform, 1.f / SCALE, 1.f / SCALE, 1.f / SCALE );
+	Matrix scaledTransform;
+	D3DXMatrixMultiply( &scaledTransform, &m_worldTransform, &planetScaleTransform );
+
+	// pixel diameters, also for the max possible
+	float estimatedPixelDiameter = EstimatePixelDiameterPos( (const Vector3*)&scaledTransform._41, 1.f / Tr2Renderer::GetProjectionTransform()._11 );
+	float estimatedMaxPixelDiameter = EstimatePixelDiameterPos( (const Vector3*)&scaledTransform._41, tanf( FOV_MIN / 2.f ) );
+	
+	if(!m_warpMode)
+	{
+		m_requiredTextureSize = CalcRequiredTextureSize( estimatedMaxPixelDiameter );
+		if ( estimatedMaxPixelDiameter < GetVisibilityThreshold() )
+		{
+			m_needResources = false;
+		}
+	}
+
+	// visible at all?
+	if ( estimatedPixelDiameter > GetVisibilityThreshold() )
+	{
+		// visible, so resources are needed after all
+		m_needResources = true;
+
+		// what lod level? there is only low and high
+		bool useLowLOD = ( estimatedPixelDiameter < GetMediumDetailThreshold() );
+
+		// use EveTransform's/Tr2Mesh's inbuild low-detail mechanism
+		if( m_highDetail )
+		{
+			m_highDetail->SetLowDetail( useLowLOD );
+
+			// now we can get the renderables, finally
+			if ( m_resourcesReady )
+			{
+				m_highDetail->GetRenderables( frustum, renderables, scaledTransform );
+			}
+		}
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Just return a global variable, slightly modified by a constant, since this
+//   is a planet, not a ship.
+// Return value:
+//   Returns the visibilty threshold for planets
+// --------------------------------------------------------------------------------
+float EvePlanet::GetVisibilityThreshold() const
+{
+	return g_eveSpaceSceneVisibilityThreshold * 1.5f;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Just return a global variable, slightly modified by a constant, since this
+//   is a planet, not a ship.
+// Return value:
+//   Returns the medium lod threshold for planets
+// --------------------------------------------------------------------------------
+float EvePlanet::GetMediumDetailThreshold() const
+{
+	return g_eveSpaceSceneMediumDetailThreshold * 1.5f;
+}

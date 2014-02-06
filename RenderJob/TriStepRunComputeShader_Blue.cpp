@@ -1,0 +1,40 @@
+#include "StdAfx.h"
+#include "TriStepRunComputeShader.h"
+#include "ITr2ShaderMaterial.h"
+#include "include/ITr2GpuBuffer.h"
+
+BLUE_DEFINE( TriStepRunComputeShader );
+
+const Be::ClassInfo* TriStepRunComputeShader::ExposeToBlue()
+{
+	EXPOSURE_BEGIN(TriStepRunComputeShader, "" )
+
+		MAP_INTERFACE( TriRenderStep )
+		MAP_INTERFACE( TriStepRunComputeShader )
+
+		MAP_ATTRIBUTE( "effect", m_effect, "Effect containing a compute shader", Be::READWRITE )
+		MAP_ATTRIBUTE( "groupDimX", m_groupDimX, "Dispatch group dimension.X", Be::READWRITE )
+		MAP_ATTRIBUTE( "groupDimY", m_groupDimY, "Dispatch group dimension.Y", Be::READWRITE )
+		MAP_ATTRIBUTE( "groupDimZ", m_groupDimZ, "Dispatch group dimension.Z", Be::READWRITE )
+
+		MAP_ATTRIBUTE( "logDispatchTime", m_logDispatchTime, "Make the dispatch call synchronous and log the running time", Be::READWRITE )
+		
+		MAP_ATTRIBUTE( "indirectionBuffer", m_indirectionBuffer, "If set, use DispatchIndirect with this buffer holding the arguments", Be::READWRITE )
+		MAP_ATTRIBUTE( "offsetForArgs", m_offsetForArgs, "The argument offset in indirectionBuffer for an indirect dispatch.", Be::READWRITE )
+
+		MAP_METHOD_AND_WRAP_OPTIONAL_ARGS
+		( 
+			"__init__", 
+			py__init__,
+			4,
+			"Run a compute shader in renderStep.Execute"
+			"\n"
+			"\nOptional Arguments:"
+			"\neffect - A Tr2Effect containing a compute shader (default None)"
+			"\ngroup dimension X - unsigned int, dispatch group dimension.X, default 1"
+			"\ngroup dimension Y - unsigned int, dispatch group dimension.Y, default 1"
+			"\ngroup dimension Z - unsigned int, dispatch group dimension.Z, default 1"
+		)
+
+	EXPOSURE_CHAINTO( TriRenderStep )
+}

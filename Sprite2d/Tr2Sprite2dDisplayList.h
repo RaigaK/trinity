@@ -1,0 +1,65 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// Created:		January 2012
+// Copyright:	CCP 2012
+//
+
+#pragma once
+
+#ifndef Tr2Sprite2dDisplayList_h
+#define Tr2Sprite2dDisplayList_h
+
+#include "Tr2DeviceResource.h"
+#include "ITr2SpriteObject.h"
+#include "Tr2Effect.h"
+
+const unsigned int TR2_SS_MAX_TRANSFORM_COUNT = 32;
+
+BLUE_DECLARE( TriRenderJob );
+BLUE_DECLARE( Tr2AtlasTexture );
+
+struct Tr2Sprite2dDisplayList:
+	public Tr2DeviceResource
+{
+	Tr2VertexBufferAL vertexBuffer;
+	Tr2IndexBufferAL indexBuffer;
+
+	struct Entry : public Tr2Effect::IRenderCallback
+	{
+		// Render job to run, rather than issuing a draw call
+		TriRenderJobPtr job;
+
+		uint32_t numVertices;
+		uint32_t startIndex;
+		uint32_t primitiveCount;
+		Vector4 texelSize0;
+		Vector4 texelSize1;
+		Tr2AtlasTexturePtr texture0;
+		Tr2AtlasTexturePtr texture1;
+		Tr2EffectPtr effect;
+		//CComPtr<ID3DXConstantTable> vsConstantTable;
+		//hardcoded due to need for CB slot//Tr2EffectConstant transformsHandle;
+		Matrix transformArray[ TR2_SS_MAX_TRANSFORM_COUNT ];
+		Tr2ConstantBufferAL* m_uiTransformsCb;
+
+		//////////////////////////////////////////////////////////////////////////
+		// Tr2Effect::IRenderCallback
+		virtual void SubmitGeometry( Tr2RenderContext& renderContext );
+	};
+
+	std::list<Entry> entries;
+
+	Tr2Sprite2dDisplayList( ITr2SpriteObject* owner );
+	~Tr2Sprite2dDisplayList();
+
+	//////////////////////////////////////////////////////////////////////////
+	// ITriDeviceResource
+	virtual void ReleaseResources( TriStorage s );
+private:
+	bool OnPrepareResources();
+
+private:
+	ITr2SpriteObject* m_owner;
+};
+
+#endif // Tr2Sprite2dDisplayList_h

@@ -1,0 +1,26 @@
+#include "StdAfx.h"
+#include "TriStepGenerateMipMaps.h"
+#include "Tr2Renderer.h"
+
+
+TriStepGenerateMipMaps::TriStepGenerateMipMaps( IRoot* lockobj )
+{
+}
+
+TriStepGenerateMipMaps::~TriStepGenerateMipMaps(void)
+{
+}
+
+TriStepResult TriStepGenerateMipMaps::Execute( Be::Time time, Tr2RenderContext& renderContext )
+{
+	if( m_renderTarget )
+	{
+		m_renderTarget->GetRenderTarget().GenerateMipMaps( renderContext );
+	}
+	return RS_OK;
+}
+
+void TriStepGenerateMipMaps::py__init__( Tr2RenderTarget* rt )
+{
+	m_renderTarget = rt;
+}

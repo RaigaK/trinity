@@ -1,0 +1,49 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   July 2011
+//    Copyright: CCP 2011
+//
+#include "StdAfx.h"
+#include "EveTurretFiringFX.h"
+
+BLUE_DEFINE( EveTurretFiringFX );
+
+const Be::ClassInfo* EveTurretFiringFX::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveTurretFiringFX, "" )
+        MAP_INTERFACE( EveTurretFiringFX )
+        MAP_INTERFACE( IInitialize )
+        MAP_INTERFACE( INotify )
+
+		MAP_ATTRIBUTE( "name", m_name, "A name for this firing effect", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "display", m_display, "Toggle rendering", Be::READWRITE )
+
+		MAP_ATTRIBUTE( "useMuzzleTransform", m_useMuzzleTransform, "Set this and the stretch effect aims from data in the muzzle transform.", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "isFiring", m_isFiring, "IS this effect rendering (because it is firing)", Be::READ )
+
+		MAP_ATTRIBUTE( "isLoopFiring", m_isLoopFiring, "some turrets (like miners or salvagers) loop the firing effect endlessly", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "firingDelay1", m_perMuzzleData[0].constantDelay, "Delay in seconds for firing effect 1", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay2", m_perMuzzleData[1].constantDelay, "Delay in seconds for firing effect 2", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay3", m_perMuzzleData[2].constantDelay, "Delay in seconds for firing effect 3", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay4", m_perMuzzleData[3].constantDelay, "Delay in seconds for firing effect 4", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay5", m_perMuzzleData[4].constantDelay, "Delay in seconds for firing effect 5", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay6", m_perMuzzleData[5].constantDelay, "Delay in seconds for firing effect 6", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay7", m_perMuzzleData[6].constantDelay, "Delay in seconds for firing effect 7", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "firingDelay8", m_perMuzzleData[7].constantDelay, "Delay in seconds for firing effect 8", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "stretch", m_stretch, "A list of stretch effects for this firing effect", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "endPosition", m_endPosition, "Destination or end position", Be::READ )
+
+		MAP_METHOD_AND_WRAP(
+			"GetPerMuzzleEffectCount",
+			GetPerMuzzleEffectCount,
+			"Return the number of muzzles in this firing effect." )
+
+	EXPOSURE_END()
+}
+
+
+

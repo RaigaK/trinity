@@ -1,0 +1,62 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   February 2013
+//    Copyright: CCP 2013
+//
+
+#pragma once
+#ifndef Tr2GpuStructuredBuffer_H
+#define Tr2GpuStructuredBuffer_H
+
+
+#include "include/ITr2GpuBuffer.h"
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   A Blue-exposed wrapper around Tr2GpuBufferAL class for structured buffers, i.e. 
+//   buffers containing structures as elements. The creation parameters for the class are 
+//   persisted, but the contents of the buffer is not.
+// See Also:
+//   Tr2GpuBufferAL
+// --------------------------------------------------------------------------------------
+BLUE_CLASS( Tr2GpuStructuredBuffer ): 
+	public ITr2GpuBuffer,
+	public INotify,
+	public IInitialize
+{
+public:
+	EXPOSE_TO_BLUE();
+
+	using IInitialize::Lock;
+	using IInitialize::Unlock;
+
+    Tr2GpuStructuredBuffer( IRoot* = 0 );
+	~Tr2GpuStructuredBuffer();
+
+	ALResult py__init__( uint32_t count, uint32_t stride, bool cpuWritable );
+
+	bool Initialize();
+
+	bool OnModified( Be::Var* value );
+
+	Tr2GpuBufferAL* GetGpuBuffer( unsigned index );
+
+	ALResult Create( uint32_t count, uint32_t stride, bool cpuWritable );
+	bool IsValid() const;
+private:
+	ALResult CreateBuffer();
+
+	// AL buffer
+	Tr2GpuBufferAL	m_buffer;
+
+	// Number of elements in the buffer
+	uint32_t m_count;
+	// Size of one element in bytes
+	uint32_t m_stride;
+	// Can the buffer be locked with write-only access
+	bool m_cpuWritable;
+};
+
+TYPEDEF_BLUECLASS( Tr2GpuStructuredBuffer );
+
+#endif

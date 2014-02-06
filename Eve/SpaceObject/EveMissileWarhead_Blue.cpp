@@ -1,0 +1,41 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   February 2012
+//    Copyright: CCP 2012
+//
+#include "StdAfx.h"
+#include "EveMissileWarhead.h"
+
+BLUE_DEFINE( EveMissileWarhead );
+
+const Be::ClassInfo* EveMissileWarhead::ExposeToBlue()
+{
+    EXPOSURE_BEGIN( EveMissileWarhead, "" )
+        MAP_INTERFACE( EveMissileWarhead )
+		MAP_INTERFACE( EveTransform )
+
+		MAP_ATTRIBUTE( "startDataValid", m_startDataValid, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "pathOffset", m_pathOffset, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "durationEjectPhase", m_durationEjectPhase, "The total length of the warhead's ejection phase.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "startEjectVelocity", m_startEjectVelocity, "The warhead's speed at start of the ejection phase.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "acceleration", m_acceleration, "The warhead's acceleration after eject phase is complete.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "maxExplosionDistance", m_maxExplosionDistance, "Determine how far away from the target the warhead should explode.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "id", m_id, "The warhead's acceleration after eject phase is complete.", Be::READWRITE )
+		MAP_ATTRIBUTE( "explosionPosition", m_explosionPosition, "Position in world space where the missile exploded", Be::READ )
+
+		MAP_METHOD_AND_WRAP(
+			"PrepareLaunch",
+			PrepareLaunch,
+			"Description:\n"
+			"Initalize a warhead without launching it.\n" )
+
+		MAP_METHOD_AND_WRAP(
+			"Launch",
+			Launch,
+			"Description:\n"
+			"Launch warhead.\n"
+			"Arguments:\n"
+			"startTransform - transform matrix of initial position/orientation in warheads's destinyball's space.\n" )
+
+	EXPOSURE_CHAINTO( EveTransform )
+}

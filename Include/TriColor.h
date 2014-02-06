@@ -1,0 +1,151 @@
+/* 
+	*************************************************************************************
+
+	TriColor.h
+
+	Author:    Hilmar Veigar Pétursson
+	Created:   November 2000
+	OS:        Win32
+	Project:   Trinity
+
+	Description:   
+
+		See TRICOLOR_Description
+
+
+	Dependencies:
+
+		DirectX 9.0, Blue
+
+	(c) CCP 2000
+
+	*************************************************************************************
+*/
+
+
+#ifndef _TRICOLOR_H_
+#define _TRICOLOR_H_
+
+#define TRICOLOR_Description \
+"Simple mapping of D3DXCOLOR over to Blue, with the addition of HSV \r\n\
+function"
+
+#include "ITriColor.h"
+#include "TriMath.h"
+
+#include <blue/include/IBlueOS.h>
+#include <blue/include/IBluePython.h>
+
+#pragma warning (disable: 4275) // non dll-interface struct 'D3DXQUATERNION'
+
+#if BLUE_WITH_PYTHON
+class TriColor :
+	public ITriColor,
+	public IPythonMethods,
+	public Color
+{
+public:
+	EXPOSE_TO_BLUE();
+
+	TriColor(IRoot* lockobj = NULL);
+	~TriColor();
+
+
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	// ITriColor
+	/////////////////////////////////////////////////////////////////////////////////////
+	void SetRGB(
+		float r, 
+		float g, 
+		float b,
+		float a = TRICOLOR_NOALPHA
+		);
+
+	void SetHSV(
+		float hue, 
+		float saturation, 
+		float value, 
+		float alpha = TRICOLOR_NOALPHA
+		);
+
+	void SetVector(
+		const Vector3* in,
+		float alpha
+		);
+
+	void GetHSV(
+		float* hue, 
+		float* saturation, 
+		float* value, 
+		float* alpha = NULL
+		);
+
+	void SetColor(
+		const ::Color* c
+		);
+
+	const ::Color* GetColor(
+		) const;
+
+	::Color* CopyColor(
+		::Color* in
+		) const;
+
+	::Color* Color(
+		);
+
+
+	void AdjustContrast(
+		float c
+		);
+
+	void AdjustSaturation(
+		float s
+		);
+
+	void Negative(
+		);
+
+	void Scale(
+		float s
+		);
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IPythonMethods
+	/////////////////////////////////////////////////////////////////////////////////////
+	void Destroy(
+		);
+
+	PyObject* GetAttr( 
+		const char* name, 
+		bool* handled
+		);
+
+	bool SetAttr(
+		const char* name,
+		PyObject* v,
+		bool* handled
+		);
+
+	PyObject* Repr(
+		bool* handled
+		);
+
+public:
+	void Py__init__( float r, float g, float b, float a );
+	void PySetRGB( float r, float g, float b, Be::Optional<float> a );
+	void PySetHSV( float hue, float saturation, float value, Be::Optional<float> a );
+	void PySetVector( ITriVector* vector, float alpha );
+	Vector3 PyGetHSV();
+	void PyFromInt( int color );
+	uint32_t PyAsInt();
+	PyObject* PyAdd( PyObject* args );	
+	PyObject* PyLerp( PyObject* args );
+	PyObject* PyModulate( PyObject* args );	
+};
+TYPEDEF_BLUECLASS(TriColor);
+
+#endif
+#endif
+

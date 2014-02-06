@@ -1,0 +1,30 @@
+#pragma once
+#ifndef BoundingSphere_H
+#define BoundingSphere_H
+
+// helper functions to deal with bounding spheres
+inline const Vector3& BoundingSphereGetCenter( const Vector4& sphere ) { return ( const Vector3& )sphere; }
+void BoundingSphereInitialize( Vector4& sphere );
+bool BoundingSphereIsInside( const Vector4& sphere, const Vector3& pos );
+bool BoundingSphereIsSphereInside( const Vector4& parentSphere, const Vector4& testSphere );
+void BoundingSphereUpdate( const Vector3& pos, Vector4& sphere );
+void BoundingSphereUpdate( const Vector4& addSphere, Vector4& resultSphere );
+void BoundingSphereTransform( const Matrix& tf, Vector4& sphere );
+void BoundingSphereFromBox( Vector4& sphere, const Vector3& minBounds, const Vector3& maxBounds, const Matrix* tf = NULL );
+
+bool IntersectSphereAxisAlignedBox( const Vector4& sphere, const Vector3& minBounds, const Vector3& maxBounds );
+
+inline void BoundingSphereSetOrUpdate( Vector4& addSphere, Vector4& resultSphere, bool update )
+{
+	if( update )
+	{
+		BoundingSphereUpdate( addSphere, resultSphere );
+	}
+	else
+	{
+		resultSphere = addSphere;
+	}
+}
+
+
+#endif // BoundingSphere_H

@@ -1,0 +1,88 @@
+#pragma once
+#ifndef TriDebugTextRenderer_H
+#define TriDebugTextRenderer_H
+
+#include "Tr2DeviceResource.h"
+#include "include/Rect.h"
+
+enum TriDebugFont
+{
+    TRI_DBG_FONT_SMALL,
+    TRI_DBG_FONT_MEDIUM,
+    TRI_DBG_FONT_LARGE,
+};
+
+enum TriDebugFontStyle
+{
+    TRI_DFS_LEFT        = 0x00000000,
+    TRI_DFS_CENTER      = 0x00000001,
+    TRI_DFS_RIGHT       = 0x00000002,
+    TRI_DFS_TOP         = 0x00000000,
+    TRI_DFS_BOTTOM      = 0x00000008,
+    TRI_DFS_VCENTER     = 0x00000004,
+};
+
+class TriDebugTextRenderer : public Tr2DeviceResource
+{
+public:
+    TriDebugTextRenderer();
+    ~TriDebugTextRenderer();
+
+    void Printf( TriDebugFont font, const Rect& rect, uint32_t format, const Vector4& color, const char* msg, ... );
+	void PrintfImmediate( TriDebugFont font, const Rect& rect, uint32_t format, const Vector4& color, const char* msg, ... );
+	void Vprintf( TriDebugFont font, const Rect& rect, uint32_t format, const Vector4& color, const char* msg, va_list args );
+	void VprintfImmediate( TriDebugFont font, const Rect& rect, uint32_t format, const Vector4& color, const char* msg, va_list args );
+
+    void Render();
+    void Clear();
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ITriDeviceResource
+    void ReleaseResources( TriStorage s );
+private:
+	bool OnPrepareResources();
+public:
+#ifdef TRINITYDEV
+	void GetDescription( std::string& desc )
+	{
+		desc = "<TriDebugFont>";
+	}
+#endif
+
+private:
+	void VprintfImpl( bool immediate, TriDebugFont font, const Rect& rect, uint32_t format, const Vector4& color, const char* msg, va_list args );
+    void DrawText( TriDebugFont font, const char* string, const Rect& rect, uint32_t format, const Vector4& color );
+
+private:
+    struct TextEntry
+    {
+        TriDebugFont m_font;
+        Rect m_rect;
+        uint32_t m_format;
+        Vector4 m_color;
+        const char* m_text;
+    };
+
+    TrackableStdList<TextEntry> m_entries;
+
+#ifdef _WIN32
+    // Memory DC for GDI rendering
+	HDC m_dc;
+	// Offscreen GDI bitmap
+	HBITMAP m_bitmap;
+	// Pixel data from m_bitmap; memory managed by WinApi
+	uint8_t* m_bitmapData;
+	// Fonts (correspond to TriDebugFont)
+	HFONT m_dcFonts[3];
+    // Current m_bitmap width
+	unsigned m_bitmapWidth;
+	// Current m_bitmap height
+	unsigned m_bitmapHeight;
+#endif	
+	// Temporary texture
+	Tr2TextureAL m_texture;
+};
+
+
+
+#endif // TriDebugTextRenderer_H

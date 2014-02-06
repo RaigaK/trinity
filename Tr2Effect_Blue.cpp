@@ -1,0 +1,204 @@
+#include "StdAfx.h"
+#include "Tr2Effect.h"
+#include "TriError.h"
+
+BLUE_DEFINE( Tr2Effect );
+
+#if BLUE_WITH_PYTHON
+// ---------------------------------------------------------------
+// PyGetTechniques
+// 
+// Gets a python list of the techniques on the effect
+// (techniquename, isValid, annotationDict). We don't really 
+// support multiple techniques, so this function returns a dummy
+// list with a single tuple.
+// ---------------------------------------------------------------
+static PyObject* PyGetTechniques( PyObject* self, PyObject* args )
+{
+	Tr2Effect* pThis = BluePythonCast<Tr2Effect*>( self );
+
+	if (!pThis->GetEffectRes())
+	{
+		CCP_LOGERR( "No effect resource loaded." );
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	PyObject* techniqueList = PyList_New(0);
+
+	PyObject* techniqueInfo = PyTuple_New(3);
+	PyTuple_SetItem(techniqueInfo, 0, PyString_FromString("theTechnique"));
+	PyTuple_SetItem(techniqueInfo, 1, PyBool_FromLong( 1 ) );
+	PyTuple_SetItem(techniqueInfo, 2, PyDict_New());
+	PyList_Append( techniqueList, techniqueInfo); 
+	Py_DECREF( techniqueInfo );
+
+	return techniqueList;
+}
+
+// ---------------------------------------------------------------
+// PyGetParameterAnnotations
+// 
+// Gets a python dict of the parameter annotations, using a parameter object or string for the name
+// ---------------------------------------------------------------
+static PyObject* PyGetParameterAnnotations( PyObject* self, PyObject* args )
+{
+	Tr2Effect* pThis = BluePythonCast<Tr2Effect*>( self );
+
+	PyObject *parameterObject = NULL;
+	if (!PyArg_ParseTuple(args, "O", &parameterObject))
+		return NULL;
+
+	std::string parameterNameString;
+
+	if (!pThis->GetEffectRes())
+	{
+		CCP_LOGERR( "No effect resource loaded." );
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	// If we got passed a string, look up the string, if we got passed a parameter, look up the name of that
+	if ( PyString_Check( parameterObject ) )
+		parameterNameString = PyString_AsString( parameterObject );
+	else
+	{
+		ITriEffectParameterPtr iParameterObject( parameterObject );
+		if ( iParameterObject != NULL )
+			parameterNameString = iParameterObject->GetParameterName();
+		else
+		{
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+	}
+
+	PyObject* tmpValue = NULL;
+	PyObject* annotationDict = PyDict_New();
+
+	auto annotations = pThis->GetEffectRes()->GetParameterAnnotations( parameterNameString.c_str() );
+	if( annotations == nullptr )
+	{
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+	for( auto annotation = annotations->begin(); annotation != annotations->end(); ++annotation )
+	{
+		if( annotation->type == Tr2EffectParameterAnnotation::BOOL )
+		{
+			tmpValue = PyBool_FromLong( annotation->boolValue ? 1 : 0 );
+			PyDict_SetItemString( annotationDict, annotation->name, tmpValue );
+			Py_DECREF( tmpValue );
+		}
+		else if( annotation->type == Tr2EffectParameterAnnotation::INT )
+		{
+			tmpValue = PyInt_FromLong( annotation->intValue );
+			PyDict_SetItemString( annotationDict, annotation->name, tmpValue );
+			Py_DECREF( tmpValue );
+		}
+		else if( annotation->type == Tr2EffectParameterAnnotation::FLOAT )
+		{
+			tmpValue = PyFloat_FromDouble( annotation->floatValue );
+			PyDict_SetItemString( annotationDict, annotation->name, tmpValue );
+			Py_DECREF( tmpValue );
+		}
+		else if( annotation->type == Tr2EffectParameterAnnotation::STRING )
+		{
+			tmpValue = PyString_FromString( annotation->stringValue );
+			PyDict_SetItemString( annotationDict, annotation->name, tmpValue );
+			Py_DECREF( tmpValue );
+		} 
+	}
+
+	return annotationDict;
+}
+#endif
+
+Be::VarChooser EffectFileChooser[] =
+{
+	{
+		"SELECT_EFFECT",     
+		BeCast(0),     
+		"Effect source (.fx)|*.fx|All Files (*.*)|*.*"
+	},
+	{ 0 }
+};
+
+
+const Be::ClassInfo* Tr2Effect::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( Tr2Effect, "" )
+		MAP_INTERFACE( Tr2Effect )
+		MAP_INTERFACE( ITr2ShaderMaterial )
+		MAP_INTERFACE( INotify )
+		MAP_INTERFACE( IInitialize )
+		MAP_INTERFACE( IListNotify )
+
+		////////////////////////////////////////////////////////////////////////////
+		//               name
+		MAP_ATTRIBUTE
+		( 
+			"name",    
+			m_name,    
+			"A name to describe the effect. Not used by the engine, an authoring convenience.", 
+			Be::READWRITE | Be::PERSIST
+		)
+
+		////////////////////////////////////////////////////////////////////////////
+		// Effect Resource Blue File
+		MAP_ATTRIBUTE_WITH_CHOOSER
+		( 
+			"effectFilePath",
+			m_effectFilePath,
+			"The shader file to use",
+			Be::READWRITE | Be::PERSIST | Be::NOTIFY,
+			EffectFileChooser
+		)
+
+		MAP_ATTRIBUTE( 
+			"actualEffectFilePath", 
+			m_actualEffectFilePath, 
+			"Path to compiled effect, after shader model mangling",
+			Be::READ
+		)
+
+		////////////////////////////////////////////////////////////////////////////
+		// The currently loaded effect resource
+		MAP_ATTRIBUTE
+		(    
+			"effectResource",
+			m_effectResource,
+			"na",
+			Be::READ
+		)
+		////////////////////////////////////////////////////////////////////////////
+		//
+		MAP_ATTRIBUTE
+		( 
+			"parameters",      
+			m_parameters,
+			"Effect Parameters", 
+			Be::READWRITE | Be::PERSIST
+		)
+		////////////////////////////////////////////////////////////////////////////
+		//
+		MAP_ATTRIBUTE
+		( 
+			"resources",      
+			m_resources,
+			"Effect Resources", 
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_METHOD( "GetParameterAnnotations", PyGetParameterAnnotations, "Gets the annotations on a parameter" )
+		MAP_METHOD_AND_WRAP( "PopulateParameters", PopulateParameters, "Populates the parameter list with the appropriate parameters" )
+		MAP_METHOD_AND_WRAP( "PruneParameters", PruneParameters, "Removes parameters from the parameter list that are not used by the effect" )
+		MAP_METHOD( "GetTechniques", PyGetTechniques, "Gets a list of the techniques available on this effect." )
+		MAP_METHOD_AND_WRAP( "IsParameterUsedByTechnique", IsParameterUsedByTechnique, "Returns True if the parameter name is used by the current technique" )
+		MAP_METHOD_AND_WRAP( "RebuildCachedData", RebuildCachedDataInternal, "Call this after adding/removing parameters/resources" )
+
+		MAP_METHOD_AND_WRAP( "StartUpdate"	, StartUpdate,	"Temporarily block list notifications from causing a data rebuild" )
+		MAP_METHOD_AND_WRAP( "EndUpdate"	, EndUpdate	,	"Reactivate list notifications, and do a data rebuild" )
+
+	EXPOSURE_END()
+}

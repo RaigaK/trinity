@@ -1,0 +1,206 @@
+#pragma once
+#ifndef Tr2EffectStateManager_h
+#define Tr2EffectStateManager_h
+
+#include "Tr2DeviceResource.h"
+
+BLUE_DECLARE( Tr2EffectRes );
+
+class TriRenderBatch;
+class ITriRenderBatchAccumulator;
+class Tr2Effect;
+class Tr2LowLevelShader;
+class TriVariable;
+class Tr2VertexDefinition;
+struct Tr2ShaderInputDefinition;
+
+BLUE_DECLARE_INTERFACE( ITr2ShaderMaterial );
+
+//
+// See http://core/wiki/Tr2EffectStateManager
+//
+class Tr2EffectStateManager
+{
+public:
+	Tr2EffectStateManager( Tr2RenderContext& renderContext );
+
+	void Initialize();
+	void Shutdown();
+
+	// This is called when device is reset
+	void ReleaseDeviceResources( TriStorage s );
+
+	void BeginManagedRendering();
+	void EndManagedRendering();
+
+	enum
+	{
+		// 16 textures/samplers per shader
+		SAMPLER_MAX_COUNT		= 16,
+		VERTEX_STREAM_MAX_COUNT = 16,
+		UNKNOWN					= 0XFFFFFFFFu
+	};
+
+	enum OverrideMode
+	{
+		OM_DO_NOTHING,				// use the override effect, but leave the PS data lone
+		OM_APPLY_PS,				// use the override effect, and apply its PS data, replacing what was already there
+		OM_DO_NOT_SET_ORIGINAL_PS,	// do not set original pixel shader inputs
+	};
+
+	enum RenderingMode
+	{
+		RM_ANY,	// Don't care about the render state
+		RM_OPAQUE,
+		RM_DECAL,
+		RM_DECAL_NO_DEPTH,
+		RM_ALPHA,
+		RM_ALPHA_ADDITIVE,
+		RM_DEPTH_ONLY,
+		RM_PICKING,
+		RM_FULLSCREEN,
+		RM_SPRITE2D,
+		RM_CULL,
+		RM_LIGHT,
+        RM_ERASE,
+        RM_PREPASS_COLOR,
+		RM_VIS_WIREFRAME, // For enlighten target mesh visualisation in Jessica
+
+		RM_COUNT
+	};
+
+	enum 
+	{ 
+		UNINITIALIZED_DECLARATION = ~0u 
+	};
+
+	void RenderBatches( ITriRenderBatchAccumulator* batches );
+	void RenderLightBatches( ITriRenderBatchAccumulator* batches );
+	void RenderBatchesWithOverride( ITriRenderBatchAccumulator* batches, ITr2ShaderMaterial* overrideEffect, OverrideMode overrideMode );
+
+	void RenderBatchesForPicking( ITr2ShaderMaterial* effect, TriRenderBatch* &p, int &objectNum );
+	void RenderBatchesForPickingWithoutOverride( ITriRenderBatchAccumulator* batches, int &objectNum );
+
+
+	void ApplyStandardStates( RenderingMode rm );
+
+	void ApplyRenderStates( uint32_t ix );
+	void ApplySamplerSetup( Tr2RenderContextEnum::ShaderType inputType, uint32_t samplerIx, uint32_t ix );
+	void ApplyShaderBuffer( Tr2RenderContextEnum::ShaderType inputType, uint32_t samplerIx, const Tr2GpuBufferAL& buffer );
+	void ApplyTexture( 
+		Tr2RenderContextEnum::ShaderType inputType, 
+		uint32_t samplerIx, 
+		const Tr2TextureAL& texture, 
+		Tr2RenderContextEnum::ColorSpace colorSpace = Tr2RenderContextEnum::COLOR_SPACE_LINEAR );
+	void UnsetAllTextures();
+	void ApplyShader( Tr2RenderContextEnum::ShaderType type, uint32_t ix );
+
+	void ApplyStreamSource( uint32_t stream, const Tr2VertexBufferAL & buffer, uint32_t offset, uint32_t stride );
+	void ApplyIndexBuffer( const Tr2IndexBufferAL & indices );
+
+	// --------------------------------------------------------------------------------------
+	// Description:
+	//   Set of render states.
+	// --------------------------------------------------------------------------------------
+	typedef std::map<Tr2RenderContextEnum::RenderState, uint32_t> Tr2RenderStateSetup;
+
+
+	static uint32_t RegisterShader( 
+		Tr2RenderContextEnum::ShaderType type, 
+		const void* bytecode, 
+		uint32_t bytecodeSize, 
+		const void* patchedBytecode, 
+		uint32_t patchedBytecodeSize, 
+		const Tr2ShaderInputDefinition& inputDefinition );
+
+	static uint32_t RegisterRenderStateSetup( 
+		const Tr2RenderStateSetup& rss );
+
+	bool IsWireframeRendering();
+	void SetWireframeRendering( bool b );
+	void SetInvertedCullMode( bool b );
+	bool IsCullModeInverted();
+
+	TriVariable* GetObjectIdVariable();
+
+	// Shared across managers:
+	// - sampler setups
+	// - vertex declarations
+
+	static uint32_t RegisterSamplerSetup( const Tr2SamplerDescription& description );
+	
+	static uint32_t GetVertexDeclarationHandle( const Tr2VertexDefinition& vertexDefinition );
+	void ApplyVertexDeclaration( uint32_t declaration );
+	static bool GetVertexDeclarationElements( uint32_t declaration, Tr2VertexDefinition& definition );
+
+	// Stop caching this texture -- when the next ApplyTexture comes, always set it
+	void ForgetTexture( const Tr2TextureAL& texture );
+
+private:
+	friend class Tr2EffectRes;
+	friend class Tr2LowLevelShader;
+
+	Tr2RenderContext&	m_renderContext;
+
+	// Render batches from an accumulator that was not set up for sorting by effect,
+	// so they are rendered in whatever order they were added to the accumulator.
+	// This is usually used for rendering transparent objects where the application
+	// sorted by object.
+	void RenderBatchesInOrder( ITriRenderBatchAccumulator* batches );
+
+	// Hints for RenderBatchesSortedByEffect method
+	enum BatchesRenderHints
+	{
+		// Nothing special
+		HINT_DEFAULT				= 0,
+		// Batches effects don't have unique per-effect data,
+		// so setting it can be skipped (see RenderLightBatches)
+		HINT_NO_PER_EFFECT_DATA		= 1,
+	};
+
+	// Render batches from an accumulator that was set up for sorting by effect.
+	// This is normally used for opaque or additive batches. State settings can
+	// be minimized by taking advantage of sorting that has been done.
+	void RenderBatchesSortedByEffect( ITriRenderBatchAccumulator* batches, BatchesRenderHints hints = HINT_DEFAULT );
+
+	// used by SetPerObjectDataToDevice
+	Tr2ConstantBufferAL		m_perObjectConstantBuffers[ Tr2RenderContextEnum::CBUFFER_COUNT ];
+	
+	struct CurrentValues
+	{
+		void Reset();
+		
+		std::pair<const void*, Tr2RenderContextEnum::ColorSpace> m_samplerTextures[Tr2RenderContextEnum::SHADER_TYPE_COUNT][SAMPLER_MAX_COUNT];
+		uint32_t m_samplerSetupBinding[Tr2RenderContextEnum::SHADER_TYPE_COUNT][SAMPLER_MAX_COUNT];
+		uint32_t m_shader[Tr2RenderContextEnum::SHADER_TYPE_COUNT];
+		uint32_t m_pixelShader;
+
+		uint32_t m_vertexDeclaration;
+
+		struct HalStream
+		{
+			const Tr2VertexBufferAL* m_vertexBuffer;
+			uint32_t m_offset;
+			uint32_t m_stride;
+		};
+		HalStream m_streams[VERTEX_STREAM_MAX_COUNT];
+
+		const Tr2IndexBufferAL* m_indexBuffer;
+		Tr2EffectStateManager::RenderingMode m_renderingMode;
+		uint32_t m_renderStateSetup;
+	};
+
+	CurrentValues m_currentValues;
+
+	uint32_t		m_fillMode;
+	bool			m_isCullModeInverted;
+	bool			m_isManagedRendering;
+
+	TriVariable		*m_objectIdVariable;
+	TriVariable		*m_areaIdVariable;
+
+	Tr2EffectStateManager( const Tr2EffectStateManager & );
+	Tr2EffectStateManager& operator=( const Tr2EffectStateManager & );
+};
+
+#endif //Tr2EffectStateManager_h

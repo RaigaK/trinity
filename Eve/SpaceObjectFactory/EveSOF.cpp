@@ -1,0 +1,476 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   August 2013
+//    Copyright: CCP 2013
+//
+#include "StdAfx.h"
+#include "EveSOF.h"
+#include "Eve/SpaceObject/EveShip2.h"
+#include "Eve/EveSpriteSet.h"
+#include "Eve/EveTrailsSet.h"
+#include "Eve/EveSpotlightSet.h"
+#include "Eve/EvePlaneSet.h"
+#include "Eve/EveBoosterSet2.h"
+#include "Tr2Mesh.h"
+#include "EffectParameter/TriTexture2DParameter.h"
+#include "EffectParameter/Tr2Vector4Parameter.h"
+#include "EffectParameter/Tr2FloatParameter.h"
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Initialize data members
+// --------------------------------------------------------------------------------
+EveSOF::EveSOF( IRoot* lockobj ) :
+	PARENTLOCK( m_dataMgr )
+{
+	// some shaders here
+	m_spriteSetEffect.CreateInstance();
+	m_spriteSetEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglights.fx" );
+	m_spriteSetEffect->AddResourceTexture2D( "GradientMap", "res:/texture/particle/whitesharp_gradient.dds" );
+	m_spriteSetEffectSkinned.CreateInstance();
+	m_spriteSetEffectSkinned->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_blinkinglights.fx" );
+	m_spriteSetEffectSkinned->AddResourceTexture2D( "GradientMap", "res:/texture/particle/whitesharp_gradient.dds" );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   tear down
+// --------------------------------------------------------------------------------
+EveSOF::~EveSOF()
+{
+
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is the old way of loading a ship via redfile
+// --------------------------------------------------------------------------------
+IRootPtr EveSOF::Load( const char* resFile, const char* hullName, const char* raceName )
+{
+	// load it like we used to: blue res manager
+	IRootPtr p;
+	p.Attach( BeResMan->LoadObject( resFile ) );
+	if( p == nullptr )
+	{
+		return p;
+	}
+
+	// try to get hullinfo
+	const EveSOFDataMgr::HullData* hullData = m_dataMgr.GetHullData( hullName );
+	if( hullData == NULL )
+	{
+		return p;
+	}
+
+	// try to get raceinfo
+	const EveSOFDataMgr::RaceData* raceData = m_dataMgr.GetRaceData( raceName );
+	if( raceData == NULL )
+	{
+		return p;
+	}
+
+	// see if we can attach boosters, but only to ships
+	EveShip2Ptr newShip;
+	if( p->QueryInterface( BlueInterfaceIID<EveShip2>(), (void**)&newShip ) )
+	{
+//		SetupBoosters( newShip, hullData, raceData );
+	}
+
+	return p;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+IRootPtr EveSOF::Build( const char* hullName, const char* factionName, const char* raceName )
+{
+	// make sure we find this hull
+	const EveSOFDataMgr::HullData* hullData = m_dataMgr.GetHullData( hullName );
+	if( hullData == NULL )
+	{
+		CCP_LOGERR( "Couldn't find the requested hull %s in the database", hullName );
+		return NULL;
+	}
+	// make sure we find this faction
+	const EveSOFDataMgr::FactionData* factionData = m_dataMgr.GetFactionData( factionName );
+	if( factionData == NULL )
+	{
+		CCP_LOGERR( "Couldn't find the requested faction %s in the database", factionName );
+		return NULL;
+	}
+	// make sure we find this race
+	const EveSOFDataMgr::RaceData* raceData = m_dataMgr.GetRaceData( raceName );
+	if( raceData == NULL )
+	{
+		CCP_LOGERR( "Couldn't find the requested race %s in the database", raceName );
+		return NULL;
+	}
+
+	// make an EveShip2 for now...
+	EveShip2Ptr newShip;
+	newShip.CreateInstance();
+
+	// get us the base geometry
+	SetupGeometry( newShip, hullData, factionData );
+
+	// materials (aka skins)
+	SetupMeshArea( newShip, hullData, factionData );
+
+	// effects on ships
+	SetupSpriteSets( newShip, hullData, factionData );
+	SetupSpotlightSets( newShip, hullData, factionData );
+
+	// attachments to ship
+	SetupBoosters( newShip, hullData, raceData );
+
+	// ships needs a final ::Initialize call
+	newShip->Initialize();
+
+	return newShip->GetRawRoot();
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupGeometry( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// need a mesh
+	Tr2MeshPtr newMesh;
+	newMesh.CreateInstance();
+
+	// gr2 res path
+	newMesh->SetMeshResPath( hullData->geometryResFilePath.c_str() );
+
+	// plug it into ship
+	ship->SetMesh( newMesh );
+
+	// beoundingsphere comes from data, is faster
+	ship->SetBoundingSphereInformation( &hullData->boundingSphere );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupMeshArea( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// start populating all areas with mesharea objects
+	Tr2MeshPtr mesh = ship->GetMesh();
+
+	// opaque
+	Tr2MeshAreaVector* opaqueMeshAreaVector = mesh->GetAreas( TRIBATCHTYPE_OPAQUE );
+	for( auto area = hullData->opaqueAreas.begin(); area != hullData->opaqueAreas.end(); ++ area )
+	{
+		// every area has it's own shader, nothing we can share here
+		Tr2EffectPtr newShader;
+		newShader.CreateInstance();
+		newShader->SetEffectPathName( area->shaderPath.c_str() );
+
+		// shader parameters all come from faction
+		auto shaderParameters = factionData->areaParameters.find( area->designation );
+		if( shaderParameters != factionData->areaParameters.end() )
+		{
+			auto parameterList = shaderParameters->second.parameters;
+			for( auto param = parameterList.begin(); param != parameterList.end(); ++param )
+			{
+				newShader->AddParameterVector4( param->first.c_str(), &param->second );
+			}
+		}
+		// shader textures
+		for( auto it = area->textures.begin(); it != area->textures.end(); ++it )
+		{
+			// res path might be factional!!
+			std::string resPath = it->second.resFilePath.c_str();
+			ModifyTextureResPath( resPath, it->first.c_str(), factionData );
+			newShader->AddResourceTexture2D( it->first.c_str(), resPath.c_str() );
+		}
+
+		// new mesharea
+		Tr2MeshAreaPtr newMeshArea;
+		newMeshArea.CreateInstance();
+		newMeshArea->SetMaterial( newShader );
+		newMeshArea->SetIndex( area->index );
+		opaqueMeshAreaVector->Append( newMeshArea );
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// cycle over all spritesets of this hull
+	for( auto ssit = hullData->spriteSets.begin(); ssit != hullData->spriteSets.end(); ++ssit )
+	{
+		const EveSOFDataMgr::HullSpriteSetData* spriteSetData = &(*ssit);
+
+		// create a spriteset for this ship
+		EveSpriteSetPtr spriteSet;
+		spriteSet.CreateInstance();
+		// set skinned or unskinned shader
+		spriteSet->SetEffect( spriteSetData->skinned ? m_spriteSetEffectSkinned : m_spriteSetEffect );
+		// add all the individual items
+		for( auto ssiit = spriteSetData->m_items.begin(); ssiit != spriteSetData->m_items.end(); ++ssiit )
+		{
+			const EveSOFDataMgr::HullSpriteSetItemData* itemData = &(*ssiit);
+
+			// if we find no faction data for this sprite, it means it is not to be there for this ship/faction
+			auto finder = factionData->spriteSetsColor.find( ssiit->groupIndex );
+			if( finder == factionData->spriteSetsColor.end() )
+			{
+				continue;
+			}
+
+			// create spriteset items
+			EveSpriteSetItemPtr spriteSetItem;
+			spriteSetItem.CreateInstance();
+			// set it up, first with the per-hull data
+			spriteSetItem->m_blinkPhase = ssiit->blinkPhase;
+			spriteSetItem->m_blinkRate = ssiit->blinkRate;
+			spriteSetItem->m_boneIndex = ssiit->boneIndex;
+			spriteSetItem->m_falloff = ssiit->falloff;
+			spriteSetItem->m_maxScale = ssiit->maxScale;
+			spriteSetItem->m_minScale = ssiit->minScale;
+			spriteSetItem->m_position = ssiit->position;
+			// now with the per-faction data
+			spriteSetItem->m_color = finder->second.color;
+
+			// put it into spriteset
+			spriteSet->Add( spriteSetItem );
+		}
+		// spriteset needs internal rebuild
+		spriteSet->Rebuild();
+		// put set onto ship
+		ship->AddSpriteSet( spriteSet );
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// cycle over all spritesets of this hull
+	for( auto ssit = hullData->spotlightSets.begin(); ssit != hullData->spotlightSets.end(); ++ssit )
+	{
+		const EveSOFDataMgr::HullSpotlightSetData* spotlightSetData = &(*ssit);
+
+		// create a spriteset for this ship
+		EveSpotlightSetPtr spotlightSet;
+		spotlightSet.CreateInstance();
+
+		// create shaders
+		Tr2EffectPtr coneEffect;
+		coneEffect.CreateInstance();
+		Tr2EffectPtr glowEffect;
+		glowEffect.CreateInstance();
+
+		// set skinned or unskinned shader
+		if( spotlightSetData->skinned )
+		{
+			coneEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightcone.fx" );
+			glowEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_spotlightglow.fx" );
+		}
+		else
+		{
+			coneEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/spotlightcone.fx" );
+			glowEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/spotlightglow.fx" );
+		}
+
+		// textures
+		glowEffect->AddResourceTexture2D( "TextureMap", spotlightSetData->glowTextureResPath.c_str() );
+		coneEffect->AddResourceTexture2D( "TextureMap", spotlightSetData->coneTextureResPath.c_str() );
+
+		// parameters
+		Tr2FloatParameterPtr zOffsetParam;
+		zOffsetParam.CreateInstance();
+		zOffsetParam->m_name = BlueSharedString( "zOffset" );
+		zOffsetParam->m_value = spotlightSetData->zOffset;
+		coneEffect->m_parameters.Append( zOffsetParam->GetRawRoot() );
+
+		// set to set
+		spotlightSet->SetConeEffect( coneEffect );
+		spotlightSet->SetGlowEffect( glowEffect );
+
+		// add all individual items
+		for( auto ssiit = spotlightSetData->items.begin(); ssiit != spotlightSetData->items.end(); ++ssiit )
+		{
+			// crete it
+			EveSpotlightSetItemPtr spotlightSetItem;
+			spotlightSetItem.CreateInstance();
+			// fill it up
+			spotlightSetItem->m_boneIndex = ssiit->boneIndex;
+			spotlightSetItem->m_boosterGainInfluence = ssiit->boosterGainInfluence;
+			spotlightSetItem->m_coneColor = Color( 1.f, 1.f, 1.f, 1.f );
+			spotlightSetItem->m_flareColor = Color( 1.f, 1.f, 1.f, 1.f );
+			spotlightSetItem->m_spriteColor = Color( 1.f, 1.f, 1.f, 1.f );
+			spotlightSetItem->m_spriteScale = ssiit->spriteScale;
+			spotlightSetItem->m_transform = ssiit->transform;
+			// add it
+			spotlightSet->AddSpotlightItem( spotlightSetItem );
+		}
+		// spotlightset needs internal rebuild
+		spotlightSet->Rebuild();
+		// add to ship
+		ship->AddSpotlightSet( spotlightSet );
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupPlaneSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// cycle over all spritesets of this hull
+	for( auto psit = hullData->planeSets.begin(); psit != hullData->planeSets.end(); ++psit )
+	{
+		const EveSOFDataMgr::HullPlaneSetData* planeSetData = &(*psit);
+
+		// create a planeset for this ship
+		EvePlaneSetPtr planeSet;
+		planeSet.CreateInstance();
+
+		// create shader
+		Tr2EffectPtr planeEffect;
+		planeEffect.CreateInstance();
+
+		// set skinned or unskinned shader
+		if( planeSetData->skinned )
+		{
+			planeEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planeglow.fx" );
+		}
+		else
+		{
+			planeEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx" );
+		}
+
+		// textures
+		planeEffect->AddResourceTexture2D( "Layer1Map", planeSetData->layer1MapResPath.c_str() );
+		planeEffect->AddResourceTexture2D( "Layer2Map", planeSetData->layer2MapResPath.c_str() );
+		planeEffect->AddResourceTexture2D( "MaskMap", planeSetData->maskMapResPath.c_str() );
+
+		// parameters
+		planeEffect->AddParameterVector4( "PlaneData", &planeSetData->planeData );
+
+		// set to set
+		planeSet->SetEffect( planeEffect );
+
+		// add all individual items
+		for( auto psiit = planeSetData->items.begin(); psiit != planeSetData->items.end(); ++psiit )
+		{
+			// crete it
+			EvePlaneSetItemPtr planeSetItem;
+			planeSetItem.CreateInstance();
+			// fill it up
+
+			// add it
+			planeSet->AddPlaneItem( planeSetItem );
+		}
+		// add to ship
+		ship->AddPlaneSet( planeSet );
+	}
+
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   add the booster to the new ship
+// --------------------------------------------------------------------------------
+void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDataMgr::HullData* hullData, const EveSOFDataMgr::RaceData* raceData ) const
+{
+	// does this hull has boosters at all?
+	if( hullData->boosters.items.empty() )
+	{
+		return;
+	}
+
+	// create
+	EveBoosterSet2Ptr set;
+	set.CreateInstance();
+
+	// per-race data
+	const EveSOFDataMgr::BoosterData* rdata = (const EveSOFDataMgr::BoosterData*)&raceData->boosterData;
+	// pre-hull data
+	const EveSOFDataMgr::HullBoosterData* hdata = (const EveSOFDataMgr::HullBoosterData*)&hullData->boosters;
+
+	// set the booster set's internal data
+	set->SetData( rdata->glowScale, &rdata->glowColor, rdata->symHaloScale, rdata->haloScaleX, rdata->haloScaleY, &rdata->haloColor, hdata->alwaysOn );
+
+	Tr2EffectPtr effect;
+	effect.CreateInstance();
+	effect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/Booster.fx" );
+	effect->AddParameterColor( "Color", &rdata->color );
+	effect->AddParameterVector4( "BoosterScale", &rdata->scale );
+	effect->AddResourceTexture2D( "WaveMap", "res:/Texture/Sprite/waveHiFi.dds" );
+	effect->AddResourceTexture2D( "DiffuseMap", rdata->textureResPath.c_str() );
+	set->SetEffect( effect );
+
+	EveSpriteSetPtr glow;
+	glow.CreateInstance();
+	Tr2EffectPtr glowEffect;
+	glowEffect.CreateInstance();
+	glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlow.fx" );
+	glowEffect->AddResourceTexture2D( "DiffuseMap", "res:/Texture/Particle/whitesharp.dds" );
+	glow->SetEffect( glowEffect );
+	set->SetGlow( glow );
+
+	if( hdata->hasTrails )
+	{
+		Tr2EffectPtr trailEffect;
+		trailEffect.CreateInstance();
+		EveTrailsSetPtr trail;
+		trail.CreateInstance();
+		trailEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/VolumetricTrails.fx" );
+		trailEffect->AddParameterVector4( "TrailSize", &rdata->trailSize );
+		trailEffect->AddParameterColor( "TrailColor", &rdata->trailColor );
+		trail->SetEffect( trailEffect );
+		trail->SetMeshResPath( "res:/dx9/model/ship/booster/volumetricTrail.gr2" );
+		set->SetTrail( trail );
+	}
+
+	// add all the indiviual items
+	for( auto biit = hdata->items.begin(); biit != hdata->items.end(); ++biit )
+	{
+		set->Add( &biit->transform );
+	}
+
+	// add it to ship
+	set->PrepareResources();
+	ship->SetBoosterSet( set );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Takes a texture resPath and checks if there is a factional version of this.
+// --------------------------------------------------------------------------------
+void EveSOF::ModifyTextureResPath( std::string& resPath, const char* name, const EveSOFDataMgr::FactionData* factionData ) const
+{
+	// do we have a texture insert for this texture?
+	auto finder = factionData->textureInserts.find( name );
+	if( finder == factionData->textureInserts.end() )
+	{
+		return;
+	}
+
+	// mangle with string...
+	size_t insertPos1 = resPath.rfind('_');
+	if( insertPos1 != std::string::npos )
+	{
+		resPath.insert( insertPos1 + 1, finder->second.resFilePath + std::string("_") );
+	}
+	size_t insertPos2 = resPath.rfind('/');
+	if( insertPos2 != std::string::npos )
+	{
+		resPath.insert( insertPos2 + 1, finder->second.resFilePath + std::string("/") );
+	}
+}
+
+
+
+
+

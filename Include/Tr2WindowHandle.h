@@ -1,0 +1,22 @@
+////////////////////////////////////////////////////////////////////////////////
+//
+// Created:		May 2013
+// Copyright:	CCP 2013
+//
+
+#pragma once
+#ifndef Tr2WindowHandle_h
+#define Tr2WindowHandle_h
+
+#ifdef _WIN32
+
+typedef HWND Tr2WindowHandle;
+
+#else
+
+typedef uintptr_t Tr2WindowHandle;
+
+#endif
+
+
+#endif // Tr2WindowHandle_h

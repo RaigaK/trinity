@@ -1,0 +1,64 @@
+#include "StdAfx.h"
+#include "TriStepCopyRenderTarget.h"
+#include "Tr2RenderTarget.h"
+#include "Resources/TriTextureRes.h"
+#include "TriViewport.h"
+
+TriStepCopyRenderTarget::TriStepCopyRenderTarget( IRoot* lockobj )
+{
+}
+
+TriStepResult TriStepCopyRenderTarget::Execute( Be::Time time, Tr2RenderContext& renderContext )
+{
+	if( ( !m_destinationRT && !m_destinationTexture ) || !m_sourceRT )
+	{
+		return RS_OK;
+	}
+
+	const unsigned destX = m_destinationViewport ? m_destinationViewport->x : 0;
+	const unsigned destY = m_destinationViewport ? m_destinationViewport->y : 0;
+
+
+	HRESULT hr = 0;
+
+	if( m_destinationRT )
+	{
+		if( !m_sourceViewport )
+		{
+			hr = m_destinationRT->GetRenderTarget().CopySubresourceRegion( destX, destY, *m_sourceRT, nullptr, renderContext );
+		}
+		else
+		{
+			const auto& vp = *m_sourceViewport;
+			uint32_t ltrb[4] = { (uint32_t)vp.x, (uint32_t)vp.y, (uint32_t)(vp.x + vp.width), (uint32_t)(vp.y + vp.height) };
+			hr = m_destinationRT->GetRenderTarget().CopySubresourceRegion( destX, destY, *m_sourceRT, ltrb, renderContext );
+		}
+	}
+	else
+	if( m_destinationTexture && m_destinationTexture->GetTexture() )
+	{
+		Tr2TextureSubresource destView;
+		destView.m_left = destX;
+		destView.m_top  = destY;
+
+		Tr2TextureSubresource sourceView;
+		if( m_sourceViewport )
+		{
+			const auto& vp = *m_sourceViewport;
+			sourceView.m_left		= vp.x;
+			sourceView.m_top		= vp.y;
+			sourceView.m_right		= vp.x + vp.width;
+			sourceView.m_bottom		= vp.y + vp.height;			
+		}
+
+		hr = m_destinationTexture->GetTexture()->CopySubresourceRegion( destView, *m_sourceRT, sourceView, renderContext );
+	}
+
+	if( !SUCCEEDED( hr ) )
+	{
+		CCP_LOGERR( "TriStepCopyRenderTarget: CopySubresourceRegion failed - 0x%x", hr );
+		return RS_FAILED;
+	}
+
+	return RS_OK;
+}

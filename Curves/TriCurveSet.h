@@ -1,0 +1,87 @@
+#pragma once
+#ifndef TriCurveSet_h
+#define TriCurveSet_h
+
+
+#include "include/ITr2Updateable.h"
+#include "include/ITr2ValueBinding.h"
+
+BLUE_DECLARE( TriCurveSet );
+BLUE_DECLARE_VECTOR( TriCurveSet );
+BLUE_DECLARE( TriValueBinding );
+BLUE_DECLARE_INTERFACE( ITriFunction );
+BLUE_DECLARE_IVECTOR( ITriFunction );
+BLUE_DECLARE_IVECTOR( ITr2ValueBinding );
+
+class TriCurveSet:
+     public IInitialize,
+	 public ITr2Updateable,
+	 public ISimTimeRebaseNotify
+{
+public:
+    EXPOSE_TO_BLUE();
+    TriCurveSet( IRoot* lockobj = NULL );
+	~TriCurveSet();
+
+	void Update( double time );
+	void Update( Be::Time time );
+
+	void Play();
+	void Stop();
+	void StopOnNextFrame();
+	void StopAfter( double seconds );
+	void StopAfterWithCallback( double seconds, const BlueScriptCallback& cb );
+
+	void PlayFrom( double time );
+
+	bool IsPlaying();
+
+	// access the name
+	const std::string& GetName() const					{	return m_name;				}
+
+	// access the curves
+	size_t GetCurvesCount() const						{	return m_curves.size();		}
+	ITriFunctionPtr GetCurve( unsigned int _id )		{	return m_curves[ _id ];		}
+
+	// access the bindings
+	size_t GetBindingsCount() const						{	return m_bindings.size();	}
+	ITr2ValueBindingPtr GetBinding( unsigned int _id )	{	return m_bindings[ _id ];	}
+
+	// Gets the duration of the longest non-cycling curve in the curve set
+	float GetMaxCurveDuration() const;
+	float GetTimeScale() const;
+
+	//////////////////////////////////////////////////////////////////////////
+	// IInitialize
+	bool Initialize();
+	
+	//////////////////////////////////////////////////////////////////////////
+	// ISimTimeRebaseNotify
+	void OnSimClockRebase( Be::Time oldTime, Be::Time newTime );
+private:
+	void UpdateWithCurrentTime();
+
+	std::string m_name;
+	PITr2ValueBindingVector m_bindings;
+	PITriFunctionVector m_curves;
+
+	bool m_isPlaying;
+	bool m_stopOnNextFrame;
+	bool m_playOnLoad;
+	bool m_useSimTimeRebase;
+	bool m_isUsingSimTimeRebase;
+
+	double m_startTime;
+	double m_lastTime;
+	double m_endTime;
+
+	double m_scaledTime;
+
+	float m_scale;
+
+	BlueScriptCallback m_callback;
+};
+
+TYPEDEF_BLUECLASS( TriCurveSet );
+
+#endif //TriCurveSet_h

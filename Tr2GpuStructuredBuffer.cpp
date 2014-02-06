@@ -1,0 +1,141 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   February 2013
+//    Copyright: CCP 2013
+//
+
+#include "StdAfx.h"
+#include "Tr2GpuStructuredBuffer.h"
+
+using namespace Tr2RenderContextEnum;
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Tr2GpuStructuredBuffer default constructor
+// --------------------------------------------------------------------------------------
+Tr2GpuStructuredBuffer::Tr2GpuStructuredBuffer( IRoot* )
+	:m_count( 0 ),
+	m_stride( 0 ),
+	m_cpuWritable( false )
+{
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Tr2GpuStructuredBuffer destructor
+// --------------------------------------------------------------------------------------
+Tr2GpuStructuredBuffer::~Tr2GpuStructuredBuffer()
+{
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Blue-exposed initializer. 
+// --------------------------------------------------------------------------------------
+ALResult Tr2GpuStructuredBuffer::py__init__( uint32_t count, uint32_t stride, bool cpuWritable )
+{
+	if( count && stride )
+	{
+		return Create( count, stride, cpuWritable );
+	}
+	return S_OK;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements IInitialize interface. Construct AL buffer from read parameters.
+// Return Value:
+//   true always
+// --------------------------------------------------------------------------------------
+bool Tr2GpuStructuredBuffer::Initialize()
+{
+	CreateBuffer();
+	return true;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements INotify interface. Re-creates AL buffer when of the object parameters
+//   changes.
+// Arguments:
+//   value - The Blue-exposed parameter that changed
+// Return Value:
+//   true always
+// --------------------------------------------------------------------------------------
+bool Tr2GpuStructuredBuffer::OnModified( Be::Var* value )
+{
+	CreateBuffer();
+	return true;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Assigns new values to buffer parameters and construct AL buffer.
+// Arguments:
+//   count - Number of elements in the buffer
+//   stride - Size of one element in bytes
+//   cpuWritable - Can the buffer be locked with write-only access
+// Return Value:
+//   true If AL buffer is successfully created
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+ALResult Tr2GpuStructuredBuffer::Create( uint32_t count, uint32_t stride, bool cpuWritable )
+{
+	m_count = count;
+	m_stride = stride;
+	m_cpuWritable = cpuWritable;
+	return CreateBuffer();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements ITr2GpuBuffer interface. Returns AL buffer.
+// Arguments:
+//   index - Buffer index (unused)
+// Return Value:
+//   Pointer to AL buffer
+// --------------------------------------------------------------------------------------
+Tr2GpuBufferAL* Tr2GpuStructuredBuffer::GetGpuBuffer( unsigned index )
+{
+	return &m_buffer;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Check if the object contains a valid AL buffer.
+// Return Value:
+//   true If the object contains a valid AL buffer
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+bool Tr2GpuStructuredBuffer::IsValid() const
+{
+	return m_buffer.IsValid();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Re-creates AL buffer.
+// Return Value:
+//   true If AL buffer is successfully created
+//   false Otherwise
+// --------------------------------------------------------------------------------------
+ALResult Tr2GpuStructuredBuffer::CreateBuffer()
+{
+	if( !m_count || !m_stride )
+	{
+		return E_INVALIDARG;
+	}
+	BufferUsage usage = 0;
+	if( m_cpuWritable )
+	{
+		usage = USAGE_CPU_WRITE;
+	}
+	
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	return m_buffer.CreateStructured( 
+		m_count, 
+		m_stride, 
+		usage,
+		nullptr, 
+		renderContext );
+}

@@ -1,0 +1,336 @@
+#include "StdAfx.h"
+#include "Utilities/BoundingSphere.h"
+#include "EveLineSet.h"
+#include "Eve/EveConstantBufferFormats.h"
+#include "TriRenderBatch.h"
+#include "Tr2PerObjectData.h"
+#include "EveUpdateContext.h"
+#include "TriRenderBatch.h"
+#include "Utilities/ViewDistanceInfo.h"
+
+using namespace Tr2RenderContextEnum;
+
+EveLineSet::EveLineSet( IRoot* lockobj /*= NULL*/ ):
+	m_display( true ),
+	m_boundingSphere( 0.f, 0.f, 0.f, 0.f ),
+	m_vertexDeclHandle( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
+	m_currentSubmittedLineCount( 0 ),
+	m_maxCurrentLineCount( 0 ),
+	m_isRenderedAsTransparent( false ),
+	m_scaling( 1.0f, 1.0f, 1.0f )
+{
+}
+
+EveLineSet::~EveLineSet()
+{
+	ReleaseResources( TRISTORAGE_ALL );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// IInitialize
+bool EveLineSet::Initialize()
+{
+	m_maxCurrentLineCount = 100;
+	m_lines.reserve( m_maxCurrentLineCount );
+	PrepareResources();
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// ITriDeviceResource
+void EveLineSet::ReleaseResources( TriStorage s )
+{
+	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
+	// CComPtr, this is safe!
+	m_vertexBuffer.Destroy();
+}
+
+bool EveLineSet::OnPrepareResources()
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	if( m_vertexDeclHandle == Tr2EffectStateManager::UNINITIALIZED_DECLARATION )
+	{
+		Tr2VertexDefinition vd;
+		vd.Add( vd.FLOAT32_3, vd.POSITION );
+		vd.Add( vd.FLOAT32_4, vd.TEXCOORD );
+
+		m_vertexDeclHandle = Tr2EffectStateManager::GetVertexDeclarationHandle( vd );
+		if( m_vertexDeclHandle == Tr2EffectStateManager::UNINITIALIZED_DECLARATION )
+		{
+			return false;
+		}
+	}
+	
+	if( !m_vertexBuffer.IsValid() )
+	{
+		CR_RETURN_VAL(
+			m_vertexBuffer.Create(
+				m_maxCurrentLineCount * sizeof( EveLineData ),
+				USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
+				nullptr,
+				renderContext )
+			, false );
+	}
+
+	void* vertexBuffer;
+	CR_RETURN_VAL( m_vertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+
+	if( !m_lines.empty() )
+	{
+		memcpy( vertexBuffer, &m_lines[0], sizeof( EveLineData ) * m_lines.size() );
+	}
+
+	m_vertexBuffer.Unlock( renderContext );
+	m_currentSubmittedLineCount = (unsigned int)m_lines.size();
+
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
+// IEveSpaceObject2
+void EveLineSet::Update( EveUpdateContext& updateContext )
+{
+	Quaternion rotation( 0.0f, 0.0f, 0.0f, 1.0f );
+	Vector3 translation( 0.0f, 0.0f, 0.0f );
+
+	if( m_ballPosition )
+	{
+		m_ballPosition->Update( &translation, updateContext.GetTime() );
+	}
+	if( m_ballRotation )
+	{
+		m_ballRotation->Update( &rotation, updateContext.GetTime() );
+	}
+
+	D3DXMatrixTransformation( &m_worldTransform, 0, 0, &m_scaling, 0, &rotation, &translation );
+}
+
+void EveLineSet::UpdateWorldTransform( Be::Time time )
+{
+}
+
+void EveLineSet::RenderDebugInfo( Tr2RenderContext& renderContext )
+{
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Updates all the view dependent data, needed for multi-screen rendering
+// Arguments:
+//   parentTransform - we have transform hierarchy
+// --------------------------------------------------------------------------------
+void EveLineSet::UpdateViewDependentData( const Matrix& parentTransform )
+{
+}
+
+void EveLineSet::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& /*parentTransform*/ )
+{
+	if( !m_display )
+	{
+		return;
+	}
+
+	renderables.push_back( this );
+}
+
+bool EveLineSet::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query ) const
+{
+	sphere = m_boundingSphere;
+	return true;
+}
+
+void EveLineSet::UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const
+{ 
+	Vector4 v; 
+	if( GetBoundingSphere( v ) )
+	{
+		viewDistance.UpdateClipPlanes( v, frustum );
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// ITr2Renderable
+bool EveLineSet::HasTransparentBatches()
+{
+	return true;
+}
+
+void EveLineSet::GetBatches( ITriRenderBatchAccumulator* accumulator, 
+						     TriBatchType batchType,
+						     const Tr2PerObjectData* perObjectData )
+{
+	// Is only rendered as transparent or additive.
+	if( !(batchType == TRIBATCHTYPE_TRANSPARENT && m_isRenderedAsTransparent) &&
+		!(batchType == TRIBATCHTYPE_ADDITIVE && !m_isRenderedAsTransparent))
+	{
+		return;
+	}
+
+	if( !m_display )
+	{
+		return;
+	}
+
+	TriForwardingBatch* batch = accumulator->Allocate<TriForwardingBatch>();
+	if( batch )
+	{
+		batch->SetPerObjectData( perObjectData );
+		batch->SetShaderMaterial( m_effect );
+		batch->SetGeometryProvider( this );
+
+		accumulator->Commit( batch );
+	}
+}
+
+float EveLineSet::GetSortValue()
+{
+	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
+	float distance = D3DXVec3Length( &d );
+	return distance;
+}
+
+Tr2PerObjectData* EveLineSet::GetPerObjectData( ITriRenderBatchAccumulator* accumulator )
+{
+	Tr2PerObjectDataStandard* data = accumulator->Allocate<Tr2PerObjectDataStandard>();
+
+	if( !data )
+	{
+		return nullptr;
+	}
+
+	EvePerObjectPSData perObjectPSBuffer;
+	EvePerObjectVSData perObjectVSBuffer;
+
+	// column_major for shaders
+	D3DXMatrixTranspose( &perObjectVSBuffer.WorldMat, &m_worldTransform );
+	D3DXMatrixTranspose( &perObjectPSBuffer.WorldMat, &m_worldTransform );
+
+	data->CopyToVSFloatBuffer( perObjectVSBuffer );
+	data->CopyToPSFloatBuffer( perObjectPSBuffer );
+
+	return data;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// ITr2GeometryProvider
+void EveLineSet::SubmitGeometry( Tr2RenderContext& renderContext )
+{
+	if( !m_display )
+	{
+		return;
+	}
+
+	if( !m_vertexBuffer.IsValid() )
+	{
+		return;
+	}
+
+	if( m_vertexDeclHandle == Tr2EffectStateManager::UNINITIALIZED_DECLARATION )
+	{
+		return;
+	}
+
+	renderContext.m_esm.ApplyVertexDeclaration( m_vertexDeclHandle );
+	renderContext.m_esm.ApplyStreamSource( 0, m_vertexBuffer, 0, sizeof( EveLineData ) / 2 );
+	renderContext.SetTopology( TOP_LINES );
+	renderContext.DrawPrimitive( 0, m_currentSubmittedLineCount );
+}
+
+// Python Exposed Methods
+unsigned int EveLineSet::AddLine( const Vector3& position1, const Vector4& color1, const Vector3& position2, const Vector4& color2 )
+{
+	EveLineData newLine;
+
+	newLine.m_position1 = position1;
+	newLine.m_color1 = (float*)&color1;
+	newLine.m_position2 = position2;
+	newLine.m_color2 = (float*)&color2;
+
+	m_lines.push_back( newLine );
+	return (unsigned int)m_lines.size() - 1;
+}
+
+bool EveLineSet::SubmitChanges()
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	if( m_lines.size() > m_maxCurrentLineCount )
+	{
+		// increase the size of the buffer 
+		m_maxCurrentLineCount = (unsigned int)m_lines.capacity();
+		ReleaseResources( TRISTORAGE_ALL );
+	}
+
+	// We have to make sure that we're prepared
+	PrepareResources();
+
+	if( !m_vertexBuffer.IsValid() )
+	{
+		return false;
+	}
+
+	void* vertexBuffer;
+	CR_RETURN_VAL( m_vertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+
+	memcpy( vertexBuffer, &m_lines[0], sizeof( EveLineData ) * m_lines.size() );
+
+	m_vertexBuffer.Unlock( renderContext );
+	
+	m_currentSubmittedLineCount = (unsigned int)m_lines.size();
+
+	// also update the bounding sphere here
+	BoundingSphereInitialize( m_boundingSphere );
+	for( auto it = m_lines.begin(); it != m_lines.end(); ++it )
+	{
+		BoundingSphereUpdate( it->m_position1, m_boundingSphere );
+		BoundingSphereUpdate( it->m_position2, m_boundingSphere );
+	}
+
+	return true;
+}
+
+void EveLineSet::RemoveLine( unsigned int id )
+{
+	if( id < m_lines.size()  )
+	{
+		m_lines.erase( m_lines.begin() + id );
+	}
+}
+
+void EveLineSet::ChangeLine( unsigned int id, const Vector3& position1, const Vector4& color1, const Vector3& position2, const Vector4& color2 )
+{
+	if( id < m_lines.size() )
+	{
+		EveLineData& line = m_lines[id];
+		line.m_position1 = position1;
+		line.m_position2 = position2;
+		line.m_color1 = (float*)&color1;
+		line.m_color2 = (float*)&color2;
+	}
+}
+
+void EveLineSet::ChangeLineColor( unsigned int id, const Vector4& color1, const Vector4& color2 )
+{
+	if( id < m_lines.size() )
+	{
+		EveLineData& line = m_lines[id];
+		line.m_color1 = (float*)&color1;
+		line.m_color2 = (float*)&color2;
+	}
+}
+
+void EveLineSet::ChangeLinePosition( unsigned int id, const Vector3& position1, const Vector3& position2 )
+{
+	if( id < m_lines.size() )
+	{
+		EveLineData& line = m_lines[id];
+		line.m_position1 = position1;
+		line.m_position2 = position2;
+	}
+}
+
+void EveLineSet::ClearLines()
+{
+	m_lines.clear();
+}

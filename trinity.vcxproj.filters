@@ -1,0 +1,3720 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files"/>
+    <Filter Include="Source Files"/>
+    <Filter Include="Source Files\Apex"/>
+    <Filter Include="Source Files\Curves"/>
+    <Filter Include="Source Files\EffectParameter"/>
+    <Filter Include="Source Files\Eve"/>
+    <Filter Include="Source Files\Eve\Renderable"/>
+    <Filter Include="Source Files\Eve\SpaceObject"/>
+    <Filter Include="Source Files\Eve\SpaceObjectFactory"/>
+    <Filter Include="Source Files\Font"/>
+    <Filter Include="Source Files\ImageIO"/>
+    <Filter Include="Source Files\Include"/>
+    <Filter Include="Source Files\Interior"/>
+    <Filter Include="Source Files\Particle"/>
+    <Filter Include="Source Files\RenderJob"/>
+    <Filter Include="Source Files\Resources"/>
+    <Filter Include="Source Files\Sprite2d"/>
+    <Filter Include="Source Files\UI"/>
+    <Filter Include="Source Files\Utilities"/>
+    <Filter Include="Source Files\Wod"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ALResultBlue.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="autoversion.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BinkOutputStream.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CudaDLL.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DFundamentalTypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EveSpaceObjectModelCenterPosition.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EveSprite2dBracket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EveSprite2dBracketRenderer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GrannyBoneOffset.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ID3DTexture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2AnimationUpdater.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2AttributeGenerator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2EffectValue.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2GeometryProvider.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2PhysicsUpdater.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2PickableScene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2Renderable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2ShaderMaterial.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2ShaderState.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2SkinnedObject.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2UmbraUserData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2VisibilityQueryable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2VisualizationModeRenderer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2WorldTransformUpdater.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITriGRRes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITriPoseSequencer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITriReroutable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IWorldPosition.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TbbStub.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2AtlasTexture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2BindingVector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Blitter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2BoundingLineSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2CapturedBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ConstantBufferFormats.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ConstGeometry.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2CpuSkinnedModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2CurveLineSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2DepthStencil.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2DeviceResource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2DxtCompressor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2DynamicMesh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2DynamicRingBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Effect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2EffectDescription.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2EffectStateManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2EnlightenArea.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2FileExportInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GpuBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GpuBufferAlias.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GpuLight.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GPUParticleEmitter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GPUParticlePool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GPUParticlePoolManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GPUParticleType.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GpuStructuredBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GrannyAnimation.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GrannyPrimitiveSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2GRNMemoryPersist.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2HideableMixin.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2HighLevelShader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2HostBitmap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2InstancedMesh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2KelvinColor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2LineGraph.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2LineSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2LitPerObjectData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2LowLevelShader.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ManipulationTool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2MaterialParameterStore.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Mesh.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2MeshArea.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Model.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2NamedPipeListener.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PerObjectData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PersistentPerObjectData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PickBuffer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PostProcess.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PrimitiveScene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PrimitiveSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ProjectBoundingBoxBracket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PushPopDS.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PushPopRT.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2PyValueBinding.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RenderContext.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Renderer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RenderTarget.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RenderTargetGrabber.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RenderUtils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RotationTool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2RuntimeInstanceData.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ScalingTool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ShaderManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ShaderMaterial.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ShaderParameterDescription.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2ShaderPermuteTag.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SHProbeRes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedModel.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedModelBuilder.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedModelBuilderBlend.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedModelBuilderSource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedObject.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SkinnedObjectLOD.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SolidSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2StreamingBitmapSaver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2SwapChain.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2TextureAtlas.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2TextureAtlasMan.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Transform.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2TranslationTool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2UmbraScene.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2Variable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2VariableStore.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2VertexDefinitionUtilities.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2VideoAdapters.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tr2VisibilityResults.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriConstants.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriConvolutionMatrix5.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriDebugResourceHelper.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriDebugTextRenderer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriDebugTextRendererBitmaps.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriDevice.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriDirect3D.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriEnlightenStream.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriEnlightenUtils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriError.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriFloat.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriFrustum.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriFrustumOrtho.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriIME.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriIMEWrapper.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriLineSet.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriNearestBoundingPoint.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriObserverLocal.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriPoint.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriPoolAllocator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriProjection.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriPythonContext.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriPythonThunkers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriRect.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriRenderBatch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriRigidOrientation.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriSequencer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriSettings.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriSettingsRegistrar.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriShadowMap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriUtil.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriValueBinding.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriVariable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TriViewport.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UmbraLibrary.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UmbraTypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3d.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Apex.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ApexEmitterActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ApexParamEditor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ApexRenderer.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ApexRes.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ApexScene.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ClothingActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ClothingRes.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2DestructibleActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ExampleFSActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ExplosionActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2ForceFieldActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2TurbulenceFSActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Apex\Tr2WindActor.h">
+      <Filter>Source Files\Apex</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2BoneMatrixCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2ColorCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2DistanceTracker.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2EulerRotation.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2GrannyTrack.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2GrannyTransformTrack.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2GrannyVector3Curve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2GrannyVectorTrack.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2MayaAnimationEngine.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2MayaEulerRotationCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2MayaScalarCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2MayaVector3Curve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2QuaternionCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2ScalarBezierCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2ScalarCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2ScalarExprCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2ScalarExprKeyCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2Vector2Curve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Tr2Vector3Curve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriColorCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriCurveSet.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriEventCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriEventKey.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriRotationCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriScalarCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriScalarKey.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriVectorCurve.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\TriVectorScaler.h">
+      <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2FloatParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2GeometryBufferParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2Matrix4Parameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2Vector2Parameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2Vector3Parameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\Tr2Vector4Parameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriFloatArrayParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriFloatParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriTexture2DParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriTextureCubeParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriTransformParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriVariableParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectParameter\TriVector4Parameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveAnimationData.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveAnimationSequencer.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveAnimationState.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveBoosterSet2.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveCamera.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveConstantBufferFormats.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveCurveLineSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveDustfieldConstraint.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveEffectRoot.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveLensflare.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveLineSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveLocator2.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveLODHelper.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveMeshOverlayEffect.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveOccluder.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveParticleDirectForce.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveParticleDragForce.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveParticleSpringAttractor.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EvePlaneSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EvePlaneSetItem.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EvePlanet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveProjectBracket.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveRenderableMesh.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveRootTransform.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveShip2Builder.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSO2ModelCenterPos.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpaceObjectDecal.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpaceScene.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpaceSceneLightMgr.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpherePin.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpherePinIndexTree.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpotlightSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpotlightSetItem.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpriteSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveSpriteSetItem.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveStarfield.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveStretch.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTrailsSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTransform.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTransformArray.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTransformItem.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTurretFiringFX.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveTurretSet.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\EveUpdateContext.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\IEveLightReceiver.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\IEveShadowCaster.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\IEveSpaceObject2.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\IEveTransform.h">
+      <Filter>Source Files\Eve</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\Renderable\EveMetaball.h">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\Renderable\EveMetaballItem.h">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveMissile.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveMissileWarhead.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveMobile.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveShip2.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveSpaceObject2.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\EveStation2.h">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObjectFactory\EveSOF.h">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObjectFactory\EveSOFData.h">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObjectFactory\EveSOFDataMgr.h">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="Font\Tr2FontManager.h">
+      <Filter>Source Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Font\Tr2FontMeasurer.h">
+      <Filter>Source Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Font\Tr2SBit.h">
+      <Filter>Source Files\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2BmpHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2DdsHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2ImageHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2JpgHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2PngHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2SddHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2SddHeader.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageIO\Tr2TgaHandler.h">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEveBallpark.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IEveReferencePoint.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\IPhysXSdk.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2BindingSentinelValue.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2BoundingBox.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2CapturedBuffer.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2ClothMesh.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2DebugRenderer.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2GpuBuffer.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2InstanceData.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2Interior.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2InteriorPortal.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2LightPrePassScene.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2MultiPassScene.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2RenderTargetGrabber.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2Scene.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2Updateable.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITr2ValueBinding.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriColor.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriColorCurve.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriConstants.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriConvolutionMatrix5.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriCurveLength.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriDevice.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriDuration.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriEffectParameter.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriFunction.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriIME.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriMatrix.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriObserverLocal.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriPickable.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriPoint.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriPostProcess.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriPostProcessStage.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriQuaternion.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriRect.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriRenderObject.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriRotationCurve.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriScalarCurve.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriSortable.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriSurface.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriTargetable.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriTextureRes.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriTransform.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriVector.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriVectorCurve.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ITriVertexElement.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Point.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rect.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Tr2Curve.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Tr2WindowHandle.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriColor.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriMath.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriMatrix.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriPlane.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriQuaternion.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\TriVector.h">
+      <Filter>Source Files\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorBoundingBox.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorBoxLight.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorCell.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorConstantBufferFormats.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorCurveLineSet.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorCylinderLight.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorDirectionalLight.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorDusterCache.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorEnlightenSystem.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorEnlightenSystemImpl.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorEnlightenUpdateTaskManager.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorFlare.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorFlareData.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorLightGeometryRenderBatch.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorLightmapGenerator.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorLightSet.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorLightSource.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorMirror.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorOccluder.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorOrientedBoundingBox.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorParticleObject.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorPhysicalPortal.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorPlaceable.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorPortalSocket.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorProbeVisualizer.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorProbeVolume.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorRenderBatch.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorScene.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorSHLightingSolver.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorStatic.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2InteriorVisualization.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Interior\Tr2IntSkinnedObject.h">
+      <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\ITr2GenericEmitter.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\ITr2GenericParticleConstraint.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\ITr2ParticleForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2CapsuleShapeAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ConsecutiveIntegerAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2DynamicEmitter.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ElementBlendConstraint.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ForceSphereVolume.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleAttractorForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleDirectForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleDragForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleElementDeclaration.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleFluidDragForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleSpring.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleSystem.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleTurbulenceForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2ParticleVortexForce.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2PlaneConstraint.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2RandomDirectionAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2RandomIntegerAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2RandomUniformAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2SphereConstraint.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2SphereShapeAttributeGenerator.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\Tr2StaticEmitter.h">
+      <Filter>Source Files\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\ITriRenderStep.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\Tr2RenderJobs.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriRenderJob.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriRenderStep.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepClear.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepClearUav.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepCopyRenderTarget.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepEnableWireframeMode.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepFilterVisibilityResults.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepGenerateMipMaps.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPopDepthStencil.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPopProjection.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPopRenderTarget.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPopViewport.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPopViewTransform.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPresentSwapChain.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPushDepthStencil.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPushProjection.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPushRenderTarget.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPushViewport.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPushViewTransform.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepPythonCB.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRemoteSync.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRemoteUpdate.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderAtlas.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderCubeMap.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderDebug.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderEffect.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderFps.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderFullScreenShader.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderLineGraph.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderObject.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderPass.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderScene.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderSceneDebug.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRenderTexture.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepResolve.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRunComputeShader.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepRunJob.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetDebugRenderer.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetDepthStencil.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetProjection.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetRenderState.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetRenderTarget.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetStandardRenderStates.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetVariableStore.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetView.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetViewport.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetVisibilityResults.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepSetVisualizationMode.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepTestBlocking.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepToggleCubemap.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepUpdate.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderJob\TriStepVisibilityQuery.h">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Tr2AsyncSave.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Tr2EffectRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Tr2ImageRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Tr2MaterialRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Tr2RadiosityRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\TriGeometryRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\TriGrannyRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\TriTextureRes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\ITr2Sprite2dRenderer.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\ITr2Sprite2dTexture.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\ITr2SpriteObject.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2d.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dArc.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dBinkTexture.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dContainer.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dDisplayList.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dFrame.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dLayer.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dLine.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dLineTrace.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dPolygon.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dRenderJob.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dScene.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dStretch.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dStretchVertical.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dTextObject.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dTexture.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2Sprite2dTransform.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d\Tr2SpriteObject.h">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\App.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\IUILib.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Scancodes.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Tr2MouseCursor.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Tr2PresentParameters.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIChoosers.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\BoundingBox.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\BoundingSphere.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Color.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\GeometryUtils.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Matrix.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\MatrixUtils.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Obb.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\Quaternion.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\ViewDistanceInfo.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\IWodUmbraObject.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodBakingScene.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodLightSource.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodLightSourceOverride.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodPlaceable.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodPlaceableRes.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClInclude Include="Wod\WodReceivesLights.h">
+      <Filter>Source Files\Wod</Filter>
+    </ClInclude>
+    <ClCompile Include="ALResultBlue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BinkOutputStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaDLL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EveSprite2dBracket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EveSprite2dBracketRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EveSprite2dBracketRenderer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EveSprite2dBracket_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrannyBoneOffset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GrannyBoneOffset_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ITr2BindingSentinelValue_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ITr2PickableScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2AtlasTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2AtlasTexture_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2BindingVector3_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Blitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2BoundingLineSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2BoundingLineSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CapturedBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CapturedBuffer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ConstantBufferFormats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ConstGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CpuSkinnedModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CpuSkinnedModel_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CurveLineSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2CurveLineSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DepthStencil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DepthStencil_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DeviceResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DxtCompressor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DxtCompressor_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DynamicMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DynamicMesh_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2DynamicRingBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Effect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2EffectDescription.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2EffectStateManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2EffectStateManager_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Effect_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2EnlightenArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2EnlightenArea_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2FileExportInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2FileExportInfo_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuBufferAlias.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuBufferAlias_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuBuffer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticleEmitter_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticlePool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticlePoolManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticlePoolManager_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticlePool_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticleType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GPUParticleType_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuStructuredBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GpuStructuredBuffer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GrannyAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GrannyAnimation_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GrannyPrimitiveSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GrannyPrimitiveSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2GRNMemoryPersist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2HighLevelShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2HighLevelShader_blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2HostBitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2HostBitmap_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2InstancedMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2InstancedMesh_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2KelvinColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2KelvinColor_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LabelTextParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LineGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LineGraph_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LineSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LineSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LowLevelShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2LowLevelShader_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ManipulationTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ManipulationTool_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2MaterialParameterStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2MaterialParameterStore_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2MeshArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2MeshArea_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Mesh_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Model_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2NamedPipeListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2NamedPipeListener_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PerObjectData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PickBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PostProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PostProcess_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveScene_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ProjectBoundingBoxBracket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ProjectBoundingBoxBracket_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PushPopDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PushPopRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PyValueBinding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PyValueBinding_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderContext_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Renderer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderTargetGrabber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderTargetGrabber_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderTarget_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RenderUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RotationTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RotationTool_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RuntimeInstanceData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2RuntimeInstanceData_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ScalingTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ScalingTool_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderManager_blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderMaterial_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderParameterDescription.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderParameterDescription_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderPermuteTag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2ShaderPermuteTag_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SHProbeRes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SHProbeRes_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModelBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModelBuilderBlend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModelBuilderBlend_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModelBuilderSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModelBuilder_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedModel_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedObjectLOD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SkinnedObject_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SolidSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SolidSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2StreamingBitmapSaver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2StreamingBitmapSaver_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SwapChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2SwapChain_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TextureAtlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TextureAtlasMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TextureAtlasMan_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TextureAtlas_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2Transform_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TranslationTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2TranslationTool_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2UmbraScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VariableStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VariableStore_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VertexDefinitionUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VideoAdapters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VideoAdapters_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VisibilityResults.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2VisibilityResults_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriColor_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriConstants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriConvolutionMatrix5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriConvolutionMatrix5_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDebugResourceHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDebugTextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDevice11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDevice9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDeviceGLES2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDeviceOrbis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDevice_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriDirect3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriEnlightenStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriEnlightenUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriFloat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriFloat_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriFrustumOrtho.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriIME.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriIMEWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriIME_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriLineSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriLineSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriMatrix_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriNearestBoundingPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriNearestBoundingPoint_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trinity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriObserverLocal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriObserverLocal_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriPoint_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriPoolAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriProjection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriProjection_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriPythonContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriPythonThunkers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriQuaternion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriQuaternion_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriRect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriRect_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriRenderBatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriRigidOrientation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriRigidOrientation_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriSequencer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriSequencer_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriSettings_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriShadowMap_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriValueBinding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriValueBinding_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriVariable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriVector_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriViewport_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TriView_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UmbraLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UmbraLibrary_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Apex.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Apex_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexEmitterActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexEmitterActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexParamEditor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexRenderer.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexRes.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexRes_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexScene.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ApexScene_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ClothingActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ClothingActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ClothingRes.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ClothingRes_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2DestructibleActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2DestructibleActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ExampleFSActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ExampleFSActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ExplosionActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ExplosionActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ForceFieldActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2ForceFieldActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2TurbulenceFSActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2TurbulenceFSActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2WindActor.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Apex\Tr2WindActor_Blue.cpp">
+      <Filter>Source Files\Apex</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2BoneMatrixCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2BoneMatrixCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ColorCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ColorCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2DistanceTracker.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2DistanceTracker_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2EulerRotation.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2EulerRotation_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyTrack.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyTrack_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyTransformTrack.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyTransformTrack_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyVector3Curve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyVector3Curve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyVectorTrack.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2GrannyVectorTrack_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaAnimationEngine.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaAnimationEngine_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaEulerRotationCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaEulerRotationCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaScalarCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaScalarCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaVector3Curve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2MayaVector3Curve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2QuaternionCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2QuaternionCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarBezierCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarBezierCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarExprCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarExprCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarExprKeyCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2ScalarExprKeyCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2Vector2Curve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2Vector2Curve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2Vector3Curve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Tr2Vector3Curve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriColorCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriColorCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriCurveSet.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriCurveSet_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriEventCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriEventCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriEventKey.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriEventKey_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriRotationCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriRotationCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriScalarCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriScalarCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriScalarKey.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriScalarKey_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriVectorCurve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriVectorCurve_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriVectorScaler.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\TriVectorScaler_Blue.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2FloatParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2FloatParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2GeometryBufferParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2GeometryBufferParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Matrix4Parameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Matrix4Parameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector2Parameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector2Parameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector3Parameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector3Parameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector4Parameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\Tr2Vector4Parameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriFloatArrayParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriFloatArrayParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriFloatParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriFloatParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTexture2DParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTexture2DParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTextureCubeParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTextureCubeParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTransformParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTransformParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriVariableParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriVariableParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriVector4Parameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriVector4Parameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationData.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationData_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationSequencer.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationSequencer_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationState.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveAnimationState_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveBoosterSet2.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveBoosterSet2_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveCamera.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveCamera_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveCurveLineSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveCurveLineSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveDustfieldConstraint.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveDustfieldConstraint_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveEffectRoot.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveEffectRoot_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLensflare.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLensflare_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLineSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLineSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLocator2.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLocator2_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveLODHelper.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveMeshOverlayEffect.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveMeshOverlayEffect_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveOccluder.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveOccluder_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleDirectForce.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleDirectForce_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleDragForce.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleDragForce_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleSpringAttractor.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveParticleSpringAttractor_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlaneSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlaneSetItem.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlaneSetItem_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlaneSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlanet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EvePlanet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveProjectBracket.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveProjectBracket_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveRenderableMesh.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveRenderableMesh_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveRootTransform.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveRootTransform_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveShip2Builder.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveShip2Builder_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSO2ModelCenterPos.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSO2ModelCenterPos_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceObjectDecal.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceObjectDecal_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceScene.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceSceneLightMgr.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceSceneLightMgr_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpaceScene_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpherePin.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpherePinIndexTree.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpherePin_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpotlightSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpotlightSetItem.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpotlightSetItem_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpotlightSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpriteSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpriteSetItem.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpriteSetItem_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveSpriteSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveStarfield.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveStarfield_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveStretch.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveStretch_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTrailsSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTrailsSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransform.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransformArray.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransformArray_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransformItem.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransformItem_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTransform_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTurretFiringFX.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTurretFiringFX_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTurretSet.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\EveTurretSet_Blue.cpp">
+      <Filter>Source Files\Eve</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\Renderable\EveMetaball.cpp">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\Renderable\EveMetaballItem.cpp">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\Renderable\EveMetaballItem_Blue.cpp">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\Renderable\EveMetaball_Blue.cpp">
+      <Filter>Source Files\Eve\Renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMissile.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMissileWarhead.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMissileWarhead_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMissile_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMobile.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveMobile_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveShip2.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveShip2_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveSpaceObject2.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveSpaceObject2_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveStation2.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\EveStation2_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOF.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOFData.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOFDataMgr.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOFDataMgr_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOFData_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObjectFactory\EveSOF_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObjectFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2FontManager.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2FontManager_Blue.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2FontMeasurer.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2FontMeasurer_Blue.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2SBit.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\Tr2Sbit_Blue.cpp">
+      <Filter>Source Files\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2BmpHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2DdsHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2ImageHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2JpgHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2PngHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2SddHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageIO\Tr2TgaHandler.cpp">
+      <Filter>Source Files\ImageIO</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorBoundingBox.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorBoundingBox_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorBoxLight.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorBoxLight_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCell.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCell_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCurveLineSet.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCurveLineSet_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCylinderLight.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorCylinderLight_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorDirectionalLight.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorDirectionalLight_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorDusterCache.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorEnlightenSystem.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorEnlightenSystemImpl.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorEnlightenSystem_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorEnlightenUpdateTaskManager.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorFlare.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorFlareData.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorFlareData_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorFlare_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorLightmapGenerator.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorLightmapGenerator_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorLightSet.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorLightSource.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorLightSource_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorMirror.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorOccluder.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorOccluder_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorOrientedBoundingBox.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorOrientedBoundingBox_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorParticleObject.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorParticleObject_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPhysicalPortal.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPhysicalPortal_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPlaceable.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPlaceable_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPortalSocket.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorPortalSocket_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorProbeVisualizer.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorProbeVisualizer_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorProbeVolume.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorProbeVolume_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorRenderBatch.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorScene.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorScene_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorSHLightingSolver.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorStatic.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2InteriorStatic_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2IntSkinnedObject.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Interior\Tr2IntSkinnedObject_Blue.cpp">
+      <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2CapsuleShapeAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2CapsuleShapeAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ConsecutiveIntegerAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ConsecutiveIntegerAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2DynamicEmitter.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2DynamicEmitter_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ElementBlendConstraint.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ElementBlendConstraint_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ForceSphereVolume.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ForceSphereVolume_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleAttractorForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleAttractorForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleDirectForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleDirectForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleDragForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleDragForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleElementDeclaration.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleElementDeclaration_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleFluidDragForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleFluidDragForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleSpring.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleSpring_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleSystem.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleSystem_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleTurbulenceForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleTurbulenceForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleVortexForce.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2ParticleVortexForce_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2PlaneConstraint.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2PlaneConstraint_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomDirectionAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomDirectionAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomIntegerAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomIntegerAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomUniformAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2RandomUniformAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2SphereConstraint.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2SphereConstraint_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2SphereShapeAttributeGenerator.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2SphereShapeAttributeGenerator_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2StaticEmitter.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Tr2StaticEmitter_Blue.cpp">
+      <Filter>Source Files\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\Tr2RenderJobs.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\Tr2RenderJobs_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriRenderJob.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriRenderJob_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriRenderStep.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriRenderStep_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepClear.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepClearUav.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepClearUav_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepClear_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepCopyRenderTarget.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepCopyRenderTarget_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepEnableWireframeMode.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepEnableWireframeMode_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepFilterVisibilityResults.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepFilterVisibilityResults_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepGenerateMipMaps.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepGenerateMipMaps_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopDepthStencil.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopDepthStencil_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopProjection.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopProjection_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopRenderTarget.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopRenderTarget_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopViewport.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopViewport_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopViewTransform.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPopViewTransform_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPresentSwapChain.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPresentSwapChain_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushDepthStencil.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushDepthStencil_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushProjection.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushProjection_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushRenderTarget.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushRenderTarget_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushViewport.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushViewport_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushViewTransform.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPushViewTransform_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPythonCB.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepPythonCB_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRemoteSync.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRemoteSync_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRemoteUpdate.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRemoteUpdate_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderAtlas.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderAtlas_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderCubeMap.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderCubeMap_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderDebug.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderDebug_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderEffect.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderEffect_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderFps.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderFps_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderFullScreenShader.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderFullScreenShader_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderLineGraph.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderLineGraph_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderObject.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderObject_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderPass.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderPass_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderScene.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderSceneDebug.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderSceneDebug_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderScene_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderTexture.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRenderTexture_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepResolve.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepResolve_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRunComputeShader.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRunComputeShader_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRunJob.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepRunJob_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetDebugRenderer.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetDebugRenderer_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetDepthStencil.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetDepthStencil_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetProjection.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetProjection_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetRenderState.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetRenderState_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetRenderTarget.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetRenderTarget_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetStandardRenderStates.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetStandardRenderStates_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVariableStore.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVariableStore_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetView.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetViewport.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetViewport_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetView_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVisibilityResults.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVisibilityResults_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVisualizationMode.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepSetVisualizationMode_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepTestBlocking.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepTestBlocking_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepToggleCubemap.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepToggleCubemap_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepUpdate.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepUpdate_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepVisibilityQuery.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderJob\TriStepVisibilityQuery_Blue.cpp">
+      <Filter>Source Files\RenderJob</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2AsyncSave.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2EffectRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2EffectRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2ImageRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2ImageRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2MaterialRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2MaterialRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2RadiosityRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Tr2RadiosityRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriGeometryRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriGeometryRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriGrannyRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriGrannyRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriTextureRes.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TriTextureRes_Blue.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2d.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dArc.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dArc_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dBinkTexture.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dBinkTexture_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dContainer.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dContainer_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dDisplayList.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dFrame.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dFrame_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLayer.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLayer_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLine.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLineTrace.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLineTrace_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dLine_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dPolygon.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dPolygon_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dRenderJob.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dRenderJob_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dScene.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dScene_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dStretch.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dStretchVertical.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dStretchVertical_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dStretch_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTextObject.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTextObject_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTexture.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTexture_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTransform.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2dTransform_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2Sprite2d_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2SpriteObject.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite2d\Tr2SpriteObject_Blue.cpp">
+      <Filter>Source Files\Sprite2d</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\App.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\App9.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\AppOrbis.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\AppPosix.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\App_Blue.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Scancodes.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Tr2MouseCursor.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Tr2MouseCursor_Blue.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Tr2PresentParameters.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Tr2PresentParameters_Blue.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIChoosers.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\BoundingBox.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\BoundingSphere.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\GeometryUtils.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\MatrixUtils.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\Obb.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\ViewDistanceInfo.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodBakingScene.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodBakingScene_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodLightSource.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodLightSourceOverride.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodLightSourceOverride_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodLightSource_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodPlaceable.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodPlaceableRes.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodPlaceableRes_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodPlaceable_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodReceivesLights.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ClCompile Include="Wod\WodReceivesLights_Blue.cpp">
+      <Filter>Source Files\Wod</Filter>
+    </ClCompile>
+    <ResourceCompile Include="Trinity.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

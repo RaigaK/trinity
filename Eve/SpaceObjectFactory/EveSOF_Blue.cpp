@@ -1,0 +1,23 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   August 2013
+//    Copyright: CCP 2013
+//
+#include "StdAfx.h"
+#include "EveSOF.h"
+
+BLUE_DEFINE( EveSOF );
+
+const Be::ClassInfo* EveSOF::ExposeToBlue()
+{
+    EXPOSURE_BEGIN( EveSOF, "" )
+        MAP_INTERFACE( EveSOF )
+
+		MAP_ATTRIBUTE( "dataMgr", m_dataMgr, "Holds all the source data to the ships", Be::READ )
+
+		MAP_METHOD_AND_WRAP( "Build", Build, "na" )
+		MAP_METHOD_AND_WRAP( "Load", Load, "na" )
+
+
+    EXPOSURE_END()
+}

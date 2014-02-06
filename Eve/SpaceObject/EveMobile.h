@@ -1,0 +1,103 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   October 2013
+//    Copyright: CCP 2013
+//
+#pragma once
+#ifndef EveMobile_H
+#define EveMobile_H
+
+#include "EveSpaceObject2.h"
+
+// forwards
+BLUE_DECLARE( EveSpaceObject2 );
+BLUE_DECLARE( EveTurretSet );
+BLUE_DECLARE_VECTOR( EveTurretSet );
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This class adds functionalty like turrets to the spaceobjects class
+// SeeAlso:
+//   EveSpaceObject2
+// --------------------------------------------------------------------------------
+BLUE_CLASS( EveMobile ) :
+	public EveSpaceObject2,
+	public IListNotify
+{
+public:
+	EXPOSE_TO_BLUE();
+
+	EveMobile( IRoot* lockobj = NULL );
+	~EveMobile();
+
+	using IInitialize::Lock;
+	using IInitialize::Unlock;
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IInitialize
+	bool Initialize();
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// Overrides of EveSpaceObject2 implementations
+	virtual void Update( EveUpdateContext& updateContext );
+	virtual void GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform );
+	virtual void RenderDebugInfo( Tr2RenderContext& renderContext );
+	virtual void UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const;
+
+	//////////////////////////////////////////////////////////////////////////////////////
+	// IEveShadowCaster - overriding EveSpaceObject2 implementations
+	virtual bool GetRenderablesCastingShadow( bool isSelf, const TriFrustumOrtho& frustum, std::vector<ITr2Renderable*>& renderables );
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IListNotify
+	void OnListModified( long event, ssize_t key, ssize_t key2, IRoot* value, const IList* theList );
+
+	// re-positions all attached turrets to the corresponding locators
+	void RebuildTurretPositions();
+	// checks and counts the number of locators and/or granny-bones used to position turrets
+	unsigned int GetTurretLocatorCount();
+	void ActivateTurrets();
+	void DeactivateTurrets();
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// activation
+	void PlayActivationCurve();
+	void SetActivationStrength( float strength );
+	ITriScalarFunctionPtr m_activationStrengthCurve;
+private:
+	bool m_playActivationCurve;
+	float m_activationDelta;
+
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// turrets
+	PEveTurretSetVector m_turretSets;
+	// ship-internal data on turret locators
+	struct TurretSetLocatorInfo
+	{
+		// how this turretset is attached
+		EveSpaceObject2::LocatorType type;
+		// all locator indices of this turretset
+		std::vector<unsigned int> locatorIndices;
+	};
+	std::vector<TurretSetLocatorInfo> m_turretSetsLocatorInfo;
+
+	// turret locator counting
+	struct TurretLocatorCountingInfo
+	{
+		unsigned int currentCount;
+		unsigned int totalCount;
+	};
+	std::map<std::string, TurretLocatorCountingInfo> m_turretLocatorCountingInfo;
+	void ResetTurretLocatorCounter( bool updateTotal );
+	bool GetTurretLocatorCountingInfo( const char* name, unsigned int& current, unsigned int& total ) const;
+	bool ValidateTurretLocatorName( const char* locatorName, unsigned int& locatorsFoundA, unsigned int& locatorsFoundB ) const;
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// children
+	virtual bool DisplayChildren() const;
+};
+
+TYPEDEF_BLUECLASS( EveMobile );
+
+#endif // EveMobile_H

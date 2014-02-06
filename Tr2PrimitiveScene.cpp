@@ -1,0 +1,332 @@
+#include "StdAfx.h"
+
+#include "Tr2PrimitiveScene.h"
+#include "TriProjection.h"
+#include "TriView.h"
+#include "TriViewport.h"
+#include "Tr2Effect.h"
+#include "Tr2PrimitiveSet.h"
+#include "Tr2Renderer.h"
+#include "Tr2ConstantBufferFormats.h"
+#include "TriFrustum.h"
+
+struct PerFrameVSData
+{
+	Matrix ViewInverseTransposeMat;
+	Vector4 sunDirWorld;
+	Vector4 sceneFogColor;
+	Matrix ViewProjectionMat;
+	Matrix ViewMat;
+	Matrix ProjectionMat;
+};
+
+Tr2PrimitiveScene::Tr2PrimitiveScene( IRoot* lockobj ) :
+	PARENTLOCK( m_primitives ),
+	PARENTLOCK( m_excludedPickingPrimitives ),
+	m_pickBuffer( NULL, Tr2RenderContextEnum::PIXEL_FORMAT_R32G32B32A32_FLOAT, 1 ),
+	m_pickEffect()
+{
+	m_pickBuffer.PrepareResources();	
+	m_allocator = CCP_NEW( "Tr2PrimitiveScene/m_allocator" ) TriPoolAllocator();    
+	m_opaqueBatches = CCP_NEW( "Tr2PrimitiveScene/m_opaqueBatches" ) TriRenderBatchAccumulator<>( m_allocator );
+    m_pickingBatches = CCP_NEW( "Tr2PrimitiveScene/m_pickingBatches" ) TriRenderBatchAccumulator<>( m_allocator );
+	m_pickEffect.CreateInstance();
+}
+
+Tr2PrimitiveScene::~Tr2PrimitiveScene()
+{
+	CCP_DELETE( m_pickingBatches );
+	CCP_DELETE( m_opaqueBatches );
+	CCP_DELETE( m_allocator );
+	m_pickBuffer.ReleaseResources( TRISTORAGE_ALL );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements ITr2Scene::Render. Renders a list of primitive sets.
+// --------------------------------------------------------------------------------------
+void Tr2PrimitiveScene::Render( Tr2RenderContext& renderContext )
+{
+	// We render everything since it is so cheap
+	m_visibleRenderObjects.clear();		
+	for( PrimitiveIterator it = m_primitives.begin(); it != m_primitives.end(); ++it )
+	{
+		(*it)->UpdateTransform();
+		m_visibleRenderObjects.push_back((*it));
+	}
+
+	if( m_manipulator != NULL )
+	{
+		m_manipulator->Update();
+		std::vector<ITr2Renderable*> manipPrims = m_manipulator->GetPrimitivesToRender();
+		for( RenderableIterator it = manipPrims.begin(); it != manipPrims.end(); ++it )
+		{			
+			m_visibleRenderObjects.push_back((*it));
+		}
+	}
+
+	// Sort the list before we render since the primitives might not write to z
+	Tr2RenderableSortList sortList;
+	for( RenderableIterator it = m_visibleRenderObjects.begin(); it != m_visibleRenderObjects.end(); ++it )
+	{
+		ITr2RenderableEntry entry;
+		entry.m_object = (*it);
+		entry.m_distance = (*it)->GetSortValue();
+		sortList.push_back( entry );	
+	}
+	std::sort( sortList.begin(), sortList.end() );
+	// sort the primitives back to front
+	std::reverse( sortList.begin(), sortList.end() );
+
+	SetupPerFrameData();
+	renderContext.m_esm.BeginManagedRendering();
+
+	for( Tr2RenderableSortList::iterator it = sortList.begin(); 
+		 it != sortList.end(); ++it )
+	{		
+		ITr2RenderablePtr obj = (*it).m_object;		
+		Tr2PerObjectData* perObject = obj->GetPerObjectData( m_opaqueBatches );		
+		obj->GetBatches( m_opaqueBatches, TRIBATCHTYPE_OPAQUE, perObject );		
+	}
+
+	m_opaqueBatches->Finalize();
+	renderContext.m_esm.ApplyStandardStates( Tr2EffectStateManager::RM_OPAQUE );
+	renderContext.m_esm.RenderBatches( m_opaqueBatches );
+	m_opaqueBatches->Clear();
+	m_allocator->Clear();
+
+	renderContext.m_esm.EndManagedRendering();
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements ITr2Scene::RenderDebugInfo. Nothing to do here.
+// --------------------------------------------------------------------------------------
+void Tr2PrimitiveScene::RenderDebugInfo( Tr2RenderContext& renderContext )
+{
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements ITr2Scene::Update. Nothing to do here.
+// --------------------------------------------------------------------------------------
+void Tr2PrimitiveScene::Update( Be::Time time )
+{
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource. Destroys the constant buffer when needed.
+// --------------------------------------------------------------------------------------
+void Tr2PrimitiveScene::ReleaseResources( TriStorage s )
+{
+	if( s & TRISTORAGE_ALL )
+	{
+		m_vertexConstants.Destroy();
+	}
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Implements Tr2DeviceResource. Does nothing.
+// --------------------------------------------------------------------------------------
+bool Tr2PrimitiveScene::OnPrepareResources()
+{
+	return true;
+}
+
+void Tr2PrimitiveScene::SetupTransformsForPicking( float fx, float fy, TriProjection* proj, TriView* view, TriViewport* viewport )
+{
+	Tr2Renderer::SetViewTransform( view->GetTransform() );
+	proj->SetProjection();
+
+	
+	if( Tr2Renderer::GetCurrentProjectionType() == PT_ORTHOGONAL )
+	{		
+		fx *= (Tr2Renderer::GetOrthoWidth()/2.0f);
+		fy *= (Tr2Renderer::GetOrthoHeight()/2.0f);
+		float metersPerPixel = (Tr2Renderer::GetOrthoWidth()/viewport->width)/2.0f;	
+		Tr2Renderer::SetOrthoProjection(fx-metersPerPixel, 
+										fx+metersPerPixel, 
+										fy-metersPerPixel, 
+										fy+metersPerPixel, 
+										Tr2Renderer::GetFrontClip(), 
+										Tr2Renderer::GetBackClip());
+	}
+	else
+	{
+		//
+		// Projection is set up to scale the image such that the viewport is covered by one pixel.
+		Vector2 scaling( float(viewport->width), float(viewport->height) );
+		// translate the projection so that we center around the pick ray origin,
+		// while remembering to scale this value as well:
+		Vector2 translation;
+		translation.x = -fx*scaling.x;
+		translation.y = -fy*scaling.y;
+		Tr2Renderer::AdjustProjection( scaling, translation );
+	}
+}
+
+void Tr2PrimitiveScene::SetupPerFrameData( )
+{
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+
+	PerFrameVSData data;
+
+	// 0
+	memset( &data, 0, sizeof( PerFrameVSData ) );
+
+	// column_major for shaders
+	data.ViewMat = XMMatrixTranspose( Tr2Renderer::GetViewTransform() );
+	data.ProjectionMat = XMMatrixTranspose( Tr2Renderer::GetProjectionTransform() );
+	data.ViewProjectionMat = XMMatrixTranspose( 
+		XMMatrixMultiply( Tr2Renderer::GetViewTransform(), Tr2Renderer::GetProjectionTransform() ) );
+
+	FillAndSetConstants( m_vertexConstants, data, Tr2RenderContextEnum::VERTEX_SHADER, Tr2Renderer::GetPerFrameVSStartRegister(), renderContext );
+}
+
+void Tr2PrimitiveScene::SetPerFrameDataForPicking( void )
+{
+	SetupPerFrameData();
+}
+
+const std::vector<ITr2Renderable*>& Tr2PrimitiveScene::GetObjectsInsideFrustum( )
+{
+	m_visibleRenderObjects.clear();
+
+	TriFrustum frustum;
+	frustum.DeriveFrustum( &Tr2Renderer::GetViewTransform(), 
+							&Tr2Renderer::GetViewPosition(), 
+							&Tr2Renderer::GetProjectionTransform(), 
+							Tr2Renderer::GetViewport() );
+	for( PrimitiveIterator it = m_primitives.begin(); it != m_primitives.end(); ++it )
+	{
+		(*it)->UpdateTransform();
+		Vector4 bs = (*it)->GetBoundingSphere();
+		if( frustum.IsSphereVisible( &bs ) )
+		{
+			m_visibleRenderObjects.push_back((*it));	
+		}	
+	}
+	return m_visibleRenderObjects;
+
+}
+
+const std::vector<ITr2Renderable*>& Tr2PrimitiveScene::GetPickingObjectsToRender( const Vector3& dirWorld )
+{
+	m_pickingObjects.clear();
+	// Allow the user to filter out the picking so certain objects do not 
+	// get rendered for picking
+	bool found = false;
+	// Be sure that view dependant data is updated before we render for picking
+	for( RenderableIterator it = m_visibleRenderObjects.begin(); it != m_visibleRenderObjects.end(); ++it )
+	{		
+		((Tr2PrimitiveSet*)(*it))->UpdateTransform();
+		for( PrimitiveIterator pit = m_excludedPickingPrimitives.begin(); pit != m_excludedPickingPrimitives.end(); ++pit )
+		{
+			if( (Tr2PrimitiveSet*)(*it) == (*pit) )
+			{
+				found = true;
+				break;
+			}
+		}
+		if( !found )
+		{
+			m_pickingObjects.push_back((*it));
+		}	
+		found = false;
+	}
+	
+	return m_pickingObjects;
+}
+
+const std::vector<ITr2Renderable*>& Tr2PrimitiveScene::GetPickingObjectsToRender( const Vector3& dirWorld, float fov, float aspect )
+{
+	return GetPickingObjectsToRender( dirWorld );
+}
+
+// We always render opaque batches for picking
+ITriRenderBatchAccumulator* Tr2PrimitiveScene::GetOpaquePickingBatchAccumulator( void )
+{
+	return m_opaqueBatches;
+}
+
+// If you need special behaviour for picking, these batches are rendered without a picking override
+ITriRenderBatchAccumulator* Tr2PrimitiveScene::GetPickingBatchAccumulator( void )
+{
+	return m_pickingBatches;
+}
+
+// -------------------------------------------------------------
+// Description:
+//   Returns an array of passes that need to be rendered in order
+//   to get all picking components. 
+// Arguments:
+//   requestedComponents  - Components requested for picking operation
+//                          (union of PickComponent).
+//   passes - (out) Array components actually rendered during each
+//            picking pass (union of PickComponent). Maximum number
+//            of passes is MAX_PICK_PASSES.
+// Return Value:
+//   Number of passes required to query all requested picking
+//   components.
+// -------------------------------------------------------------
+unsigned int Tr2PrimitiveScene::GetRequiredPasses( PickComponents requestedComponents, PickComponents* passes )
+{
+	unsigned count = 0;
+	if( requestedComponents & PICK_OBJECT || requestedComponents & PICK_AREA )
+	{
+		passes[0] = requestedComponents & ( PICK_OBJECT | PICK_AREA );
+		++count;
+	}
+	if( requestedComponents & PICK_UV )
+	{
+		passes[count] = PICK_UV;
+		++count;
+	}
+	if( requestedComponents & PICK_POSITION )
+	{
+		if( count )
+		{
+			passes[0] |= PICK_POSITION;
+		}
+		else
+		{
+			passes[0] = PICK_POSITION;
+			count = 1;
+		}
+	}
+	return count;
+}
+
+void Tr2PrimitiveScene::DecodeBufferPixel( const void* pBuffer, PickComponents pass, BufferResults& results ) const
+{
+	// helpers: get each channel
+	float a = *((float*)pBuffer + 3);
+	float r = *((float*)pBuffer + 2);
+	float g = *((float*)pBuffer + 1);
+	float b = *((float*)pBuffer + 0);
+	if( pass & PICK_UV )
+	{
+		results.uv.x = b;
+		results.uv.y = g;
+		results.depth = r;
+	}
+	else
+	{
+		// put it "together"
+		results.objectId = (unsigned short)g;
+		results.objectId--;
+		results.depth = r;
+		// If alpha values are set to 1.0. We did not pick anything
+		if ( a == 1.0f )
+		{
+			results.objectId = -1;
+		}
+	}
+}
+
+Tr2PickBuffer& Tr2PrimitiveScene::GetPickBuffer( void )
+{
+	return m_pickBuffer;
+}

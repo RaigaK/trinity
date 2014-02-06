@@ -1,0 +1,45 @@
+#include "StdAfx.h"
+#include "EveSpriteSet.h"
+#include "Tr2Effect.h"
+
+BLUE_DEFINE( EveSpriteSet );
+
+const Be::ClassInfo* EveSpriteSet::ExposeToBlue()
+{
+    EXPOSURE_BEGIN( EveSpriteSet, "" )
+        MAP_INTERFACE( EveSpriteSet )
+		MAP_INTERFACE( IInitialize )
+
+		MAP_ATTRIBUTE
+		( 
+			"name",    
+			m_name,    
+			"", 
+			Be::READWRITE | Be::PERSIST 
+		)
+		MAP_ATTRIBUTE
+		(
+			"sprites",
+			m_sprites,
+			"",
+			Be::READWRITE | Be::PERSIST | Be::NOTIFY
+		)
+		MAP_ATTRIBUTE
+		(
+			"effect",  
+			m_effect, 
+			"Effect to use for rendering sprites", 
+			Be::READWRITE | Be::PERSIST | Be::NOTIFY
+		)
+		MAP_ATTRIBUTE
+		( 
+			"display", 
+			m_display, 
+			"Specifies whether to render the object or not", 
+			Be::READWRITE | Be::PERSIST 
+		)
+
+		MAP_METHOD_AND_WRAP( "Rebuild", Rebuild, "Rebuild resources after adding/removing/changing individual sprites" )
+
+    EXPOSURE_END()
+}

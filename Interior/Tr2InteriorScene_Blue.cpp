@@ -1,0 +1,815 @@
+#include "StdAfx.h"
+
+#if INTERIORS_ENABLED
+
+#include "Tr2InteriorScene.h"
+
+#include "TriConstants.h"
+#include "TriPythonContext.h"
+#include "TriProjection.h"
+#include "TriView.h"
+#include "TriViewport.h"
+
+BLUE_DEFINE( Tr2InteriorScene );
+
+static Be::VarChooser VisualizerChooser[] =
+{
+	{
+		"VM_NONE",     
+		BeCast( VM_NONE ),     
+		"No visualizer - use normal rendering"
+	},
+	{
+		"VM_WHITE",     
+		BeCast( VM_WHITE ),     
+		"Pixel shader returns white (useful to verify that something is output)"
+	},
+
+	{
+		"VM_OBJECT_NORMAL",     
+		BeCast( VM_OBJECT_NORMAL ),     
+		"Normal from vertices"
+	},
+	{
+		"VM_TANGENT",     
+		BeCast( VM_TANGENT ),     
+		"Tangent from vertices"
+	},
+	{
+		"VM_BITANGENT",     
+		BeCast( VM_BITANGENT ),     
+		"Bitangent from vertices"
+	},
+
+	{
+		"VM_TEXCOORD0",     
+		BeCast( VM_TEXCOORD0 ),     
+		"Texture coordinate 0"
+	},
+	{
+		"VM_TEXCOORD1",     
+		BeCast( VM_TEXCOORD1 ),     
+		"Texture coordinate 0"
+	},
+
+	{
+		"VM_TEXELDENSITY0",     
+		BeCast( VM_TEXELDENSITY0 ),     
+		"Density of texels mapped through texture coordinate 0"
+	},
+	{
+		"VM_NORMALMAP",     
+		BeCast( VM_NORMALMAP ),     
+		"Tangent space normal from map"
+	},
+	{
+		"VM_DIFFUSEMAP",     
+		BeCast( VM_DIFFUSEMAP ),     
+		"Diffuse map"
+	},
+	{
+		"VM_SPECULARMAP",     
+		BeCast( VM_SPECULARMAP ),     
+		"Specular map"
+	},
+	{
+		"VM_OVERDRAW",
+		BeCast( VM_OVERDRAW ),
+		"See the overdraw of the scene"
+	},
+	{
+		"VM_EN_ONLY",
+		BeCast( VM_EN_ONLY ),
+		"Enlighten only)"
+	},
+	{
+		"VM_EN_TARGET_DETAIL",
+		BeCast( VM_EN_TARGET_DETAIL ),
+		"Enlighten target and detail meshes"
+	},
+	{
+		"VM_EN_OUTPUT_DENSITY",
+		BeCast( VM_EN_OUTPUT_DENSITY ),
+		"Enlighten output density (statics only)"
+	},
+	{
+		"VM_EN_ALBEDO",
+		BeCast( VM_EN_ALBEDO ),
+		"Enlighten albedo (statics only)"
+	},
+	{
+		"VM_EN_EMISSIVE",
+		BeCast( VM_EN_EMISSIVE ),
+		"Enlighten emissive surfaces (statics only)"
+	},
+	{
+		"VM_EN_OBJECT_TEXCOORD",
+		BeCast( VM_EN_OBJECT_TEXCOORD ),
+		"Enlighten object texture coordinates (statics only)"
+	},
+	{
+		"VM_EN_NAUGHTY_PIXELS",
+		BeCast( VM_EN_NAUGHTY_PIXELS ),
+		"Enlighten naughty pixels"
+	},
+	{
+		"VM_EN_CHARTS",
+		BeCast( VM_EN_CHARTS ),
+		"Enlighten detail mesh charts"
+	},
+	{
+		"VM_EN_TARGET_CHARTS",
+		BeCast( VM_EN_TARGET_CHARTS ),
+		"Enlighten target mesh charts"
+	},
+	{
+		"VM_DEPTH",
+		BeCast( VM_DEPTH ),
+		"See the depth buffer of the scene"
+	},
+	{
+		"VM_ALL_LIGHTING",
+		BeCast( VM_ALL_LIGHTING ),
+		"See cummulative direct and secondary lighting"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_NORMALS",
+		BeCast( VM_LIGHT_PRE_PASS_NORMALS ),
+		"normal in worldspace from light pre-pass texture"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_DEPTH",
+		BeCast( VM_LIGHT_PRE_PASS_DEPTH ),
+		"depth in clip space from light pre-pass texture"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_WORLD_POSITION",
+		BeCast( VM_LIGHT_PRE_PASS_WORLD_POSITION ),
+		"world position from light pre-pass texture"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_LIGHTING",
+		BeCast( VM_LIGHT_PRE_PASS_LIGHTING ),
+		"resulting lighting from pre-pass light accumulation texture"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_LIGHT_OVERDRAW",
+		BeCast( VM_LIGHT_PRE_PASS_LIGHT_OVERDRAW ),
+		"light geometry overdraw during light accumulation pass"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_DIFFUSE_LIGHTING",
+		BeCast( VM_LIGHT_PRE_PASS_DIFFUSE_LIGHTING ),
+		"resulting deffuse lighting from pre-pass light accumulation texture"
+	},
+	{
+		"VM_LIGHT_PRE_PASS_SPECULAR_LIGHTING",
+		BeCast( VM_LIGHT_PRE_PASS_SPECULAR_LIGHTING ),
+		"resulting specular lighting from pre-pass light accumulation texture"
+	},
+	{
+		"VM_OCCLUSION",
+		BeCast( VM_OCCLUSION ),
+		"render occlusion geometry on top of the normal geometry"
+	},
+	{ 0 }
+};
+
+// Register the enum as trinity.Tr2InteriorVisualizerMethod
+BLUE_REGISTER_ENUM_EX( "Tr2InteriorVisualizerMethod", 
+					  VisualizeMethod, 
+					  VisualizerChooser, 
+					  ENUM_REG_ENUM_OBJECT_ON_MODULE );
+
+static Be::VarChooser PickComponentChooser[] =
+{
+	{
+		"PICK_OBJECT",     
+		BeCast( ITr2PickableScene::PICK_OBJECT ),     
+		"Return object the mouse is over"
+	},
+	{
+		"PICK_AREA",     
+		BeCast( ITr2PickableScene::PICK_AREA ),     
+		"Return mesh and area indexes of the object the mouse is over"
+	},
+	{
+		"PICK_POSITION",     
+		BeCast( ITr2PickableScene::PICK_POSITION ),     
+		"Return world position of the point the mouse is over"
+	},
+	{
+		"PICK_UV",     
+		BeCast( ITr2PickableScene::PICK_UV ),     
+		"Return object UV coordinates of the point the mouse is over"
+	},
+	{ 0 }
+};
+
+// Register the enum as trinity.Tr2PickComponent
+BLUE_REGISTER_ENUM_EX( "Tr2PickComponent", 
+					  ITr2PickableScene::PickComponent, 
+					  PickComponentChooser, 
+					  ENUM_REG_ENUM_OBJECT_ON_MODULE );
+
+#if BLUE_WITH_PYTHON
+static PyObject* PyPick(PyObject* self, PyObject* args)
+{
+	TriPythonContext pythonCtx;
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>( self );
+
+	PyObject* pyProjection = NULL;
+	PyObject* pyView = NULL;
+	PyObject* pyViewport = NULL;
+
+	int x, y, components;
+	if (!PyArg_ParseTuple(args, "iiOOOi",
+		&x,
+		&y,
+		&pyProjection,
+		&pyView,
+		&pyViewport,
+		&components
+		))
+	{
+		return NULL;
+	}
+
+	TriProjection* projection = NULL;
+	if( !BlueExtractArgument( pyProjection, projection, 3 ) )
+	{
+		return NULL;
+	}
+
+	TriView* view = NULL;
+	if( !BlueExtractArgument( pyView, view, 4 ) )
+	{
+		return NULL;
+	}
+
+	TriViewport* viewport = NULL;
+	if( !BlueExtractArgument( pyViewport, viewport, 5 ) )
+	{
+		return NULL;
+	}
+
+	ITr2PickableScene::PickResults results;
+	results.components = components;
+	results.object = NULL;
+	results.area = 0;
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	pThis->PickObject(renderContext, x, y, projection, view, viewport, results );
+
+	PyObject* result = PyDict_New();
+	if( results.components & ITr2PickableScene::PICK_OBJECT )
+	{
+		PyObject* key = PyInt_FromLong( ITr2PickableScene::PICK_OBJECT );
+		PyObject* value;
+		if( results.object )
+		{
+			value = PyOS->WrapBlueObject( results.object );
+		}
+		else
+		{
+			value = Py_None;
+			Py_IncRef( value );
+		}
+		PyDict_SetItem( result, key, value );
+		Py_DECREF( key );
+		Py_DECREF( value );
+	}
+	if( results.components & ITr2PickableScene::PICK_AREA )
+	{
+		unsigned int areaID = ((1<<8) - 1) & results.area;
+		unsigned int meshID = (results.area - areaID)>>8;
+
+		PyObject* key = PyInt_FromLong( ITr2PickableScene::PICK_AREA );
+
+		PyObject* value = PyTuple_New( 2 );
+		PyTuple_SET_ITEM( value, 0, PyLong_FromUnsignedLong( meshID ) ); 
+		PyTuple_SET_ITEM( value, 1, PyLong_FromUnsignedLong( areaID - 1 ) );
+
+		PyDict_SetItem( result, key, value );
+
+		Py_DECREF( key );
+		Py_DECREF( value );
+	}
+	if( results.components & ITr2PickableScene::PICK_POSITION )
+	{
+		PyObject* key = PyInt_FromLong( ITr2PickableScene::PICK_POSITION );
+		PyObject* value = Py_BuildValue("(fff)", results.position.x, results.position.y, results.position.z );
+		PyDict_SetItem( result, key, value );
+		Py_DECREF( key );
+		Py_DECREF( value );
+	}
+	if( results.components & ITr2PickableScene::PICK_UV )
+	{
+		PyObject* key = PyInt_FromLong( ITr2PickableScene::PICK_UV );
+		PyObject* value = Py_BuildValue("(ff)", results.uv.x, results.uv.y );
+		PyDict_SetItem( result, key, value );
+		Py_DECREF( key );
+		Py_DECREF( value );
+	}
+	return result;
+}
+
+PyObject* PyPickObjectAndArea(PyObject* self, PyObject* args)
+{
+	TriPythonContext pythonCtx;
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>( self );
+
+	PyObject* pyProjection = NULL;
+	PyObject* pyView = NULL;
+	PyObject* pyViewport = NULL;
+
+	int x, y;
+	if (!PyArg_ParseTuple(args, "iiOOO",
+		&x,
+		&y,
+		&pyProjection,
+		&pyView,
+		&pyViewport
+		))
+		return NULL;
+
+	TriProjection* projection = NULL;
+	if( !BlueExtractArgument( pyProjection, projection, 3 ) )
+	{
+		return NULL;
+	}
+
+	TriView* view = NULL;
+	if( !BlueExtractArgument( pyView, view, 4 ) )
+	{
+		return NULL;
+	}
+
+	TriViewport* viewport = NULL;
+	if( !BlueExtractArgument( pyViewport, viewport, 5 ) )
+	{
+		return NULL;
+	}
+
+	ITr2PickableScene::PickResults results;
+	results.components = ITr2PickableScene::PICK_OBJECT | ITr2PickableScene::PICK_AREA;
+	results.object = NULL;
+	results.area = 0;
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	pThis->PickObject( renderContext, x, y, projection, view, viewport, results );
+
+	if( results.object )
+	{
+		PyObject *result =  PyTuple_New(2);
+		PyObject *meshAndArea =  PyTuple_New(2);
+
+		unsigned int areaID = ((1<<8) - 1) & results.area;
+		unsigned int meshID = (results.area - areaID)>>8;
+
+		PyTuple_SET_ITEM(meshAndArea, 0, PyLong_FromUnsignedLong(meshID));
+		// areaID goes from 1 upwards, rebase to 0
+		PyTuple_SET_ITEM(meshAndArea, 1, PyLong_FromUnsignedLong(areaID-1));
+
+		PyTuple_SET_ITEM(result, 0, PyOS->WrapBlueObject(results.object)); 
+		PyTuple_SET_ITEM(result, 1, meshAndArea);
+		return result;
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+PyObject* PyInteriorPickPointAndObject( PyObject* self, PyObject* args )
+{
+
+	TriPythonContext pythonCtx;
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>( self );
+
+	PyObject* pyProjection = NULL;
+	PyObject* pyView = NULL;
+	PyObject* pyViewport = NULL;
+
+	int x, y;
+	if (!PyArg_ParseTuple(args, "iiOOO",
+		&x,
+		&y,
+		&pyProjection,
+		&pyView,
+		&pyViewport
+		))
+		return NULL;
+
+	TriProjection* projection = NULL;
+	if( !BlueExtractArgument( pyProjection, projection, 3 ) )
+	{
+		return NULL;
+	}
+
+	TriView* view = NULL;
+	if( !BlueExtractArgument( pyView, view, 4 ) )
+	{
+		return NULL;
+	}
+
+	TriViewport* viewport = NULL;
+	if( !BlueExtractArgument( pyViewport, viewport, 5 ) )
+	{
+		return NULL;
+	}
+
+	ITr2PickableScene::PickResults results;
+	results.components = ITr2PickableScene::PICK_OBJECT | ITr2PickableScene::PICK_POSITION;
+	results.object = NULL;
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	pThis->PickObject( renderContext, x, y, projection, view, viewport, results );
+
+	if( results.object )
+	{
+		PyObject *result =  PyTuple_New(2);
+		PyTuple_SET_ITEM(result, 0, PyOS->WrapBlueObject(results.object) ); 
+		PyTuple_SET_ITEM(result, 1, Py_BuildValue("(fff)", results.position.x, results.position.y, results.position.z ) );
+		return result;
+	}
+
+	Py_INCREF(Py_None);
+	return Py_None;
+}
+
+static PyObject* PyMarqueePickObjects(PyObject* self, PyObject* args)
+{
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>(self);
+
+	int minX, minY, maxX, maxY;
+	PyObject *pyProj, *pyView, *pyViewport;
+
+	if(PyArg_ParseTuple(args, "iiiiOOO", &minX, &minY, &maxX, &maxY, &pyProj, &pyView, &pyViewport))
+	{
+		TriProjection* proj = BluePythonCast<TriProjection*>(pyProj);
+		TriView* view = BluePythonCast<TriView*>(pyView);
+		TriViewport* viewport = BluePythonCast<TriViewport*>(pyViewport);
+
+		std::set<IRoot*> selected = pThis->MarqueePickObjects(minX, minY, maxX, maxY, proj, view, viewport);
+
+		PyObject* pyList = PyList_New(0);
+		if(!selected.empty())
+		{
+			for(std::set<IRoot*>::iterator it=selected.begin(); it!=selected.end(); it++)
+			{
+				IRoot* obj = *it;
+				PyObject* pyObj = PyOS->WrapBlueObject(obj);
+				PyList_Append(pyList, pyObj);
+				Py_XDECREF( pyObj );
+			}
+			return pyList;
+		}
+		Py_RETURN_NONE;
+	}
+	return NULL;
+}
+
+static PyObject* PyBuildEnlighten( PyObject* self, PyObject* args)
+{
+#if defined(ENLIGHTEN_PRECOMPUTE_ENABLED)
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>(self);
+
+	PyObject *pyProg = NULL;
+
+	if(PyArg_ParseTuple(args, "|O", &pyProg))
+	{
+		if( pyProg )
+		{
+			TriEnlightenProgressBar* prog = BluePythonCast<TriEnlightenProgressBar*>(pyProg);
+			if( prog == NULL )
+			{
+				PyErr_SetString( PyExc_TypeError, "Function accepts one optional argument (TriEnlightenProgressBar)" );
+				return NULL;
+			}
+			pThis->BuildEnlighten( *prog );
+		}
+		else
+		{
+			TriEnlightenProgressBar prog;
+			pThis->BuildEnlighten( prog );
+		}
+
+		Py_RETURN_NONE;
+	}
+	else
+	{
+		PyErr_SetString( PyExc_TypeError, "Function accepts one optional argument (TriEnlightenProgressBar)" );
+		return NULL;
+	}
+	return NULL;
+#else
+	PyErr_SetString(PyExc_NotImplementedError, "Not available in deploy");
+	return NULL;
+#endif
+}
+
+static PyObject* PyPreviewEnlighten( PyObject* self, PyObject* args)
+{
+#if defined(ENLIGHTEN_PRECOMPUTE_ENABLED)
+	Tr2InteriorScene* pThis = BluePythonCast<Tr2InteriorScene*>(self);
+
+	PyObject *pyProg = NULL;
+
+	if(PyArg_ParseTuple(args, "|O", &pyProg))
+	{
+		if( pyProg )
+		{
+			TriEnlightenProgressBar* prog = BluePythonCast<TriEnlightenProgressBar*>(pyProg);
+			if( prog == NULL )
+			{
+				PyErr_SetString( PyExc_TypeError, "Function accepts one optional argument (TriEnlightenProgressBar)" );
+				return NULL;
+			}
+			pThis->PreviewEnlighten( *prog );
+		}
+		else
+		{
+			TriEnlightenProgressBar prog;
+			pThis->PreviewEnlighten( prog );
+		}
+
+		Py_RETURN_NONE;
+	}
+	else
+	{
+		PyErr_SetString( PyExc_TypeError, "Function accepts one optional argument (TriEnlightenProgressBar)" );
+		return NULL;
+	}
+	return NULL;
+#else
+	PyErr_SetString(PyExc_NotImplementedError, "Not available in deploy");
+	return NULL;
+#endif
+}
+#endif
+
+const Be::ClassInfo* Tr2InteriorScene::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( Tr2InteriorScene, "" )
+		MAP_INTERFACE( Tr2InteriorScene )
+		MAP_INTERFACE( ITr2Scene )
+		MAP_INTERFACE( ITr2MultiPassScene )
+		MAP_INTERFACE( ITr2VisibilityQueryable )
+		MAP_INTERFACE( IInitialize )
+		MAP_INTERFACE( INotify )
+		MAP_INTERFACE( ITr2Updateable )
+
+		MAP_ATTRIBUTE( "cells", m_cells, "List of all cells in the scene", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE( "portals", m_portals, "List of all portals in the scene", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "lights", m_lights, "List of scene light sources", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE( "dynamics", m_dynamics, "List of dynamic objects in scene", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+
+		MAP_ATTRIBUTE( "useRootCell", m_sceneUseRootCell, "Override flag to control whether this scene uses a root culling cell.", Be::READWRITE )
+
+		MAP_ATTRIBUTE( "renderDebugInfo", m_renderDebugInfo, "If true, objects are given a chance to render debugging info.", Be::READWRITE )
+		MAP_ATTRIBUTE( "renderCullingInfo", m_renderCullingInfo, "If true, Umbra objects render debugging info.", Be::READWRITE )
+		MAP_ATTRIBUTE( "enlightenVisibilityUpdateThreshold", m_enlightenVisibilityUpdateThreshold, "Distance, in number of portal traversals from a visible cell, at which we stop updating Enlighten", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "shScale", m_shScale, "Global scaling factor for spherical harmonics lighting from light probes", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE( "sunDiffuseColor", m_sunDiffuseColor, "Sun diffuse color", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "sunSpecularColor", m_sunSpecularColor, "Sun specular color", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "sunDirection", m_sunDirection, "Sun direction", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "ambientColor", m_ambientColor, "Scene Ambient color", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "drawSorted", m_drawSorted, "Turn the drawing of sorted batches on and off", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "sortedRenderBatchCount", m_sortedRenderBatchCount, "The number of sorted batches", Be::READ )
+		MAP_ATTRIBUTE( "unsortedRenderBatchCount", m_unsortedRenderBatchCount, "The number of unsorted batches", Be::READ )
+		MAP_ATTRIBUTE( "curveSets", m_curveSets, "", Be::READWRITE )
+
+		MAP_ATTRIBUTE( "apexLODResourceBudget", m_apexLODResourceBudget, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "apexLODResourceBudgetConsumed", m_apexLODResourceBudgetConsumed, "", Be::READ )
+
+		MAP_ATTRIBUTE( "environmentLightingMultiplier", m_enlightenEnvironmentMultiplicationFactor, "A multiplier that increases the contribution of the environment cubemap in enlighten", Be::READWRITE | Be::PERSIST | Be::NOTIFY  )
+		MAP_ATTRIBUTE( "backgroundEffect", m_backgroundEffect, "The effect used to render the background behind any objects", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "backgroundCubemapPath", m_backgroundCubeMapPath, "The path used to load the background environment map", Be::READWRITE | Be::PERSIST | Be::NOTIFY, TriTextureChooser )
+		MAP_ATTRIBUTE( "backgroundCubemapRes", m_backgroundCubeMapRes, "The background environment map", Be::READ )
+        MAP_ATTRIBUTE( "ragdollScene", m_ragdollScene, "ITr2PhysicsUpdater object which simulates ragdoll during the animation update.", Be::READWRITE | Be::PERSIST )
+
+        MAP_ATTRIBUTE( "useShadowFocalPosition", m_useShadowFocalPosition, "Flag to use m_shadowFocalPosition (if true) or camera position (if false)"
+					   " to calculate shadow caster importance.", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "shadowFocalPosition", m_shadowFocalPosition, "Focal position (reference point to use when calculating shadow caster importance).", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "shadowUpdatesPerFrame", m_shadowsUpdatesPerFrame, "Maximum number of shadows to update per frame (including LOD switches).", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "shadowsLODSwitchesPerFrame", m_shadowsLODSwitchesPerFrame, "Maximum number of shadow LOD switches per frame.", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "useShadowLOD", m_useShadowLOD, "Enable shadow resolution LODs.", Be::READWRITE | Be::PERSIST )
+		
+		MAP_ATTRIBUTE_WITH_CHOOSER( "visualizeMethod", m_visualizeMethod, "Changes rendering to a visualizing method instead of normal rendering", Be::READWRITE | Be::ENUM | Be::NOTIFY, VisualizerChooser )
+
+        MAP_ATTRIBUTE( "fogColor", m_fogColor, "Fog color", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "maxFogAmount", m_maxFogAmount, "Maximum fog density amount (from 0 to 1)", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "minFogDistance", m_minFogDistance, "Distance where fog density starts to grow from 0", Be::READWRITE | Be::PERSIST )
+        MAP_ATTRIBUTE( "maxFogDistance", m_maxFogDistance, "Distance where fog reaches maximum density", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "shadowAtlases", m_shadowAtlases, "Shadow map atlases used for this scene (readonly for debugging)", Be::READ )
+		MAP_ATTRIBUTE( "enableLightCulling", m_enableLightCulling, "Enable light culling", Be::READWRITE )
+
+		MAP_METHOD( 
+			"Pick", 
+			PyPick, 
+			"Given mouse position and a view setup, can return the object that the mouse is over, the mesh and area indices "
+			"and object\'s texture coordinates"
+			"\n returns dict (pick attribute -> value) or empty dict if nothing pickable was hit by the ray"
+			"\n"
+			"\nArguments:"
+			"\nx - integer x coordinate of the mouse over the viewport"
+			"\ny - integer y coordinate of the mouse over the viewport"
+			"\nprojection - The TriProjection to use to pick into the scene"
+			"\nview - The TriView to use to pick into the scene"
+			"\nviewport - The TriViewport of the viewport to use to pick into the scene"
+			"\ncomponents - The TriViewport of the viewport to use to pick into the scene"
+		)
+
+		MAP_METHOD( 
+			"PickObjectAndArea", 
+			PyPickObjectAndArea, 
+			"Given mouse position and a view setup, returns the object that the mouse is over, as well as the mesh and area indices"
+			"\n returns (<Object>,(<MeshID>,<AreaID>)) or None if nothing pickable was hit by the ray"
+			"\n"
+			"\nArguments:"
+			"\nx - integer x coordinate of the mouse over the viewport"
+			"\ny - integer y coordinate of the mouse over the viewport"
+			"\nprojection - The TriProjection to use to pick into the scene"
+			"\nview - The TriView to use to pick into the scene"
+			"\nviewport - The TriViewport of the viewport to use to pick into the scene"
+		)
+		
+		MAP_METHOD( 
+			"PickPointAndObject", 
+			PyInteriorPickPointAndObject, 
+			"Given mouse position and a view setup, returns the object that the mouse is over, as well as the mesh and area indices"
+			"\n returns (<Object>,(x,y,z)) or None if nothing pickable was hit by the ray"
+			"\n"
+			"\nArguments:"
+			"\nx - integer x coordinate of the mouse over the viewport"
+			"\ny - integer y coordinate of the mouse over the viewport"
+			"\nprojection - The TriProjection to use to pick into the scene"
+			"\nview - The TriView to use to pick into the scene"
+			"\nviewport - The TriViewport of the viewport to use to pick into the scene"
+		)
+		
+		MAP_METHOD_AND_WRAP( 
+			"PickObject", 
+			PickObjectOnly, 
+			"Given mouse position and a view setup, returns the object that the mouse is over, as well as the mesh and area indices"
+			"\nreturns <Object> or None if nothing pickable was hit by the ray"
+			"\n"
+			"\nArguments:"
+			"\nx - integer x coordinate of the mouse over the viewport"
+			"\ny - integer y coordinate of the mouse over the viewport"
+			"\nprojection - The TriProjection to use to pick into the scene"
+			"\nview - The TriView to use to pick into the scene"
+			"\nviewport - The TriViewport of the viewport to use to pick into the scene"
+		)
+
+		MAP_METHOD_AND_WRAP( 
+			"PickObjectUV", 
+			PickObjectUV, 
+			"Given mouse position and a view setup, returns the UV coordinates of the texel the mouse is over."
+			"\nreturns 2-float tuple with UV coordinates"
+			"\n"
+			"\nArguments:"
+			"\nx - integer x coordinate of the mouse over the viewport"
+			"\ny - integer y coordinate of the mouse over the viewport"
+			"\nprojection - The TriProjection to use to pick into the scene"
+			"\nview - The TriView to use to pick into the scene"
+			"\nviewport - The TriViewport of the viewport to use to pick into the scene"
+		)
+
+		MAP_METHOD( "MarqueePickObjects", PyMarqueePickObjects, "Returns the picked objects under the dragged rectangle.")
+
+		MAP_METHOD(
+			"BuildEnlighten", 
+			PyBuildEnlighten, 
+			"Builds the Enlighten systems for all cells in the scene."
+			"\n"
+			"\nArguments:"
+			"\nprogressBar - optional progress bar object"
+		)
+
+		MAP_METHOD(
+			"PreviewEnlighten", 
+			PyPreviewEnlighten, 
+			"Builds the Enlighten systems in preview mode for all cells in the scene."
+			"\n"
+			"\nArguments:"
+			"\nprogressBar - optional progress bar object"
+		)
+#if defined(ENLIGHTEN_PRECOMPUTE_ENABLED)
+		MAP_METHOD_AND_WRAP(
+			"BuildLightProbes", 
+			BuildLightProbes, 
+			"Builds the Enlighten light probes for all cells and probe volumes in the scene."
+		)
+
+		MAP_METHOD_AND_WRAP(
+			"SaveEnlighten", 
+			SaveEnlighten, 
+			"Saves the Enlighten systems for all cells in the scene."
+		)
+#endif
+		MAP_METHOD_AND_WRAP(
+			"PopulateProbeVolumes", 
+			PopulateProbeVolumes, 
+			"Populate probe volumes vector with data from SH file for all cells in the scene."
+		)
+
+
+		MAP_METHOD_AND_WRAP( "RebuildSceneData", RebuildSceneData, "Rebuilds the internal data in all cells" )
+
+		MAP_METHOD_AND_WRAP( "ClearVisibilityResults", ClearVisibilityResults, "Clears the visibility result set")
+
+		 MAP_METHOD_AND_WRAP( 
+			"AddLightSource", 
+			AddLightSource, 
+			"Add an interior lightsource to the scene"
+			"\n"
+			"\nArguments:"
+			"\nlight - The light to add" )
+
+		MAP_METHOD_AND_WRAP( 
+			"RemoveLightSource", 
+			RemoveLightSource, 
+			"Remove an interior lightsource from the scene"
+			"\n"
+			"\nArguments:"
+			"\nlight - The light to remove" )
+
+		MAP_METHOD_AND_WRAP( 
+			"AddDynamic", 
+			AddDynamic, 
+			"Add an interior dynamic (avatar, placeable, etc.) to the scene"
+			"\n"
+			"\nArguments:"
+			"\nobject - The ITr2InteriorDynamic (Tr2InteriorPlaceable or Tr2InteriorAvatar) to add")
+
+		MAP_METHOD_AND_WRAP( 
+			"RemoveDynamic", 
+			RemoveDynamic, 
+			"Remove an interior dynamic (avatar, placeable, etc.) from the scene"
+			"\n"
+			"\nArguments:"
+			"\nobject - The ITr2InteriorDynamic (Tr2InteriorPlaceable or Tr2InteriorAvatar) to remove")
+
+		MAP_METHOD_AND_WRAP( 
+			"SetUmbraProperties",              
+			SetUmbraProperties,
+			"SetUmbraProperties( unsigned int )\n"
+			"Sets umbra properties with the specified bitmask" )
+
+		MAP_METHOD_AND_WRAP( 
+			"GetUmbraProperties",              
+			GetUmbraProperties,
+			"GetUmbraProperties(  )\n"
+			"Returns the umbra properties current bitmask" )
+
+		MAP_METHOD_AND_WRAP( "UpdateSpotlightShadows", UpdateSpotlightShadows, "Forces update on all spotlight shadows" )
+
+		MAP_ATTRIBUTE( 
+			"useFilterList", 
+			m_useFilterList, 
+			"If True, only objects added with AddToFilterList will actually draw when visible.", Be::READWRITE )
+
+		MAP_ATTRIBUTE( 
+			"filterList", 
+			m_filterList, 
+			"List of objects to draw, when visible, if useFilterList is True.", Be::READWRITE )
+
+		MAP_ATTRIBUTE(
+			"visualizerOverride",
+			m_visualizerOverride,
+			"Pointer to effect whose pixel shader will be the visualizer mode.  Takes precedence over visualizeMethod", 
+			Be::READWRITE 
+		)
+
+		MAP_ATTRIBUTE(
+			"visualizerOverrideApplyPS",
+			m_visualizerOverrideApplyPS,
+			"Boolean that controls if a visualizerOverride's pixelshader data should be applied (stomping existing PS blocks)",
+			Be::READWRITE
+		)
+
+		MAP_ATTRIBUTE(
+			"apexScene",
+			m_apexScene,
+			"Apex scene used",
+			Be::READWRITE
+		)
+
+		MAP_ATTRIBUTE( "visibilityResults", m_visibilityResults, "Results of the visibility query", Be::READ )
+		MAP_ATTRIBUTE( "enableSHSolver", m_enableSHSolver, "Enable/disable solving for SH coefficients", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "enableROIs", m_enableROIs, "Enable Umbra regions of influence for light sources", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+
+		MAP_METHOD_AND_WRAP( "ReorderDynamic", ReorderDynamic,
+			"\nMoves the dynamic object in the dynamics list. This affects the order of updates.\n"
+			"\nArguments:"
+			"\ndynamic : Dynamic object to move in the list (needs to be in the dynamics list)"
+			"\ninsertAfter : Dynamic object to put the fist object after in the list (needs to be in the dynamics list)" 
+			)
+
+	EXPOSURE_END()
+}
+
+#endif
