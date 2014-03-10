@@ -29,7 +29,7 @@ public:
 	const std::string& GetModel() const;
 	void SetModel( const std::string& val);
 
-	bool	PlayAnimation( const char* animName, bool replace, int loopCount, float delay, float speed );
+	bool	PlayAnimation( const char* animName, bool replace, int loopCount, float delay, float speed, bool clearWhenDone=true );
 	void	EndAnimation();
 	void	ClearAnimations();
 	float	GetAnimationChainCompleteTime();

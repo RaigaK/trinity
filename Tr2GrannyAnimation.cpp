@@ -246,7 +246,7 @@ void Tr2GrannyAnimation::SetModel( const std::string& val )
 	Initialize();
 }
 
-bool Tr2GrannyAnimation::PlayAnimation( const char* animName, bool replace, int loopCount, float delay, float speed )
+bool Tr2GrannyAnimation::PlayAnimation( const char* animName, bool replace, int loopCount, float delay, float speed, bool clearWhenDone )
 {
 	if( ( !m_grannyRes  && !m_geometryRes )  ||		
 		( m_grannyRes	&& !m_grannyRes->IsPrepared() ) ||
@@ -341,7 +341,7 @@ bool Tr2GrannyAnimation::PlayAnimation( const char* animName, bool replace, int 
 	GrannySetControlLoopCount( control, loopCount );
 	GrannySetControlSpeed( control, speed );
 
-	if( loopCount > 0 )
+	if( loopCount > 0 && clearWhenDone )
 	{
 		GrannyCompleteControlAt( control, Tr2Renderer::GetAnimationTime() + GrannyGetControlDurationLeft( control ) + delay );
 	}

@@ -362,7 +362,7 @@ void EveAnimationState::DoAnimationSequence( EveSpaceObject2Ptr owner, EveAnimat
 	if( sequence->m_animation )
 	{
 		EveAnimationPtr anim = sequence->m_animation;
-		owner->PlayAnimation( anim->m_name.c_str(), false, anim->m_loops, anim->m_delay, anim->m_speed );
+		owner->GetAnimationController()->PlayAnimation( anim->m_name.c_str(), false, anim->m_loops, anim->m_delay, anim->m_speed, false );
 	}
 
 	if( m_pendingCommands )
