@@ -44,6 +44,16 @@ const Be::ClassInfo* EveLensflare::ExposeToBlue()
 			"List of curves that accept screen position polar coordinate angle as an argument", 
 			Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( 
+			"xDistanceToCenter", 
+			m_xDistanceToCenter, 
+			"List of curves that accept distance to screen center along x axis as an argument", 
+			Be::READ | Be::PERSIST )
+		MAP_ATTRIBUTE( 
+			"yDistanceToCenter", 
+			m_yDistanceToCenter, 
+			"List of curves that accept distance to screen center along y axis as an argument", 
+			Be::READ | Be::PERSIST )
+		MAP_ATTRIBUTE( 
 			"bindings", 
 			m_bindings, 
 			"List of value bindings", 

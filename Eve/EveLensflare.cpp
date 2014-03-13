@@ -24,6 +24,8 @@ EveLensflare::EveLensflare( IRoot* lockobj ) :
 	PARENTLOCK( m_distanceToEdgeCurves ),
 	PARENTLOCK( m_distanceToCenterCurves ),
 	PARENTLOCK( m_radialAngleCurves ),
+	PARENTLOCK( m_xDistanceToCenter ),
+	PARENTLOCK( m_yDistanceToCenter ),
 	PARENTLOCK( m_bindings ),
 	PARENTLOCK( m_curveSets ),
 	m_display( true ),
@@ -165,6 +167,16 @@ void EveLensflare::PrepareRender( const TriFrustum& frustum )
 	for( auto it = m_radialAngleCurves.begin(); it != m_radialAngleCurves.end(); ++it )
 	{
 		( *it )->UpdateValue( radialAngle );
+	}
+
+	for( auto it = m_xDistanceToCenter.begin(); it != m_xDistanceToCenter.end(); ++it )
+	{
+		( *it )->UpdateValue( abs( direction.x ) );
+	}
+
+	for( auto it = m_yDistanceToCenter.begin(); it != m_yDistanceToCenter.end(); ++it )
+	{
+		( *it )->UpdateValue( abs( direction.y ) );
 	}
 
 	for( auto it = m_bindings.begin(); it != m_bindings.end(); ++it )

@@ -84,6 +84,8 @@ private:
 	PITriFunctionVector m_distanceToEdgeCurves;
 	PITriFunctionVector m_distanceToCenterCurves;
 	PITriFunctionVector m_radialAngleCurves;
+	PITriFunctionVector m_xDistanceToCenter;
+	PITriFunctionVector m_yDistanceToCenter;
 
 	PITr2ValueBindingVector m_bindings;
 
