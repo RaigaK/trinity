@@ -54,9 +54,7 @@ public:
 		int boneIndex, groupIndex;
 		bool boosterGainInfluence;
 		Vector3 spriteScale;
-		float coneIntensity;
-		float flareIntensity;
-		float spriteIntensity;
+		float coneIntensity, flareIntensity, spriteIntensity;
 	};
 
 	struct HullSpotlightSetData
@@ -178,7 +176,7 @@ public:
 		// spritesets
 		std::map<int, FactionSpriteSetColorData> spriteSetsColor;
 		// spotlight sets
-		std::map<int, FactionSpotlightSetColorData> spotlightSetColors;
+		std::map<int, FactionSpotlightSetColorData> spotlightSetsColors;
 	};
 
 	// race data structs

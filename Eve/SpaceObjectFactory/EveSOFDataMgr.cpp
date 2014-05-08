@@ -455,11 +455,14 @@ bool EveSOFDataMgr::LoadFactionData( EveSOFDataPtr srcData )
 		// spotlight set colors
 		for( auto spotcit = factionData->m_spotlightSets.begin(); spotcit != factionData->m_spotlightSets.end(); ++spotcit )
 		{
+			EveSOFDataFactionSpotlightSetPtr spotlightSetData = (*spotcit);
+
 			FactionSpotlightSetColorData spotcd;
-			spotcd.coneColor = (*spotcit)->m_coneColor;
-			spotcd.flareColor = (*spotcit)->m_flareColor;
-			spotcd.spriteColor = (*spotcit)->m_spriteColor;
-			fd.spotlightSetColors[(*spotcit)->m_groupIndex] = spotcd;
+			spotcd.coneColor = spotlightSetData->m_coneColor;
+			spotcd.flareColor = spotlightSetData->m_flareColor;
+			spotcd.spriteColor = spotlightSetData->m_spriteColor;
+
+			fd.spotlightSetsColors[spotlightSetData->m_groupIndex] = spotcd;
 		}
 
 		// area parameters

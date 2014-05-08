@@ -374,8 +374,8 @@ void EveSOF::SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData
 			spotlightSetItem->m_boneIndex = ssiit->boneIndex;
 			spotlightSetItem->m_boosterGainInfluence = ssiit->boosterGainInfluence;
 			
-			auto finder = factionData->spotlightSetColors.find( ssiit->groupIndex );
-			if( finder == factionData->spotlightSetColors.end() )
+			auto finder = factionData->spotlightSetsColors.find( ssiit->groupIndex );
+			if( finder == factionData->spotlightSetsColors.end() )
 			{
 				spotlightSetItem->m_coneColor = Color( 1.f, 1.f, 1.f, 1.f );
 				spotlightSetItem->m_flareColor = Color( 1.f, 1.f, 1.f, 1.f );
