@@ -101,18 +101,10 @@ const EveSOFDataMgr::RaceData* EveSOFDataMgr::GetRaceData( const char* raceName 
 //   Here we get a blue object which is the whole database and use it to
 //   set internal containers with all SOF db data
 // --------------------------------------------------------------------------------
-bool EveSOFDataMgr::SetData( IRootPtr dbData )
+bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 {
-	// is it of right type?
-	EveSOFDataPtr srcData;
-	if( !dbData->QueryInterface( BlueInterfaceIID<EveSOFData>(), (void**)&srcData ) )
-	{
-		CCP_LOGERR( "SOF resource file is not of correct type!" );
-		return false;
-	}
-
 	// load hull data
-	if(!LoadHullData( srcData ) )
+	if(!LoadHullData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading hull data!" );
 		return false; 
@@ -120,7 +112,7 @@ bool EveSOFDataMgr::SetData( IRootPtr dbData )
 	CCP_LOGNOTICE( "SOF: loaded %d hulls", m_hullData.size() );
 
 	// load faction data
-	if(!LoadFactionData( srcData ) )
+	if(!LoadFactionData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading faction data!" );
 		return false;
@@ -128,7 +120,7 @@ bool EveSOFDataMgr::SetData( IRootPtr dbData )
 	CCP_LOGNOTICE( "SOF: loaded %d factions", m_factionData.size() );
 
 	// load race data
-	if(!LoadRaceData( srcData ) )
+	if(!LoadRaceData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading race data!" );
 		return false;
@@ -156,8 +148,16 @@ bool EveSOFDataMgr::LoadData( const char* filePath )
 		return false;
 	}
 
+	// is it of right type?
+	EveSOFDataPtr dbData;
+	if( !p->QueryInterface( BlueInterfaceIID<EveSOFData>(), (void**)&dbData ) )
+	{
+		CCP_LOGERR( "SOF resource file %s is not of correct type!", filePath );
+		return false;
+	}
+
 	// set it, so we create the stl containers in here
-	if( !SetData( p ) )
+	if( !SetData( dbData ) )
 	{
 		CCP_LOGERR( "resource set SOF db data resource file: %s", filePath );
 		return false;

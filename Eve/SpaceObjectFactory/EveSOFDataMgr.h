@@ -200,7 +200,7 @@ public:
 
 	// loading all the data
 	bool LoadData( const char* filePath );
-	bool SetData( IRootPtr dbData );
+	bool SetData( EveSOFData* dbData );
 
 	// access to hull data
 	bool HasHullData( const char* hullName ) const;
