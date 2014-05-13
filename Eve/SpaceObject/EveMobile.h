@@ -53,17 +53,18 @@ public:
 	// IListNotify
 	void OnListModified( long event, ssize_t key, ssize_t key2, IRoot* value, const IList* theList );
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// Overrides of animation controller
+	virtual bool ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data );
+
 	// re-positions all attached turrets to the corresponding locators
 	void RebuildTurretPositions();
 	// checks and counts the number of locators and/or granny-bones used to position turrets
 	unsigned int GetTurretLocatorCount();
-	void ActivateTurrets();
-	void DeactivateTurrets();
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// activation
 	void PlayActivationCurve();
-	void SetActivationStrength( float strength );
 	ITriScalarFunctionPtr m_activationStrengthCurve;
 
 private:

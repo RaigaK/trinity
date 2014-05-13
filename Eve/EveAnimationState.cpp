@@ -2,6 +2,7 @@
 #include "EveAnimationState.h"
 #include "SpaceObject/EveSpaceObject2.h"
 #include "SpaceObject/EveMobile.h"
+#include "SpaceObject/EveShip2.h"
 #include "../Curves/TriCurveSet.h"
 #include "../Tr2GrannyAnimation.h"
 #include "../Tr2Renderer.h"
@@ -232,43 +233,6 @@ bool EveAnimationState::HasTransition( std::string stateName )
 	return GetTransition( stateName );
 }
 
-inline EveMobilePtr GetAsEveMobile( EveSpaceObject2Ptr owner )
-{
-	EveMobilePtr pOwner;
-	if( !((IInitialize*)owner)->QueryInterface( BlueInterfaceIID<EveMobile>(), (void**)&pOwner ) )
-	{
-		CCP_LOGERR( "EveAnimationState: Object is not EveMobile." );
-		return nullptr;
-	}
-	return pOwner;
-}
-
-inline void ExecuteActivationCurveCommand( EveSpaceObject2Ptr owner, EveAnimationCommandPtr cmd )
-{
-	EveMobilePtr pOwner = GetAsEveMobile( owner );
-	if( !pOwner )
-	{
-		return;
-	}
-
-	IRootPtr p;
-	p.Attach( BeResMan->LoadObject( cmd->m_data.c_str() ) );
-	if( p == NULL )
-	{
-		CCP_LOGERR( "EveAnimationState: Couldn't find PlayActivationCurve data resource file: %s", cmd->m_data.c_str() );
-		return;
-	}
-
-	ITriScalarFunctionPtr ptr;
-	if( !p->QueryInterface( BlueInterfaceIID<ITriScalarFunction>(), (void**)&ptr ) )
-	{
-		CCP_LOGERR( "EveAnimationState: PlayActivationCurve resource file %s is not of correct type!", cmd->m_data.c_str() );
-		return;
-	}
-	pOwner->m_activationStrengthCurve = ptr;
-	pOwner->PlayActivationCurve();
-}
-
 // --------------------------------------------------------------------------------
 // Description:
 //   Play curves in the animation sequence
@@ -299,44 +263,7 @@ void EveAnimationState::DoAnimationSequenceCommands( EveSpaceObject2Ptr owner, E
 	
 	for( auto it = sequence->m_commands.cbegin(); it != sequence->m_commands.cend(); it++ )
 	{
-		EveAnimationCommandPtr cmd = *it;
-		EveMobilePtr pOwner;
-		switch( cmd->m_command )
-		{
-		case ANIM_CMD_PLAYACTIVATION:
-			ExecuteActivationCurveCommand( owner, cmd );
-			break;
-		case ANIM_CMD_ACTIVATE_TURRETS:
-			pOwner = GetAsEveMobile( owner );
-			if( pOwner )
-			{
-				pOwner->ActivateTurrets();
-			}
-			break;
-		case ANIM_CMD_DEACTIVATE_TURRETS:
-			pOwner = GetAsEveMobile( owner );
-			if( pOwner )
-			{
-				pOwner->DeactivateTurrets();
-			}
-			break;
-		case ANIM_CMD_ACTIVATION_STRENGTH_ZERO:
-			pOwner = GetAsEveMobile( owner );
-			if( pOwner )
-			{
-				pOwner->SetActivationStrength( 0.f );
-			}
-			break;
-		case ANIM_CMD_ACTIVATION_STRENGTH_ONE:
-			pOwner = GetAsEveMobile( owner );
-			if( pOwner )
-			{
-				pOwner->SetActivationStrength( 1.f );
-			}
-			break;
-		default:
-			break;
-		};
+		owner->ExecuteAnimationStateCommand( (*it)->m_command, (*it)->m_data );
 	}
 }
 

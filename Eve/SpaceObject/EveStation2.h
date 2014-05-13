@@ -24,6 +24,10 @@ public:
 	virtual void GetBatches( ITriRenderBatchAccumulator* batches, TriBatchType batchType, const Tr2PerObjectData* perObjectData );
 	virtual void UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const;
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// Overrides of animation controller
+	virtual bool ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data );
+
 private:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// dynamic planesets (used for holograms, etc.)

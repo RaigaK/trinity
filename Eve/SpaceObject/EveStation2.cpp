@@ -83,6 +83,17 @@ void EveStation2::UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanc
 	}
 }
 
+// --------------------------------------------------------------------------------
+// Description:
+//   Gets called by the state machine of this object to execute some command.
+// Return Value:
+//   Returns true if this implementation has handled the command.
+// --------------------------------------------------------------------------------
+bool EveStation2::ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data )
+{
+	return EveSpaceObject2::ExecuteAnimationStateCommand( cmd, data );
+}
+
 
 
 

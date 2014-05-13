@@ -60,17 +60,17 @@ EveBoosterSet2::EveBoosterSet2( IRoot* lockobj ) :
 	m_destinyUpdate( true ),
 	m_alwaysOn( false ),
 	m_drawDebugInfo( false ),
-	m_alwaysOnIntensity( 1.0f ),
+	m_alwaysOnIntensity( 1.f ),
 	m_boosterLOD( 0.f ),
 	m_trailsLOD( 0.f ),
 	m_parentSpeed( 0.f ),
-	m_parentWarp( 0.f ),
 	m_parentRotation( 0.f, 0.f, 0.f, 1.f ),
 	m_vertexDeclHandle( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
 	m_maxVel( 250.f ),
 	m_lastAccFactor( 0.f ),
 	m_lastValue( 0.f ),
 	m_overallIntensity( 0.f ),
+	m_warpIntensity( 0.f ),
 	m_maxSize( 0.f ),
 	m_glowScale( 1.f ),
 	m_symHaloScale( 1.f ),
@@ -170,7 +170,7 @@ bool EveBoosterSet2::OnModified( Be::Var* val )
 float EveBoosterSet2::CalculateIntensity( ITriVectorFunctionPtr ball, Be::Time t )
 {
 	// if we want the boosters to be permanently visible
-	if ( m_alwaysOn )
+	if( m_alwaysOn )
 	{
 		return m_alwaysOnIntensity;
 	}
@@ -700,7 +700,7 @@ Tr2PerObjectData* EveBoosterSet2::GetPerObjectData( ITriRenderBatchAccumulator* 
 	// ps data
 	perObjectData->m_psData.boosterIntensity = m_overallIntensity;
 	perObjectData->m_psData.trailIntensity = m_trailIntensity;
-	perObjectData->m_psData.shipWarp = m_parentWarp;
+	perObjectData->m_psData.warpIntensity = m_warpIntensity;
 
 	for( unsigned int i = 0; i < EVE_MAX_CONTROL_POINT_COUNT; ++i )
 	{

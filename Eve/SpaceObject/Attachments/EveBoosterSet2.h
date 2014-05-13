@@ -59,7 +59,7 @@ public:
 		// trail data
 		float boosterIntensity;
 		float trailIntensity;
-		float shipWarp;
+		float warpIntensity;
 		float padding2;
 	};
 
@@ -170,19 +170,17 @@ private:
 	bool m_display;
 	// show them always on strength 1.0 (for jessica editing)
 	bool m_alwaysOn;
+	float m_alwaysOnIntensity;
 	// toggle debug drawing
 	bool m_drawDebugInfo;
 	// LODs
 	float m_boosterLOD;
 	float m_trailsLOD;
 
-	float m_alwaysOnIntensity;
-
 	// parent ship transform
 	Matrix m_parentTransform;
 	// parent ship data
 	float m_parentSpeed;
-	float m_parentWarp;
 	Quaternion m_parentRotation;
 
 	// bounding info (is setup dynamically)
@@ -216,6 +214,7 @@ private:
 	float m_lastAccFactor;
 	float m_lastValue;
 	float m_overallIntensity;
+	float m_warpIntensity;
 
 	// data of the booster
 	float m_maxSize;

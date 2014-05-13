@@ -38,6 +38,10 @@ public:
 	// IBlueAsyncResNotifyTarget - overriding EveSpaceObject2 implementations
 	virtual void RebuildCachedData( BlueAsyncRes* p );
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// Overrides of animation controller
+	virtual bool ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data );
+
 	// boosters
 	void SetBoosterSet( EveBoosterSet2Ptr set );
 	// re-positions all attached boosters to the corresponding locators

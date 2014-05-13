@@ -2100,6 +2100,17 @@ float EveSpaceObject2::GetCurveSetDuration( const std::string& name ) const
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Gets called by the state machine of this object to execute some command.
+// Return Value:
+//   Returns true if this implementation has handled the command.
+// --------------------------------------------------------------------------------
+bool EveSpaceObject2::ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data )
+{
+	return false;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Get a mutex for this object that can be used during UpdateAsyncronous call.
 // --------------------------------------------------------------------------------
 CcpMutex& EveSpaceObject2::GetObjectMutex()
@@ -2117,3 +2128,4 @@ CcpMutex& EveSpaceObject2::GetObjectMutex()
 	}
 	return *mutexes[reinterpret_cast<size_t>( this ) & ( MUTEX_COUNT - 1 )];
 }
+

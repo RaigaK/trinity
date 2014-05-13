@@ -33,6 +33,8 @@ Be::VarChooser EveAnimCommandChooser[] =
 	{ "DeactivateTurrets", BeCast( ANIM_CMD_DEACTIVATE_TURRETS ), "DeactivateTurrets" },
 	{ "ActivationStrengthZero", BeCast( ANIM_CMD_ACTIVATION_STRENGTH_ZERO ), "Set Activation strength to zero" },
 	{ "ActivationStrengthOne", BeCast( ANIM_CMD_ACTIVATION_STRENGTH_ONE ), "Set Activation strength to one" },
+	{ "TurnoffBoosters", BeCast( ANIM_CMD_TURNOFF_BOOSTERS ), "Tell non-warp boosters to go off" },
+	{ "TurnonBoosters", BeCast( ANIM_CMD_TURNON_BOOSTERS ), "Tell non-warp boosters to start" },
 	{ 0 }
 };
 

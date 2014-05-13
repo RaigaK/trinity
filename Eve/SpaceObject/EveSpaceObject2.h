@@ -148,15 +148,8 @@ public:
 	// IEveSpaceObject2
 	virtual void UpdateSyncronous( EveUpdateContext& updateContext );
 	virtual void UpdateAsyncronous( EveUpdateContext& updateContext );
-
-	// Update the transformed damage locator positions
-	void UpdateDamageLocatorPositions();
-	void UpdateImpactDirections();
-
-	void UnloadLodIfNeeded( Be::Time time );
 	virtual void RenderDebugInfo( Tr2RenderContext& renderContext );
 	virtual void GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform );
-
 	virtual bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const;
 	virtual void UpdateViewDistanceInfo( const TriFrustum& frustum, ViewDistanceInfo& viewDistance ) const;
 	virtual void GetModelCenterWorldPosition( Vector3 &position, Be::Time t );
@@ -176,8 +169,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////
 	// IInitialize
 	bool Initialize();
-
-	void SetupResourceLoadCallbacks();
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2Renderable
@@ -206,12 +197,15 @@ public:
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IWorldPosition
-	/////////////////////////////////////////////////////////////////////////////////////
 	virtual const Vector3* GetWorldPosition();
 
-	//For stateful GPU particles
+	/////////////////////////////////////////////////////////////////////////////////////
+	// animation controller
+	virtual bool ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data );
+
+	// For stateful GPU particles
 	ITriVectorFunctionPtr GetPositionFunction();
-	
+
 	Vector3 GetModelWorldPosition();
 	Tr2GrannyAnimationPtr GetAnimationController() { return m_animationUpdater; }
 
@@ -241,7 +235,16 @@ public:
 	void UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shaderType, uint32_t size, void* );
 
 protected:
+	// LODing
+	void UnloadLodIfNeeded( Be::Time time );
 	void FreezeHighDetailMesh();
+
+	// damage locators
+	unsigned GetDamageLocatorCount() const;
+	Vector3 GetDamageLocator( unsigned index ) const;
+	Vector3 GetTransformedDamageLocator( unsigned index ) const;
+	void UpdateDamageLocatorPositions();
+	void UpdateImpactDirections();
 
 	void PrepareForAnimation();
 	void FreeAnimationData();
@@ -249,11 +252,6 @@ protected:
 	void GetBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData ) const;
 	void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData ) const;
 	void GetBatchesFromOverlayVector( ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData, TriBatchType batchType );
-
-	//GPUParticle ship explosion test - not moving into ITriTargetable until tested further.
-	unsigned GetDamageLocatorCount() const;
-	Vector3 GetDamageLocator( unsigned index ) const;
-	Vector3 GetTransformedDamageLocator( unsigned index ) const;
 
 	CcpMutex& GetObjectMutex();
 	void UpdateWorldTransform( Be::Time time );

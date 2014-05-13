@@ -333,3 +333,23 @@ void EveShip2::UpdateShipSpeedForAudio()
 		}
 	}
 }
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Gets called by the state machine of this object to execute some command.
+// Return Value:
+//   Returns true if this implementation has handled the command.
+// --------------------------------------------------------------------------------
+bool EveShip2::ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data )
+{
+	switch( cmd )
+	{
+	case ANIM_CMD_TURNOFF_BOOSTERS:
+		return true;
+	case ANIM_CMD_TURNON_BOOSTERS:
+		return true;
+	}
+
+	// not handled here, so pass it up the chain
+	return EveMobile::ExecuteAnimationStateCommand( cmd, data );
+}

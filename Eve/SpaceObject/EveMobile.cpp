@@ -440,30 +440,6 @@ void EveMobile::RebuildTurretPositions()
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Activate all of the object's turret sets
-// --------------------------------------------------------------------------------
-void EveMobile::ActivateTurrets()
-{
-	for( auto it = m_turretSets.begin(); it != m_turretSets.end(); it++ )
-	{
-		(*it)->EnterStateIdle();
-	}
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   Deactivate all of the object's turret sets
-// --------------------------------------------------------------------------------
-void EveMobile::DeactivateTurrets()
-{
-	for( auto it = m_turretSets.begin(); it != m_turretSets.end(); it++ )
-	{
-		(*it)->EnterStateDeactive();
-	}
-}
-
-// --------------------------------------------------------------------------------
-// Description:
 //   Sets the current and total arguments with contents of the m_locatorCount for 
 //   the name given.
 //   Returns false if name is not found.
@@ -560,10 +536,62 @@ void EveMobile::PlayActivationCurve()
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Set activation strength to the specified value.
+//   Gets called by the state machine of this object to execute some command.
+// Return Value:
+//   Returns true if this implementation has handled the command.
 // --------------------------------------------------------------------------------
-void EveMobile::SetActivationStrength( float strength )
+bool EveMobile::ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::string& data )
 {
-	m_spaceObjectData.y = strength;
-	m_playActivationCurve = false;
+	switch( cmd )
+	{
+	case ANIM_CMD_PLAYACTIVATION:
+		if( !data.empty() )
+		{
+			IRootPtr p;
+			p.Attach( BeResMan->LoadObject( data.c_str() ) );
+			if( p == NULL )
+			{
+				CCP_LOGERR( "EveMobile: Couldn't find PlayActivationCurve data resource file: %s", data.c_str() );
+				return true;
+			}
+
+			ITriScalarFunctionPtr ptr;
+			if( !p->QueryInterface( BlueInterfaceIID<ITriScalarFunction>(), (void**)&ptr ) )
+			{
+				CCP_LOGERR( "EveMobile: PlayActivationCurve resource file %s is not of correct type!", data.c_str() );
+				return true;
+			}
+			m_activationStrengthCurve = ptr;
+			PlayActivationCurve();
+		}
+		return true;
+
+	case ANIM_CMD_ACTIVATE_TURRETS:
+		for( auto it = m_turretSets.begin(); it != m_turretSets.end(); it++ )
+		{
+			(*it)->EnterStateIdle();
+		}
+		return true;
+
+	case ANIM_CMD_DEACTIVATE_TURRETS:
+		for( auto it = m_turretSets.begin(); it != m_turretSets.end(); it++ )
+		{
+			(*it)->EnterStateDeactive();
+		}
+		return true;
+
+	case ANIM_CMD_ACTIVATION_STRENGTH_ZERO:
+		m_spaceObjectData.y = 0.f;
+		m_playActivationCurve = false;
+		return true;
+
+	case ANIM_CMD_ACTIVATION_STRENGTH_ONE:
+		m_spaceObjectData.y = 1.f;
+		m_playActivationCurve = false;
+		return true;
+	}
+
+	// not handled here, so pass it up the chain
+	return EveSpaceObject2::ExecuteAnimationStateCommand( cmd, data );
 }
+
