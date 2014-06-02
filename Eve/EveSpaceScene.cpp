@@ -181,8 +181,8 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 	m_sunData.DirWorld = Vector3( 0.0f, -1.0f, 0.0f );
 	m_sunData.unused_pad0 = 0.0;
 
-	m_sceneData.AmbientColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
-	m_sceneData.FogColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
+	m_ambientColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
+	m_fogColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
 	m_fogEnd = m_fogStart = m_fogMax = 0.0f;
 
 	m_pickEffect.CreateInstance();
@@ -1660,8 +1660,6 @@ void EveSpaceScene::PopulatePerFrameVSData( PerFrameVSData &data )
 	// make sure whatever direction we get in here, it is normalized! And inverted: Shaders work with direction to light...
 	D3DXVec3Normalize( &data.Sun.DirWorld, &data.Sun.DirWorld );
 	data.Sun.DirWorld = -data.Sun.DirWorld;
-	// scene data
-	data.Scene = m_sceneData;
 
 	// resolution of rendertarget
 	data.TargetResolution.x = (float)Tr2Renderer::GetRenderTargetWidth();
@@ -1706,7 +1704,8 @@ void EveSpaceScene::PopulatePerFramePSData( PerFramePSData &data )
 	// make sure whatever direction we get in here, it is normalized! And inverted: Shaders work with direction to light...
 	D3DXVec3Normalize( &data.Sun.DirWorld, &data.Sun.DirWorld );
 	data.Sun.DirWorld = -data.Sun.DirWorld;
-	data.Scene = m_sceneData;
+	data.AmbientColor = m_ambientColor;
+	data.FogColor = m_fogColor;
 
 	// ps data of fog
 	data.FogFactors.x = m_fogType;

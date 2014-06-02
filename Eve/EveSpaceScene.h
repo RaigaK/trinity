@@ -182,13 +182,6 @@ protected:
 		Color DiffuseColor;
 	};
 
-	// This is the global ambient - including contributions from Light, Sun and D3D global ambient
-	struct SceneData
-	{
-		Color AmbientColor;
-		Color FogColor; 
-	};
-
 	// Per-frame pixel constants for rendering scene
 	struct PerFramePSData
 	{
@@ -197,7 +190,8 @@ protected:
 		Matrix EnvMapRotationMat;
 
 		SunData Sun;
-		SceneData Scene;
+		Color AmbientColor;
+		Color FogColor; 
 
 		Vector2 CameraRange;
 		Vector2 ViewportOffset;
@@ -236,8 +230,6 @@ protected:
 		Vector2 FovXY;
 		// used to reconstruct clip positions without viewport projection adjustment
 		Vector4 ViewportAdjustment;
-		// scene color info
-		SceneData Scene;
 
 		float Time;
 		float _;
@@ -390,7 +382,9 @@ protected:
 	Tr2RenderTargetPtr m_distortionMap;
 
 	SunData m_sunData;
-	SceneData m_sceneData;
+
+	Color m_ambientColor;
+	Color m_fogColor;
 
 	float m_fogStart; // Depth at which fogging starts
 	float m_fogEnd; // Depth at which fog does not get stronger
