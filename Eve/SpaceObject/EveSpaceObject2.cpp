@@ -1206,6 +1206,12 @@ void EveSpaceObject2::RebuildCachedData( BlueAsyncRes* p )
 	m_animationUpdater->SetUseMeshBinding( true );	
 	m_animationUpdater->SetSharedGeometryRes( m_geometryResFromMesh );
 	m_animationUpdater->RebuildCachedData( p );
+	if( m_animationUpdater->m_modelInstance )
+	{
+		Matrix m;
+		D3DXMatrixIdentity( &m );
+		m_animationUpdater->PrePhysicsAnimation( 0, m );
+	}
 
 	if( m_boundingSphereRadius < 0.0f )
 	{
