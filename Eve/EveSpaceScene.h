@@ -296,6 +296,8 @@ protected:
 							Tr2EffectStateManager::RenderingMode rm,
 							Tr2RenderContext &renderContext );
 
+	void UpdateSceneFromScript( Be::Time time );
+
 protected:
 	bool m_display;
 	bool m_update;

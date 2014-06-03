@@ -2263,3 +2263,8 @@ Vector3 EveSpaceScene::PickInfinity( int x, int y, Matrix proj, Matrix view )
 
 	return dir;
 }
+
+void EveSpaceScene::UpdateSceneFromScript( Be::Time time )
+{
+	Update( time, time );
+}

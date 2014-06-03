@@ -494,7 +494,7 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 			"\nview - The TriView to use to pick into the scene"
 			"\nviewport - The TriViewport of the viewport to use to pick into the scene" )
 
-		MAP_METHOD_AND_WRAP("UpdateScene", Update, "Run the scene's update loop")
+		MAP_METHOD_AND_WRAP("UpdateScene", UpdateSceneFromScript, "Run the scene's update loop")
 		
 		MAP_METHOD_AND_WRAP("PickInfinity", PickInfinity, "Pick infinity")
 		
