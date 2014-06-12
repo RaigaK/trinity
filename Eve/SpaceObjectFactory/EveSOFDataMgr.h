@@ -9,6 +9,9 @@
 
 // forwards
 BLUE_DECLARE( EveSOFData );
+BLUE_DECLARE( EveSOFDataHull );
+BLUE_DECLARE( EveSOFDataFaction );
+BLUE_DECLARE( EveSOFDataRace );
 BLUE_DECLARE( EveSOFDataHullArea );
 
 // --------------------------------------------------------------------------------
@@ -205,6 +208,11 @@ public:
 	bool LoadData( const char* filePath );
 	bool SetData( EveSOFData* dbData );
 
+	// update individual parts
+	bool UpdateHull( const char* hullName, EveSOFDataHull* hullData );
+	bool UpdateFaction( const char* factionName, EveSOFDataFaction* factionData );
+	bool UpdateRace( const char* raceName, EveSOFDataRace* raceData );
+
 	// access to hull data
 	bool HasHullData( const char* hullName ) const;
 	const HullData* GetHullData( const char* hullName ) const;
@@ -220,7 +228,12 @@ private:
 	bool LoadHullData( EveSOFDataPtr srcData );
 	bool LoadFactionData( EveSOFDataPtr srcData );
 	bool LoadRaceData( EveSOFDataPtr srcData );
-	HullAreas LoadHullAreaData( const EveSOFDataHullAreaPtr hullArea );
+	HullAreas LoadHullAreaData( const EveSOFDataHullAreaPtr hullArea ) const;
+
+	// helper functions to pass data from trinity object to stl containers
+	void GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) const;
+	void GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr srcData ) const;
+	void GenerateRaceData( RaceData& rd, EveSOFDataRacePtr srcData ) const;
 
 	// keep all hull data in a map
 	std::map<std::string, HullData> m_hullData;

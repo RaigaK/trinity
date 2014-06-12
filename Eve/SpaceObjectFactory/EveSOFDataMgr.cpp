@@ -98,11 +98,85 @@ const EveSOFDataMgr::RaceData* EveSOFDataMgr::GetRaceData( const char* raceName 
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Update an individual hull, identified by it's name
+// --------------------------------------------------------------------------------
+bool EveSOFDataMgr::UpdateHull( const char* hullName, EveSOFDataHull* hullData )
+{
+	// must exist
+	if( !HasHullData( hullName ) )
+	{
+		CCP_LOGWARN( "Trying to update a hull which does not exist: %s", hullName );
+		return false;
+	}
+
+	// fill the non-trinity struct with the provided data
+	HullData hd;
+	GenerateHullData( hd, hullData );
+
+	// set it to the main map
+	m_hullData[ hullName ] = hd;
+
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Update an individual faction, identified by it's name
+// --------------------------------------------------------------------------------
+bool EveSOFDataMgr::UpdateFaction( const char* factionName, EveSOFDataFaction* factionData )
+{
+	// must exist
+	if( !HasFactionData( factionName ) )
+	{
+		CCP_LOGWARN( "Trying to update a faction which does not exist: %s", factionName );
+		return false;
+	}
+
+	// fill the non-trinity struct with the provided data
+	FactionData fd;
+	GenerateFactionData( fd, factionData );
+
+	// set it to the main map
+	m_factionData[ factionName ] = fd;
+
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Update an individual race, identified by it's name
+// --------------------------------------------------------------------------------
+bool EveSOFDataMgr::UpdateRace( const char* raceName, EveSOFDataRace* raceData )
+{
+	// must exist
+	if( !HasRaceData( raceName ) )
+	{
+		CCP_LOGWARN( "Trying to update a faction which does not exist: %s", raceName );
+		return false;
+	}
+
+	// fill the non-trinity struct with the provided data
+	RaceData rd;
+	GenerateRaceData( rd, raceData );
+
+	// set it to the main map
+	m_raceData[ raceName ] = rd;
+
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Here we get a blue object which is the whole database and use it to
 //   set internal containers with all SOF db data
 // --------------------------------------------------------------------------------
 bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 {
+	// clear existing data
+	m_hullData.clear();
+	m_factionData.clear();
+	m_raceData.clear();
+
 	// load hull data
 	if(!LoadHullData( dbData ) )
 	{
@@ -165,12 +239,11 @@ bool EveSOFDataMgr::LoadData( const char* filePath )
 	return true;
 }
 
-
 // --------------------------------------------------------------------------------
 // Description:
 //   Create hull area from sof db data
 // --------------------------------------------------------------------------------
-EveSOFDataMgr::HullAreas EveSOFDataMgr::LoadHullAreaData( const EveSOFDataHullAreaPtr areaData )
+EveSOFDataMgr::HullAreas EveSOFDataMgr::LoadHullAreaData( const EveSOFDataHullAreaPtr areaData ) const
 {
 	HullAreas ha;
 	ha.index = areaData->m_index;
@@ -211,217 +284,227 @@ bool EveSOFDataMgr::LoadHullData( EveSOFDataPtr srcData )
 			return false;
 		}
 
-		// insert data
+		// fill the non-trinity struct with the provided data
 		HullData hd;
-		hd.geometryResFilePath = hullData->m_geometryResFilePath;
-		hd.boundingSphere = hullData->m_boundingSphere;
-		hd.isSkinned = hullData->m_isSkinned;
+		GenerateHullData( hd, hullData );
 
-		// boosters
-		if( hullData->m_booster )
-		{
-			EveSOFDataHullBoosterPtr boosterData = hullData->m_booster;
-
-			HullBoosterData hbd;
-			hbd.alwaysOn = boosterData->m_alwaysOn;
-			hbd.hasTrails = boosterData->m_hasTrails;
-
-			// booster items
-			for( auto biit = boosterData->m_items.begin(); biit != boosterData->m_items.end(); ++biit )
-			{
-				EveSOFDataHullBoosterItemPtr boosterItemData = (*biit);
-
-				HullBoosterItemData hbid;
-				hbid.transform = boosterItemData->m_transform;
-				hbid.functionality = boosterItemData->m_functionality;
-				hbid.hasTrail = boosterItemData->m_hasTrail;
-
-				hbd.items.push_back( hbid );
-			}
-
-			hd.boosters = hbd;
-		}
-
-		// spritesets
-		for( auto ssit = hullData->m_spriteSets.begin(); ssit != hullData->m_spriteSets.end(); ++ssit )
-		{
-			EveSOFDataHullSpriteSetPtr spriteSetData = (*ssit);
-
-			HullSpriteSetData hssd;
-			hssd.skinned = spriteSetData->m_skinned;
-			for( auto ssiit = spriteSetData->m_items.begin(); ssiit != spriteSetData->m_items.end(); ++ssiit )
-			{
-				EveSOFDataHullSpriteSetItemPtr spriteSetItemData = (*ssiit);
-
-				HullSpriteSetItemData hssid;
-				hssid.blinkPhase = spriteSetItemData->m_blinkPhase;
-				hssid.blinkRate = spriteSetItemData->m_blinkRate;
-				hssid.boneIndex = spriteSetItemData->m_boneIndex;
-				hssid.falloff = spriteSetItemData->m_falloff;
-				hssid.maxScale = spriteSetItemData->m_maxScale;
-				hssid.minScale = spriteSetItemData->m_minScale;
-				hssid.position = spriteSetItemData->m_position;
-				hssid.groupIndex = spriteSetItemData->m_groupIndex;
-				hssd.m_items.push_back( hssid );
-			}
-			hd.spriteSets.push_back( hssd );
-		}
-
-		// spotlightsets
-		for( auto ssit = hullData->m_spotlightSets.begin(); ssit != hullData->m_spotlightSets.end(); ++ssit )
-		{
-			EveSOFDataHullSpotlightSetPtr spotlightSetData = (*ssit);
-
-			HullSpotlightSetData hssd;
-			hssd.skinned = spotlightSetData->m_skinned;
-			hssd.zOffset = spotlightSetData->m_zOffset;
-			hssd.coneTextureResPath = spotlightSetData->m_coneTextureResPath;
-			hssd.glowTextureResPath = spotlightSetData->m_glowTextureResPath;
-			for( auto ssiit = spotlightSetData->m_items.begin(); ssiit != spotlightSetData->m_items.end(); ++ssiit )
-			{
-				EveSOFDataHullSpotlightSetItemPtr spotlightSetItemData = (*ssiit);
-
-				HullSpotlightSetItemData hssid;
-				hssid.boneIndex = spotlightSetItemData->m_boneIndex;
-				hssid.boosterGainInfluence = spotlightSetItemData->m_boosterGainInfluence;
-				hssid.spriteScale = spotlightSetItemData->m_spriteScale;
-				hssid.transform = spotlightSetItemData->m_transform;
-				hssid.groupIndex = spotlightSetItemData->m_groupIndex;
-				hssid.coneIntensity = spotlightSetItemData->m_coneIntensity;
-				hssid.flareIntensity = spotlightSetItemData->m_flareIntensity;
-				hssid.spriteIntensity = spotlightSetItemData->m_spriteIntensity;
-				hssd.items.push_back( hssid );
-			}
-			hd.spotlightSets.push_back( hssd );
-		}
-
-		// planesets
-		for( auto psit = hullData->m_planeSets.begin(); psit != hullData->m_planeSets.end(); ++psit )
-		{
-			EveSOFDataHullPlaneSetPtr planeSetData = (*psit);
-
-			HullPlaneSetData hpsd;
-			hpsd.layer1MapResPath = planeSetData->m_layer1MapResPath;
-			hpsd.layer2MapResPath = planeSetData->m_layer2MapResPath;
-			hpsd.maskMapResPath = planeSetData->m_maskMapResPath;
-			hpsd.planeData = planeSetData->m_planeData;
-			hpsd.skinned = planeSetData->m_skinned;
-			for( auto psiit = planeSetData->m_items.begin(); psiit != planeSetData->m_items.end(); ++psiit )
-			{
-				EveSOFDataHullPlaneSetItemPtr planeSetItemData = (*psiit);
-
-				HullPlaneSetItemData pssid;
-				pssid.boneIndex = planeSetItemData->m_boneIndex;
-				pssid.layer1Scroll = planeSetItemData->m_layer1Scroll;
-				pssid.layer1Transform = planeSetItemData->m_layer1Transform;
-				pssid.layer2Scroll = planeSetItemData->m_layer2Scroll;
-				pssid.layer2Transform = planeSetItemData->m_layer2Transform;
-				pssid.position = planeSetItemData->m_position;
-				pssid.rotation = planeSetItemData->m_rotation;
-				pssid.scaling = planeSetItemData->m_scaling;
-				pssid.color = planeSetItemData->m_color;
-				hpsd.items.push_back( pssid );
-			}
-			hd.planeSets.push_back( hpsd );
-		}
-
-		// hulldecals
-		for( auto hdit = hullData->m_hullDecals.begin(); hdit != hullData->m_hullDecals.end(); ++hdit )
-		{
-			EveSOFDataHullDecalPtr hullDecal = (*hdit);
-
-			HullDecalData hdd;
-			hdd.position = hullDecal->m_position;
-			hdd.rotation = hullDecal->m_rotation;
-			hdd.scaling = hullDecal->m_scaling;
-			hdd.shaderPath = hullDecal->m_shaderPath;
-			for( auto hdtit = hullDecal->m_textures.begin(); hdtit != hullDecal->m_textures.end(); ++hdtit )
-			{
-				EveSOFDataTexturePtr textureData = (*hdtit);
-
-				TextureData td;
-				td.resFilePath = textureData->m_resFilePath;
-				hdd.textures[textureData->m_name] = td;
-			}
-			for( auto hdpit = hullDecal->m_parameters.begin(); hdpit != hullDecal->m_parameters.end(); ++hdpit )
-			{
-				EveSOFDataParameterPtr parameterData = (*hdpit);
-
-				hdd.parameters[parameterData->m_name] = parameterData->m_value;
-			}
-			hd.hullDecals.push_back( hdd );
-		}
-
-		// meshareas
-		for( auto mait = hullData->m_opaqueAreas.begin(); mait != hullData->m_opaqueAreas.end(); ++mait )
-		{
-			EveSOFDataHullAreaPtr areaData = (*mait);
-			hd.opaqueAreas.push_back( LoadHullAreaData( areaData ) );
-		}
-		for( auto mait = hullData->m_transparentAreas.begin(); mait != hullData->m_transparentAreas.end(); ++mait )
-		{
-			EveSOFDataHullAreaPtr areaData = (*mait);
-			hd.transparentAreas.push_back( LoadHullAreaData( areaData ) );
-		}
-		for( auto mait = hullData->m_additiveAreas.begin(); mait != hullData->m_additiveAreas.end(); ++mait )
-		{
-			EveSOFDataHullAreaPtr areaData = (*mait);
-			hd.additiveAreas.push_back( LoadHullAreaData( areaData ) );
-		}
-		for( auto mait = hullData->m_distortionAreas.begin(); mait != hullData->m_distortionAreas.end(); ++mait )
-		{
-			EveSOFDataHullAreaPtr areaData = (*mait);
-			hd.distortionAreas.push_back( LoadHullAreaData( areaData ) );
-		}
-		for( auto mait = hullData->m_depthAreas.begin(); mait != hullData->m_depthAreas.end(); ++mait )
-		{
-			EveSOFDataHullAreaPtr areaData = (*mait);
-			hd.depthAreas.push_back( LoadHullAreaData( areaData ) );
-		}
-
-		// turret locators
-		for( auto tlit = hullData->m_locatorTurrets.begin(); tlit != hullData->m_locatorTurrets.end(); ++it )
-		{
-			EveSOFDataHullLocatorPtr locatorData = (*tlit);
-
-			LocatorData ld;
-			ld.name = locatorData->m_name;
-			ld.transform = locatorData->m_transform;
-			hd.locatorTurrets.push_back( ld );
-		}
-
-		// audio locators
-		for( auto alit = hullData->m_locatorAudio.begin(); alit != hullData->m_locatorAudio.end(); ++it )
-		{
-			EveSOFDataHullLocatorPtr locatorData = (*alit);
-
-			LocatorData ld;
-			ld.name = locatorData->m_name;
-			ld.transform = locatorData->m_transform;
-			hd.locatorAudio.push_back( ld );
-		}
-
-		// children
-		for( auto chit = hullData->m_children.begin(); chit != hullData->m_children.end(); ++chit )
-		{
-			EveSOFDataHullChildPtr child = (*chit);
-			HullChild hc;
-			hc.redFilePath = child->m_redFilePath;
-			hc.translation = child->m_translation;
-			hc.rotation = child->m_rotation;
-			hc.scaling = child->m_scaling;
-			hd.children.push_back( hc );
-		}
-
-		// model curves
-		hd.modelRotationCurvePath = hullData->m_modelRotationCurvePath;
-		hd.modelTranslationCurvePath = hullData->m_modelTranslationCurvePath;
-
+		// put it into the main map
 		m_hullData[(*it)->m_name] = hd;
 	}
-
-
 	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Fill a non-trinity hull data struct with all the data from the trinity
+//   data struct
+// --------------------------------------------------------------------------------
+void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) const
+{
+	// insert data
+	hd.geometryResFilePath = srcData->m_geometryResFilePath;
+	hd.boundingSphere = srcData->m_boundingSphere;
+	hd.isSkinned = srcData->m_isSkinned;
+
+	// boosters
+	if( srcData->m_booster )
+	{
+		EveSOFDataHullBoosterPtr boosterData = srcData->m_booster;
+
+		HullBoosterData hbd;
+		hbd.alwaysOn = boosterData->m_alwaysOn;
+		hbd.hasTrails = boosterData->m_hasTrails;
+
+		// booster items
+		for( auto biit = boosterData->m_items.begin(); biit != boosterData->m_items.end(); ++biit )
+		{
+			EveSOFDataHullBoosterItemPtr boosterItemData = (*biit);
+
+			HullBoosterItemData hbid;
+			hbid.transform = boosterItemData->m_transform;
+			hbid.functionality = boosterItemData->m_functionality;
+			hbid.hasTrail = boosterItemData->m_hasTrail;
+
+			hbd.items.push_back( hbid );
+		}
+
+		hd.boosters = hbd;
+	}
+
+	// spritesets
+	for( auto ssit = srcData->m_spriteSets.begin(); ssit != srcData->m_spriteSets.end(); ++ssit )
+	{
+		EveSOFDataHullSpriteSetPtr spriteSetData = (*ssit);
+
+		HullSpriteSetData hssd;
+		hssd.skinned = spriteSetData->m_skinned;
+		for( auto ssiit = spriteSetData->m_items.begin(); ssiit != spriteSetData->m_items.end(); ++ssiit )
+		{
+			EveSOFDataHullSpriteSetItemPtr spriteSetItemData = (*ssiit);
+
+			HullSpriteSetItemData hssid;
+			hssid.blinkPhase = spriteSetItemData->m_blinkPhase;
+			hssid.blinkRate = spriteSetItemData->m_blinkRate;
+			hssid.boneIndex = spriteSetItemData->m_boneIndex;
+			hssid.falloff = spriteSetItemData->m_falloff;
+			hssid.maxScale = spriteSetItemData->m_maxScale;
+			hssid.minScale = spriteSetItemData->m_minScale;
+			hssid.position = spriteSetItemData->m_position;
+			hssid.groupIndex = spriteSetItemData->m_groupIndex;
+			hssd.m_items.push_back( hssid );
+		}
+		hd.spriteSets.push_back( hssd );
+	}
+
+	// spotlightsets
+	for( auto ssit = srcData->m_spotlightSets.begin(); ssit != srcData->m_spotlightSets.end(); ++ssit )
+	{
+		EveSOFDataHullSpotlightSetPtr spotlightSetData = (*ssit);
+
+		HullSpotlightSetData hssd;
+		hssd.skinned = spotlightSetData->m_skinned;
+		hssd.zOffset = spotlightSetData->m_zOffset;
+		hssd.coneTextureResPath = spotlightSetData->m_coneTextureResPath;
+		hssd.glowTextureResPath = spotlightSetData->m_glowTextureResPath;
+		for( auto ssiit = spotlightSetData->m_items.begin(); ssiit != spotlightSetData->m_items.end(); ++ssiit )
+		{
+			EveSOFDataHullSpotlightSetItemPtr spotlightSetItemData = (*ssiit);
+
+			HullSpotlightSetItemData hssid;
+			hssid.boneIndex = spotlightSetItemData->m_boneIndex;
+			hssid.boosterGainInfluence = spotlightSetItemData->m_boosterGainInfluence;
+			hssid.spriteScale = spotlightSetItemData->m_spriteScale;
+			hssid.transform = spotlightSetItemData->m_transform;
+			hssid.groupIndex = spotlightSetItemData->m_groupIndex;
+			hssid.coneIntensity = spotlightSetItemData->m_coneIntensity;
+			hssid.flareIntensity = spotlightSetItemData->m_flareIntensity;
+			hssid.spriteIntensity = spotlightSetItemData->m_spriteIntensity;
+			hssd.items.push_back( hssid );
+		}
+		hd.spotlightSets.push_back( hssd );
+	}
+
+	// planesets
+	for( auto psit = srcData->m_planeSets.begin(); psit != srcData->m_planeSets.end(); ++psit )
+	{
+		EveSOFDataHullPlaneSetPtr planeSetData = (*psit);
+
+		HullPlaneSetData hpsd;
+		hpsd.layer1MapResPath = planeSetData->m_layer1MapResPath;
+		hpsd.layer2MapResPath = planeSetData->m_layer2MapResPath;
+		hpsd.maskMapResPath = planeSetData->m_maskMapResPath;
+		hpsd.planeData = planeSetData->m_planeData;
+		hpsd.skinned = planeSetData->m_skinned;
+		for( auto psiit = planeSetData->m_items.begin(); psiit != planeSetData->m_items.end(); ++psiit )
+		{
+			EveSOFDataHullPlaneSetItemPtr planeSetItemData = (*psiit);
+
+			HullPlaneSetItemData pssid;
+			pssid.boneIndex = planeSetItemData->m_boneIndex;
+			pssid.layer1Scroll = planeSetItemData->m_layer1Scroll;
+			pssid.layer1Transform = planeSetItemData->m_layer1Transform;
+			pssid.layer2Scroll = planeSetItemData->m_layer2Scroll;
+			pssid.layer2Transform = planeSetItemData->m_layer2Transform;
+			pssid.position = planeSetItemData->m_position;
+			pssid.rotation = planeSetItemData->m_rotation;
+			pssid.scaling = planeSetItemData->m_scaling;
+			pssid.color = planeSetItemData->m_color;
+			hpsd.items.push_back( pssid );
+		}
+		hd.planeSets.push_back( hpsd );
+	}
+
+	// hulldecals
+	for( auto hdit = srcData->m_hullDecals.begin(); hdit != srcData->m_hullDecals.end(); ++hdit )
+	{
+		EveSOFDataHullDecalPtr hullDecal = (*hdit);
+
+		HullDecalData hdd;
+		hdd.position = hullDecal->m_position;
+		hdd.rotation = hullDecal->m_rotation;
+		hdd.scaling = hullDecal->m_scaling;
+		hdd.shaderPath = hullDecal->m_shaderPath;
+		for( auto hdtit = hullDecal->m_textures.begin(); hdtit != hullDecal->m_textures.end(); ++hdtit )
+		{
+			EveSOFDataTexturePtr textureData = (*hdtit);
+
+			TextureData td;
+			td.resFilePath = textureData->m_resFilePath;
+			hdd.textures[textureData->m_name] = td;
+		}
+		for( auto hdpit = hullDecal->m_parameters.begin(); hdpit != hullDecal->m_parameters.end(); ++hdpit )
+		{
+			EveSOFDataParameterPtr parameterData = (*hdpit);
+
+			hdd.parameters[parameterData->m_name] = parameterData->m_value;
+		}
+		hd.hullDecals.push_back( hdd );
+	}
+
+	// meshareas
+	for( auto mait = srcData->m_opaqueAreas.begin(); mait != srcData->m_opaqueAreas.end(); ++mait )
+	{
+		EveSOFDataHullAreaPtr areaData = (*mait);
+		hd.opaqueAreas.push_back( LoadHullAreaData( areaData ) );
+	}
+	for( auto mait = srcData->m_transparentAreas.begin(); mait != srcData->m_transparentAreas.end(); ++mait )
+	{
+		EveSOFDataHullAreaPtr areaData = (*mait);
+		hd.transparentAreas.push_back( LoadHullAreaData( areaData ) );
+	}
+	for( auto mait = srcData->m_additiveAreas.begin(); mait != srcData->m_additiveAreas.end(); ++mait )
+	{
+		EveSOFDataHullAreaPtr areaData = (*mait);
+		hd.additiveAreas.push_back( LoadHullAreaData( areaData ) );
+	}
+	for( auto mait = srcData->m_distortionAreas.begin(); mait != srcData->m_distortionAreas.end(); ++mait )
+	{
+		EveSOFDataHullAreaPtr areaData = (*mait);
+		hd.distortionAreas.push_back( LoadHullAreaData( areaData ) );
+	}
+	for( auto mait = srcData->m_depthAreas.begin(); mait != srcData->m_depthAreas.end(); ++mait )
+	{
+		EveSOFDataHullAreaPtr areaData = (*mait);
+		hd.depthAreas.push_back( LoadHullAreaData( areaData ) );
+	}
+
+	// turret locators
+	for( auto tlit = srcData->m_locatorTurrets.begin(); tlit != srcData->m_locatorTurrets.end(); ++tlit )
+	{
+		EveSOFDataHullLocatorPtr locatorData = (*tlit);
+
+		LocatorData ld;
+		ld.name = locatorData->m_name;
+		ld.transform = locatorData->m_transform;
+		hd.locatorTurrets.push_back( ld );
+	}
+
+	// audio locators
+	for( auto alit = srcData->m_locatorAudio.begin(); alit != srcData->m_locatorAudio.end(); ++alit )
+	{
+		EveSOFDataHullLocatorPtr locatorData = (*alit);
+
+		LocatorData ld;
+		ld.name = locatorData->m_name;
+		ld.transform = locatorData->m_transform;
+		hd.locatorAudio.push_back( ld );
+	}
+
+	// children
+	for( auto chit = srcData->m_children.begin(); chit != srcData->m_children.end(); ++chit )
+	{
+		EveSOFDataHullChildPtr child = (*chit);
+		HullChild hc;
+		hc.redFilePath = child->m_redFilePath;
+		hc.translation = child->m_translation;
+		hc.rotation = child->m_rotation;
+		hc.scaling = child->m_scaling;
+		hd.children.push_back( hc );
+	}
+
+	// model curves
+	hd.modelRotationCurvePath = srcData->m_modelRotationCurvePath;
+	hd.modelTranslationCurvePath = srcData->m_modelTranslationCurvePath;
 }
 
 // --------------------------------------------------------------------------------
@@ -442,66 +525,76 @@ bool EveSOFDataMgr::LoadFactionData( EveSOFDataPtr srcData )
 			return false;
 		}
 
-		// insert data
+		// fill the non-trinity struct with the provided data
 		FactionData fd;
-		fd.resPathInsert = factionData->m_resPathInsert;
+		GenerateFactionData( fd, factionData );
 
-		// sprite set colors
-		for( auto sscit = factionData->m_spriteSets.begin(); sscit != factionData->m_spriteSets.end(); ++sscit )
-		{
-			EveSOFDataFactionSpriteSetPtr spriteSetData = (*sscit);
-
-			FactionSpriteSetColorData sscd;
-			sscd.color = spriteSetData->m_color;
-
-			fd.spriteSetsColor[spriteSetData->m_groupIndex] = sscd;
-		}
-
-		// spotlight set colors
-		for( auto spotcit = factionData->m_spotlightSets.begin(); spotcit != factionData->m_spotlightSets.end(); ++spotcit )
-		{
-			EveSOFDataFactionSpotlightSetPtr spotlightSetData = (*spotcit);
-
-			FactionSpotlightSetColorData spotcd;
-			spotcd.coneColor = spotlightSetData->m_coneColor;
-			spotcd.flareColor = spotlightSetData->m_flareColor;
-			spotcd.spriteColor = spotlightSetData->m_spriteColor;
-
-			fd.spotlightSetsColors[spotlightSetData->m_groupIndex] = spotcd;
-		}
-
-		// area parameters
-		for( auto hait = factionData->m_opaqueAreas.begin(); hait != factionData->m_opaqueAreas.end(); ++hait )
-		{
-			EveSOFDataFactionHullAreaPtr hullAreaData = (*hait);
-
-			FactionAreaData ad;
-			for( auto hapit = hullAreaData->m_parameters.begin(); hapit != hullAreaData->m_parameters.end(); ++hapit )
-			{
-				EveSOFDataParameterPtr parameterData = (*hapit);
-				ad.parameters[parameterData->m_name] = parameterData->m_value;
-			}
-			fd.opaqueAreaParameters[hullAreaData->m_name] = ad;
-		}
-		for( auto hait = factionData->m_transparentAreas.begin(); hait != factionData->m_transparentAreas.end(); ++hait )
-		{
-			EveSOFDataFactionHullAreaPtr hullAreaData = (*hait);
-
-			FactionAreaData ad;
-			for( auto hapit = hullAreaData->m_parameters.begin(); hapit != hullAreaData->m_parameters.end(); ++hapit )
-			{
-				EveSOFDataParameterPtr parameterData = (*hapit);
-				ad.parameters[parameterData->m_name] = parameterData->m_value;
-			}
-			fd.transparentAreaParameters[hullAreaData->m_name] = ad;
-		}
-
-
+		// put it into the main map
 		m_factionData[(*it)->m_name] = fd;
 	}
 
-
 	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Fill a non-trinity faction data struct with all the data from the trinity
+//   data struct
+// --------------------------------------------------------------------------------
+void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr srcData ) const
+{
+	// insert data
+	fd.resPathInsert = srcData->m_resPathInsert;
+
+	// sprite set colors
+	for( auto sscit = srcData->m_spriteSets.begin(); sscit != srcData->m_spriteSets.end(); ++sscit )
+	{
+		EveSOFDataFactionSpriteSetPtr spriteSetData = (*sscit);
+
+		FactionSpriteSetColorData sscd;
+		sscd.color = spriteSetData->m_color;
+
+		fd.spriteSetsColor[spriteSetData->m_groupIndex] = sscd;
+	}
+
+	// spotlight set colors
+	for( auto spotcit = srcData->m_spotlightSets.begin(); spotcit != srcData->m_spotlightSets.end(); ++spotcit )
+	{
+		EveSOFDataFactionSpotlightSetPtr spotlightSetData = (*spotcit);
+
+		FactionSpotlightSetColorData spotcd;
+		spotcd.coneColor = spotlightSetData->m_coneColor;
+		spotcd.flareColor = spotlightSetData->m_flareColor;
+		spotcd.spriteColor = spotlightSetData->m_spriteColor;
+
+		fd.spotlightSetsColors[spotlightSetData->m_groupIndex] = spotcd;
+	}
+
+	// area parameters
+	for( auto hait = srcData->m_opaqueAreas.begin(); hait != srcData->m_opaqueAreas.end(); ++hait )
+	{
+		EveSOFDataFactionHullAreaPtr hullAreaData = (*hait);
+
+		FactionAreaData ad;
+		for( auto hapit = hullAreaData->m_parameters.begin(); hapit != hullAreaData->m_parameters.end(); ++hapit )
+		{
+			EveSOFDataParameterPtr parameterData = (*hapit);
+			ad.parameters[parameterData->m_name] = parameterData->m_value;
+		}
+		fd.opaqueAreaParameters[hullAreaData->m_name] = ad;
+	}
+	for( auto hait = srcData->m_transparentAreas.begin(); hait != srcData->m_transparentAreas.end(); ++hait )
+	{
+		EveSOFDataFactionHullAreaPtr hullAreaData = (*hait);
+
+		FactionAreaData ad;
+		for( auto hapit = hullAreaData->m_parameters.begin(); hapit != hullAreaData->m_parameters.end(); ++hapit )
+		{
+			EveSOFDataParameterPtr parameterData = (*hapit);
+			ad.parameters[parameterData->m_name] = parameterData->m_value;
+		}
+		fd.transparentAreaParameters[hullAreaData->m_name] = ad;
+	}
 }
 
 // --------------------------------------------------------------------------------
@@ -522,26 +615,36 @@ bool EveSOFDataMgr::LoadRaceData( EveSOFDataPtr srcData )
 			return false;
 		}
 
-		// insert data
+		// fill the non-trinity struct with the provided data
 		RaceData rd;
+		GenerateRaceData( rd, raceData );
 
-		// booster data
-		rd.boosterData.color = raceData->m_booster->m_color;
-		rd.boosterData.scale = raceData->m_booster->m_scale;
-		rd.boosterData.textureResPath = raceData->m_booster->m_textureResPath;
-		rd.boosterData.glowScale = raceData->m_booster->m_glowScale;
-		rd.boosterData.glowColor = raceData->m_booster->m_glowColor;
-		rd.boosterData.haloColor = raceData->m_booster->m_haloColor;
-		rd.boosterData.haloScaleX = raceData->m_booster->m_haloScaleX;
-		rd.boosterData.haloScaleY = raceData->m_booster->m_haloScaleY;
-		rd.boosterData.symHaloScale = raceData->m_booster->m_symHaloScale;
-		rd.boosterData.trailColor = raceData->m_booster->m_trailColor;
-		rd.boosterData.trailSize = raceData->m_booster->m_trailSize;
-
+		// put it into the main map
 		m_raceData[(*it)->m_name] = rd;
 	}
 
 	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Fill a non-trinity race data struct with all the data from the trinity
+//   data struct
+// --------------------------------------------------------------------------------
+void EveSOFDataMgr::GenerateRaceData( RaceData& rd, EveSOFDataRacePtr srcData ) const
+{
+	// booster data
+	rd.boosterData.color = srcData->m_booster->m_color;
+	rd.boosterData.scale = srcData->m_booster->m_scale;
+	rd.boosterData.textureResPath = srcData->m_booster->m_textureResPath;
+	rd.boosterData.glowScale = srcData->m_booster->m_glowScale;
+	rd.boosterData.glowColor = srcData->m_booster->m_glowColor;
+	rd.boosterData.haloColor = srcData->m_booster->m_haloColor;
+	rd.boosterData.haloScaleX = srcData->m_booster->m_haloScaleX;
+	rd.boosterData.haloScaleY = srcData->m_booster->m_haloScaleY;
+	rd.boosterData.symHaloScale = srcData->m_booster->m_symHaloScale;
+	rd.boosterData.trailColor = srcData->m_booster->m_trailColor;
+	rd.boosterData.trailSize = srcData->m_booster->m_trailSize;
 }
 
 
