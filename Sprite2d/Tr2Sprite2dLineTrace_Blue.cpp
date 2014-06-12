@@ -70,6 +70,14 @@ const Be::ClassInfo* Tr2Sprite2dLineTrace::ExposeToBlue()
 			"If set, the line trace is treated as a closed loop",
 			Be::READWRITE | Be::NOTIFY
 		)
+
+		MAP_ATTRIBUTE
+		(
+			"cornerType",
+			m_cornerType,
+			"Determines the shapes of corners connecting the line segments",
+			Be::READWRITE | Be::NOTIFY
+		)
 		
 	EXPOSURE_CHAINTO( Tr2TexturedSpriteObject )
 }

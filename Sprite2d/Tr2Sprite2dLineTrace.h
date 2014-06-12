@@ -58,6 +58,8 @@ public:
 		IRoot* value,
 		const IList* theList
 		);
+	
+	enum CornerType { CORNERTYPE_MITER, CORNERTYPE_ROUND, CORNERTYPE_NONE };
 
 private:
 	void ClearVertices();
@@ -70,9 +72,30 @@ private:
 		const Vector2& to, 
 		const Color& toColor, 
 		float capAngleTo);
+	void AddVertex(Tr2Sprite2dVertexBase& v, float xOffset, float yOffset, float halfWidth, bool isAA, float texOffset1, Color color);
+	void Tr2Sprite2dLineTrace::AddRoundJoint(
+		Tr2Sprite2dScene* renderer,
+		float capAngleTo, 
+		Tr2Sprite2dVertexBase v2, 
+		Tr2Sprite2dVertexBase v3, 
+		Vector2 normal, 
+		Color modulatedToColor, 
+		bool isAA, 
+		float pixelWidthInTexels,
+		float halfWidth);
 	float ClampAngle(float angle);
 	unsigned int GetEstimatedVertexCount();
-
+	void AddMiterJoint( 
+		Tr2Sprite2dScene* renderer, 
+		float capAngleTo, 
+		Tr2Sprite2dVertexBase v2, 
+		Tr2Sprite2dVertexBase v3, 
+		Vector2 normal, 
+		Color modulatedToColor, 
+		bool isAA, 
+		float pixelWidthInTexels, 
+		float halfWidth);
+	Vector2 GetMiterPoint(float halfWidth, Vector2 basePoint, float startAngle, float endAngle, float sign);
 private:
 	std::wstring m_name;
 
@@ -83,6 +106,7 @@ private:
 	float m_textureOffset;
 	float m_textureOffsetAccum;
 	float m_length;
+	int m_cornerType;
 
 	float m_start;
 	float m_end;
