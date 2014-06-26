@@ -77,6 +77,7 @@ public:
 	~EveSOFDataHullSpotlightSet() {}
 
 	// data
+	std::string m_name;
 	bool m_skinned;
 	float m_zOffset;
 	std::string m_glowTextureResPath;
@@ -117,6 +118,7 @@ public:
 	~EveSOFDataHullPlaneSet() {}
 
 	// data
+	std::string m_name;
 	bool m_skinned;
 	std::string m_layer1MapResPath;
 	std::string m_layer2MapResPath;
@@ -155,6 +157,7 @@ public:
 	~EveSOFDataHullSpriteSet() {}
 
 	// animated?
+	std::string m_name;
 	bool m_skinned;
 	// items
 	PEveSOFDataHullSpriteSetItemVector m_items;
@@ -241,6 +244,7 @@ public:
 	~EveSOFDataHullChild() {}
 
 	// data
+	std::string m_name;
 	std::string m_redFilePath;
 	Vector3 m_translation;
 	Quaternion m_rotation;
@@ -292,6 +296,7 @@ public:
 	~EveSOFDataHullDecal() {}
 
 	// per-hull data of a hull decal
+	std::string m_name;
 	Vector3 m_position, m_scaling;
 	Quaternion m_rotation;
 	std::string m_shaderPath;
@@ -374,6 +379,7 @@ public:
 
 	// per-faction data of a spriteset
 	int m_groupIndex;
+	std::string m_name;
 	Color m_color;
 };
 TYPEDEF_BLUECLASS( EveSOFDataFactionSpriteSet );
@@ -390,6 +396,7 @@ public:
 
 	// per-faction data of a spotlight
 	int m_groupIndex;
+	std::string m_name;
 	Color m_coneColor, m_spriteColor, m_flareColor;
 };
 TYPEDEF_BLUECLASS( EveSOFDataFactionSpotlightSet );
@@ -406,6 +413,7 @@ public:
 
 	// per-faction data of a planeset
 	int m_groupIndex;
+	std::string m_name;
 	Color m_color;
 };
 TYPEDEF_BLUECLASS( EveSOFDataFactionPlaneSet );
@@ -422,8 +430,8 @@ public:
 
 	// group
 	int m_groupIndex;
-	// data for visual overrrides
 	bool m_isVisible;
+	std::string m_name;
 	std::string m_shaderPath;
 	PEveSOFDataParameterVector m_parameters;
 	PEveSOFDataTextureVector m_textures;
