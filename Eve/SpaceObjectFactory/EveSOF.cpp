@@ -386,16 +386,27 @@ void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData* h
 		{
 			const EveSOFDataMgr::HullSpriteSetItemData* itemData = &(*ssiit);
 
-			// if we find no faction data for this sprite, it means it is not to be there for this ship/faction
 			auto finder = factionData->spriteSetsColor.find( ssiit->groupIndex );
-			if( finder == factionData->spriteSetsColor.end() )
+			if( finder != factionData->spriteSetsColor.end() && !finder->second.isVisible )
 			{
+				// This spriteset item is not used for this faction.
 				continue;
 			}
 
 			// create spriteset items
 			EveSpriteSetItemPtr spriteSetItem;
 			spriteSetItem.CreateInstance();
+
+			if( finder == factionData->spriteSetsColor.end() )
+			{
+				// sprite set doesn't exist for faction
+				spriteSetItem->m_color = Color( 1.f, 0.f, 0.f, 1.f );
+			}
+			else
+			{
+				spriteSetItem->m_color = finder->second.color;
+			}
+
 			// set it up, first with the per-hull data
 			spriteSetItem->m_blinkPhase = ssiit->blinkPhase;
 			spriteSetItem->m_blinkRate = ssiit->blinkRate;
@@ -404,8 +415,6 @@ void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDataMgr::HullData* h
 			spriteSetItem->m_maxScale = ssiit->maxScale;
 			spriteSetItem->m_minScale = ssiit->minScale;
 			spriteSetItem->m_position = ssiit->position;
-			// now with the per-faction data
-			spriteSetItem->m_color = finder->second.color;
 
 			// put it into spriteset
 			spriteSet->Add( spriteSetItem );

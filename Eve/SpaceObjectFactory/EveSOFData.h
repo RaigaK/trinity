@@ -378,6 +378,7 @@ public:
 	~EveSOFDataFactionSpriteSet() {}
 
 	// per-faction data of a spriteset
+	bool m_isVisible;
 	int m_groupIndex;
 	std::string m_name;
 	Color m_color;

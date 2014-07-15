@@ -198,6 +198,7 @@ EveSOFDataHullSpriteSetItem::EveSOFDataHullSpriteSetItem( IRoot* lockobj ) :
 
 
 EveSOFDataFactionSpriteSet::EveSOFDataFactionSpriteSet( IRoot* lockobj ) :
+	m_isVisible( true ),
 	m_groupIndex( -1 ),
 	m_color( 0.f, 0.f, 0.f, 0.f )
 {}

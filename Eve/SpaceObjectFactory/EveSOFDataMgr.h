@@ -179,6 +179,7 @@ public:
 	// faction data structs
 	struct FactionSpriteSetColorData
 	{
+		bool isVisible;
 		Color color;
 	};
 
