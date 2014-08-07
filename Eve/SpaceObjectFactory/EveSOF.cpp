@@ -293,7 +293,7 @@ void EveSOF::ModifyResourcePathsForLOD( const Tr2MeshAreaVector* areas, const ch
 				if( (*resIt)->QueryInterface( BlueInterfaceIID<TriTexture2DParameter>(), (void**)&textureRes ) )
 				{
 					std::string resPathCopy = textureRes->GetResourcePath();
-					if( InsertStringStub( resPathCopy, ".dds", lodInsert ) )
+					if( StringInsertStub( resPathCopy, ".dds", lodInsert ) )
 					{
 						textureRes->SetResourcePath( resPathCopy.c_str() );
 					}
@@ -316,7 +316,7 @@ Tr2MeshPtr EveSOF::CreateMeshLOD( const Tr2Mesh* base, const char* lodInsert ) c
 	ModifyResourcePathsForLOD( mesh->GetAreas( TRIBATCHTYPE_TRANSPARENT ), lodInsert );
 	
 	std::string path = mesh->GetMeshResPath();
-	if( InsertStringStub( path, ".gr2", lodInsert ) )
+	if( StringInsertStub( path, ".gr2", lodInsert ) )
 	{
 		mesh->SetMeshResPath( path.c_str() );
 	}

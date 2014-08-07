@@ -15,6 +15,12 @@ bool FileExists( const std::string& path )
 	return BePaths->FileExists( wstrCopy );
 }
 
+// dna commands
+static std::string s_dnaCommands[] = {
+	"invalid",				// CMD_INVALID
+	"mesh",					// CMD_MESH
+};
+
 // --------------------------------------------------------------------------------
 // Description:
 //   Initialize data members
@@ -60,7 +66,7 @@ void EveSOFDNA::Setup( const char* dnaString, EveSOFDataMgrPtr dataMgr )
 
 	// split up dna string in all subparts
 	std::vector<std::string> dnaParts;
-	SplitString( dnaParts, dnaString, '.' );
+	StringSplit( dnaParts, dnaString, '.' );
 
 	// need three at least
 	if(dnaParts.size() < 3)
@@ -96,11 +102,23 @@ void EveSOFDNA::Setup( const char* dnaString, EveSOFDataMgrPtr dataMgr )
 	}
 
 	// additional dna subparts
-	for( unsigned int dnaSubpart = 3; dnaSubpart < dnaParts.size(); ++dnaSubpart )
+	for( size_t dnaSubpart = 3; dnaSubpart < dnaParts.size(); ++dnaSubpart )
 	{
 		// split into command and args
+		std::vector<std::string> cmdAndArgs;
+		StringSplit( cmdAndArgs, dnaParts[ dnaSubpart ].c_str(), ':' );
+		if( cmdAndArgs.size() != 2 )
+		{
+			CCP_LOGERR( "Invalid SOF DNA, incorrect command and args: %s", dnaString );
+			continue;
+		}
 
-		//std::string command
+		// get commands
+		std::vector<std::string> commandList;
+		StringSplit( commandList, cmdAndArgs[1].c_str(), ';' );
+
+		// put into map
+		m_commands[cmdAndArgs[0]] = commandList;
 	}
 }
 
@@ -262,7 +280,7 @@ void EveSOFDNA::ModifyTextureResPath( std::string& resPath, const char* resName 
 
 		// insert part into filename
 		std::string insertStr = "_" + m_factionData->resPathInsert;
-		if( InsertStringStub( resPathCopy, "_pgs", insertStr.c_str() ) && FileExists( resPathCopy ) )
+		if( StringInsertStub( resPathCopy, "_pgs", insertStr.c_str() ) && FileExists( resPathCopy ) )
 		{
 			resPath = resPathCopy;
 		}
@@ -367,6 +385,34 @@ const Vector4* EveSOFDNA::GetFactionMeshAreaParameters( TriBatchType type, const
 		return nullptr;
 	}
 
+	// do we have a dna mesh command for this?
+	std::vector<std::string> meshCommandArgs;
+	if( GetDnaCommandArgs( CMD_MESH, meshCommandArgs ) )
+	{
+		// is this the correct area? hull or exhaust etc.
+		if( meshCommandArgs[0] == std::string( areaDesignation ) )
+		{
+			// identify mask, submask
+			if( StringStartsWithI( parameterName, meshCommandArgs[1].c_str() ) )
+			{
+				// get the material from the lib
+				const EveSOFDataMgr::MaterialData* materialData = m_dataMgr->GetMaterialData( meshCommandArgs[2].c_str() );
+				if( materialData ) 
+				{
+					// construct parameter name
+					std::string lookup = std::string( parameterName );
+					StringRemove( lookup, "SubMask" );
+					StringRemove( lookup, "Mask" );
+					auto parameterIt = materialData->parameters.find( lookup.c_str() );
+					if( parameterIt != materialData->parameters.end() )
+					{
+						return &parameterIt->second;
+					}
+				}
+			}
+		}
+	}
+
 	// find the area, by designation string
 	auto parameterListIt = areaParameters->find( areaDesignation );
 	if( parameterListIt == areaParameters->end() )
@@ -430,6 +476,35 @@ const char* EveSOFDNA::GetRaceName() const
 {
 	return m_raceName.c_str();
 }
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Try to find a command in our cmd list and return it's arguments
+// --------------------------------------------------------------------------------
+bool EveSOFDNA::GetDnaCommandArgs( DnaCommand cmd, std::vector<std::string>& args ) const
+{
+	// straight out in mode cases:
+	if( m_commands.empty() )
+	{
+		return false;
+	}
+
+	// try to find it!
+	auto commandIt = m_commands.find( s_dnaCommands[ cmd ] );
+	if( commandIt == m_commands.end() )
+	{
+		return false;
+	}
+
+	// just copy the args
+	args = commandIt->second;
+
+	return true;
+}
+
+
+
+
 
 
 

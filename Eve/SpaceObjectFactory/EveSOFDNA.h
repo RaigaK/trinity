@@ -28,6 +28,14 @@ public:
 	EveSOFDNA( IRoot* lockobj = NULL );
 	~EveSOFDNA();
 
+	// commands from the dna
+	enum DnaCommand
+	{
+		CMD_INVALID = 0,
+		CMD_MESH,
+		CMD_MAX
+	}; 
+
 	// initialize this dna
 	void Setup( const char* dnaString, EveSOFDataMgrPtr dataMgr );
 
@@ -68,6 +76,9 @@ public:
 
 
 private:
+	// search for a dna command and get it's args
+	bool GetDnaCommandArgs( DnaCommand cmd, std::vector<std::string>& args ) const;
+
 	// the dna as a string
 	std::string m_dna;
 
@@ -82,6 +93,7 @@ private:
 	std::string m_hullName;
 	std::string m_factionName;
 	std::string m_raceName;
+	std::map<std::string, std::vector<std::string>> m_commands;
 };
 
 TYPEDEF_BLUECLASS( EveSOFDNA );

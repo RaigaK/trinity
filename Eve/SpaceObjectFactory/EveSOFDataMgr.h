@@ -272,6 +272,9 @@ public:
 	// access to race data
 	bool HasRaceData( const char* raceName ) const;
 	const RaceData* GetRaceData( const char* raceName ) const;
+	// access to material data
+	bool HasMaterialData( const char* materialName ) const;
+	const MaterialData* GetMaterialData( const char* materialName ) const;
 
 private:
 	// load indiviual parts of data

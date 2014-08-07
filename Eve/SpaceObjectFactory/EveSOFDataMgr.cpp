@@ -43,7 +43,7 @@ const EveSOFDataMgr::HullData* EveSOFDataMgr::GetHullData( const char* hullName 
 	std::map<std::string, HullData>::const_iterator finder = m_hullData.find( hullName );
 	if( finder == m_hullData.end() )
 	{
-		return NULL;
+		return nullptr;
 	}
 	return &finder->second;
 }
@@ -67,7 +67,7 @@ const EveSOFDataMgr::FactionData* EveSOFDataMgr::GetFactionData( const char* fac
 	std::map<std::string, FactionData>::const_iterator finder = m_factionData.find( factionName );
 	if( finder == m_factionData.end() )
 	{
-		return NULL;
+		return nullptr;
 	}
 	return &finder->second;
 }
@@ -91,7 +91,31 @@ const EveSOFDataMgr::RaceData* EveSOFDataMgr::GetRaceData( const char* raceName 
 	std::map<std::string, RaceData>::const_iterator finder = m_raceData.find( raceName );
 	if( finder == m_raceData.end() )
 	{
-		return NULL;
+		return nullptr;
+	}
+	return &finder->second;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   check if material data is there. Mainly for debug reason!
+// --------------------------------------------------------------------------------
+bool EveSOFDataMgr::HasMaterialData( const char* materialName ) const
+{
+	std::map<std::string, MaterialData>::const_iterator finder = m_materialData.find( materialName );
+	return finder != m_materialData.end();
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Access to racedata, only const pointer!!
+// --------------------------------------------------------------------------------
+const EveSOFDataMgr::MaterialData* EveSOFDataMgr::GetMaterialData( const char* materialName ) const
+{
+	std::map<std::string, MaterialData>::const_iterator finder = m_materialData.find( materialName );
+	if( finder == m_materialData.end() )
+	{
+		return nullptr;
 	}
 	return &finder->second;
 }

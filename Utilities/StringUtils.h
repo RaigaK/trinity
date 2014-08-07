@@ -11,7 +11,7 @@
 // Description:
 //   Inserts insertStr before the last instance of beforeSubstr in baseString.
 // --------------------------------------------------------------------------------
-inline bool InsertStringStub( std::string& baseString, const char* beforeSubstr, const char* insertStr )
+inline bool StringInsertStub( std::string& baseString, const char* beforeSubstr, const char* insertStr )
 {
 	size_t index = baseString.rfind( beforeSubstr );
 	if( index == std::string::npos )
@@ -28,7 +28,7 @@ inline bool InsertStringStub( std::string& baseString, const char* beforeSubstr,
 //   Split up a string into a vector of strings using a seperator.
 //   Similar to Python's split()
 // --------------------------------------------------------------------------------
-inline void SplitString( std::vector<std::string>& result, const char* original, char seperator )
+inline void StringSplit( std::vector<std::string>& result, const char* original, char seperator )
 {
 	std::string originalStr( original );
 	for( size_t i = 0; i < originalStr.size(); ++i )
@@ -43,6 +43,38 @@ inline void SplitString( std::vector<std::string>& result, const char* original,
 
 		i = next;
 	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Remove a subpart from a string
+// --------------------------------------------------------------------------------
+inline bool StringRemove( std::string& baseString, const char* remove )
+{
+	// find what to remove
+	size_t removeStart = baseString.find( remove );
+	if( removeStart != std::string::npos )
+	{
+		baseString.erase( removeStart, strlen( remove ) );
+		return true;
+	}
+	return false;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Check if a string starts with another string! Case-insensitve!
+//   Similar to Python's starts_with()
+// --------------------------------------------------------------------------------
+inline bool StringStartsWithI( const char* baseString, const char* startString )
+{
+	// turn all lowercase
+	std::string b( baseString );
+	std::transform( b.begin(), b.end(), b.begin(), ::tolower );
+	std::string f( startString );
+	std::transform( f.begin(), f.end(), f.begin(), ::tolower );
+	
+	return ( b.compare( 0, f.size(), f ) == 0 );
 }
 
 
