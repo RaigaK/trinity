@@ -4,6 +4,7 @@
 #include "Resources/TriGeometryRes.h"
 #include "Tr2ShaderMaterial.h"
 #include "Tr2LowLevelShader.h"
+#include "Resources/Tr2LodResource.h"
 
 BLUE_DECLARE( Tr2Effect );
 BLUE_DECLARE( Tr2ShaderMaterial );
@@ -25,6 +26,7 @@ Tr2Mesh::Tr2Mesh( IRoot* lockobj ) :
 	PARENTLOCK( m_decalPrepassAreas ),
 	PARENTLOCK( m_flareAreas ),
 	PARENTLOCK( m_distortionAreas ),
+	PARENTLOCK( m_lodResources ),
 	m_meshIndex( 0 ),
 	m_deferGeometryLoad( false ),
 	m_immutable( false ),
@@ -731,6 +733,39 @@ void Tr2Mesh::ReloadWhenReferenced()
 		m_isLoading = true;
 		BeResMan->AddToQueue( BRMQ_BACKGROUND, StaticResourceLoadFinished, this, IBlueCallbackMan::BCBF_FENCE, &m_resourceLoadCbId );
 	}
+}
+
+void Tr2Mesh::SelectLod( Tr2Lod lod )
+{
+	if( m_selectedLod == lod )
+	{
+		return;
+	}
+
+	m_selectedLod = lod;
+	for( auto it = m_lodResources.begin(); it != m_lodResources.end(); ++it )
+	{
+		(*it)->SelectLod( lod );
+	}
+}
+
+void Tr2Mesh::AddLodResource( Tr2LodResource* lr )
+{
+	m_lodResources.Append( lr );
+}
+
+void Tr2Mesh::RemoveLodResource( Tr2LodResource* lr )
+{
+	auto key = m_lodResources.FindKey( lr );
+	if( key != -1 )
+	{
+		m_lodResources.Remove( key );
+	}
+}
+
+void Tr2Mesh::ClearLodResources()
+{
+	m_lodResources.Remove( -1 );
 }
 
 

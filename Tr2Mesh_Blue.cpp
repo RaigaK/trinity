@@ -144,6 +144,14 @@ const Be::ClassInfo* Tr2Mesh::ExposeToBlue()
 		MAP_ATTRIBUTE( "decalPrepassAreas", m_decalPrepassAreas, "Prepass areas that are rendered in the order that they exist, before transparency", Be::READWRITE | Be::PERSIST )
         MAP_ATTRIBUTE( "geometryEraserAreas", m_geometryEraserAreas, "Areas that erase geometry", Be::READWRITE | Be::PERSIST )
         MAP_ATTRIBUTE( "distortionAreas", m_distortionAreas, "", Be::READWRITE | Be::PERSIST )
+		
+		MAP_ATTRIBUTE( "lodResources", m_lodResources, "List of resources associated with this mesh that can select level of detail", Be::READWRITE | Be::PERSIST )
+		MAP_METHOD_AND_WRAP
+		(
+			"SelectLod",
+			SelectLod,
+			"Selects the level of detail on all resources associated with this mesh"
+		)
 
 		MAP_METHOD_AND_WRAP( "SetGeometryRes", PySetGeometryRes, "Set the geometry resource used by this mesh - bypassing the regular method of setting a resource name. This is used for geometry resources that require special handling, such as pre-baked blendshapes." )
 		MAP_METHOD( "BindLowLevelShaders", PyBindLowLevelShaders, "Bind a new low level shader to all areas based on the current situation" )

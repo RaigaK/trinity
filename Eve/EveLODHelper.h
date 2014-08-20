@@ -13,10 +13,12 @@ extern float g_eveSpaceSceneMediumUpdateRate;
 
 enum BoundingSphereQuery { EVE_BOUNDS_NORMAL, EVE_BOUNDS_WITH_CHILDREN };
 
+// TODO: Change to use Tr2Lod
 enum LodLevel
 {
-	LOD_INVALID = 0,
-	LOD_HIGH,
+	LOD_INVALID = -1,
+	
+	LOD_HIGH = 0,
 	LOD_MEDIUM,
 	LOD_LOW,
 };

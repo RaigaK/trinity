@@ -8,10 +8,13 @@
 #include "TriRenderBatch.h"
 
 #include "blue/Include/IUnloadable.h"
+#include "Resources/Tr2LodResource.h"
 
 BLUE_DECLARE( Tr2Mesh );
 BLUE_DECLARE( TriGeometryRes );
 BLUE_DECLARE( Tr2VariableStore );
+BLUE_DECLARE_VECTOR( Tr2LodResource );
+
 struct TriGeometryResSkeletonData;
 class ITriRenderBatchAccumulator;
 class Tr2PerObjectData;
@@ -96,6 +99,11 @@ public:
 
 	const char* GetName() const { return m_name.c_str(); }
 
+	void SelectLod( Tr2Lod lod );
+	void AddLodResource( Tr2LodResource* lr );
+	void RemoveLodResource( Tr2LodResource* lr );
+	void ClearLodResources();
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	// INotify
 	bool OnModified( Be::Var* val );
@@ -148,6 +156,7 @@ private:
 
 	void PySetGeometryRes( TriGeometryRes* geometryRes );
 	int GetAreasCount() const;
+
 protected:
 	std::string m_name;
 	std::string m_meshResPath;
@@ -205,6 +214,9 @@ protected:
 	Tr2VariableStorePtr m_pendingVariableStore;
 
 	std::vector<BlueScriptCallback> m_geometryPreparedCallbacks;
+
+	PTr2LodResourceVector m_lodResources;
+	Tr2Lod m_selectedLod;
 };
 
 TYPEDEF_BLUECLASS( Tr2Mesh );
