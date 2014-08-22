@@ -2557,7 +2557,6 @@
     <ClInclude Include="GrannyBoneOffset.h"/>
     <ClInclude Include="ID3DTexture.h"/>
     <ClInclude Include="IRenderCallback.h"/>
-    <ClInclude Include="ITr2AnimationUpdater.h"/>
     <ClInclude Include="ITr2AttributeGenerator.h"/>
     <ClInclude Include="ITr2EffectValue.h"/>
     <ClInclude Include="ITr2GeometryProvider.h"/>
@@ -2822,6 +2821,7 @@
     <ClInclude Include="Include\IEveBallpark.h"/>
     <ClInclude Include="Include\IEveReferencePoint.h"/>
     <ClInclude Include="Include\IPhysXSdk.h"/>
+    <ClInclude Include="Include\ITr2AnimationUpdater.h"/>
     <ClInclude Include="Include\ITr2BoundingBox.h"/>
     <ClInclude Include="Include\ITr2CapturedBuffer.h"/>
     <ClInclude Include="Include\ITr2DebugRenderer.h"/>
