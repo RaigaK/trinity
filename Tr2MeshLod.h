@@ -13,19 +13,8 @@
 
 BLUE_DECLARE_VECTOR( Tr2LodResource );
 
-struct TriGeometryResSkeletonData;
-class ITriRenderBatchAccumulator;
-class Tr2PerObjectData;
-class TriRenderBatch;
-
-namespace MR
-{
-	class Rig;
-}
-
 BLUE_CLASS( Tr2MeshLod ):
 	public Tr2MeshBase
-	// public IBlueAsyncResNotifyTarget
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -35,9 +24,18 @@ public:
 
 	virtual bool IsLoading() const { return false; }
 
+	// Selects the given level of detail for the mesh
 	void SelectLod( Tr2Lod lod );
+
+	// Add an associated resource, such as a texture used on an area of the mesh.
+	// When level of detail is selected, it is also applied to associated
+	// resources.
 	void AddAssociatedResource( Tr2LodResource* lr );
+
+	// Remove an associated resource.
 	void RemoveAssociatedResource( Tr2LodResource* lr );
+
+	// Clear all associated resources.
 	void ClearAssociatedResources();
 
 	virtual TriGeometryRes* GetGeometryResource() const;
@@ -45,30 +43,8 @@ public:
 
 	virtual bool GetBoundingBox( Vector3& min, Vector3& max ) const;
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	// IInitialize
-	bool Initialize();
-
-	///////////////////////////////////////////////////////////////////////////////////////
-	//// IBlueAsyncResNotifyTarget
-	//virtual void ReleaseCachedData( BlueAsyncRes* p );
-	//virtual void RebuildCachedData( BlueAsyncRes* p );
-
-private:
-	unsigned int FindJoint( const std::string* boneList, const int numBones, const char* name ) const;
-
-	static void StaticResourceLoadFinished( void* pContext );
-	static void StaticResourcePrepFinished( void* pContext );
-
 protected:
 	Tr2LodResourcePtr m_geometryRes;
-
-	bool m_immutable;
-	bool m_computeAccess;
-
-	bool m_isLoading;
-	CcpAtomic<uint32_t> m_resourceLoadCbId;
-	CcpAtomic<uint32_t> m_resourcePrepCbId;
 
 	PTr2LodResourceVector m_associatedResources;
 	Tr2Lod m_selectedLod;
