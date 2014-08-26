@@ -1608,8 +1608,6 @@ void EveSpaceObject2::SelectMeshLevelOfDetail()
 	if( mesh )
 	{
 		m_mesh = mesh;
-
-		PrepareForAnimation();
 	}
 	else if( m_meshLod )
 	{
@@ -1624,6 +1622,7 @@ void EveSpaceObject2::SelectMeshLevelOfDetail()
 
 	if( m_mesh )
 	{
+		PrepareForAnimation();
 		m_mesh->GetBoundingBox( m_localAabbMin, m_localAabbMax );
 	}
 }
