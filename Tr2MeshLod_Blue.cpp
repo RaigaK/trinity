@@ -6,6 +6,7 @@
 
 #include "StdAfx.h"
 #include "Tr2MeshLod.h"
+#include "Resources/TriGeometryRes.h"
 
 BLUE_DEFINE( Tr2MeshLod );
 
@@ -18,6 +19,13 @@ const Be::ClassInfo* Tr2MeshLod::ExposeToBlue()
 			m_geometryRes,
 			"Geometry LOD resource for this mesh",
 			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_PROPERTY_READONLY
+		(
+			"geometry",
+			GetGeometryResource,
+			"TriGeometryRes used as the currently selected level of detail for this mesh"
 		)
 		
 		MAP_ATTRIBUTE
