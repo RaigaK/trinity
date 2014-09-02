@@ -241,7 +241,7 @@ bool Tr2EffectRes::OnPrepareResources()
 		return false;
 	}
 
-	if( IsPrepared() || IsLoading() )
+	if( IsGood() || IsLoading() )
 	{
 		return true;
 	}
