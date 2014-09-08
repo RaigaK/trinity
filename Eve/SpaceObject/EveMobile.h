@@ -66,6 +66,11 @@ public:
 	// activation
 	void PlayActivationCurve();
 
+    /////////////////////////////////////////////////////////////////////////////////////
+	// clip sphere modification
+	void PlayClipSphereFactorCurve();
+	void ModifyClipSphereCurve( float curveLength, float timeElapsed );
+
 protected:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// children
@@ -106,6 +111,12 @@ private:
 	void ResetTurretLocatorCounter( bool updateTotal );
 	bool GetTurretLocatorCountingInfo( const char* name, unsigned int& current, unsigned int& total ) const;
 	bool ValidateTurretLocatorName( const char* locatorName, unsigned int& locatorsFoundA, unsigned int& locatorsFoundB ) const;
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	// clip sphere modification
+	bool m_playClipSphereFactorCurve; 
+	float m_clipSphereFactorDelta;
+	ITriScalarFunctionPtr m_clipSphereFactorCurve;
 };
 
 TYPEDEF_BLUECLASS( EveMobile );

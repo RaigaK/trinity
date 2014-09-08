@@ -9,6 +9,7 @@
 #include "Tr2GrannyAnimation.h"
 
 #include "EveMobile.h"
+#include "Curves/TriScalarCurve.h"
 #include "Eve/EveTurretSet.h"
 #include "Eve/SpaceObject/Utils/EveLocator2.h"
 #include "Eve/EveUpdateContext.h"
@@ -22,6 +23,7 @@ EveMobile::EveMobile( IRoot* lockobj ) :
 	PARENTLOCK( m_turretSets ),
 	m_activationDelta( 0.f ),
 	m_playActivationCurve( false ),
+	m_playClipSphereFactorCurve( false ),
 	m_clipSphereFactor( 0.f ),
 	m_clipSphereCenter( 0.f, 0.f, 0.f )
 {
@@ -142,6 +144,13 @@ void EveMobile::UpdateAsyncronous( EveUpdateContext& updateContext )
 		float deltaT = updateContext.GetDeltaT();
 		m_activationDelta += deltaT;
 		m_spaceObjectMiscData.y = m_activationStrengthCurve->Update( m_activationDelta );
+	}
+
+	if( m_clipSphereFactorCurve && m_playClipSphereFactorCurve )
+	{
+		float deltaT = updateContext.GetDeltaT();
+		m_clipSphereFactorDelta += deltaT;
+		m_clipSphereFactor = m_clipSphereFactorCurve->Update( m_clipSphereFactorDelta );
 	}
 
 	// the m_clipSphereFactor goes from 0.0 to 1.0 and is the "amount" of visibility of this whole
@@ -559,6 +568,26 @@ void EveMobile::PlayActivationCurve()
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Play the objects buildingCurve from the beginning.
+// --------------------------------------------------------------------------------
+void EveMobile::PlayClipSphereFactorCurve()
+{
+	m_clipSphereFactorDelta = 0.0f;
+	m_playClipSphereFactorCurve = true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Modifies the clip sphere curve by setting it's length and the time elapsed
+// --------------------------------------------------------------------------------
+void EveMobile::ModifyClipSphereCurve( float curveLength, float timeElapsed )
+{
+	m_clipSphereFactorDelta = timeElapsed;
+	m_clipSphereFactorCurve->ScaleTime( curveLength );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Gets called by the state machine of this object to execute some command.
 // Return Value:
 //   Returns true if this implementation has handled the command.
@@ -611,6 +640,34 @@ bool EveMobile::ExecuteAnimationStateCommand( EveAnimationCmd cmd, const std::st
 	case ANIM_CMD_ACTIVATION_STRENGTH_ONE:
 		m_spaceObjectMiscData.y = 1.f;
 		m_playActivationCurve = false;
+		return true;
+
+	case ANIM_CMD_PLAY_CLIPSPHERE:
+		if( !data.empty() )
+		{
+			IRootPtr p;
+			p.Attach( BeResMan->LoadObject( data.c_str() ) );
+			if( p == NULL )
+			{
+				CCP_LOGERR( "EveMobile: Couldn't find curve data resource file: %s", data.c_str() );
+				return true;
+			}
+
+			ITriScalarFunctionPtr ptr;
+			if( !p->QueryInterface( BlueInterfaceIID<ITriScalarFunction>(), (void**)&ptr ) )
+			{
+				CCP_LOGERR( "EveMobile: Curve resource file %s is not of correct type!", data.c_str() );
+				return true;
+			}
+
+			m_clipSphereFactorCurve = ptr;
+			PlayClipSphereFactorCurve();
+		}
+		return true;
+
+	case ANIM_CMD_STOP_CLIPSPHERE:
+		m_clipSphereFactor = 0.0f;
+		m_playClipSphereFactorCurve = false;
 		return true;
 
 	default:
