@@ -220,6 +220,7 @@ void Tr2EffectRes::ReleaseResources( TriStorage s )
 {
 	if( (s & TRISTORAGE_ALL) == TRISTORAGE_ALL )
 	{
+		SetGood( false );
 		SetPrepared( false );
 		CancelPendingLoad();
 

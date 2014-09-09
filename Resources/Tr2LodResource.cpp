@@ -40,6 +40,11 @@ IBlueResource* Tr2LodResource::GetResource()
 		return m_active;
 	}
 
+	if( m_requested )
+	{
+		return m_requested;
+	}
+
 	return nullptr;
 }
 

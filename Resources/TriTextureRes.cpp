@@ -123,6 +123,7 @@ void TriTextureRes::ReleaseResources( TriStorage s )
 		m_wrappedRenderTarget = nullptr;
 		m_wrappedDepthStencil = nullptr;
 		SetPrepared( false );
+		SetGood( false );
 	}
 }
 
@@ -201,7 +202,7 @@ void TriTextureRes::OnCloseStream()
 
 bool TriTextureRes::OnPrepareResources()
 {
-	if( IsPrepared() || IsLoading() )
+	if( IsGood() || IsLoading() )
 	{
 		// todo: we get here a lot from TriTexture calling PrepareResources.
 		// Those calls are probably not needed anymore - research a bit more.

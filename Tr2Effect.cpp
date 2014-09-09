@@ -320,7 +320,7 @@ void Tr2Effect::AddResourceTexture2DLod( const char* name, Tr2LodResourcePtr lod
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Manually adding a color parameter to this effect's list with creating
+//   Manually adding a vector4 parameter to this effect's list with creating
 //   it
 // --------------------------------------------------------------------------------
 void Tr2Effect::AddParameterVector4( const char* name, const Vector4* value )
@@ -333,7 +333,19 @@ void Tr2Effect::AddParameterVector4( const char* name, const Vector4* value )
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Manually adding a vector4 parameter to this effect's list with creating
+//   Manually adding a float parameter to this effect's list with creating
+//   it
+// --------------------------------------------------------------------------------
+void Tr2Effect::AddParameterFloat( const char* name, float value )
+{
+	// turn float vlaue into a vector4, cause that's what we put into constant parameters
+	Vector4 vec4( value, value, value, value );
+	AddParameterVector4( name, &vec4 );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Manually adding a color parameter to this effect's list with creating
 //   it
 // --------------------------------------------------------------------------------
 void Tr2Effect::AddParameterColor( const char* name, const Color* value )

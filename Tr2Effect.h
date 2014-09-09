@@ -69,6 +69,7 @@ public:
 	void AddResourceTexture2D( const char* name, const char* resPath );
 	void AddResourceTexture2DLod( const char* name, Tr2LodResourcePtr lodResource );
 	void AddParameterVector4( const char* name, const Vector4* value );
+	void AddParameterFloat( const char* name, float value );
 	void AddParameterColor( const char* name, const Color* value );
 
 	// access parameters and resources

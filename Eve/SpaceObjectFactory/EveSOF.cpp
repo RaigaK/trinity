@@ -40,11 +40,17 @@ EveSOF::EveSOF( IRoot* lockobj ) :
 {
 	// some shared shaders here
 	m_spriteSetEffect.CreateInstance();
+	m_spriteSetEffect->StartUpdate();
 	m_spriteSetEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglights.fx" );
+	m_spriteSetEffect->AddParameterFloat( "MainIntensity", 1.f );
 	m_spriteSetEffect->AddResourceTexture2D( "GradientMap", "res:/texture/particle/whitesharp_gradient.dds" );
+	m_spriteSetEffect->EndUpdate();
 	m_spriteSetEffectSkinned.CreateInstance();
+	m_spriteSetEffectSkinned->StartUpdate();
 	m_spriteSetEffectSkinned->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_blinkinglights.fx" );
+	m_spriteSetEffectSkinned->AddParameterFloat( "MainIntensity", 1.f );
 	m_spriteSetEffectSkinned->AddResourceTexture2D( "GradientMap", "res:/texture/particle/whitesharp_gradient.dds" );
+	m_spriteSetEffectSkinned->EndUpdate();
 
 	m_shadowEffect.CreateInstance();
 	m_shadowEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx" );
