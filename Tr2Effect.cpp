@@ -221,7 +221,7 @@ static bool ConvertEffectPath( const std::string path, std::string& actualPath )
 		CCP_LOGERR( "Effect '%s' needs to be under /effect/", path.c_str() );
 		return false;
 	}
-	if( !dot )
+	if( dot == -1 )
 	{
 		CCP_LOGWARN( "Invalid effect path '%s', no extension", path.c_str() );
 		dot = i;
