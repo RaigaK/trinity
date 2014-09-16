@@ -39,8 +39,7 @@ BLUE_CLASS( TriTexture2DParameter ):
 	public ITriEffectResourceParameter,
 	public IInitialize,
 	public INotify,
-	public ICopierCustomAssignment,
-	public Tr2DeviceResource
+	public ICopierCustomAssignment
 {
 
 public:
@@ -84,13 +83,6 @@ public:
 		ICopier* copier
 		);
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	// ITriDeviceResource
-private:
-	bool OnPrepareResources();
-public:				
-	void ReleaseResources( TriStorage s );
-
 	// access resource
 	void SetResource( TriTextureRes* newRes );
 	
@@ -100,24 +92,6 @@ public:
 	void SetParameterName( const char* name );
 	const wchar_t* GetResourcePath() const;
 	void SetResourcePath( const char* resourcePath );
-
-protected:
-	// this is the index of the current override samplerstate-block
-	unsigned int m_overrideSamplerStateIx;
-	// update overriding
-	void BuildOverrideSamplerStateIx(void);
-	// override the effect's sampler state
-	bool m_useOverrides;
-	Tr2RenderContextEnum::TextureAddressMode m_overrideAddressUMode;
-	Tr2RenderContextEnum::TextureAddressMode m_overrideAddressVMode;
-	Tr2RenderContextEnum::TextureAddressMode m_overrideAddressWMode;
-	Tr2RenderContextEnum::TextureFilter m_overrideFilterMode;
-	Tr2RenderContextEnum::TextureFilter m_overrideMipFilterMode;
-	float m_overrideMipmapLodBias;
-	unsigned int m_overrideMaxMipLevel;
-	unsigned int m_overrideMaxAnisotropy;
-	bool m_overrideSrgb;
-
 private:
 	ITr2ShaderStatePtr m_cachedEffect;
 

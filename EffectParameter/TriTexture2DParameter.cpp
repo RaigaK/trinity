@@ -6,17 +6,6 @@
 
 TriTexture2DParameter::TriTexture2DParameter(IRoot* lockobj):
 	m_isUsedByEffect( false ),
-	m_useOverrides( false ),
-	m_overrideSamplerStateIx( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
-	m_overrideAddressUMode( Tr2RenderContextEnum::TA_WRAP ),
-	m_overrideAddressVMode( Tr2RenderContextEnum::TA_WRAP ),
-	m_overrideAddressWMode( Tr2RenderContextEnum::TA_WRAP ),
-	m_overrideFilterMode( Tr2RenderContextEnum::TF_LINEAR ),
-	m_overrideMipFilterMode( Tr2RenderContextEnum::TF_LINEAR ),
-	m_overrideMipmapLodBias( 0.f ),
-	m_overrideMaxMipLevel( 0 ),
-	m_overrideMaxAnisotropy( 4 ),
-	m_overrideSrgb( false ),
 	m_resourceType( Tr2EffectResource::TEXTURE_TYPELESS )
 {
 }
@@ -24,17 +13,6 @@ TriTexture2DParameter::TriTexture2DParameter(IRoot* lockobj):
 
 TriTexture2DParameter::~TriTexture2DParameter()
 {
-}
-
-void TriTexture2DParameter::ReleaseResources( TriStorage s )
-{
-	m_overrideSamplerStateIx = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-}
-
-bool TriTexture2DParameter::OnPrepareResources()
-{
-	BuildOverrideSamplerStateIx();
-	return true;
 }
 
 const char* TriTexture2DParameter::GetParameterName() const
@@ -92,23 +70,6 @@ void TriTexture2DParameter::ReloadResources()
 
 bool TriTexture2DParameter::OnModified(	Be::Var* val )
 {
-	if( IsMatch( val, m_useOverrides          ) ||
-		IsMatch( val, m_overrideAddressUMode  ) ||
-		IsMatch( val, m_overrideAddressVMode  ) ||
-		IsMatch( val, m_overrideAddressWMode  ) ||
-		IsMatch( val, m_overrideFilterMode    ) ||
-		IsMatch( val, m_overrideFilterMode    ) ||
-		IsMatch( val, m_overrideMipFilterMode ) ||
-		IsMatch( val, m_overrideMipmapLodBias ) ||
-		IsMatch( val, m_overrideMaxMipLevel   ) ||
-		IsMatch( val, m_overrideMaxAnisotropy ) ||
-		IsMatch( val, m_overrideSrgb		  )
-	  )
-	{
-		BuildOverrideSamplerStateIx();
-		return true;
-	}
-		
 	UnloadResources();
 
 	Initialize();
@@ -118,41 +79,9 @@ bool TriTexture2DParameter::OnModified(	Be::Var* val )
 	return true;
 }
 
-// ---------------------------------------------------------------------------------------------------------
-void TriTexture2DParameter::BuildOverrideSamplerStateIx()
-{
-	// should we use the overrides?
-	if(m_useOverrides)
-	{
-		// build a new setup...
-		Tr2SamplerDescription sampler(
-			m_overrideFilterMode,
-			m_overrideFilterMode,
-			m_overrideMipFilterMode,
-			false,
-			m_overrideAddressUMode,
-			m_overrideAddressVMode,
-			m_overrideAddressWMode,
-			m_overrideMipmapLodBias,
-			m_overrideMaxAnisotropy,
-			Tr2RenderContextEnum::CMP_NEVER,
-			Color( 0.f, 0.f, 0.f, 0.f ),
-			float( m_overrideMaxMipLevel ),
-			FLT_MAX
-			);
-
-		// register it! or "unregister" it
-		m_overrideSamplerStateIx = Tr2EffectStateManager::RegisterSamplerSetup( sampler );
-	}
-	else
-	{
-		m_overrideSamplerStateIx = 0xffffffff;
-	}
-}
-
 // --------------------------------------------------------------------------------------
 // Description:
-//   Applies texture and possibly state overrides to the render context.
+//   Applies texture to the render context.
 // Arguments:
 //   inputType - shader type
 //   destHandle - reinterpreted as a sampler index
@@ -175,7 +104,7 @@ void TriTexture2DParameter::CopyValueToEffect(	Tr2RenderContextEnum::ShaderType 
 		}
 		else
 		{
-			bool isSrgb = m_useOverrides ? m_overrideSrgb : ( resourceFlags & RESOURCE_FLAG_SRGB ) != 0;
+			bool isSrgb = ( resourceFlags & RESOURCE_FLAG_SRGB ) != 0;
 			auto colorSpace = isSrgb ? Tr2RenderContextEnum::COLOR_SPACE_SRGB : Tr2RenderContextEnum::COLOR_SPACE_LINEAR;
 			renderContext.m_esm.ApplyTexture( inputType, ix, *tex, colorSpace );
 		}
@@ -191,12 +120,6 @@ void TriTexture2DParameter::CopyValueToEffect(	Tr2RenderContextEnum::ShaderType 
 		{
 			Tr2Renderer::ApplyFallbackTexture( inputType, ix, m_resourceType, m_name.c_str(), renderContext );
 		}
-	}
-
-	if( m_useOverrides )
-	{ 
-		renderContext.m_esm.ApplySamplerSetup( inputType, ix, m_overrideSamplerStateIx );
-		destHandle[1] = 1;
 	}
 }
 
@@ -220,9 +143,6 @@ bool TriTexture2DParameter::IsPrepared() const
 bool TriTexture2DParameter::Initialize()
 {
 	LoadResources();
-
-	// make sure we get our own SamplerStateBlock, if we need to override!
-	BuildOverrideSamplerStateIx();
 	return true;
 }
 
