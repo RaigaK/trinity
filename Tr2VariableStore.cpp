@@ -516,13 +516,16 @@ TriVariable* Tr2VariableStore::RegisterVariableType( const char* name, TriVariab
 		{
 			// Trying to re-register a generic unknown texture type, which has already been narrowed down to RES or AL. Leave it alone.
 		}
-		else if( ( type == TRIVARIABLE_TEXTURE_RES && existingType == TRIVARIABLE_TEXTURE_AL ) || 
-				 ( type == TRIVARIABLE_TEXTURE_AL && existingType == TRIVARIABLE_TEXTURE_RES ) )
+		else if( type == TRIVARIABLE_TEXTURE_RES && existingType == TRIVARIABLE_TEXTURE_AL )
 		{
-			// hack hack hack TODO DX11 -- the single global variable store is used to hold renderTargets that can be either
-			// new AL or old TriTextureRes, based on whether the python code has been upgraded or not.  The bug is that they
-			// overwrite each other's entries in the global store, for now allow type morphing.
 			var->m_type = type;
+			var->m_depthStencil = nullptr;
+			var->m_renderTarget = nullptr;
+		}
+		else if( ( type == TRIVARIABLE_TEXTURE_AL && existingType == TRIVARIABLE_TEXTURE_RES ) )
+		{
+			var->m_type = type;
+			var->m_texture = nullptr;
 		}
 		else if( type == TRIVARIABLE_INVALID )
 		{

@@ -35,7 +35,7 @@ const wchar_t* TriTexture2DParameter::GetResourcePath() const
 	const TriTextureRes* currentRes = GetResource();
 	if( !currentRes )
 	{
-		return nullptr;
+		return L"";
 	}
 	return currentRes->GetPath();
 }

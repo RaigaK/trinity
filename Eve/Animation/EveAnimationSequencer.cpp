@@ -152,15 +152,19 @@ bool EveAnimationStateSequencer::CheckCompletionAndChangeStates()
 	{
 		if( ( stateName = m_pendingStates[0]->GetTransition( lastState->GetName() ) ) )
 		{
+			// We're just finished transitioning into the first pending state. That state has a transition
+			// into the last pending state so we start transitioning into that immediately.
 			nextState = GetAnimationState( stateName );
 			m_pendingStates.Clear();
 			m_pendingStates.Append( lastState );
+			nextState->Start( this, EVE_ANIM_START_TRANSITION );
 		}
 		else
 		{
 			m_pendingStates.Clear();
+			m_isTransitioning = false;
+			nextState->Start( this, EVE_ANIM_START_INIT );
 		}
-		nextState->Start( this );
 	}
 	//else{} only way get more than 1 pending is if we're transitioning, see GoToState
 	m_currentState = nextState;
