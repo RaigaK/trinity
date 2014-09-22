@@ -33,6 +33,8 @@ void TriDevice::HandleRenderTick( Be::Time realTime, Be::Time simTime )
 		m_renderJobs->RunUpdate( realTime, simTime );
 	}
 
+	m_postUpdateCallbacks->Update();
+
 	Render();
 }
 

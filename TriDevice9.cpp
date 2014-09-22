@@ -169,6 +169,8 @@ void TriDevice::HandleRenderTick( Be::Time realTime, Be::Time simTime )
 		m_renderJobs->RunUpdate( realTime, simTime );
 	}
 	
+	m_postUpdateCallbacks->Update();
+
 	// Present the backbuffer from the last renderering to the front buffer.
 	// it is more efficient to do it like this (revers order), because there is some
 	// acyncrounicy between EndScene() and Present(). So if we pump Python

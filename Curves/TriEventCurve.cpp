@@ -1,5 +1,27 @@
 #include "StdAfx.h"
 #include "TriEventCurve.h"
+#include "TriDevice.h"
+
+namespace
+{
+	void EventKeyCallback( void* context )
+	{
+		TriEventKey* key = reinterpret_cast<TriEventKey*>( context );
+
+		PyObject* result = PyObject_CallObject( key->m_callable, key->m_callableArgs );
+		if( result )
+		{
+			Py_DECREF( result );
+		}
+		else
+		{
+			; //TODO: Handle error
+		}
+
+		// A reference was added when the callback was set up - release it here.
+		key->Unlock();
+	}
+}
 
 TriEventCurve::TriEventCurve( IRoot* lockobj ) :
 	PARENTLOCK( m_keys ),
@@ -61,18 +83,11 @@ void TriEventCurve::UpdateValue( double time )
 #if BLUE_WITH_PYTHON
 		if( currentKey->m_callable )
 		{
-			 if( PyCallable_Check( currentKey->m_callable ) )
-			 {
-				 PyObject* result = PyObject_Call( currentKey->m_callable, currentKey->m_callableArgs, NULL );
-				 if( result )
-				 {
-					 Py_DECREF( result );
-				 }
-				 else
-				 {
-					 ; //TODO: Handle error
-				 }
-			 }
+			if( PyCallable_Check( currentKey->m_callable ) )
+			{
+				currentKey->Lock();
+				gTriDev->AddPostUpdateCallback( EventKeyCallback, reinterpret_cast<void*>( currentKey ) );
+			}
 			else
 			{
 				CCP_LOGWARN( "TriEventCurve: Key does not hold a callable object" );
@@ -126,8 +141,19 @@ void TriEventCurve::AddCallableKey( float time, PyObject* callable, PyObject* ar
 	key->m_callable = callable;
 	Py_XINCREF( key->m_callable );
 
-	key->m_callableArgs = args;
-	Py_XINCREF( key->m_callableArgs );
+	PyObject* argsAsTuple;
+	if( PyTuple_Check( args ) )
+	{
+		argsAsTuple = args;
+		Py_INCREF( argsAsTuple );
+	}
+	else
+	{
+		argsAsTuple = PyTuple_New( 1 );
+		PyTuple_SET_ITEM( argsAsTuple, 0, args );
+		Py_INCREF( args );
+	}
+	key->m_callableArgs = argsAsTuple;
 
 	InsertKey(key);
 }

@@ -269,6 +269,11 @@ public:
 	int GetAdapter() { return mAdapter; }
 	bool DeviceExists();
 
+	// Add a callback to be processed after update render jobs are processed. This
+	// can for example be used for routing callbacks from worker threads into
+	// Python at some well defined point.
+	void AddPostUpdateCallback( IBlueCallbackMan::CallbackFunc cb, void* context );
+
 private:
 	bool InitD3DDevice();  //call when a new device has been set
 	bool DeviceSupportsVertexTexture();
@@ -357,6 +362,9 @@ private:
 	TrackableStdVector<CallbackData> m_presentCallbacks;
 
 	void CallCallbacks( const TrackableStdVector<CallbackData>& cbs );
+
+	IBlueCallbackManPtr m_postUpdateCallbacks;
+
 public:
 	EXPOSE_TO_BLUE();
 

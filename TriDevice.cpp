@@ -10,6 +10,8 @@
 #include "Tr2RenderTargetGrabber.h"
 #include "Include/TriMath.h"
 
+#include "Blue/Include/IBlueCallbackMan.h"
+
 #if BINK_ENABLED
 #include "Sprite2d/Tr2Sprite2dBinkTexture.h"
 #endif
@@ -182,6 +184,8 @@ TriDevice::TriDevice(IRoot* lockobj) :
 #endif
 
 	BeOS->RegisterForSimTimeRebase( this );
+
+	BeClasses->CreateInstanceFromName("BlueCallbackMan", BlueInterfaceIID<IBlueCallbackMan>(), (void**)&m_postUpdateCallbacks );
 }
 
 
@@ -1332,6 +1336,11 @@ void TriDevice::GetBackBufferGrabber( ITr2RenderTargetGrabber** grabber )
 	}
 
 	( *grabber ) = backBufferGrabber.Detach();
+}
+
+void TriDevice::AddPostUpdateCallback( IBlueCallbackMan::CallbackFunc cb, void* context )
+{
+	m_postUpdateCallbacks->Add( cb, context, IBlueCallbackMan::BCBF_NONE, nullptr );
 }
 
 //  Description:
