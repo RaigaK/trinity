@@ -568,15 +568,6 @@ static float CameraDistanceFalloff( const Vector3& posView )
 	return 0.2274f * pow( fovHeight, 0.185f );
 }
 
-static bool ParticleDistanceCmp( const Vector3& l, const Vector3& r )
-{
-	// we only ever sort the alive particles
-	const Vector3& cameraPosition = Tr2Renderer::GetViewPosition();
-	Vector3 lDir(l - cameraPosition);
-	Vector3 rDir(r - cameraPosition);
-	return D3DXVec3LengthSq( &lDir ) > D3DXVec3LengthSq( &rDir );
-}
-
 #if BLUE_WITH_PYTHON
 static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 {
@@ -677,6 +668,7 @@ static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 	int closestParticleID = -1;
 
 	unsigned count = data->GetCount();
+	float closestParticleDistance = FLT_MAX;
 
 	for( unsigned int i = 0; i < count; ++i )
 	{
@@ -692,10 +684,11 @@ static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 				&rayStart, 
 				&rayDirection ) )
 		{
-			if( !closestParticle || ParticleDistanceCmp( *closestParticle, *position ) )
+			float distance = D3DXVec3Length( &particlePositionInViewSpace );
+			if( distance < closestParticleDistance )
 			{
 				// p is closer
-				closestParticle = position;
+				closestParticleDistance = distance;
 				closestParticleID = (int)i;
 			}
 		}
