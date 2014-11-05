@@ -10,7 +10,6 @@
 
 #include "Particle/ITr2GenericParticleConstraint.h"
 #include "Particle/Tr2ParticleElementDeclaration.h"
-#include "Vector3d.h"
 
 BLUE_DECLARE_INTERFACE( IEveBallpark );
 BLUE_DECLARE( Tr2ScalarCurve );
@@ -58,8 +57,6 @@ private:
 	float m_velocityStretch;
 	// Reference (camera) position - used to update particle generators
 	Vector3 m_referencePosition;
-	// Effect origin in global space
-	Vector3d m_origin;
 	// Origin shift compared to previous frame
 	Vector3 m_originShift;
 

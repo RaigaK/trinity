@@ -1,7 +1,11 @@
 #pragma once
 #ifndef EveUpdateContext_h
 #define EveUpdateContext_h
+#include "Include/IEveBallpark.h"
 #include "Tr2GPUParticlePoolManager.h"
+#include "Vector3d.h"
+
+static const double UNINITIALIZED_ORIGIN = std::numeric_limits<double>::infinity();
 
 class EveUpdateContext
 {
@@ -9,7 +13,9 @@ public:
 	EveUpdateContext() {}
 	EveUpdateContext( Be::Time time ) : 
 		m_lastTime( 0 ),
-		m_currentTime( 0 )
+		m_currentTime( 0 ),
+		m_origin( UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN ),
+		m_originShift( 0, 0, 0 )
 	{
 		SetTime( time );
 	}
@@ -45,12 +51,45 @@ public:
 		m_gpuParticleManager = manager;
 	}
 
+	// World origin change
+	void UpdateOrigin( IEveBallpark* ballpark )
+	{
+		Vector3d originNow;
+		IEveReferencePointPtr refObject( ballpark );
+		if( refObject )
+		{
+			refObject->GetReferencePoint( &originNow, m_currentTime );
+			if( m_origin.x != UNINITIALIZED_ORIGIN )
+			{
+				m_origin = m_origin - originNow;
+				m_originShift = m_origin.AsVector3();
+			}
+			m_origin = originNow;
+		}
+	}
+	Vector3 GetOriginShift() const
+	{
+		return m_originShift;
+	}
+	Vector3d GetOrigin() const
+	{
+		if( m_origin.x != UNINITIALIZED_ORIGIN )
+		{
+			return m_origin;
+		}
+		return Vector3d( 0, 0, 0 );
+	}
+
 private:
 	Be::Time m_currentTime;
 	Be::Time m_lastTime;
 
 	// extra stuff
-	Tr2GPUParticlePoolManagerPtr m_gpuParticleManager;		
+	Tr2GPUParticlePoolManagerPtr m_gpuParticleManager;
+
+	// For tracking world origin
+	Vector3d m_origin;
+	Vector3 m_originShift;
 };
 
 #endif //EveUpdateContext_h

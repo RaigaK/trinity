@@ -250,7 +250,8 @@ void EveSpaceScene::Update( Be::Time realTime, Be::Time simTime )
 		return;
 	}
 
-	m_updateContext.SetTime(simTime);
+	m_updateContext.SetTime( simTime );
+	m_updateContext.UpdateOrigin( m_ballpark );
 
 	{
 		EveTransformVector::const_iterator it;
@@ -337,17 +338,8 @@ void EveSpaceScene::Update( Be::Time realTime, Be::Time simTime )
 		m_sunData.DirWorld = -sunDirection;
 	}
 
-	// every space scene has a reference position, get it! (if in Jessica, it's just
-	// 0,0,0
-	Vector3d sceneReferencePoint( 0.0, 0.0, 0.0 );
-	if( m_ballpark )
-	{
-		IEveReferencePointPtr refObject( m_ballpark );
-		if( refObject )
-		{
-			refObject->GetReferencePoint( &sceneReferencePoint, simTime );
-		}
-	}
+	// every space scene has a reference position
+	Vector3d sceneReferencePoint = m_updateContext.GetOrigin();
 
 	Tr2ParticleSystem::UpdateAllSystems( simTime );
 	

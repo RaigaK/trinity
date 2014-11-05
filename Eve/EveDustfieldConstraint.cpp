@@ -14,7 +14,6 @@
 #include <limits>
 
 
-static const double UNINITIALIZED_ORIGIN = std::numeric_limits<double>::infinity();
 
 // --------------------------------------------------------------------------------------
 // Description:
@@ -27,7 +26,6 @@ EveDustfieldConstraint::EveDustfieldConstraint( IRoot* lockobj )
 	m_maxStretch( 15.0f ),
 	m_movementScale( 1.f ),
 	m_maxSpeed( 0.f ),
-	m_origin( UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN ),
 	m_originShift( 0.f, 0.f, 0.f )
 {
 }
@@ -102,27 +100,13 @@ void EveDustfieldConstraint::Update( const EveUpdateContext& updateContext, IEve
 	Be::Time time = updateContext.GetTime();
 	float delta = updateContext.GetDeltaT();
 	
-	// Get the reference position
-	Vector3d referencePosition( 0.0, 0.0, 0.0 );
-	IEveReferencePointPtr refObject( ballpark );
-	if( refObject )
+	m_originShift = updateContext.GetOriginShift();
+	if( m_maxSpeed != 0.f && D3DXVec3Length( &m_originShift ) > m_maxSpeed * delta )
 	{
-		refObject->GetReferencePoint( &referencePosition, time );
+		D3DXVec3Normalize( &m_originShift, &m_originShift );
+		D3DXVec3Scale( &m_originShift, &m_originShift, m_maxSpeed * delta );
 	}
-	if( m_origin.x != UNINITIALIZED_ORIGIN )
-	{
-		m_originShift = Vector3(
-			float( m_origin.x - referencePosition.x ),
-			float( m_origin.y - referencePosition.y ),
-			float( m_origin.z - referencePosition.z ) );
-		if( m_maxSpeed != 0.f && D3DXVec3Length( &m_originShift ) > m_maxSpeed * delta )
-		{
-			D3DXVec3Normalize( &m_originShift, &m_originShift );
-			D3DXVec3Scale( &m_originShift, &m_originShift, m_maxSpeed * delta );
-		}
-		m_originShift *= m_movementScale;
-	}
-	m_origin = referencePosition;
+	m_originShift *= m_movementScale;
 
 	m_referencePosition = *(m_camera->GetPosition());
 
