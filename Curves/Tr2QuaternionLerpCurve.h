@@ -12,12 +12,12 @@ class Tr2QuaternionLerpCurve :
 public:
     EXPOSE_TO_BLUE();
 
-    Be::Time mStart;
-    float mLength;
+    Be::Time m_start;
+    float m_length;
 
-    Quaternion mValue;
-    ITriQuaternionFunctionPtr mStartCurve;
-    ITriQuaternionFunctionPtr mEndCurve;
+    Quaternion m_value;
+    ITriQuaternionFunctionPtr m_startCurve;
+    ITriQuaternionFunctionPtr m_endCurve;
 
     Tr2QuaternionLerpCurve(IRoot* lockobj = NULL);
     ~Tr2QuaternionLerpCurve();
@@ -30,7 +30,7 @@ public:
     /////////////////////////////////////////////////////////////////////////////////////
     // ITriCurveLength
     /////////////////////////////////////////////////////////////////////////////////////
-    float Length() { return mLength; }
+    float Length() { return m_length; }
 
     /////////////////////////////////////////////////////////////////////////////////////
     // ITriQuaternionFunction

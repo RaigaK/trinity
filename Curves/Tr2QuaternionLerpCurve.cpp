@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "Tr2QuaternionLerpCurve.h"
+#include "include/TriMath.h"
 
 
 Tr2QuaternionLerpCurve::Tr2QuaternionLerpCurve(IRoot* lockobj) :
-    mStart  ( 0 ),
-    mLength  ( 0 ),
-    mValue( 0.0f, 0.0f, 0.0f, 1.0f )
+    m_start( 0 ),
+	m_length( 0 ),
+    m_value( 0.0f, 0.0f, 0.0f, 1.0f )
 {
-    mValue = Quaternion( 0.0f, 0.0f, 0.0f, 1.0f );
 }
 
 
@@ -21,8 +21,8 @@ Quaternion* Tr2QuaternionLerpCurve::Update(
     Be::Time t
     )
 {
-    GetValueAt(&mValue, t);
-    *in = mValue;
+    GetValueAt( &m_value, t );
+    *in = m_value;
     return in;
 }
 
@@ -32,8 +32,8 @@ Quaternion* Tr2QuaternionLerpCurve::Update(
     double t
     )
 {
-    GetValueAt(&mValue, t);
-    *in = mValue;
+    GetValueAt( &m_value, t );
+    *in = m_value;
     return in;
 }
 
@@ -43,7 +43,7 @@ Quaternion* Tr2QuaternionLerpCurve::GetValueAt(
     Be::Time now 
     )
 {
-    if( !mStartCurve || !mEndCurve || mLength <= 0 )
+    if( !m_startCurve || !m_endCurve || m_length <= 0 )
     {
         return in;
     }
@@ -51,10 +51,10 @@ Quaternion* Tr2QuaternionLerpCurve::GetValueAt(
     Quaternion start;
     Quaternion end;
 
-    float delta = TimeAsFloat(now - mStart);
-    float ratio = max(0.0f, min(1.0f, delta / mLength));
+    float delta = TimeAsFloat( now - m_start );
+    float ratio = Clamp( delta / m_length, 0.0f, 1.0f );
 
-    D3DXQuaternionSlerp(in, mStartCurve->GetValueAt(&start, now), mEndCurve->GetValueAt(&end, now), ratio);
+    D3DXQuaternionSlerp( in, m_startCurve->GetValueAt( &start, now ), m_endCurve->GetValueAt( &end, now ), ratio );
 
     return in;
 }
@@ -65,7 +65,7 @@ Quaternion* Tr2QuaternionLerpCurve::GetValueAt(
     double pos
     )
 {
-    if( !mStartCurve || !mEndCurve || mLength <= 0 )
+    if( !m_startCurve || !m_endCurve || m_length <= 0 )
     {
         return in;
     }
@@ -73,10 +73,10 @@ Quaternion* Tr2QuaternionLerpCurve::GetValueAt(
     Quaternion start;
     Quaternion end;
 
-    float delta = float(pos - TimeAsDouble(mStart));
-    float ratio = max(0.0f, min(1.0f, delta / mLength));
+    float delta = float( pos - TimeAsDouble( m_start ) );
+	float ratio = Clamp( delta / m_length, 0.0f, 1.0f );
 
-    D3DXQuaternionSlerp(in, mStartCurve->GetValueAt(&start, pos), mEndCurve->GetValueAt(&end, pos), ratio);
+    D3DXQuaternionSlerp( in, m_startCurve->GetValueAt( &start, pos ), m_endCurve->GetValueAt( &end, pos ), ratio );
 
     return in;
 }

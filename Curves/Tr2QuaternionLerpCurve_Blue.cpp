@@ -13,35 +13,35 @@ const Be::ClassInfo* Tr2QuaternionLerpCurve::ExposeToBlue()
         MAP_ATTRIBUTE
         ( 
             "start",
-            mStart,
+            m_start,
             "The time at which the sequence should begin",
             Be::READWRITE | Be::PERSIST
         )
         MAP_ATTRIBUTE
         ( 
             "length",
-            mLength,
+            m_length,
             "Length of the ",
             Be::READWRITE | Be::PERSIST
         )
         MAP_ATTRIBUTE
         (  
             "value",
-            mValue,
+            m_value,
             "na",
             Be::READWRITE | Be::PERSIST
         )
         MAP_ATTRIBUTE
         ( 
             "startCurve",
-            mStartCurve,
+            m_startCurve,
             "Starting rotation curve",
             Be::READWRITE | Be::PERSIST
         )
         MAP_ATTRIBUTE
         ( 
             "endCurve",
-            mEndCurve,
+            m_endCurve,
             "End rotation curve",
             Be::READWRITE | Be::PERSIST
         )
