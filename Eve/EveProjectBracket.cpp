@@ -17,7 +17,8 @@ EveProjectBracket::EveProjectBracket( IRoot* lockobj /*= NULL */ ) :
 	m_trackPosition( 0.0f, 0.0f, 0.0f ),
 	m_ballTrackingScaling( 1.0f ),
 	m_dock( false ),
-	m_visible( true ),
+	m_isVisible( true ),
+	m_isVisibleStateSet( false ),
 	m_integerCoordinates( true ),
 	m_marginLeft( 0.0f ),
 	m_marginRight( 0.0f ),
@@ -96,6 +97,9 @@ void EveProjectBracket::UpdateValue( double time )
 
 	float x = projectedPosition.x;
 	float y = projectedPosition.y;
+	
+	m_rawProjectedPosition.x = x;
+	m_rawProjectedPosition.y = y;
 
 	// Brackets behind the camera with the 'dock' flag cleared are hidden
 	if( (!isInFront && !m_dock) )
@@ -230,12 +234,13 @@ void EveProjectBracket::UpdateValue( double time )
 
 void EveProjectBracket::SetBracketDisplayState( bool state )
 {
-	if( state == m_visible )
+	if( (state == m_isVisible) && m_isVisibleStateSet )
 	{
 		return;
 	}
 
-	m_visible = state;
+	m_isVisible = state;
+	m_isVisibleStateSet = true;
 
 	if( m_bracket )
 	{

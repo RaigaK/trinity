@@ -170,6 +170,13 @@ const Be::ClassInfo* EveProjectBracket::ExposeToBlue()
 		)
 		MAP_ATTRIBUTE
 		(
+			"rawProjectedPosition",
+			m_rawProjectedPosition,
+			"The raw projected 2d position, without any clamping applied.",
+			Be::READ
+		)
+		MAP_ATTRIBUTE
+		(
 			"displayChangeCallback",
 			m_displayChangeCallback,
 			"An optional callback that is called whenever the display state of the bracket\n"

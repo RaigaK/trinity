@@ -49,7 +49,11 @@ protected:
 	// Should the bracket dock on the sides if source is off the screen?
 	// If not, the visible flag is toggled depending on off-screen status
 	bool m_dock;
-	bool m_visible;
+	bool m_isVisible;
+	
+	// Has the visible state been set? Used to ensure that callback gets issued
+	// the first time this is set.
+	bool m_isVisibleStateSet;
 
 	// Should the coordinates be rounded to the nearest integer? Defaults to true.
 	bool m_integerCoordinates;
@@ -86,6 +90,7 @@ protected:
 	EveSprite2dBracketPtr m_bracketIcon;
 
 	Vector2 m_projectedPosition;
+	Vector2 m_rawProjectedPosition;
 };
 
 TYPEDEF_BLUECLASS( EveProjectBracket );
