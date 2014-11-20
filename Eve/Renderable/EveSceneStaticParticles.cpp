@@ -44,7 +44,7 @@ EveSceneStaticParticles::~EveSceneStaticParticles()
 // Description:
 //   Adds a cluster of particles. Just puts it on a list, nothing is done here.
 // --------------------------------------------------------------------------------
-void EveSceneStaticParticles::AddCluster( Vector3d position, float radius, Color color1, Color color2 )
+void EveSceneStaticParticles::AddCluster( Vector3d position, float radius, Color color1, Color color2, unsigned int randomSeed )
 {
 	// just add it to the list, call to :: will make the actual work
 	ClusterData cd;
@@ -52,6 +52,7 @@ void EveSceneStaticParticles::AddCluster( Vector3d position, float radius, Color
 	cd.radius = radius;
 	cd.color1 = color1;
 	cd.color2 = color2;
+	cd.randomSeed = randomSeed;
 	m_clusters.push_back( cd );
 }
 
@@ -287,6 +288,12 @@ void EveSceneStaticParticles::Rebuild()
 		// relative position to cluster center in float position
 		Vector3d d = Vector3d( (double)clusterData->position.x, (double)clusterData->position.y, (double)clusterData->position.z ) - m_centerOfClusters;
 		Vector3 clusterPosRelativeToCenter = Vector3( (float)d.x, (float)d.y, (float)d.z );
+
+		// seed any randomness
+		if( clusterData->randomSeed > 0 )
+		{
+			TriRandomSeed( clusterData->randomSeed );
+		}
 
 		// calc all of the particles
 		for( int i = 0; i < particlesPerCluster; ++i )

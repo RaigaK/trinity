@@ -39,6 +39,7 @@ public:
 		float radius;
 		Color color1;
 		Color color2;
+		unsigned int randomSeed;
 	};
 
 	struct ParticleBufferItem
@@ -59,7 +60,7 @@ public:
 	void RenderDebugInfo( Tr2RenderContext& renderContext );
 
 	// manage clusters
-	void AddCluster( Vector3d position, float radius, Color color1, Color color2 );
+	void AddCluster( Vector3d position, float radius, Color color1, Color color2, unsigned int randomSeed );
 	void ClearClusters();
 	void Rebuild();
 

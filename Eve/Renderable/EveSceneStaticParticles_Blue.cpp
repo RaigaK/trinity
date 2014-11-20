@@ -31,7 +31,8 @@ const Be::ClassInfo* EveSceneStaticParticles::ExposeToBlue()
 			"\nposition - The center position of the cluster in global 3d space (double precision)"
 			"\nradius - The radius of the cluster"
 			"\ncolor1 - First color for the cluster to interpolate from"
-			"\ncolor2 - Second color for the cluster to interpolate from" )
+			"\ncolor2 - Second color for the cluster to interpolate from"
+			"\nrandomSeed - seeding integer for the randomness of this cluster (default is 0)" )
 
 		MAP_METHOD_AND_WRAP( "ClearClusters", ClearClusters, "Remove all clusters" )
 		MAP_METHOD_AND_WRAP( "Rebuild", Rebuild, "Once finished adding clusters, we need to build internal buffers etc." )
