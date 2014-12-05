@@ -6,7 +6,6 @@
 #include "IRenderCallback.h"
 
 BLUE_DECLARE( TriTexture2DParameter );
-BLUE_DECLARE( TriFloatParameter );
 BLUE_DECLARE( Tr2VariableStore );
 BLUE_DECLARE( Tr2LodResource );
 BLUE_DECLARE_INTERFACE( ITriEffectParameter );

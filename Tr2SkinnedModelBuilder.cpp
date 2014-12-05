@@ -6,7 +6,6 @@
 #include "Resources/TriGeometryRes.h"
 #include "EffectParameter/TriVector4Parameter.h"
 #include "EffectParameter/Tr2Vector4Parameter.h"
-#include "EffectParameter/TriFloatParameter.h"
 #include "EffectParameter/Tr2FloatParameter.h"
 #include "EffectParameter/TriFloatArrayParameter.h"
 #include "EffectParameter/TriTexture2DParameter.h"
@@ -1449,10 +1448,6 @@ void Tr2SkinnedModelBuilder::AppendToEffectArrayParam( TriFloatArrayParameter* a
 		else if( Tr2Vector4Parameter* src = dynamic_cast<Tr2Vector4Parameter*>( srcParameter ) )
 		{
 			parameterValue = src->m_value;
-		}
-		else if( TriFloatParameter* src = dynamic_cast<TriFloatParameter*>( srcParameter ) )
-		{
-			parameterValue.x = src->m_value;
 		}
 		else if( Tr2FloatParameter* src = dynamic_cast<Tr2FloatParameter*>( srcParameter ) )
 		{
