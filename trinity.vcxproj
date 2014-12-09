@@ -2751,12 +2751,10 @@
     <ClInclude Include="EffectParameter\Tr2Vector3Parameter.h"/>
     <ClInclude Include="EffectParameter\Tr2Vector4Parameter.h"/>
     <ClInclude Include="EffectParameter\TriFloatArrayParameter.h"/>
-    <ClInclude Include="EffectParameter\TriFloatParameter.h"/>
     <ClInclude Include="EffectParameter\TriTexture2DParameter.h"/>
     <ClInclude Include="EffectParameter\TriTextureCubeParameter.h"/>
     <ClInclude Include="EffectParameter\TriTransformParameter.h"/>
     <ClInclude Include="EffectParameter\TriVariableParameter.h"/>
-    <ClInclude Include="EffectParameter\TriVector4Parameter.h"/>
     <ClInclude Include="Eve\EveCamera.h"/>
     <ClInclude Include="Eve\EveConstantBufferFormats.h"/>
     <ClInclude Include="Eve\EveCurveLineSet.h"/>
@@ -3340,8 +3338,6 @@
     <ClCompile Include="EffectParameter\Tr2Vector4Parameter_Blue.cpp"/>
     <ClCompile Include="EffectParameter\TriFloatArrayParameter.cpp"/>
     <ClCompile Include="EffectParameter\TriFloatArrayParameter_Blue.cpp"/>
-    <ClCompile Include="EffectParameter\TriFloatParameter.cpp"/>
-    <ClCompile Include="EffectParameter\TriFloatParameter_Blue.cpp"/>
     <ClCompile Include="EffectParameter\TriTexture2DParameter.cpp"/>
     <ClCompile Include="EffectParameter\TriTexture2DParameter_Blue.cpp"/>
     <ClCompile Include="EffectParameter\TriTextureCubeParameter_Blue.cpp"/>
@@ -3349,8 +3345,6 @@
     <ClCompile Include="EffectParameter\TriTransformParameter_Blue.cpp"/>
     <ClCompile Include="EffectParameter\TriVariableParameter.cpp"/>
     <ClCompile Include="EffectParameter\TriVariableParameter_Blue.cpp"/>
-    <ClCompile Include="EffectParameter\TriVector4Parameter.cpp"/>
-    <ClCompile Include="EffectParameter\TriVector4Parameter_Blue.cpp"/>
     <ClCompile Include="Eve\EveCamera.cpp"/>
     <ClCompile Include="Eve\EveCamera_Blue.cpp"/>
     <ClCompile Include="Eve\EveCurveLineSet.cpp"/>
