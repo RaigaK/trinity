@@ -286,6 +286,7 @@ public:
 	bool UpdateHull( const char* hullName, EveSOFDataHull* hullData );
 	bool UpdateFaction( const char* factionName, EveSOFDataFaction* factionData );
 	bool UpdateRace( const char* raceName, EveSOFDataRace* raceData );
+	bool UpdateGeneric( EveSOFDataGeneric* genericData );
 	bool UpdateMaterial( const char* materialName, EveSOFDataMaterial* materialData );
 
 	// access to generic
@@ -316,6 +317,7 @@ private:
 	void GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) const;
 	void GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr srcData ) const;
 	void GenerateRaceData( RaceData& rd, EveSOFDataRacePtr srcData ) const;
+	void GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr srcData ) const;
 	void GenerateMaterialData( MaterialData& rd, EveSOFDataMaterialPtr srcData ) const;
 
 	// keep all hull data in a map

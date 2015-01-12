@@ -223,6 +223,18 @@ bool EveSOFDataMgr::UpdateMaterial( const char* materialName, EveSOFDataMaterial
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Update the generic data
+// --------------------------------------------------------------------------------
+bool EveSOFDataMgr::UpdateGeneric( EveSOFDataGeneric* genericData )
+{
+	// fill the non-trinity struct with the provided data
+	GenerateGenericData( m_genericData, genericData );
+
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Here we get a blue object which is the whole database and use it to
 //   set internal containers with all SOF db data
 // --------------------------------------------------------------------------------
@@ -836,14 +848,26 @@ void EveSOFDataMgr::GenerateMaterialData( MaterialData& rd, EveSOFDataMaterialPt
 // --------------------------------------------------------------------------------
 bool EveSOFDataMgr::LoadGenericData( EveSOFDataPtr srcData )
 {
+	GenerateGenericData( m_genericData, srcData->m_generic );
+
+	return true;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Fill a non-trinity generic data struct with all the data from the trinity
+//   data struct
+// --------------------------------------------------------------------------------
+void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr srcData ) const
+{
 	// shader locations
-	m_genericData.shaderPrefix = srcData->m_generic->m_shaderPrefix;
-	m_genericData.shaderPrefixAnimated = srcData->m_generic->m_shaderPrefixAnimated;
-	m_genericData.areaShaderLocation = srcData->m_generic->m_areaShaderLocation;
-	m_genericData.decalShaderLocation = srcData->m_generic->m_decalShaderLocation;
+	gd.shaderPrefix = srcData->m_shaderPrefix;
+	gd.shaderPrefixAnimated = srcData->m_shaderPrefixAnimated;
+	gd.areaShaderLocation = srcData->m_areaShaderLocation;
+	gd.decalShaderLocation = srcData->m_decalShaderLocation;
 
 	// hull area parameters
-	for( auto hait = srcData->m_generic->m_hullAreas.begin(); hait != srcData->m_generic->m_hullAreas.end(); ++hait )
+	for( auto hait = srcData->m_hullAreas.begin(); hait != srcData->m_hullAreas.end(); ++hait )
 	{
 		EveSOFDataFactionHullAreaPtr hullAreaData = (*hait);
 
@@ -853,11 +877,8 @@ bool EveSOFDataMgr::LoadGenericData( EveSOFDataPtr srcData )
 			EveSOFDataParameterPtr parameterData = (*hapit);
 			ad.parameters[parameterData->m_name] = parameterData->m_value;
 		}
-		m_genericData.hullAreaParameters[hullAreaData->m_name] = ad;
+		gd.hullAreaParameters[hullAreaData->m_name] = ad;
 	}
-
-
-	return true;
 }
 
 
