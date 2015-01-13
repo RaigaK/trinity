@@ -6,7 +6,7 @@ binbootstrapper.update_binaries(__file__, *binbootstrapper.DLLS_GRAPHICS)
 import random
 import blue
 import trinity
-from trinity.windowsEvents import *
+from windowsutilities.windowsEvents import *
 import ctypes
 
 class POINT(ctypes.Structure):
