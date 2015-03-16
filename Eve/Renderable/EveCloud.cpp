@@ -8,11 +8,13 @@
 #include "EveCloud.h"
 #include "TriFrustum.h"
 #include "TriRenderBatch.h"
+#include "include/ITriFunction.h"
 #include "Utilities/ViewDistanceInfo.h"
 #include "Utilities/BoundingSphere.h"
 #include "Utilities/BoundingBox.h"
 #include "Tr2PerObjectData.h"
 #include "EveCloudEditableVolume.h"
+#include "../EveUpdateContext.h"
 
 using namespace Tr2RenderContextEnum;
 
@@ -73,8 +75,8 @@ void GetProjectedCubeBounds( AxisAlignedBoundingBox& box, const Matrix& worldVie
 	{
 		if( corners[i].w < 0 )
 		{
-			corners[i].x = corners[i].x < 0 ? 1.f : -1.f;
-			corners[i].y = corners[i].y < 0 ? 1.f : -1.f;
+			corners[i].x = corners[i].x < 0 ? -1.f : 1.f;
+			corners[i].y = corners[i].y < 0 ? -1.f : 1.f;
 		}
 		else
 		{
@@ -98,8 +100,6 @@ void GetProjectedCubeBounds( AxisAlignedBoundingBox& box, const Matrix& worldVie
 EveCloud::EveCloud( IRoot* lockobj )
 	:m_worldTransform( Tr2Renderer::GetIdentityTransform() ),
 	m_scaling( 1.0f, 1.0f, 1.0f ),
-	m_rotation( 0.0f, 0.0f, 0.0f, 1.0f ),
-	m_translation( 0.0f, 0.0f, 0.0f ),
 	m_display( true ),
 	m_declaration( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
 	m_preTesselationLevel( 32 )
@@ -113,7 +113,6 @@ EveCloud::~EveCloud()
 
 bool EveCloud::Initialize()
 {
-	BoxModified();
 	ReleaseResources( TRISTORAGE_ALL );
 	PrepareResources();
 	return true;
@@ -121,23 +120,12 @@ bool EveCloud::Initialize()
 
 bool EveCloud::OnModified( Be::Var* value )
 {
-	if( IsMatch( value, m_scaling ) || IsMatch( value, m_rotation ) || IsMatch( value, m_translation ) )
-	{
-		BoxModified();
-	}
-	else if( IsMatch( value, m_preTesselationLevel ) )
+	if( IsMatch( value, m_preTesselationLevel ) )
 	{
 		ReleaseResources( TRISTORAGE_ALL );
 		PrepareResources();
 	}
 	return true;
-}
-
-void EveCloud::BoxModified()
-{
-	D3DXMatrixTransformation( &m_worldTransform, nullptr, nullptr, &m_scaling, nullptr, &m_rotation, &m_translation );
-	m_boundingSphere = Vector4( 0.f, 0.f, 0.f, 0.5f * sqrt( 3.f ) );
-	BoundingSphereTransform( m_worldTransform, m_boundingSphere );
 }
 
 void EveCloud::UpdateSyncronous( EveUpdateContext& updateContext )
@@ -146,6 +134,20 @@ void EveCloud::UpdateSyncronous( EveUpdateContext& updateContext )
 	{
 		m_volume->Update();
 	}
+
+	Quaternion rotation( 0.0f, 0.0f, 0.0f, 1.0f );
+	Vector3 translation( 0.0f, 0.0f, 0.0f );
+
+	if( m_ballPosition )
+	{
+		m_ballPosition->Update( &translation, updateContext.GetTime() );
+	}
+	if( m_ballRotation )
+	{
+		m_ballRotation->Update( &rotation, updateContext.GetTime() );
+	}
+
+	D3DXMatrixTransformation( &m_worldTransform, 0, 0, &m_scaling, 0, &rotation, &translation );
 }
 
 void EveCloud::UpdateAsyncronous( EveUpdateContext& updateContext )

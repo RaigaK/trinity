@@ -25,12 +25,23 @@ const Be::ClassInfo* EveCloud::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "effect", m_effect, "Shader used for the rendering", Be::READWRITE | Be::PERSIST )
 
-		MAP_ATTRIBUTE( "scaling", m_scaling, "Object scaling", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
-		MAP_ATTRIBUTE( "rotation", m_rotation, "Object rotation", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
-		MAP_ATTRIBUTE( "translation", m_translation, "Object translation", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE
+		(    
+			"translationCurve",
+			m_ballPosition,
+			"Vector function slot for attaching a destiny ball to set the position of a cloud",
+			Be::READWRITE | Be::PERSIST
+		)
+		MAP_ATTRIBUTE
+		(    
+			"rotationCurve",
+			m_ballRotation,
+			"Quaternion function slot for attaching a destiny ball to set the rotation of a cloud",
+			Be::READWRITE | Be::PERSIST
+		)
+		MAP_ATTRIBUTE( "scaling", m_scaling, "Object scaling", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "boundingSphere", m_boundingSphere, "Used for culling", Be::READ )
-		MAP_ATTRIBUTE( "transform", m_worldTransform, "Local to world transform matrix", Be::READ )
 		MAP_ATTRIBUTE( "preTesselationLevel", m_preTesselationLevel, "Number of triangles per width/heigth", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "volume", m_volume, "Shape volume texture editor", Be::READWRITE | Be::PERSIST )
     EXPOSURE_END()

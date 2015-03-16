@@ -14,7 +14,8 @@
 #include "Tr2Renderer.h"
 
 BLUE_DECLARE( EveCloudEditableVolume );
-
+BLUE_DECLARE_INTERFACE( ITriVectorFunction );
+BLUE_DECLARE_INTERFACE( ITriQuaternionFunction );
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -72,7 +73,6 @@ public:
 	virtual void ReleaseResources( TriStorage s );
 private:
 	bool OnPrepareResources();
-	void BoxModified();
 
 	// data for positioning
 	Matrix m_worldTransform;
@@ -82,9 +82,10 @@ private:
 
 	ITr2ShaderMaterialPtr m_effect;
 
+	// The ability to attach the LineSet to a Ball
+	ITriVectorFunctionPtr m_ballPosition;
+	ITriQuaternionFunctionPtr m_ballRotation;
 	Vector3 m_scaling;
-	Quaternion m_rotation;
-	Vector3 m_translation;
 
 	uint32_t m_preTesselationLevel;
 
