@@ -619,6 +619,9 @@
     <ClInclude Include="EffectParameter\TriTextureCubeParameter.h">
       <Filter>Source Files\EffectParameter</Filter>
     </ClInclude>
+    <ClInclude Include="EffectParameter\TriTextureParameter.h">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClInclude>
     <ClInclude Include="EffectParameter\TriTransformParameter.h">
       <Filter>Source Files\EffectParameter</Filter>
     </ClInclude>
@@ -2321,6 +2324,12 @@
       <Filter>Source Files\EffectParameter</Filter>
     </ClCompile>
     <ClCompile Include="EffectParameter\TriTextureCubeParameter_Blue.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTextureParameter.cpp">
+      <Filter>Source Files\EffectParameter</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectParameter\TriTextureParameter_Blue.cpp">
       <Filter>Source Files\EffectParameter</Filter>
     </ClCompile>
     <ClCompile Include="EffectParameter\TriTransformParameter.cpp">
