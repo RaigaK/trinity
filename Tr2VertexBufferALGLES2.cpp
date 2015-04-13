@@ -74,8 +74,7 @@ ALResult Tr2VertexBufferAL::Create( uint32_t lengthInBytes,
 
 	if ( m_buffer )
 	{
-		glDeleteBuffers( 1, &m_buffer );
-		m_buffer = 0;
+		Destroy();
 	}
 
 	GL_FAIL( glGenBuffers( 1, &m_buffer ) );

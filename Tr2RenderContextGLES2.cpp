@@ -1365,7 +1365,6 @@ ALResult Tr2RenderContextAL::SetProgram()
 		int index = glGetAttribLocation( m_boundProgramObject->program, attributeNames[i] );
 		if( index != -1 )
 		{
-			glEnableVertexAttribArray( index ); 
 			m_boundProgramObject->attributes[std::make_pair( element.usage, element.usageIndex )] = index;
 		}
 	}
