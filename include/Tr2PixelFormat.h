@@ -146,6 +146,23 @@ inline bool IsCompressedFormat( PixelFormat format )
 	}
 }
 
+inline bool IsDds10Format(PixelFormat format)
+{
+	switch( format )
+	{
+	case PIXEL_FORMAT_BC6H_TYPELESS:
+	case PIXEL_FORMAT_BC6H_UF16:
+	case PIXEL_FORMAT_BC6H_SF16:
+	case PIXEL_FORMAT_BC7_TYPELESS:
+	case PIXEL_FORMAT_BC7_UNORM:
+	case PIXEL_FORMAT_BC7_UNORM_SRGB:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
 inline uint32_t GetBlockByteSize( PixelFormat format )
 {
 	switch( format )
