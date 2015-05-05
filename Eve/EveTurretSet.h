@@ -28,9 +28,9 @@ BLUE_DECLARE( EveTurretFiringFX );
 
 // constants
 // maximum number of single turrets per turret set
-const unsigned int EVE_MAX_TURRETS_PER_SET = 3;
-// maximum number of bones in one turret
-const unsigned int EVE_MAX_BONES_PER_TURRET = 15;
+const unsigned int EVE_MAX_TURRETS_PER_SET = 24;
+// maximum number of bones in all of the turret set
+const unsigned int EVE_MAX_TURRET_SET_BONES = EVE_MAX_TURRETS_PER_SET * 3;
 // maximum time offset for turret firing
 const float EVE_TURRET_RANDOM_DELAY_MAX = 0.6f;
 
@@ -47,11 +47,16 @@ public:
 
 	// vs per object data
 	Vector4 m_baseCutoffData;
+	Vector4 m_turretSetData;
 	Matrix m_shipMatrix;
+
 	// per turret data
-	Matrix m_turretLocal[EVE_MAX_TURRETS_PER_SET];
-	// pose matrices are 4x3, since there is a lot of them
-	float m_turretPose[EVE_MAX_BONES_PER_TURRET * EVE_MAX_TURRETS_PER_SET][4 * 3];
+	Vector4 m_turretTranslation[EVE_MAX_TURRETS_PER_SET];
+	Quaternion m_turretRotation[EVE_MAX_TURRETS_PER_SET];
+
+	// pose information
+	Vector4 m_turretPoseTrans[EVE_MAX_TURRET_SET_BONES];
+	Quaternion m_turretPoseRot[EVE_MAX_TURRET_SET_BONES];
 
 	// pixel shader per object data
 	Vector4 m_shipData;
@@ -134,6 +139,9 @@ public:
 	// timing and worldspace positioning
 	void UpdateSyncronous( float deltaT, Be::Time time, const Matrix* parentMatrix );
 	void UpdateAsyncronous( float deltaT, Be::Time time, const ParentData* parentData );
+
+	void SetEffectEndPoint();
+
 	// rendering
 	void GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Vector4* shLighting );
 	void GetRenderablesCastingShadow( const TriFrustumOrtho& frustum, std::vector<ITr2Renderable*>& renderables );
@@ -247,6 +255,8 @@ private:
 	bool m_display;
 	bool m_displayEffects;
 	bool m_isOnline;
+	// how many turrets can actually be displayed, due to bone count
+	unsigned int m_possibleTurretDisplayAmount;
 	// how many turrets visible in this frame?
 	unsigned int m_visibleCount;
 	// what is the highest onscreen size?
@@ -268,9 +278,12 @@ private:
 		bool					valid;
 		bool					visible;
 		// positions
+		Vector4					localPosition;
+		Quaternion				localQuaternion;
 		Matrix					localMatrix;
 		Matrix					worldMatrix;
 		Matrix					invWorldMatrix;
+
 		// animation
 		granny_skeleton*		grnSkeleton;
 		granny_model_instance*	grnModelInstance;

@@ -111,7 +111,8 @@ EveTurretSet::EveTurretSet( IRoot* lockobj ) :
 	m_trackMissPoint( false ),
 	m_firingEffectMuzzlePosSet( false ),
 	m_slotNumber( -1 ),
-	m_parentShLighting( nullptr )
+	m_parentShLighting( nullptr ),
+	m_possibleTurretDisplayAmount( 0 )
 {
 	// 0
 	memset( &m_parentData, 0, sizeof( ParentData ) );
@@ -283,6 +284,10 @@ void EveTurretSet::Cleanup()
 {
 	// vertex decl element array is no longer valid
 	m_turretVertexDeclElementCount = 0;
+
+	// amount of renderable turrets is now invalid
+	m_possibleTurretDisplayAmount = 0;
+
 	// system bone ids are no longer valid
 	for( unsigned int i = 0; i < SYSBONE_MAX; ++i )
 	{
@@ -406,6 +411,14 @@ void EveTurretSet::RebuildCachedData( BlueAsyncRes* p )
 							m_grnMeshBinding = GrannyNewMeshBinding( grannyFileInfo->Models[0]->MeshBindings[0].Mesh, grannyFileInfo->Skeletons[0], grannyFileInfo->Skeletons[0] );
 							// and remember model
 							m_grnModel = grannyFileInfo->Models[0];
+							
+							unsigned int boneCount = GrannyGetMeshBindingBoneCount( m_grnMeshBinding );
+							m_possibleTurretDisplayAmount = EVE_MAX_TURRETS_PER_SET;
+							if( boneCount != 0 )
+							{
+								m_possibleTurretDisplayAmount = EVE_MAX_TURRET_SET_BONES / boneCount;
+							}							 
+
 							// create animations for all turrets
 							for( std::vector<SingleTurretData>::iterator it = m_singleTurrets.begin(); it != m_singleTurrets.end(); ++it )
 							{
@@ -416,6 +429,19 @@ void EveTurretSet::RebuildCachedData( BlueAsyncRes* p )
 									it->grnLocalPose = GrannyNewLocalPose( it->grnSkeleton->BoneCount );
 									it->grnWorldPose = GrannyNewWorldPose( it->grnSkeleton->BoneCount );
 								}
+							}
+
+							// remove the turrets that are not able to be displayed
+							if( m_possibleTurretDisplayAmount > 0 && m_singleTurrets.size() > m_possibleTurretDisplayAmount )
+							{
+								CCP_LOGWARN( "Turretset '%s' has more turrets (%d) than the shader can handle (%d) due to the amount of bones for the model (%d)", 
+									grannyFileInfo->FromFileName,
+									m_singleTurrets.size(), 
+									m_possibleTurretDisplayAmount,  
+									EVE_MAX_TURRET_SET_BONES/m_possibleTurretDisplayAmount
+								);
+
+								m_singleTurrets.resize( m_possibleTurretDisplayAmount );
 							}
 						}
 					}
@@ -744,20 +770,13 @@ void EveTurretSet::UpdateAsyncronous( float deltaT, Be::Time time, const ParentD
 				Matrix m = GetFiringBoneWorldTransform( i );
 				// and set it to the muzzle
 				m_firingEffect->SetMuzzleTransform( i, &m );
-				m_firingEffectMuzzlePosSet = true;
 			}
+			m_firingEffectMuzzlePosSet = true;
 		}
 		
 		// is targeted! so did we miss or hit the target?
-		if( GetShotMissed() )
-		{
-			m_firingEffect->SetEndPosition( &m_targetPositionMiss );
-		}
-		else
-		{
-			m_firingEffect->SetEndPosition( &m_targetPosition );
-		}
-		
+		SetEffectEndPoint();
+
 		// time update (return value tells us if effect is ready to fire!)
 		if( m_firingEffect->Update( time, deltaT ) )
 		{
@@ -767,20 +786,23 @@ void EveTurretSet::UpdateAsyncronous( float deltaT, Be::Time time, const ParentD
 			// properly set
 			if( !m_firingEffectMuzzlePosSet )
 			{
+				
 				for( unsigned int i = 0; i < m_firingEffect->GetPerMuzzleEffectCount(); ++i )
 				{
 					// use something relatively sensible, even absent geometry
 					m_firingEffect->SetMuzzleTransform( i, &m_parentData.transform );
 				}
+
 				m_firingEffectMuzzlePosSet = true;
 			}
+
 
 			if( !m_laserMissBehaviour )
 			{
 				UpdateMissPosition( &m_parentData.transform );
 			}
 			PopShotMissed();
-			m_firingEffect->SetEndPosition( GetShotMissed() ? &m_targetPositionMiss : &m_targetPosition );
+			SetEffectEndPoint();
 			m_firingEffect->SetDisplayDestObject( !GetShotMissed() || m_projectileMissBehaviour );
 
 			// pop miss state
@@ -815,7 +837,7 @@ Matrix EveTurretSet::GetFiringBoneWorldTransform( unsigned int muzzle ) const
 
 	// this is a problem...
 	if( closestTurret == INVALID_TURRET_INDEX )
-	{
+	{ 
 		return Tr2Renderer::GetIdentityTransform();
 	}
 
@@ -1014,10 +1036,11 @@ void EveTurretSet::ModifySystemBoneTransform( SystemBones bone, const Vector3* t
 void EveTurretSet::SetLocalTransform( unsigned int turretIndex, const Matrix* localMatrix )
 {
 	// should never be more than MAX_TURRETS_PER_SET
-	if( turretIndex >= EVE_MAX_TURRETS_PER_SET )
+	if( turretIndex >= EVE_MAX_TURRETS_PER_SET || ( m_possibleTurretDisplayAmount != 0 && turretIndex >= m_possibleTurretDisplayAmount ))
 	{
 		return;
 	}
+
 	// keep list up to size
 	if( m_singleTurrets.size() <= turretIndex )
 	{
@@ -1026,7 +1049,7 @@ void EveTurretSet::SetLocalTransform( unsigned int turretIndex, const Matrix* lo
 		{
 			SingleTurretData data;
 			if( m_grnModel )
-			{
+			{ 
 				data.grnModelInstance = GrannyInstantiateModel( m_grnModel );
 				data.grnSkeleton = GrannyGetSourceSkeleton( data.grnModelInstance );
 				data.grnLocalPose = GrannyNewLocalPose( data.grnSkeleton->BoneCount );
@@ -1053,6 +1076,10 @@ void EveTurretSet::SetLocalTransform( unsigned int turretIndex, const Matrix* lo
 	
 	// remove scaling: this matrix comes from a locator which can have scaling, but we don't want it!
 	TriMatrixRemoveScaling( &m_singleTurrets[turretIndex].localMatrix, localMatrix );
+
+	Vector3 translation, scale;
+	D3DXMatrixDecompose( &scale, &m_singleTurrets[turretIndex].localQuaternion, &translation, &m_singleTurrets[turretIndex].localMatrix );
+	m_singleTurrets[turretIndex].localPosition = Vector4(translation, 1.0f);
 
 	// new one is not yet valid, cause it needs to get all calculated
 	m_singleTurrets[turretIndex].valid = false;
@@ -1166,6 +1193,7 @@ void EveTurretSet::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Re
 	// multiple views. We need to keep updating turrets as long as they're visible in any
 	// view, not just the last one rendered.
 	m_visibleCount = 0;
+
 	for( std::vector<SingleTurretData>::iterator it = m_singleTurrets.begin(); it != m_singleTurrets.end(); ++it )
 	{
 		// transform bounding sphere into world space to check against frustum
@@ -1340,6 +1368,8 @@ Tr2PerObjectData* EveTurretSet::GetPerObjectData( ITriRenderBatchAccumulator* ac
 	Matrix idMatrix;
 	D3DXMatrixIdentity( &idMatrix );
 
+	Vector3 scale, translation;
+
 	// tell "parent"-ship matrix
 	D3DXMatrixTranspose( &perObjectData->m_shipMatrix, &m_parentData.transform );
 
@@ -1349,57 +1379,61 @@ Tr2PerObjectData* EveTurretSet::GetPerObjectData( ITriRenderBatchAccumulator* ac
 	// fill with data
 	if( !m_singleTurrets.empty() )
 	{
+		unsigned int maxBonesPerTurret = EVE_MAX_TURRET_SET_BONES / m_singleTurrets.size();
 		// to-bone-index-mapping for the shader (is the same for all turrets of the set)
 		const int* toBoneIndices = m_grnMeshBinding ? GrannyGetMeshBindingToBoneIndices( m_grnMeshBinding ) : NULL;
-		unsigned int boneCount = m_grnMeshBinding ? GrannyGetMeshBindingBoneCount( m_grnMeshBinding ) : EVE_MAX_BONES_PER_TURRET;
+		unsigned int boneCount = m_grnMeshBinding ? GrannyGetMeshBindingBoneCount( m_grnMeshBinding ) : maxBonesPerTurret;
 
-		// base index for each turret in big matrix list for all the turret's instances
-		unsigned int baseBoneIndex = 0;
-		unsigned int baseTurretIndex = 0;
-		// put all single turret's world-matrices in the array
+		// Index of the bone in the big translation and rotation 
+		unsigned int boneIndex = 0;
+		unsigned int turretIndex = 0;
+		
+		// put all single turret's positions and rotations in the array
 		for( unsigned int i = 0; i < m_singleTurrets.size(); ++i )
 		{
 			if( m_singleTurrets[i].visible )
 			{
+				boneIndex = turretIndex * boneCount;
 				// get animation matrices here, they are not the same for all turrets of the set
 				const Matrix* compositeMatrixArray = m_singleTurrets[i].grnWorldPose ? (Matrix*)GrannyGetWorldPoseComposite4x4Array( m_singleTurrets[i].grnWorldPose ) : NULL;
-				// fill all matrices for this turret's instance
+				
+				// Construct all turret bone translations and rotations
 				for( unsigned int j = 0; j < boneCount; ++j )
 				{
-					if( m_singleTurrets[i].valid )
+					if( m_singleTurrets[i].valid && toBoneIndices && compositeMatrixArray)
 					{
-						if( compositeMatrixArray && toBoneIndices )
-						{
-							// column_major for shaders
-							TriMatrixTranspose( (Matrix*)&perObjectData->m_turretPose[baseBoneIndex + j], &compositeMatrixArray[toBoneIndices[j]], 4 * 3 * sizeof( float ) );
-						}
-						else
-						{
-							// column_major for shaders
-							TriMatrixTranspose( (Matrix*)&perObjectData->m_turretPose[baseBoneIndex + j], &idMatrix, 4 * 3 * sizeof( float ) );
-						}
+						Matrix m = compositeMatrixArray[toBoneIndices[j]];
+						D3DXMatrixDecompose( &scale, &perObjectData->m_turretPoseRot[boneIndex], &translation, &m );
+						perObjectData->m_turretPoseTrans[boneIndex] = Vector4( translation, 1.0f );
 					}
 					else
 					{
-						TriMatrixTranspose( (Matrix*)&perObjectData->m_turretPose[baseBoneIndex + j], &idMatrix, 4 * 3 * sizeof( float ) );
+						perObjectData->m_turretPoseTrans[boneIndex] = Vector4( 0, 0, 0, 1 );
+						perObjectData->m_turretPoseRot[boneIndex] = Quaternion( 0, 0, 0, 1 );
 					}
+
+					// Increment the bone index so the index in the arrays is correct
+					boneIndex++;
 				}
 
-				// local matrix of each turret instance
+				// actual turret position and rotation
 				if( m_singleTurrets[i].valid )
 				{
-					D3DXMatrixTranspose( &perObjectData->m_turretLocal[baseTurretIndex], &m_singleTurrets[i].localMatrix );
+					perObjectData->m_turretRotation[turretIndex] = m_singleTurrets[i].localQuaternion;
+					perObjectData->m_turretTranslation[turretIndex] = m_singleTurrets[i].localPosition;
 				}
 				else
 				{
-					perObjectData->m_turretLocal[baseTurretIndex] = idMatrix;
+					perObjectData->m_turretTranslation[turretIndex] = Vector4( 0, 0, 0, 1 );
+					perObjectData->m_turretRotation[turretIndex] = Quaternion( 0, 0, 0, 1 );
 				}
 
-				// increment base bone index for next turret
-				baseBoneIndex += EVE_MAX_BONES_PER_TURRET;
-				++baseTurretIndex;
+				++turretIndex;
 			}
 		}
+
+		// store how many bones in in the turrets, so we can correctly read from the buffer in the shader
+		perObjectData->m_turretSetData = Vector4( (float)boneCount, 0, 0, 0 );
 
 		// ps data
 		perObjectData->m_shipData = m_parentData.shipData;
@@ -2195,7 +2229,7 @@ void EveTurretSet::ResetMissQueue()
 // --------------------------------------------------------------------------------
 void EveTurretSet::PopShotMissed() 
 { 
-	m_lastShotAccuracy = m_missQueue.empty() ? ACCURACY_INDETERMINATE : (ShotAccuracy)m_missQueue.back();
+	m_lastShotAccuracy = m_missQueue.empty() ? ACCURACY_INDETERMINATE : (ShotAccuracy)m_missQueue.front();
 	if( !m_missQueue.empty() )
 		m_missQueue.pop_front(); 
 }
@@ -2279,19 +2313,38 @@ size_t EveTurretSet::MissQueueSize() const
 	return m_missQueue.size();
 }
 
+
 // --------------------------------------------------------------------------------
 // Description:
-//   Copy all the matrices to HW
+//   Sets the end point of the firingEffect
+// --------------------------------------------------------------------------------
+void EveTurretSet::SetEffectEndPoint()
+{
+	if( GetShotMissed() )
+	{
+		m_firingEffect->SetEndPosition( &m_targetPositionMiss );
+	}
+	else
+	{
+		m_firingEffect->SetEndPosition( &m_targetPosition );
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Copy all the data to HW
 // --------------------------------------------------------------------------------
 void EveTurretSetPerObjectData::SetPerObjectDataToDevice( Tr2ConstantBufferAL** buffers, unsigned constantTypeMask, Tr2RenderContext& renderContext ) const
 {
 	// add up constant count, see EveTurretSetPerObjectData
 	int vsConstantCount =
-		1 +															// Vector4
-		4 +															// Matrix4x4
-		EVE_MAX_TURRETS_PER_SET +								    // Vector4 array
-		4 * EVE_MAX_TURRETS_PER_SET +								// Matrix4x4 array
-		3 * EVE_MAX_BONES_PER_TURRET * EVE_MAX_TURRETS_PER_SET;		// Matrix4x3 array
+		1 +															// Vector4 clip data
+		1 +							   								// Vector4 extra data (x is bone count)
+		4 +															// World matrix
+		EVE_MAX_TURRETS_PER_SET +									// Vector4 array translation
+		EVE_MAX_TURRETS_PER_SET +									// Vector4 array rotation quaternion
+		EVE_MAX_TURRET_SET_BONES +									// Vector4 array for bone pose translation
+		EVE_MAX_TURRET_SET_BONES;									// Vector4 array for bone pose rotation
 	FillAndSetConstants( *buffers[VERTEX_SHADER], &m_baseCutoffData, vsConstantCount * 16, VERTEX_SHADER, Tr2Renderer::GetPerObjectVSStartRegister(), renderContext );
 
 	FillAndSetConstants( *buffers[PIXEL_SHADER], &m_shipData, ( 3 + Tr2ShLightingManager::PACKED_COEFFICIENT_COUNT ) * 16, PIXEL_SHADER, Tr2Renderer::GetPerObjectPSStartRegister(), renderContext );
