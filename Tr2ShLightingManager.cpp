@@ -14,7 +14,8 @@ CCP_STATS_DECLARE( shLightingSecondarySources, "Trinity/shLighting/secondarySour
 namespace
 {
 
-static const float s_cutoffRadiusRatio = atan( XM_PI / 180.f );
+// Imeratively chosen threshold for distance/radius*intensity value to decide if the light affects a sample
+static const float s_cutoffRadiusRatio = 0.045f * 7.f;
 
 template<int Order>
 class ShSolver
@@ -331,7 +332,8 @@ void Tr2ShLightingManager::CalculateSecondaryLighting( const Vector3& position, 
 		
 		XMVECTOR condition = XMVectorOrInt( XMVectorOrInt( 
 			XMVectorIsInfinite( distance ), 
-			XMVectorLess( XMVectorMultiply( sourcePos, oneOverDistance ), XMVectorReplicate( s_cutoffRadiusRatio ) ) ),
+			XMVectorLess( XMVectorMultiply( XMVectorMultiply( sourcePos, oneOverDistance ), XMLoadFloat4A( reinterpret_cast<const XMFLOAT4A*>( &source->emissive ) ) ), 
+				XMVectorReplicate( s_cutoffRadiusRatio ) ) ),
 			XMVectorLess( distance, g_XMOne ) );
 		if( XMVectorGetIntW( condition ) )
 		{
@@ -380,6 +382,11 @@ void Tr2ShLightingManager::GetLighting( const Vector3& position, float intensity
 	}
 }
 
+inline float MaxVectorComponent( const Vector3& v )
+{
+	return std::max( v.x, std::max( v.y, v.z ) );
+}
+
 // --------------------------------------------------------------------------------------
 // Description:
 //   Updates packed secondary source data.
@@ -398,6 +405,7 @@ void Tr2ShLightingManager::UpdateSourceData()
 	{
 		return;
 	}
+	float maxLight = MaxVectorComponent( m_sunColor );
 	SourceData* data = reinterpret_cast<SourceData*>( m_sourceData.get() );
 	for( auto it = m_sources.begin(); it != m_sources.end(); ++it )
 	{
@@ -405,9 +413,10 @@ void Tr2ShLightingManager::UpdateSourceData()
 		{
 			data->position = *it->position;
 			data->radius = *it->radius;
-			data->albedo = *reinterpret_cast<const Vector4*>( it->albedo ) * m_secondaryIntensity;
+			data->albedo = *reinterpret_cast<const Vector3*>( it->albedo ) * m_secondaryIntensity;
 			data->cutoffMultiplier = 1;
-			data->emissive = *reinterpret_cast<const Vector4*>( it->emissive ) * m_secondaryIntensity;
+			data->emissive = *reinterpret_cast<const Vector3*>( it->emissive ) * m_secondaryIntensity;
+			data->maxColorComponent = std::max( MaxVectorComponent( data->albedo ) * maxLight, MaxVectorComponent( data->emissive ) );
 			++data;
 			++m_sourceCount;
 		}
@@ -418,7 +427,8 @@ void Tr2ShLightingManager::UpdateSourceData()
 		data->radius = ( *it )->m_radius;
 		data->albedo = Vector3( 0, 0, 0 );
 		data->cutoffMultiplier = 0;
-		data->emissive = *reinterpret_cast<const Vector4*>( &( *it )->m_color ) * m_primaryIntensity;
+		data->emissive = *reinterpret_cast<const Vector3*>( &( *it )->m_color ) * m_primaryIntensity;
+		data->maxColorComponent = MaxVectorComponent( data->emissive );
 		++data;
 		++m_sourceCount;
 	}

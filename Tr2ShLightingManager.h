@@ -65,7 +65,8 @@ private:
 		float radius;
 		Vector3 albedo;
 		float cutoffMultiplier;
-		Vector4 emissive;
+		Vector3 emissive;
+		float maxColorComponent;
 	};
 
 	void UpdateSourceData();
