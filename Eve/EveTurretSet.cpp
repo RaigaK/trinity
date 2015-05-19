@@ -654,8 +654,9 @@ void EveTurretSet::UpdateAsyncronous( float deltaT, Be::Time time, const ParentD
 	for( std::vector<SingleTurretData>::iterator it = m_singleTurrets.begin(); it != m_singleTurrets.end(); ++it )
 	{
 		Matrix localMatrix;		
+		Vector3 localPos = Vector3(it->localPosition.x, it->localPosition.y, it->localPosition.z);
 		D3DXMatrixRotationQuaternion( &localMatrix, &it->localQuaternion );
-		TriMatrixTranslate(&localMatrix, &localMatrix, &Vector3(it->localPosition.x, it->localPosition.y, it->localPosition.z));
+		TriMatrixTranslate(&localMatrix, &localMatrix, &localPos);
 		
 		// first parent matrix (ship or station), then local matrix (locator position)
 		D3DXMatrixMultiply( &it->worldMatrix, &localMatrix, &m_parentData.transform );
