@@ -275,14 +275,6 @@ void EveSpaceObject2::UpdateSyncronous( EveUpdateContext& updateContext )
 	{
 		(*it)->Update( m_worldTransform );
 	}
-}
-
-void EveSpaceObject2::UpdateAsyncronous( EveUpdateContext& updateContext )
-{
-	if( !m_update )
-	{
-		return;
-	}
 
 	Tr2MeshBase* mesh = m_meshLod;
 	if( m_mesh )
@@ -299,6 +291,14 @@ void EveSpaceObject2::UpdateAsyncronous( EveUpdateContext& updateContext )
 			float boxVolume = aabbSize.x * aabbSize.y * aabbSize.z;
 			m_secondaryLightingSphereRadius = pow( boxVolume / 4.f * 3.f / TRI_PI, 1.0f / 3.0f );
 		}
+	}
+}
+
+void EveSpaceObject2::UpdateAsyncronous( EveUpdateContext& updateContext )
+{
+	if( !m_update )
+	{
+		return;
 	}
 
 	Be::Time time = updateContext.GetTime();

@@ -148,13 +148,11 @@ void Tr2StaticEmitter::DoSpawn()
 					mapping.offset = i->second.m_offset;
 					mapping.length = i->second.m_dimension;
 					
-					if( elements.m_items[j].m_dataType >= elements.FLOAT32_1 + int( i->second.m_dimension ) - 1 && 
-						elements.m_items[j].m_dataType <= elements.FLOAT32_4 )
+					if( ( elements.m_items[j].m_dataType & elements.DT_TYPE_MASK ) == elements.DT_FLOAT32 )
 					{
 						mapping.isFloat16 = false;
 					}
-					else if( ( elements.m_items[j].m_dataType == elements.FLOAT16_2 && i->second.m_dimension <= 2 ) || 
-							 elements.m_items[j].m_dataType == elements.FLOAT16_4 )
+					else if( ( elements.m_items[j].m_dataType & elements.DT_TYPE_MASK ) == elements.DT_FLOAT16 )
 					{
 						CCP_LOGWARN( 
 							"Particle elements \"%s\" has FLOAT16 type in Tr2StaticEmitter geometry %s, this degrades emitter performance", 
