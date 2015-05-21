@@ -53,43 +53,103 @@ public:
 	} m_data;
 };
 
-void GetProjectedCubeBounds( AxisAlignedBoundingBox& box, const Matrix& worldViewProj )
+// --------------------------------------------------------------------------------------
+// Description:
+//   Calculates axis aligned bounding box of a given box in projection space. The 
+//   function projects all the vertices, discards vertices outside frusum (ignoring far
+//   plane), clips edges with near plane and computes AABB clipped to [-1, 1] range. 
+//   Function assumes non-orthographic projection.
+// --------------------------------------------------------------------------------------
+void GetProjectedCubeBounds(  AxisAlignedBoundingBox& box, const Matrix& worldView, const Matrix& proj, float nearPlane )
 {
-	Vector4 corners[8];
+	Vector3 minBounds1 = Vector3( -0.5f, -0.5f, -0.5f );
+	Vector3 maxBounds1 = Vector3( 0.5f, 0.5f, 0.5f );
 
-	Vector3 min = Vector3( -0.5f, -0.5f, -0.5f );
-	Vector3 max = Vector3( 0.5f, 0.5f, 0.5f );
+	Vector3 sides[6][4] = {
+		{
+			Vector3( minBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( minBounds1.x, maxBounds1.y, minBounds1.z ),
+			Vector3( minBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( minBounds1.x, minBounds1.y, maxBounds1.z ),
+		},
+		{
+			Vector3( maxBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( maxBounds1.x, minBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, minBounds1.z ),
+		},
+		{
+			Vector3( minBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( maxBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( maxBounds1.x, minBounds1.y, maxBounds1.z ),
+			Vector3( minBounds1.x, minBounds1.y, maxBounds1.z ),
+		},
+		{
+			Vector3( minBounds1.x, maxBounds1.y, minBounds1.z ),
+			Vector3( minBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, minBounds1.z ),
+		},
+		{
+			Vector3( minBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( maxBounds1.x, minBounds1.y, minBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, minBounds1.z ),
+			Vector3( minBounds1.x, maxBounds1.y, minBounds1.z ),
+		},
+		{
+			Vector3( minBounds1.x, minBounds1.y, maxBounds1.z ),
+			Vector3( minBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, maxBounds1.y, maxBounds1.z ),
+			Vector3( maxBounds1.x, minBounds1.y, maxBounds1.z ),
+		},
+	};
 
-	corners[0] = Vector4( min, 1.f );
-	corners[1] = Vector4( min.x, min.y, max.z, 1.f );
-	corners[2] = Vector4( max.x, min.y, min.z, 1.f );
-	corners[3] = Vector4( max.x, min.y, max.z, 1.f );
-	corners[4] = Vector4( max, 1.f );
-	corners[5] = Vector4( max.x, max.y, min.z, 1.f );
-	corners[6] = Vector4( min.x, max.y, max.z, 1.f );
-	corners[7] = Vector4( min.x, max.y, min.z, 1.f );
-
-	D3DXVec4TransformArray( corners, sizeof( Vector4 ), corners, sizeof( Vector4 ), &worldViewProj, 8 );
-
-	for( int i = 0; i < 8; ++i )
+	for( int i = 0; i < 6; ++i )
 	{
-		if( corners[i].w < 0 )
+		for( int j = 0; j < 4; ++j )
 		{
-			corners[i].x = corners[i].x < 0 ? -1.f : 1.f;
-			corners[i].y = corners[i].y < 0 ? -1.f : 1.f;
-		}
-		else
-		{
-			corners[i] /= corners[i].w;
-			corners[i].x = std::min( std::max( corners[i].x, -1.f ), 1.f );
-			corners[i].y = std::min( std::max( corners[i].y, -1.f ), 1.f );
+			D3DXVec3TransformCoord( &sides[i][j], &sides[i][j], &worldView );
 		}
 	}
 
-	box = AxisAlignedBoundingBox( Vector3( &corners[0].x ), Vector3( &corners[0].x ) );
-	for( int i = 1; i < 8; ++i )
+	Vector4 points[48];
+	int count = 0;
+
+	D3DXPLANE plane( 0, 0, 1, nearPlane );
+
+	for( int side = 0; side < 6; ++side )
 	{
-		box.IncludePoint( Vector3( &corners[i].x ) );
+		for( int edge = 0; edge < 4; ++edge )
+		{
+			const Vector3& vertex1 = sides[side][edge];
+			const Vector3& vertex2 = sides[side][( edge + 1 ) % 4];
+			float v0 = D3DXPlaneDotCoord( &plane, &vertex1 );
+			float v1 = D3DXPlaneDotCoord( &plane, &vertex2 );
+			if( v0 <= 0 )
+			{
+				points[count++] = sides[side][edge];
+			}
+			if( v0 * v1 < 0 )
+			{
+				Vector3 result;
+				D3DXPlaneIntersectLine( &result, &plane, &vertex1, &vertex2 );
+				points[count++] = result;
+			}
+		}
+	}
+
+	D3DXVec4TransformArray( points, sizeof( Vector4 ), points, sizeof( Vector4 ), &proj, count );
+	for( int i = 0; i < count; ++i )
+	{
+		points[i] /= points[i].w;
+		points[i].x = std::min( std::max( points[i].x, -1.f ), 1.f );
+		points[i].y = std::min( std::max( points[i].y, -1.f ), 1.f );
+	}
+
+	box = AxisAlignedBoundingBox( Vector3( &points[0].x ), Vector3( &points[0].x ) );
+	for( int i = 0; i < count; ++i )
+	{
+		box.IncludePoint( Vector3( &points[i].x ) );
 	}
 }
 
@@ -342,11 +402,13 @@ Tr2PerObjectData* EveCloud::GetPerObjectData( ITriRenderBatchAccumulator* accumu
 	Vector3 zero( 0.f, 0.f, 0.f );
 	D3DXVec3TransformCoord( &data->m_data.m_eyePosLocal, &zero, &worldViewInv );
 
+	const float fakeNearPlane = 500;
 	// We modify the original projection matrix by changing clip planes to avoid precision problems
-	Matrix fakeProjectionInv = Tr2Renderer::GetProjectionTransform();
-	fakeProjectionInv._33 = -1;
-	fakeProjectionInv._43 = -500 * 2;
-	D3DXMatrixInverse( &fakeProjectionInv, nullptr, &fakeProjectionInv );
+	Matrix fakeProjection = Tr2Renderer::GetProjectionTransform();
+	fakeProjection._33 = -1;
+	fakeProjection._43 = -fakeNearPlane * 2;
+	Matrix fakeProjectionInv;
+	D3DXMatrixInverse( &fakeProjectionInv, nullptr, &fakeProjection );
 	D3DXMatrixTranspose( &data->m_data.m_projectionInv, &fakeProjectionInv );
 
 	Vector3 center;
@@ -355,7 +417,7 @@ Tr2PerObjectData* EveCloud::GetPerObjectData( ITriRenderBatchAccumulator* accumu
 
 
 	AxisAlignedBoundingBox box;
-	GetProjectedCubeBounds( box, worldViewProjection );
+	GetProjectedCubeBounds( box, m_worldTransform * Tr2Renderer::GetViewTransform(), fakeProjection, fakeNearPlane );
 
 	data->m_data.m_screenSize.x = box.m_min.x;
 	data->m_data.m_screenSize.y = box.m_min.y;
