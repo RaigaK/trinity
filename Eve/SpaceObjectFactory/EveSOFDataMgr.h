@@ -117,6 +117,7 @@ public:
 		unsigned int count;
 		BlueSharedString designation;
 		BlueSharedString shader;
+		unsigned int blockedMaterials;
 		std::map<BlueSharedString, TextureData> textures;
 		std::map<BlueSharedString, Vector4> parameters;
 	};
@@ -267,7 +268,10 @@ public:
 	// generic shader data
 	struct GenericShaderData
 	{
-		std::map<BlueSharedString, TextureData> textures;
+		// complete list of parameters
+		std::vector<BlueSharedString> parameters;
+		// global textures for this shader
+		std::map<BlueSharedString, TextureData> defaultTextures;
 	};
 
 	// generic data structs

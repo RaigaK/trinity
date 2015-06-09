@@ -48,7 +48,8 @@ EveSOFDataGenericString::EveSOFDataGenericString( IRoot* lockobj )
 
 
 EveSOFDataGenericShader::EveSOFDataGenericShader( IRoot* lockobj ) :
-	PARENTLOCK( m_textures )
+	PARENTLOCK( m_parameters ),
+	PARENTLOCK( m_defaultTextures )
 {}
 
 
@@ -101,6 +102,7 @@ EveSOFDataHull::EveSOFDataHull( IRoot* lockobj ) :
 	PARENTLOCK( m_damageLocators ),
 	PARENTLOCK( m_children ),
 	PARENTLOCK( m_animations ),
+	m_buildClass( BUILDCLASS_SHIP ),
 	m_boundingSphere( 0.f, 0.f, 0.f, 0.f ),
 	m_isSkinned( false ),
 	m_audioPosition( Vector3( 0.f, 0.f, 0.f ) )
@@ -121,7 +123,8 @@ EveSOFDataHullArea::EveSOFDataHullArea( IRoot* lockobj ) :
 	PARENTLOCK( m_textures ),
 	PARENTLOCK( m_parameters ),
 	m_index( 0 ),
-	m_count( 1 )
+	m_count( 1 ),
+	m_blockedMaterials( 0 )
 {}
 
 

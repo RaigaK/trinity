@@ -275,96 +275,94 @@ void EveSOF::FillMeshAreaVector( std::map<std::string, Tr2LodResourcePtr>& lodRe
 	const std::vector<EveSOFDataMgr::HullAreas>* hullAreas = dna->GetHullMeshAreas( areaType );
 	for( auto area = hullAreas->begin(); area != hullAreas->end(); ++area )
 	{
-		// every area has it's own shader, nothing we can share here
-		Tr2EffectPtr newShader;
-		newShader.CreateInstance();
-		newShader->StartUpdate();
-
-		// construct res path of the shader
-		std::string shaderPath = std::string( "/" ) + std::string( area->shader.c_str() );
-		StringInsertStubAfter( shaderPath, "/", dna->GetShaderPrefix( dna->IsHullAnimated() ) );
-		shaderPath = dna->GetAreaShaderLocationResPath() + shaderPath;
-		newShader->SetEffectPathName( shaderPath.c_str() );
-
-		// parameters
-		for( auto hullAreaParamsIt = area->parameters.begin(); hullAreaParamsIt != area->parameters.end(); ++hullAreaParamsIt )
+		// find data on this shader from generics, we need it!
+		const EveSOFDataMgr::GenericShaderData* shaderData = dna->GetGenericShaderData( area->shader );
+		if( shaderData )
 		{
-			const Vector4* factionParam = dna->GetFactionMeshAreaParameters( area->designation, hullAreaParamsIt->first );
-			if( factionParam )
-			{
-				newShader->AddParameterVector4( hullAreaParamsIt->first, factionParam );
-			}
-			else
-			{
-				newShader->AddParameterVector4( hullAreaParamsIt->first, &hullAreaParamsIt->second );
-			}
-		}
 
-		// shader textures from the hull data
-		for( auto it = area->textures.begin(); it != area->textures.end(); ++it )
-		{
-			CCP_STATS_ZONE( __FUNCTION__ " texture" );
+			// every area has it's own shader, nothing we can share here
+			Tr2EffectPtr newShader;
+			newShader.CreateInstance();
+			newShader->StartUpdate();
 
-			// res path how it is from hull data
-			std::string highResPath = it->second.resFilePath;
-			// get's modified by the faction data
-			dna->ModifyTextureResPath( highResPath, it->first.c_str() );
-			// make three paths for the three LODs
-			std::string mediumResPath, lowResPath, ultraResPath;
-			if( GenerateLodResourcePaths( mediumResPath, lowResPath, ultraResPath, highResPath.c_str(), it->first.c_str() ) )
+			// construct res path of the shader
+			std::string shaderPath = std::string( "/" ) + std::string( area->shader.c_str() );
+			StringInsertStubAfter( shaderPath, "/", dna->GetShaderPrefix( dna->IsHullAnimated() ) );
+			shaderPath = dna->GetAreaShaderLocationResPath() + shaderPath;
+			newShader->SetEffectPathName( shaderPath.c_str() );
+
+			// parameters
+			for( auto shaderParamIt = shaderData->parameters.begin(); shaderParamIt != shaderData->parameters.end(); ++shaderParamIt )
 			{
-				// now we need a lod resource object, maybe we already have one?
-				auto finder = lodResCollector.find( highResPath );
-				if( finder != lodResCollector.end() )
+				const Vector4* paramValue = dna->GetMeshAreaParameter( area->designation, *shaderParamIt, &area->parameters, area->blockedMaterials );
+				if( paramValue )
 				{
-					// yeah, we have one: use it!
-					newShader->AddResourceTexture2DLod( it->first, finder->second );
+					newShader->AddParameterVector4( *shaderParamIt, paramValue );
+				}
+			}
+
+			// shader textures from the hull data
+			for( auto it = area->textures.begin(); it != area->textures.end(); ++it )
+			{
+				CCP_STATS_ZONE( __FUNCTION__ " texture" );
+
+				// res path how it is from hull data
+				std::string highResPath = it->second.resFilePath;
+				// get's modified by the faction data
+				dna->ModifyTextureResPath( highResPath, it->first.c_str() );
+				// make three paths for the three LODs
+				std::string mediumResPath, lowResPath, ultraResPath;
+				if( GenerateLodResourcePaths( mediumResPath, lowResPath, ultraResPath, highResPath.c_str(), it->first.c_str() ) )
+				{
+					// now we need a lod resource object, maybe we already have one?
+					auto finder = lodResCollector.find( highResPath );
+					if( finder != lodResCollector.end() )
+					{
+						// yeah, we have one: use it!
+						newShader->AddResourceTexture2DLod( it->first, finder->second );
+					}
+					else
+					{
+						// not found, so we have to make a new one
+						Tr2LodResourcePtr lodResource;
+						lodResource.CreateInstance();
+
+						CCP_STATS_ZONE( __FUNCTION__ " lodResource" );
+
+						lodResource->SetName( it->first );
+						lodResource->SetResourcePath( TR2_LOD_LOW, lowResPath.c_str() );
+						lodResource->SetResourcePath( TR2_LOD_MEDIUM, mediumResPath.c_str() );
+						lodResource->SetResourcePath( TR2_LOD_HIGH, highResPath.c_str() );
+						lodResource->SetResourcePath( TR2_LOD_ULTRA, ultraResPath.c_str() );
+						newShader->AddResourceTexture2DLod( it->first, lodResource );
+						// also add it to the mesh for updating
+						lodResCollector[ highResPath ] = lodResource;
+					}
 				}
 				else
 				{
-					// not found, so we have to make a new one
-					Tr2LodResourcePtr lodResource;
-					lodResource.CreateInstance();
-
-					CCP_STATS_ZONE( __FUNCTION__ " lodResource" );
-
-					lodResource->SetName( it->first );
-					lodResource->SetResourcePath( TR2_LOD_LOW, lowResPath.c_str() );
-					lodResource->SetResourcePath( TR2_LOD_MEDIUM, mediumResPath.c_str() );
-					lodResource->SetResourcePath( TR2_LOD_HIGH, highResPath.c_str() );
-					lodResource->SetResourcePath( TR2_LOD_ULTRA, ultraResPath.c_str() );
-					newShader->AddResourceTexture2DLod( it->first, lodResource );
-					// also add it to the mesh for updating
-					lodResCollector[ highResPath ] = lodResource;
+					newShader->AddResourceTexture2D( it->first, highResPath.c_str() );
 				}
 			}
-			else
-			{
-				newShader->AddResourceTexture2D( it->first, highResPath.c_str() );
-			}
-		}
 
-		// shader textures from the generic data
-		auto genericTextures = dna->GetGenericShaderTextures( area->shader );
-		if( genericTextures )
-		{
-			for( auto gtit = genericTextures->begin(); gtit != genericTextures->end(); ++gtit )
+			// default shader textures from the generic data
+			for( auto gtit = shaderData->defaultTextures.begin(); gtit != shaderData->defaultTextures.end(); ++gtit )
 			{
 				newShader->AddResourceTexture2D( gtit->first, gtit->second.resFilePath.c_str() );
 			}
+
+			// that's it for setting up this shader, must rebuild cache on it!
+			newShader->EndUpdate();
+
+			// new mesharea
+			Tr2MeshAreaPtr newMeshArea;
+			newMeshArea.CreateInstance();
+			newMeshArea->SetName( area->designation.c_str() );
+			newMeshArea->SetMaterial( newShader );
+			newMeshArea->SetIndex( area->index );
+			newMeshArea->SetCount( area->count );
+			meshAreaVector->Append( newMeshArea );
 		}
-
-		// that's it for setting up this shader, must rebuild cache on it!
-		newShader->EndUpdate();
-
-		// new mesharea
-		Tr2MeshAreaPtr newMeshArea;
-		newMeshArea.CreateInstance();
-		newMeshArea->SetName( area->designation.c_str() );
-		newMeshArea->SetMaterial( newShader );
-		newMeshArea->SetIndex( area->index );
-		newMeshArea->SetCount( area->count );
-		meshAreaVector->Append( newMeshArea );
 	}
 }
 

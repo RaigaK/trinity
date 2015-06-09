@@ -229,6 +229,7 @@ public:
 	unsigned int m_count;
 	BlueSharedString m_name;
 	BlueSharedString m_shader;
+	unsigned int m_blockedMaterials;
 	PEveSOFDataTextureVector m_textures;
 	PEveSOFDataParameterVector m_parameters;
 };
@@ -337,11 +338,22 @@ public:
 	EveSOFDataHull( IRoot* lockobj = NULL );
 	~EveSOFDataHull() {}
 
+	// trinity output class
+	enum BuildClass
+	{
+		BUILDCLASS_SHIP						= 0,
+		BUILDCLASS_MOBILE,
+		BUILDCLASS_STATIONARY,
+	};
+
 	// hull name
 	std::string m_name;
 
 	// description
 	std::string m_description;
+
+	// class
+	BuildClass m_buildClass;
 
 	// geometry
 	std::string m_geometryResFilePath;
@@ -613,8 +625,11 @@ public:
 
 	BlueSharedString m_shader;
 
-	// textures
-	PEveSOFDataTextureVector m_textures;
+	// complete list of parameters
+	PEveSOFDataGenericStringVector m_parameters;
+
+	// default textures
+	PEveSOFDataTextureVector m_defaultTextures;
 };
 TYPEDEF_BLUECLASS( EveSOFDataGenericShader );
 BLUE_DECLARE_VECTOR( EveSOFDataGenericShader );

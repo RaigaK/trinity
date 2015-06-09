@@ -49,7 +49,7 @@ public:
 	const char* GetAreaShaderLocationResPath() const;
 	const char* GetDecalShaderLocationResPath() const;
 	const char* GetShaderPrefix( bool isAnimated ) const;
-	const std::map<BlueSharedString, EveSOFDataMgr::TextureData>* GetGenericShaderTextures( const BlueSharedString& shaderName ) const;
+	const EveSOFDataMgr::GenericShaderData* GetGenericShaderData( const BlueSharedString& shaderName ) const;
 
 	// get racial data
 	const EveSOFDataMgr::RaceBoosterData* GetRaceBoosterData() const;
@@ -75,7 +75,6 @@ public:
 	// get faction data
 	const char* GetFactionResPathInsert() const;
 	void ModifyTextureResPath( std::string& resPath, const char* resName ) const;
-	const Vector4* GetFactionMeshAreaParameters( const BlueSharedString& areaDesignation, const BlueSharedString& parameterName ) const;
 	const Vector4* GetFactionTurretParameters( const BlueSharedString& parameterName ) const;
 	const EveSOFDataMgr::FactionDecalData* GetFactionDecalData( int groupIndex ) const;
 	const EveSOFDataMgr::FactionPlaneSetColorData* GetFactionPlaneSetData( int groupIndex ) const;
@@ -85,11 +84,14 @@ public:
 	// get dna data
 	const char* GetDnaString() const;
 	float GetDirtLevel() const;
+	const Vector4* GetMeshAreaParameter( const BlueSharedString& areaDesignation, const BlueSharedString& parameterName, const std::map<BlueSharedString, Vector4>* hullParameters = nullptr, unsigned int blockededMaterials = 0 ) const;
 
 
 private:
 	// search for a dna command and get it's args
 	bool GetDnaCommandArgs( DnaCommand cmd, std::vector<std::string>& args ) const;
+	// search and area collection to find the data of a specific parameter
+	const Vector4* SearchForParameterData( const std::map<BlueSharedString, EveSOFDataMgr::FactionAreaData>& areas, const BlueSharedString& areaDesignation, const BlueSharedString& parameterName ) const;
 
 	// the dna as a string
 	std::string m_dna;

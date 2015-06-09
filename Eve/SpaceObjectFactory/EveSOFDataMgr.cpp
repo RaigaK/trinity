@@ -6,6 +6,7 @@
 #include "StdAfx.h"
 #include "EveSOFDataMgr.h"
 #include "EveSOFData.h"
+#include "Utilities/StringUtils.h"
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -333,6 +334,7 @@ EveSOFDataMgr::HullAreas EveSOFDataMgr::LoadHullAreaData( const EveSOFDataHullAr
 	HullAreas ha;
 	ha.index = areaData->m_index;
 	ha.count = areaData->m_count;
+	ha.blockedMaterials = areaData->m_blockedMaterials;
 	ha.designation = areaData->m_name;
 	ha.shader = areaData->m_shader;
 	for( auto matit = areaData->m_textures.begin(); matit != areaData->m_textures.end(); ++matit )
@@ -918,10 +920,16 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		EveSOFDataGenericShaderPtr shaderData = (*sit);
 
 		GenericShaderData gsd;
-		for( auto tdit = shaderData->m_textures.begin(); tdit != shaderData->m_textures.end(); ++tdit )
+		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
 		{
 			EveSOFDataTexturePtr textureData = (*tdit);
-			gsd.textures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+			gsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+		}
+
+		for( auto spit = shaderData->m_parameters.begin(); spit != shaderData->m_parameters.end(); ++spit )
+		{
+			EveSOFDataGenericStringPtr paramData = (*spit);
+			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
 		gd.shaderData[ shaderData->m_shader ] = gsd;

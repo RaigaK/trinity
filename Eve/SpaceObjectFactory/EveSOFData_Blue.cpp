@@ -236,6 +236,7 @@ const Be::ClassInfo* EveSOFDataHullArea::ExposeToBlue()
 		MAP_ATTRIBUTE( "count", m_count, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "shader", m_shader, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "blockedMaterials", m_blockedMaterials, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "textures", m_textures, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "parameters", m_parameters, "", Be::READWRITE | Be::PERSIST )
     EXPOSURE_END()
@@ -309,6 +310,34 @@ const Be::ClassInfo* EveSOFDataHullAnimation::ExposeToBlue()
 
 
 BLUE_DEFINE( EveSOFDataHull );
+
+Be::VarChooser EveSOFBuildClassChooser[] =
+{
+	{
+		"EveShip2",
+		BeCast( EveSOFDataHull::BUILDCLASS_SHIP ),
+		"Build an EveShip2"
+	},
+	{
+		"EveMobile",
+		BeCast( EveSOFDataHull::BUILDCLASS_MOBILE ),
+		"Build an EveMobile"
+	},
+	{
+		"EveStation2",
+		BeCast( EveSOFDataHull::BUILDCLASS_STATIONARY ),
+		"Build an EveStation2"
+	},
+	{ 0 }
+};
+
+BLUE_REGISTER_ENUM_EX( 
+	"BuildClass",
+	EveSOFDataHull::BuildClass,
+	EveSOFBuildClassChooser,
+	ENUM_REG_ENUM_OBJECT_ON_MODULE
+);
+
 const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 {
     EXPOSURE_BEGIN( EveSOFDataHull, "" )
@@ -317,6 +346,8 @@ const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 		MAP_ATTRIBUTE( "name", m_name, "The hull name, eg cb2_t1. This functions as an ID.", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "description", m_description, "A description string. NOT used by the SOF, it's just for debugging purposes.", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE_WITH_CHOOSER("buildClass", m_buildClass, "Choose the output trinity class", Be::READWRITE | Be::PERSIST | Be::ENUM, EveSOFBuildClassChooser )
 
 		MAP_ATTRIBUTE( "geometryResFilePath", m_geometryResFilePath, "The res file path to the gr2 file", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "boundingSphere", m_boundingSphere, "The actual size of the gemoetry", Be::READWRITE | Be::PERSIST )
@@ -484,8 +515,8 @@ const Be::ClassInfo* EveSOFDataGenericShader::ExposeToBlue()
         MAP_INTERFACE( EveSOFDataGenericShader )
 
 		MAP_ATTRIBUTE( "shader", m_shader, "The actual shader", Be::READWRITE | Be::PERSIST )
-
-		MAP_ATTRIBUTE( "textures", m_textures, "Generic textures for this shader", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "parameters", m_parameters, "Complete list of all parameters for this shader", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "defaultTextures", m_defaultTextures, "Default (global) textures for this shader", Be::READWRITE | Be::PERSIST )
     EXPOSURE_END()
 }
 
