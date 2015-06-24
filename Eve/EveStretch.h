@@ -6,6 +6,7 @@
 #include "SpaceObject/EveSpaceObject2.h"
 #include "EveTransform.h"
 #include "Curves/TriCurveSet.h"
+#include "Curves/Tr2ScalarCurve.h"
 
 BLUE_DECLARE( EveStretch );
 BLUE_DECLARE( TriFloat );
@@ -57,6 +58,7 @@ public:
 	void SetDisplaySourceObject( bool display ) { m_displaySourceObject = display; }
 
 	void UpdateCurves( EveUpdateContext& updateContext );
+	void Start();
 private:
 	Tr2Lod m_lodLevel;
 	Be::Time m_lastCurveUpdateTime;
@@ -92,7 +94,12 @@ private:
 	EveTransformPtr m_stretchObject;
 	EveTransformPtr m_moveObject;
 
+	Tr2ScalarCurvePtr m_progressCurve;
 	PTriCurveSetVector m_curveSets;
+	TriCurveSetPtr m_moveCompletion;
+	bool m_moveCompleted;
+	bool m_moving;
+	Be::Time m_startTime;
 
 	// This can't be stored directly here as we must allow
 	// value bindings to the length.

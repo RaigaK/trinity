@@ -18,8 +18,11 @@ EveStretch::EveStretch( IRoot* lockobj ) :
 	m_isNegZForward( false ),
 	m_sourcePosition( 0.0f, 0.0f, 0.0f ),
 	m_destinationPosition( 0.0f, 0.0f, 0.0f ),
-        m_lastCurveUpdateTime( 0 ),
-	m_lodLevel( TR2_LOD_LOW )
+	m_lastCurveUpdateTime( 0 ),
+	m_lodLevel( TR2_LOD_LOW ),
+	m_startTime( -1 ),
+	m_moveCompleted( false ),
+	m_moving( false )
 {
 	m_length.CreateInstance();
 
@@ -104,17 +107,30 @@ void EveStretch::UpdateCurves( EveUpdateContext& updateContext )
 		return;
 	}
 
-	if( !m_curveSets.empty() )
+	if( m_moving && m_startTime == -1 )
 	{
-		float delta = (float)TimeAsDouble( time - m_lastCurveUpdateTime );
+		m_startTime = time;
+	}
 
-		if( EveLODHelper::ShouldUpdate( m_lodLevel, delta ) )
+	float delta = (float)TimeAsDouble( time - m_lastCurveUpdateTime );
+	m_lastCurveUpdateTime = time;
+
+	if( EveLODHelper::ShouldUpdate( m_lodLevel, delta ) )
+	{
+		if( m_moving && m_progressCurve )
 		{
-			m_lastCurveUpdateTime = time;
-			for( TriCurveSetVector::const_iterator it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
-			{
-				(*it)->Update( TimeAsDouble( time ) );
-			}
+			Be::Time elapsedTime = time - m_startTime;
+			m_progressCurve->UpdateValue( TimeAsDouble( elapsedTime ) );
+		}
+
+		if( m_moveCompletion )
+		{
+			m_moveCompletion->Update( TimeAsDouble( time ) );
+		}
+	
+		for( TriCurveSetVector::const_iterator it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+		{
+			(*it)->Update( TimeAsDouble( time ) );
 		}
 	}
 }
@@ -222,12 +238,39 @@ void EveStretch::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Rend
 
 		Quaternion rotation( 0.0f, 0.0f, 0.0f, 1.0f );
 		TriQuaternionArcFromForward( &rotation, &directionVec );
-
-		D3DXMatrixTransformation( &m, NULL, NULL, NULL, NULL, &rotation, &m_sourcePosition );
-
+		
+		Vector3 movedPostition = m_sourcePosition;
+		// Calculate the current position of the move object
+		if( m_progressCurve && m_moveObject )
+		{ 
+			float progress = m_progressCurve->m_currentValue;
+			if( progress >= 1.0 && !m_moveCompleted )
+			{
+				if( m_moveCompletion )
+				{
+					m_moveCompletion->Play();
+				}
+				m_moveObject->SetDisplay( false );
+				m_moveCompleted = true;
+			}
+			D3DXVec3Lerp(&movedPostition, &m_sourcePosition, &m_destinationPosition, progress);
+		}
+		D3DXMatrixTransformation( &m, NULL, NULL, NULL, NULL, &rotation, &movedPostition );
 		m_moveObject->GetRenderables( frustum, renderables, m );
+
 		// The object's LOD is a combination of it's move, stretch, dest and source object's LODs
 		m_lodLevel = EveLODHelper::MergeLOD( m_lodLevel, m_moveObject->GetLODLevel() );
+	}
+}
+
+void EveStretch::Start()
+{
+	m_startTime = -1;
+	m_moving = true;
+	m_moveCompleted = false;
+	if( m_moveObject )
+	{
+		m_moveObject->SetDisplay( true );
 	}
 }
 

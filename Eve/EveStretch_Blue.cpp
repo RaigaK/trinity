@@ -18,6 +18,7 @@ const Be::ClassInfo* EveStretch::ExposeToBlue()
 			"",
 			Be::READWRITE | Be::PERSIST
 		)
+
 		MAP_ATTRIBUTE
 		(
 			"display",
@@ -26,6 +27,13 @@ const Be::ClassInfo* EveStretch::ExposeToBlue()
 			"Note that turning off display does not automatically turn\n"
 			"off update.",
 			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_METHOD_AND_WRAP
+		(
+			"Start",
+			Start,
+			"Trigger the movement if moveObject and curves exist."
 		)
 
 		MAP_ATTRIBUTE
@@ -76,7 +84,47 @@ const Be::ClassInfo* EveStretch::ExposeToBlue()
 		(
 			"moveObject",
 			m_moveObject,
-			"Object to be translated from source to destination",
+			"Unstretched object to be translated from source to destination",
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"progressCurve",
+			m_progressCurve,
+			"Curve that determines the interpolated position of the move object",
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"startTime",
+			m_startTime,
+			"Start time",
+			Be::READ
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"moveCompletion",
+			m_moveCompletion,
+			"Curveset that is triggered when the progress reaches 1.0",
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"moveCompleted",
+			m_moveCompleted,
+			"Gets set to true when the move object reached destination",
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"moving",
+			m_moving,
+			"Flag that is set when Play is called. Tells you that the move has started.",
 			Be::READWRITE | Be::PERSIST
 		)
 
