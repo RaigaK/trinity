@@ -172,8 +172,6 @@ void EveSpaceObjectDecal::GetRenderables( TriGeometryResPtr geomRes, const TriFr
 
 		if( m_rebuildIndexBuffer )
 		{
-			CCP_LOGWARN( "No static decal index buffer for decal %s", m_name.c_str() );
-
 			CreateDecalIndexBuffer( geomRes );
 		}
 	}
@@ -680,8 +678,6 @@ void EveSpaceObjectDecal::CreateDecalIndexBuffer( TriGeometryResPtr geomRes )
 			}
 			else
 			{
-				CCP_LOGWARN( "EveSpaceObjectDecal: This decal is not touching any geometry! %s", m_name.c_str() );
-
 				m_rebuildIndexBuffer = false;
 			}
 
