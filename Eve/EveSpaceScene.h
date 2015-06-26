@@ -244,6 +244,7 @@ protected:
 		float GammaBrightness;
 	};
 	double m_viewProjectLastD[16];
+	Vector3 m_lastLookAt;
 
 	// Per-frame vertex constants for rendering scene
 	struct PerFrameVSData

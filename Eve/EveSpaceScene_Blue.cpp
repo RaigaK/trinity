@@ -579,13 +579,18 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 		MAP_ATTRIBUTE(
 			"pixelOffsetScale",
 			m_taaPixelOffsetScale,
-			"Time of the last call to Update, for this scene",
+			"Size of the offset in pixels for TAA",
 			Be::READWRITE )
 			
 		MAP_ATTRIBUTE(
 			"taaSubpixelPattern",
 			m_taaPattern,
-			"Time of the last call to Update, for this scene",
+			"Pattern type for TAA sampling offsets."
+			"\n 0 - none"
+			"\n 1 - totally random"
+			"\n 2 - 2x pattern"
+			"\n 3 - 3x pattern"
+			"\n 4 - 4x pattern",
 			Be::READWRITE )
 			
 		MAP_ATTRIBUTE(

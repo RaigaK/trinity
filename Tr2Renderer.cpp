@@ -102,6 +102,7 @@ namespace
 	Matrix s_projectionRawTransform;
     Matrix s_inverseProjectionTransform;
 
+	Vector3 s_viewLookAtPosition;
     Matrix s_viewTransform;
     Matrix s_inverseViewTransform;
 
@@ -758,6 +759,16 @@ const Vector3& Tr2Renderer::GetViewLookAt()
     v.y = s_viewTransform._23;
     v.z = s_viewTransform._33;
     return v;
+}
+
+Vector3 Tr2Renderer::GetViewLookAtPosition()
+{
+	return s_viewLookAtPosition;
+}
+
+void Tr2Renderer::SetViewLookAtPosition( const Vector3& position)
+{
+	s_viewLookAtPosition = position;
 }
 
 const Matrix& Tr2Renderer::GetIdentityTransform()

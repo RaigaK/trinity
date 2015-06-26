@@ -79,6 +79,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	bool OnModified( Be::Var* val );
 	
+	Vector3 GetLookAtPosition() { return m_lookAtPosition; }
 
 private:
 	ITriVectorFunctionPtr m_parentTranslationCurve;
@@ -89,6 +90,7 @@ private:
 	Quaternion m_rotationAroundParent;
 	Quaternion  m_rotationOfInterest;
 
+	Vector3 m_lookAtPosition;
 	Vector3 m_alignment;
 	Vector3 m_extraParentTranslation;
 	bool m_useExtraParentTranslation;

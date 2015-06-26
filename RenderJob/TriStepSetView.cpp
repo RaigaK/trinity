@@ -27,6 +27,7 @@ TriStepResult TriStepSetView::Execute( Be::Time realTime, Be::Time simTime, Tr2R
 	{
 		m_camera->Update( simTime );
 		Tr2Renderer::SetViewTransform( m_camera->GetViewMatrix()->GetTransform() );
+		Tr2Renderer::SetViewLookAtPosition( m_camera->GetLookAtPosition() );
 	}
 	return RS_OK;
 }

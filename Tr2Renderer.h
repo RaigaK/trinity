@@ -204,6 +204,8 @@ public:
     
     static const Vector3& GetViewPosition();
     static const Vector3& GetViewLookAt();
+	static void SetViewLookAtPosition( const Vector3& v );
+	static Vector3 GetViewLookAtPosition();
 
 	static float GetAnimationTime();
 	static float GetAnimationTimeElapsed( float startTime );

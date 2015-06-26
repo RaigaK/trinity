@@ -232,6 +232,7 @@ void EveCamera::Update( Be::Time t )
 	{
 		parentPosition += m_extraParentTranslation;
 	}
+	m_lookAtPosition = parentPosition;
 
 	// Limit camera translation by parent bounding radius
 	if ( m_translationFromParent.z < max(1.f, m_frontClip) )

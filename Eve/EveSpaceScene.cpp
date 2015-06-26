@@ -1081,6 +1081,7 @@ void EveSpaceScene::UpdatePostProcessPSData()
 		currentProj = EveCamera::AddCenterOffset( currentProj, -m_xProjOffset, -m_yProjOffset, Tr2Renderer::GetFrontClip(), Tr2Renderer::GetBackClip() );
 	}
 	
+	// Find the current inverse view projection
 	double viewTransform[16];
 	double currentProjection[16];
 	Matrix4dMultiply(
@@ -1090,15 +1091,52 @@ void EveSpaceScene::UpdatePostProcessPSData()
 	double invViewProjD[16];
 	Matrix4dInvert( invViewProjD, currentViewProjD );
 
+	/* Explanation:
+		We need to try and compensate for look-at targets. To do this we must guesstimate weather we're
+		actually looking at something else than the ego ship and compensate with a world transform that
+		we use to construct a better reprojection matrix.
+		Sadly we need some magic number estimations to fake this.
+	*/
+	double translationThisFrame[16];
+	// Amount to translate by this frame
+	Vector3 lookAdjustment(0, 0, 0);
+	// How much the look-at position has changed, ego look-at shift is(almost) sationary
+	Vector3 lookAtShift = Tr2Renderer::GetViewLookAtPosition() - m_lastLookAt;
+	m_lastLookAt = Tr2Renderer::GetViewLookAtPosition();
+	// Estimation of actual look-at target movement
+	Vector3 lookAtTargetShift = lookAtShift + m_egoDisplacement;
+
+	float lookAtTargetShiftLength = D3DXVec3Length( &lookAtTargetShift );
+	float lookAtLength = D3DXVec3Length( &lookAtShift );
+	float originShiftLength = D3DXVec3Length( &m_egoDisplacement );
+	// If origin is not moving or the look-at has not changed(significantly) we don't have to do anything
+	if( originShiftLength > 0.01f && lookAtLength > 0.5f )
+	{
+		// If we're looking at a stationary object while ego is moving we want to add the ego-shift to the world position
+		if( lookAtTargetShiftLength <= 0.01f )
+		{
+			lookAdjustment = m_egoDisplacement;
+		}
+		// But if the target is moving we adjust with the camera shift
+		else
+		{
+			lookAdjustment = -lookAtShift;
+		}
+	}
+
+	Matrix trans;
+	D3DXMatrixTranslation( &trans, lookAdjustment.x, lookAdjustment.y, lookAdjustment.z );
+	Matrix4dFromMatrix( translationThisFrame, trans );
+
+	// Now construct the reprojection matrix
 	double reprojection[16];
-	Matrix4dMultiply( reprojection, invViewProjD, m_viewProjectLastD );
+	double temp[16];
+	Matrix4dMultiply( temp, translationThisFrame, m_viewProjectLastD );
+	Matrix4dMultiply( reprojection, invViewProjD, temp );
 	Matrix repro = Matrix4dToMatrix( reprojection );
 	D3DXMatrixTranspose( &m_postProcessPSData.ReprojectionMatrix, &repro );
 
-	for( int i = 0; i < 16; i++ )
-	{
-		m_viewProjectLastD[i] = currentViewProjD[i];
-	}
+	memcpy( m_viewProjectLastD, currentViewProjD, 128 );
 	
 	m_postProcessPSData.DeltaT = m_updateContext.GetDeltaT();
 	m_postProcessPSData.OriginShift = m_updateContext.GetOriginShift();
@@ -1162,7 +1200,7 @@ void EveSpaceScene::BeginRender( Tr2RenderContext& renderContext )
 	{
 		m_frameData.projectionDynamic = EveCamera::ModifyClipPlanes( Tr2Renderer::GetProjectionTransform(), m_nearClip, m_farClip );
 	}
-
+	
 	UpdatePostProcessPSData();
 	UpdateVariableStore();
 
