@@ -1108,10 +1108,10 @@ bool Tr2TextureAtlas::CopyTextureIntoAtlas( Tr2AtlasTexture* tex )
 
 	if( !m_margin )
 	{
-		Tr2TextureSubresource dest( 0 );
+		Tr2TextureSubresource dest( 0, 0 );
 		dest.m_left   = r.left;
 		dest.m_top    = r.top;
-		return SUCCEEDED( m_texture.CopySubresourceRegion( dest, *tex->GetTexture(), Tr2TextureSubresource( 0 ), renderContext ) );
+		return SUCCEEDED( m_texture.CopySubresourceRegion( dest, *tex->GetTexture(), Tr2TextureSubresource( 0, 0 ), renderContext ) );
 	}
 
 	if( m_hasMipMaps )
