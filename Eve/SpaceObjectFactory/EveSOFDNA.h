@@ -56,6 +56,7 @@ public:
 	const EveSOFDataMgr::RaceBoosterData* GetRaceBoosterData() const;
 
 	// get hull data
+	EveSOFDataHull::BuildClass GetBuildClass() const;
 	const Vector4* GetHullBoundingSphere() const;
 	bool IsHullAnimated() const;
 	const EveSOFDataMgr::HullBoosterData* GetHullBoosterData() const;

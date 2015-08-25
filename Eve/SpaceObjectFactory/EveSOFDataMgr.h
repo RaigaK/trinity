@@ -7,14 +7,7 @@
 #ifndef EveSOFDataMgr_H
 #define EveSOFDataMgr_H
 
-// forwards
-BLUE_DECLARE( EveSOFData );
-BLUE_DECLARE( EveSOFDataHull );
-BLUE_DECLARE( EveSOFDataFaction );
-BLUE_DECLARE( EveSOFDataRace );
-BLUE_DECLARE( EveSOFDataGeneric );
-BLUE_DECLARE( EveSOFDataMaterial );
-BLUE_DECLARE( EveSOFDataHullArea );
+#include "EveSOFData.h"
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -165,6 +158,7 @@ public:
 
 	struct HullData
 	{
+		EveSOFDataHull::BuildClass buildClass;
 		std::string geometryResFilePath;
 		Vector4 boundingSphere;
 		bool isSkinned;

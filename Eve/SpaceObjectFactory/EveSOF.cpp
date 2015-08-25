@@ -11,6 +11,7 @@
 #include "Eve/EveTransform.h"
 #include "Eve/EveTurretSet.h"
 #include "Eve/SpaceObject/EveShip2.h"
+#include "Eve/SpaceObject/EveStation2.h"
 #include "Eve/SpaceObject/Attachments/EveSpriteSet.h"
 #include "Eve/SpaceObject/Attachments/EveTrailsSet.h"
 #include "Eve/SpaceObject/Attachments/EveSpotlightSet.h"
@@ -107,38 +108,47 @@ IRootPtr EveSOF::BuildFromDNA( const char* dnaString )
 		return nullptr;
 	}
 
-	// make an EveShip2 for now...
-	EveShip2Ptr newShip;
-	newShip.CreateInstance();
+	// create what we need to build
+	EveSpaceObject2Ptr newObj = CreateSpaceObject( dna );
+	if( newObj == nullptr )
+	{
+		return nullptr;
+	}
 
 	// set all easey consts
-	SetupConsts( newShip, dna );
+	SetupConsts( newObj, dna );
 
 	// get us the base geometry
-	SetupMesh( newShip, dna );
+	SetupMesh( newObj, dna );
 
 	// decals
-	SetupDecals( newShip, dna );
+	SetupDecals( newObj, dna );
 
 	// effects on ships
-	SetupSpriteSets( newShip, dna );
-	SetupSpotlightSets( newShip, dna );
-	SetupPlaneSets( newShip, dna );
+	SetupSpriteSets( newObj, dna );
+	SetupSpotlightSets( newObj, dna );
+	SetupPlaneSets( newObj, dna );
 
 	// attachments to ship
-	SetupBoosters( newShip, dna );
-	SetupLocators( newShip, dna );
+	SetupLocators( newObj, dna );
 
 	// children, animations and particles
-	SetupChildrenAndAnimations( newShip, dna );
+	SetupChildrenAndAnimations( newObj, dna );
 
 	// model curves
-	SetupModelCurves( newShip, dna );
+	SetupModelCurves( newObj, dna );
+
+	// EveShip2-specific setups
+	EveShip2Ptr newShip;
+	if( newObj->GetRawRoot()->QueryInterface( BlueInterfaceIID<EveShip2>(), (void**)&newShip, BEQI_SILENT ) )
+	{
+		SetupBoosters( newShip, dna );
+	}
 
 	// ships needs a final ::Initialize call
-	newShip->Initialize();
+	newObj->Initialize();
 
-	return newShip->GetRawRoot();
+	return newObj->GetRawRoot();
 }
 
 // --------------------------------------------------------------------------------
@@ -187,9 +197,45 @@ bool EveSOF::ValidateDNA( const char* dnaString )
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Create the spaceobject class dependent on requested size
+// --------------------------------------------------------------------------------
+EveSpaceObject2Ptr EveSOF::CreateSpaceObject( const EveSOFDNAPtr dna ) const
+{
+	EveSpaceObject2Ptr spaceObject = nullptr;
+
+	switch( dna->GetBuildClass() )
+	{
+	case EveSOFDataHull::BUILDCLASS_STATIONARY:
+		{
+			EveStation2Ptr newStation;
+			newStation.CreateInstance();
+			spaceObject = newStation;
+		}
+		break;
+	case EveSOFDataHull::BUILDCLASS_MOBILE:
+		{
+			EveMobilePtr newMobile;
+			newMobile.CreateInstance();
+			spaceObject = newMobile;
+		}
+		break;
+	case EveSOFDataHull::BUILDCLASS_SHIP:
+		{
+			EveShip2Ptr newShip;
+			newShip.CreateInstance();
+			spaceObject = newShip;
+		}
+		break;
+	}
+
+	return spaceObject;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Set mostly simple constants values to the ship
 // --------------------------------------------------------------------------------
-void EveSOF::SetupConsts( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupConsts( EveSpaceObject2Ptr ship, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -204,7 +250,7 @@ void EveSOF::SetupConsts( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   This is where it is all going to happen
 // --------------------------------------------------------------------------------
-void EveSOF::SetupMesh( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupMesh( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -230,16 +276,16 @@ void EveSOF::SetupMesh( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 	mesh->SetGeometryResource( lodResource );
 
 	// bounding sphere comes from data, is faster
-	ship->SetBoundingSphereInformation( dna->GetHullBoundingSphere() );
+	obj->SetBoundingSphereInformation( dna->GetHullBoundingSphere() );
 
 	// shadow
 	if( dna->IsHullAnimated() )
 	{
-		ship->SetShadowEffect( m_shadowEffectSkinned );
+		obj->SetShadowEffect( m_shadowEffectSkinned );
 	}
 	else
 	{
-		ship->SetShadowEffect( m_shadowEffect );
+		obj->SetShadowEffect( m_shadowEffect );
 	}
 
 	// setup mesh areas, try sharing as many Tr2LodResources as possible
@@ -261,7 +307,7 @@ void EveSOF::SetupMesh( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 	mesh->SelectLod( TR2_LOD_LOW );
 
 	// assign mesh to ship
-	ship->SetMeshLod( mesh );
+	obj->SetMeshLod( mesh );
 }
 
 // --------------------------------------------------------------------------------
@@ -393,7 +439,7 @@ bool EveSOF::GenerateLodResourcePaths( std::string& mediumResPath, std::string& 
 // Description:
 //   This is where it is all going to happen
 // --------------------------------------------------------------------------------
-void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupSpriteSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -451,7 +497,7 @@ void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		// spriteset needs internal rebuild
 		spriteSet->Rebuild();
 		// put set onto ship
-		ship->AddSpriteSet( spriteSet );
+		obj->AddSpriteSet( spriteSet );
 	}
 }
 
@@ -459,7 +505,7 @@ void EveSOF::SetupSpriteSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   This is where it is all going to happen
 // --------------------------------------------------------------------------------
-void EveSOF::SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupSpotlightSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -553,7 +599,7 @@ void EveSOF::SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) cons
 		// spotlightset needs internal rebuild
 		spotlightSet->Rebuild();
 		// add to ship
-		ship->AddSpotlightSet( spotlightSet );
+		obj->AddSpotlightSet( spotlightSet );
 	}
 }
 
@@ -561,7 +607,7 @@ void EveSOF::SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) cons
 // Description:
 //   This is where it is all going to happen
 // --------------------------------------------------------------------------------
-void EveSOF::SetupPlaneSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupPlaneSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -632,7 +678,7 @@ void EveSOF::SetupPlaneSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		// rebuild it internally
 		planeSet->Rebuild();
 		// add to ship
-		ship->AddPlaneSet( planeSet );
+		obj->AddPlaneSet( planeSet );
 	}
 
 }
@@ -641,7 +687,7 @@ void EveSOF::SetupPlaneSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   Load Model Curves for rotation and translation, if there are any
 // --------------------------------------------------------------------------------
-void EveSOF::SetupModelCurves( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupModelCurves( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -657,7 +703,7 @@ void EveSOF::SetupModelCurves( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 			ITriQuaternionFunctionPtr rotationCurve;
 			if( p->QueryInterface( BlueInterfaceIID<ITriQuaternionFunction>(), (void**)&rotationCurve ) )
 			{
-				ship->SetModelRotationCurve( rotationCurve );
+				obj->SetModelRotationCurve( rotationCurve );
 			}
 		}
 	}
@@ -674,7 +720,7 @@ void EveSOF::SetupModelCurves( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 			ITriVectorFunctionPtr translationCurve;
 			if( p->QueryInterface( BlueInterfaceIID<ITriVectorFunction>(), (void**)&translationCurve ) )
 			{
-				ship->SetModelTranslationCurve( translationCurve );
+				obj->SetModelTranslationCurve( translationCurve );
 			}
 		}
 	}
@@ -714,7 +760,7 @@ void RecursiveBindParticleEmitters( EveTransformPtr transform, TriCurveSetPtr cu
 //   Add Children and Animations to the ship
 //   
 // --------------------------------------------------------------------------------
-void EveSOF::SetupChildrenAndAnimations( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -745,11 +791,11 @@ void EveSOF::SetupChildrenAndAnimations( EveShip2Ptr ship, const EveSOFDNAPtr dn
 				childrenToBindTo[childIt->id].push_back( child );
 			}
 
-			ship->AddToChildrenList( child );
+			obj->AddToChildrenList( child );
 		}
 		else if( p->QueryInterface( BlueInterfaceIID<IEveSpaceObjectChild>(), (void**)&effectChild ) )
 		{
-			ship->AddToEffectChildrenList( effectChild );
+			obj->AddToEffectChildrenList( effectChild );
 		}
 		else
 		{
@@ -803,20 +849,20 @@ void EveSOF::SetupChildrenAndAnimations( EveShip2Ptr ship, const EveSOFDNAPtr dn
 			TriValueBindingPtr binding;
 			binding.CreateInstance();
 			binding->SetSource( "currentValue", curve->GetRawRoot() );
-			if( !ship->GetModelRotationCurve() )
+			if( !obj->GetModelRotationCurve() )
 			{
 				TriRotationCurvePtr modelRotationcurve;
 				modelRotationcurve.CreateInstance();
-				ship->SetModelRotationCurve( (ITriQuaternionFunctionPtr)modelRotationcurve );
+				obj->SetModelRotationCurve( (ITriQuaternionFunctionPtr)modelRotationcurve );
 			}
-			binding->SetDestination( "value", ship->GetModelRotationCurve()->GetRootObject() );
+			binding->SetDestination( "value", obj->GetModelRotationCurve()->GetRootObject() );
 			binding->Initialize();
 
 			curveSet->AddBinding( (ITr2ValueBindingPtr)binding );
 		}
 
 		// Append the curveSet
-		ship->AddCurveSet( curveSet );
+		obj->AddCurveSet( curveSet );
 
 		// Do we have valid translation info?
 		if( animIt->startTranslationTime != -1.0 )
@@ -929,7 +975,7 @@ void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   add the hull decals to the new ship
 // --------------------------------------------------------------------------------
-void EveSOF::SetupDecals( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupDecals( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -1012,7 +1058,7 @@ void EveSOF::SetupDecals( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		shader->EndUpdate();
 		decal->SetEffect( shader );
 		decal->Initialize();
-		ship->AddDecal( decal );
+		obj->AddDecal( decal );
 	}
 }
 
@@ -1020,7 +1066,7 @@ void EveSOF::SetupDecals( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   add the hull locators to the new ship
 // --------------------------------------------------------------------------------
-void EveSOF::SetupLocators( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupLocators( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -1037,12 +1083,12 @@ void EveSOF::SetupLocators( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		loc->SetTransform( tlit->transform );
 
 		// add it to the new ship
-		ship->AddLocator( loc );
+		obj->AddLocator( loc );
 	}
 
 	// set whole block of damage locators, they are a structered list
 	const std::vector<EveSOFDataMgr::LocatorDirectionData>& damageLocators = dna->GetHullDamageLocators();
-	ship->SetDamageLocators( (const EveDamageLocator*)&damageLocators[0], damageLocators.size() );
+	obj->SetDamageLocators( (const EveDamageLocator*)&damageLocators[0], damageLocators.size() );
 
 	// create and setup the audio locator
 	EveLocator2Ptr loc;
@@ -1052,7 +1098,7 @@ void EveSOF::SetupLocators( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 	loc->SetTransform( Matrix( 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, pos->x, pos->y, pos->z, 1.f ) );
 
 	// add it to the new ship
-	ship->AddLocator( loc );
+	obj->AddLocator( loc );
 }
 
 // --------------------------------------------------------------------------------

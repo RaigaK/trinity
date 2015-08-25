@@ -14,6 +14,7 @@
 BLUE_DECLARE( EveTurretSet );
 BLUE_DECLARE( Tr2Effect );
 BLUE_DECLARE( Tr2LodResource );
+BLUE_DECLARE( EveSpaceObject2 );
 BLUE_DECLARE( EveShip2 );
 BLUE_DECLARE( EveSOF );
 BLUE_DECLARE( EveSOFDNA );
@@ -50,17 +51,22 @@ public:
 
 
 private:
-	// all setup functions for the to-be-created spaceship
-	void SetupConsts( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupMesh( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupSpriteSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupSpotlightSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupPlaneSets( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupChildrenAndAnimations( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
+	// creation
+	EveSpaceObject2Ptr CreateSpaceObject( const EveSOFDNAPtr dna ) const;
+
+	// all setup functions for the to-be-created speco object
+	void SetupConsts( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupMesh( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupSpriteSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupSpotlightSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupPlaneSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupDecals( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupModelCurves( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupLocators( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+
+	// all setup functions for ships only
 	void SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupDecals( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupModelCurves( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
-	void SetupLocators( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const;
 
 	// helper functions
 	void FillMeshAreaVector( std::map<std::string, Tr2LodResourcePtr>& lodResCollector, Tr2MeshAreaVector* meshAreaVector, TriBatchType areaType, const EveSOFDNAPtr dna ) const;

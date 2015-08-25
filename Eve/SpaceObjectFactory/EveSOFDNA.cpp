@@ -522,6 +522,15 @@ const char* EveSOFDNA::GetModelTranslationCurvePath() const
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Return the build class for this hull
+// --------------------------------------------------------------------------------
+EveSOFDataHull::BuildClass EveSOFDNA::GetBuildClass() const
+{
+	return m_hullData->buildClass;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Return a pointer to the bounding sphere info of this hull
 // --------------------------------------------------------------------------------
 const Vector4* EveSOFDNA::GetHullBoundingSphere() const

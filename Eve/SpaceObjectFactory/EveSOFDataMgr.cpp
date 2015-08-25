@@ -5,7 +5,6 @@
 //
 #include "StdAfx.h"
 #include "EveSOFDataMgr.h"
-#include "EveSOFData.h"
 #include "Utilities/StringUtils.h"
 
 // --------------------------------------------------------------------------------
@@ -389,6 +388,7 @@ bool EveSOFDataMgr::LoadHullData( EveSOFDataPtr srcData )
 void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) const
 {
 	// insert data
+	hd.buildClass = srcData->m_buildClass;
 	hd.geometryResFilePath = srcData->m_geometryResFilePath;
 	hd.boundingSphere = srcData->m_boundingSphere;
 	hd.isSkinned = srcData->m_isSkinned;
