@@ -961,13 +961,21 @@ void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 	Tr2EffectPtr glowEffect;
 	glowEffect.CreateInstance();
 	glowEffect->StartUpdate();
-	if( g_eveSofUseQuadRenderer )
+	if( rdata->volumetric )
 	{
-		glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowPool.fx" );
+		glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowAnimated.fx" );
+		glowEffect->AddResourceTexture2D( BlueSharedString("NoiseMap"), "res:/Texture/global/noise.dds" );
 	}
 	else
 	{
-		glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlow.fx" );
+		if( g_eveSofUseQuadRenderer )
+		{
+			glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlowPool.fx" );
+		}
+		else
+		{
+			glowEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/BoosterGlow.fx" );
+		}
 	}
 	glowEffect->AddResourceTexture2D( BlueSharedString("DiffuseMap"), "res:/Texture/Particle/whitesharp.dds" );
 	// finish effect and set it

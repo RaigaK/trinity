@@ -440,17 +440,22 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 		scale = D3DXVec3Length( &dir );
 	}
 
+	float seed = float( rand() ) / float( RAND_MAX );
+
 	// also add it to all the lensflares
 	if( m_glows )
 	{
 		Vector3 spritePos = pos - 2.5f * dir;
-		m_glows->Add( spritePos, 0.0f, 0.0f, scale * m_glowScale, scale * m_glowScale, 0.0f, m_glowColor );
+		m_glows->Add( spritePos, 0.0f, 0.0f, scale * m_glowScale, scale * m_glowScale, 0.0f, 
+			Color( m_glowColor.r, m_glowColor.g, m_glowColor.b, seed ) );
 
 		spritePos = pos - 3.0f * dir;
-		m_glows->Add( spritePos, 0.0f, 1.0f, scale * m_symHaloScale, scale * m_symHaloScale, 0.0f, m_haloColor );
+		m_glows->Add( spritePos, 0.0f, 1.0f, scale * m_symHaloScale, scale * m_symHaloScale, 0.0f, 
+			Color( m_haloColor.r, m_haloColor.g, m_haloColor.b, seed ) );
 
 		spritePos = pos - 3.01f * dir;
-		m_glows->Add( spritePos, 0.0f, 1.0f, scale * m_haloScaleX, scale * m_haloScaleY, 0.0f, m_haloColor );
+		m_glows->Add( spritePos, 0.0f, 1.0f, scale * m_haloScaleX, scale * m_haloScaleY, 0.0f, 
+			Color( m_haloColor.r, m_haloColor.g, m_haloColor.b, seed ) );
 	}
 
 	// also add it to the trails
@@ -1150,8 +1155,8 @@ void EveBoosterSet2::GetLights( Tr2LightManager& lightManager, const Matrix& par
 		float flicker = 1 + m_lightFlickerAmplitude * 2.0f * ( p0 * ( 1.0f - t ) + p1 * t ) - m_lightFlickerAmplitude;
 		lightManager.AddPointLight( 
 			Vector3( XMVector3TransformCoord( it->lightPosition, transform ) ), 
-			it->lightRadius * radiusFactor * flicker,
-			color );
+			it->lightRadius * radiusFactor,
+			color * flicker );
 
 	}
 }
