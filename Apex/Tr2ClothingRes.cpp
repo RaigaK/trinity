@@ -50,7 +50,6 @@ BlueAsyncRes::LoadingResult Tr2ClothingRes::InternalLoadFunction()
 		return ret;
 	}
 
-	CCP_ASSERT( g_Tr2Apex->GetApexSDK() );
 	if( !g_Tr2Apex->GetApexSDK() )
 	{
 		CCP_LOGERR( "g_apexSDK not set - call trinity.InitializeApex");
