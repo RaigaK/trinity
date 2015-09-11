@@ -426,3 +426,38 @@ bool ITr2PickableScene::RenderPickingBuffer( std::vector<ITr2Renderable*> const&
 
 	return results;
 }
+
+namespace
+{
+Be::VarChooser Tr2PickTypeChooser[] =
+{
+	{
+		"PICK_TYPE_PICKING",
+		PICK_TYPE_PICKING,
+		"Authored picking areas"
+	},
+	{
+		"PICK_TYPE_OPAQUE",
+		PICK_TYPE_OPAQUE,
+		"Opaque objects"
+	},
+	{
+		"PICK_TYPE_TRANSPARENT",
+		PICK_TYPE_TRANSPARENT,
+		"Transparent objects"
+	},
+	{
+		"PICK_TYPE_ATTACHMENTS",
+		PICK_TYPE_ATTACHMENTS,
+		"Object attachments (decals, blinkies, etc.)"
+	},
+	{
+		"PICK_TYPE_LOCATORS",
+		PICK_TYPE_LOCATORS,
+		"Object locators"
+	},
+	{ 0 }
+};
+}
+
+BLUE_REGISTER_ENUM_EX( "Tr2PickType", Tr2PickType, Tr2PickTypeChooser, ENUM_REG_ENUM_OBJECT_ON_MODULE );

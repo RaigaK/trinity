@@ -63,7 +63,6 @@ enum Tr2PickType
 
 	PICK_TYPE_ATTACHMENTS = 1 << 3,
 	PICK_TYPE_LOCATORS = 1 << 4,
-	PICK_TYPE_EDITOR_HELPERS = 1 << 5,
 };
 
 typedef uint32_t Tr2PickTypes;
