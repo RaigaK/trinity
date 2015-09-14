@@ -76,8 +76,9 @@ Tr2TextureSubresource::Tr2TextureSubresource( uint32_t face, uint32_t mipLevel )
 // --------------------------------------------------------------------------------------
 void Tr2TextureSubresource::ClampToTexture( const Tr2BitmapDimensions& texture )
 {
-	m_startFace = std::min( m_startFace, texture.GetArraySize() - 1 );
-	m_endFace = std::min( m_endFace, texture.GetArraySize() );
+	uint32_t arraySize = std::max( texture.GetArraySize(), 1u );
+	m_startFace = std::min( m_startFace, arraySize - 1 );
+	m_endFace = std::min( m_endFace, arraySize );
 
 	m_startMipLevel = std::min( m_startMipLevel, texture.GetTrueMipCount() - 1 );
 	m_endMipLevel = std::min( m_endMipLevel, texture.GetTrueMipCount() );
