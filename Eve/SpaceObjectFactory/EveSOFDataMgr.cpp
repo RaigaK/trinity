@@ -943,11 +943,11 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		gd.materialPrefixes.push_back( str->m_str );
 	}
 
-	// shader-specific data
+	// area shader-specific data
 	gd.areaShaderData.clear();
-	for( auto sit = srcData->m_areaShaders.begin(); sit != srcData->m_areaShaders.end(); ++sit )
+	for( auto asit = srcData->m_areaShaders.begin(); asit != srcData->m_areaShaders.end(); ++asit )
 	{
-		EveSOFDataGenericShaderPtr shaderData = (*sit);
+		EveSOFDataGenericShaderPtr shaderData = (*asit);
 
 		GenericShaderData gsd;
 		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
@@ -962,7 +962,49 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
+		for( auto stit = shaderData->m_textures.begin(); stit != shaderData->m_textures.end(); ++stit )
+		{
+			EveSOFDataGenericStringPtr texData = (*stit);
+			gsd.textures.push_back( BlueSharedString( texData->m_str ) );
+		}
+
 		gd.areaShaderData[ shaderData->m_shader ] = gsd;
+	}
+
+	// decal shader-specific data
+	gd.decalShaderData.clear();
+	for( auto dsit = srcData->m_decalShaders.begin(); dsit != srcData->m_decalShaders.end(); ++dsit )
+	{
+		EveSOFDataGenericShaderPtr shaderData = (*dsit);
+
+		GenericShaderData gsd;
+		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
+		{
+			EveSOFDataTexturePtr textureData = (*tdit);
+			gsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+		}
+
+		for( auto spit = shaderData->m_parameters.begin(); spit != shaderData->m_parameters.end(); ++spit )
+		{
+			EveSOFDataGenericStringPtr paramData = (*spit);
+			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
+		}
+
+		for( auto stit = shaderData->m_textures.begin(); stit != shaderData->m_textures.end(); ++stit )
+		{
+			EveSOFDataGenericStringPtr texData = (*stit);
+			gsd.textures.push_back( BlueSharedString( texData->m_str ) );
+		}
+
+		gd.decalShaderData[ shaderData->m_shader ] = gsd;
+	}
+
+	// texture extensions
+	gd.textureExtensions.clear();
+	for( auto teit = srcData->m_textureExtensions.begin(); teit != srcData->m_textureExtensions.end(); ++teit )
+	{
+		EveSOFDataKeyValuePtr texExData = (*teit);
+		gd.textureExtensions[ texExData->m_key ] = texExData->m_value;
 	}
 
 	// hull area parameters

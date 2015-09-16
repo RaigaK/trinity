@@ -295,6 +295,8 @@ public:
 	{
 		// complete list of parameters
 		std::vector<BlueSharedString> parameters;
+		// complete list of textures
+		std::vector<BlueSharedString> textures;
 		// global textures for this shader
 		std::map<BlueSharedString, TextureData> defaultTextures;
 	};
@@ -311,6 +313,8 @@ public:
 		// shader-specific data
 		std::map<BlueSharedString, GenericShaderData> areaShaderData;
 		std::map<BlueSharedString, GenericShaderData> decalShaderData;
+		// texture extensions
+		std::map<BlueSharedString, BlueSharedString> textureExtensions;
 		// hull area parameter overloads
 		std::map<BlueSharedString, FactionAreaData> hullAreaParameters;
 	};
