@@ -863,6 +863,25 @@ ALResult Tr2RenderContextAL::DrawIndexedInstancedIndirect( Tr2GpuBufferAL& param
 	return S_OK;
 }
 
+ALResult Tr2RenderContextAL::DrawInstancedIndirect( Tr2GpuBufferAL& params, uint32_t offset )
+{
+	if( !params.IsValid() )
+	{
+		return E_FAIL;
+	}
+	if( !ApplyShadowRenderStates() )
+	{
+		return E_FAIL;
+	}
+
+	AL_UPDATE_RESOURCE_FRAME_USAGE( params );
+
+	ApplyReadOnlyDepth();
+	m_context->DrawInstancedIndirect( params.m_buffer, offset );
+	
+	return S_OK;
+}
+
 ALResult Tr2RenderContextAL::DrawPrimitive( uint32_t startVertex, uint32_t primitiveCount )
 {
 	auto vc = ComputeVertexCount( primitiveCount );

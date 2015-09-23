@@ -140,6 +140,11 @@ public:
 		// For desktop OpenGL 4.3 something like glMultiDrawArraysIndirect
 		return E_FAIL;
 	}
+
+	ALResult DrawInstancedIndirect( Tr2GpuBufferAL& params, uint32_t offset )
+	{
+		return E_FAIL;
+	}
 	
 	ALResult RunComputeShader( unsigned groupDimX, unsigned groupDimY, unsigned groupDimZ ) throw()
 	{

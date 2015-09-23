@@ -94,6 +94,7 @@ public:
 		uint32_t numInstances ) throw();
 	
 	ALResult DrawIndexedInstancedIndirect( Tr2GpuBufferAL& params, uint32_t offset ) throw();
+	ALResult DrawInstancedIndirect( Tr2GpuBufferAL& params, uint32_t offset ) throw();
 	
 	ALResult DrawIndexedPrimitiveUP( 
 		uint32_t numVertices, 
