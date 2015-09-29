@@ -265,10 +265,18 @@ float EveBoosterSet2::CalculateIntensity( ITriVectorFunctionPtr ball, Be::Time t
 		accFactor = 1.f;
 	}
 
+	float speedMultiplier = 0.5f;
+	float accMultiplier = 0.5f;
+	if( m_isVolumetric )
+	{
+		speedMultiplier = 0.8f;
+		accMultiplier = 0.2f;
+	}
+
 	// dampening (like drum noise)
 	accFactor = accFactor * 0.2f + m_lastAccFactor * 0.8f;
 	m_lastAccFactor = accFactor;
-	float value = m_lastValue * 0.8f + ( 0.5f * speedRatio  + 0.5f * accFactor ) * 0.2f;
+	float value = m_lastValue * 0.8f + ( speedMultiplier * speedRatio  + accMultiplier * accFactor ) * 0.2f;
 	value = min( value, 2.0f );
 	m_lastValue = value;
 
@@ -469,7 +477,16 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 	{
 		if( hasTrail )
 		{
-			m_trails->Add( localMatrix, scale );
+			if( m_isVolumetric )
+			{
+				Matrix offset = *localMatrix;
+				offset.GetTranslation() -= offset.GetZ();
+				m_trails->Add( &offset, scale );
+			}
+			else
+			{
+				m_trails->Add( localMatrix, scale );
+			}
 		}
 	}
 

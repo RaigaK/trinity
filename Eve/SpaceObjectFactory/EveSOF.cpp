@@ -1006,6 +1006,7 @@ void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		trailEffect->SetEffectPathName( "res:/Graphics/Effect/Managed/Space/Booster/VolumetricTrails.fx" );
 		trailEffect->AddParameterVector4( BlueSharedString("TrailSize"), &rdata->trailSize );
 		trailEffect->AddParameterColor( BlueSharedString("TrailColor"), &rdata->trailColor );
+		trailEffect->AddParameterFloat( BlueSharedString( "TrailFadeIn" ), rdata->volumetric ? 0.1f : 0.0f );
 		trailEffect->EndUpdate();
 		trail->SetEffect( trailEffect );
 		trail->SetMeshResPath( "res:/dx9/model/ship/booster/volumetricTrail.gr2" );
