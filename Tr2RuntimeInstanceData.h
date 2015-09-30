@@ -103,6 +103,8 @@ private:
 	Vector3 m_aabbMax;
 	// System to emit particles to
 	Tr2ParticleSystemPtr m_particleSystem;
+
+	void SaveToGranny( const char* ) const;
 };
 
 TYPEDEF_BLUECLASS( Tr2RuntimeInstanceData );

@@ -8,6 +8,7 @@
 #include "Tr2RuntimeInstanceData.h"
 #include "Utilities/BoundingBox.h"
 #include "Particle/Tr2ParticleSystem.h"
+#include "Tr2VertexDefinitionUtilities.h"
 
 using namespace Tr2RenderContextEnum;
 
@@ -23,6 +24,95 @@ Tr2RuntimeInstanceData::Tr2RuntimeInstanceData( IRoot* lockobj )
 	m_aabbMin( 0.f, 0.f, 0.f ),
 	m_aabbMax( 0.f, 0.f, 0.f )
 {
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
+//   Saves current particle data into a granny file.
+// Arguments:
+//   resPath - Resource path of the granny file to save particle data to.
+// --------------------------------------------------------------------------------------
+void Tr2RuntimeInstanceData::SaveToGranny( const char* resPath ) const
+{
+	if( !m_data )
+	{
+		return;
+	}
+
+	std::wstring resPathW = (const wchar_t*)CA2W( resPath );
+	std::wstring filename = BePaths->ResolvePathForWritingW( resPathW );
+
+	granny_data_type_definition* definition = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) granny_data_type_definition[m_layout.m_items.size() + 1];
+	if( !ConvertVertexDeclToGranny( m_layout, definition, m_layout.m_items.size() ) )
+	{
+		return;
+	}
+
+	granny_vertex_data* vertexData = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) granny_vertex_data;
+	memset( vertexData, 0, sizeof( granny_vertex_data ) );
+	vertexData->VertexType = definition;
+	vertexData->VertexComponentNames = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) const char*[m_layout.m_items.size()];
+	for( unsigned i = 0; i < m_layout.m_items.size(); ++i )
+	{
+		vertexData->VertexComponentNames[i] = definition[i].Name;
+	}
+	vertexData->VertexComponentNameCount = (granny_int32)m_layout.m_items.size();
+
+	unsigned totalSize = m_stride;
+	if( m_count )
+	{
+		char* vertices = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) char[m_stride * m_count];
+		memcpy( vertices, m_data.get(), m_stride * m_count );
+		vertexData->Vertices = reinterpret_cast<granny_uint8*>( vertices );
+	}
+	vertexData->VertexCount = m_count;
+
+	// We don't need index buffer, but TriGeometryRes will complain/crash if tries
+	// to load granny without index buffer.
+	granny_tri_topology* topology = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) granny_tri_topology;
+	memset( topology, 0, sizeof( granny_tri_topology ) );
+	topology->Index16Count = 3;
+	topology->Indices16 = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) granny_uint16[3];
+	topology->Indices16[0] = 0;
+	topology->Indices16[1] = 0;
+	topology->Indices16[2] = 0;
+
+    granny_mesh* mesh = CCP_NEW( "Tr2RuntimeInstanceData::SaveToGranny" ) granny_mesh;
+	memset( mesh, 0, sizeof( granny_mesh ) );
+	mesh->Name = m_name.c_str();
+    mesh->PrimaryVertexData = vertexData;
+    mesh->PrimaryTopology = topology;
+
+    granny_file_info info;
+	memset( &info, 0, sizeof( granny_file_info ) );
+
+    info.MeshCount = 1;
+    info.Meshes = &mesh;
+    info.VertexDataCount = 1;
+    info.VertexDatas = &vertexData;
+    info.TriTopologyCount = 1;
+    info.TriTopologies = &topology;
+
+	granny_file_builder* builder = GrannyBeginFile(
+        1, 
+        GrannyCurrentGRNStandardTag, 
+        GrannyGRNFileMV_ThisPlatform, 
+        GrannyGetTemporaryDirectory(), 
+        "prefix2" );
+    granny_file_data_tree_writer* writer = GrannyBeginFileDataTreeWriting( GrannyFileInfoType, &info, 0, 0 );
+
+    GrannyWriteDataTreeToFileBuilder( writer, builder );
+    GrannyEndFileDataTreeWriting( writer );
+ 
+    GrannyEndFile( builder, CW2A( filename.c_str() ) );
+
+	CCP_DELETE mesh;
+	CCP_DELETE []topology->Indices16;
+	CCP_DELETE topology;
+	CCP_DELETE []vertexData->Vertices;
+	CCP_DELETE []vertexData->VertexComponentNames;
+	CCP_DELETE vertexData;
+	CCP_DELETE []definition;
 }
 
 // --------------------------------------------------------------------------------------

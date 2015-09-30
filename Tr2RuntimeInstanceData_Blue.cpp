@@ -512,6 +512,13 @@ const Be::ClassInfo* Tr2RuntimeInstanceData::ExposeToBlue()
 			"Spawns particles into the particle system"
 		)
 
+		MAP_METHOD_AND_WRAP
+		(
+			"SaveToGranny",
+			SaveToGranny,
+			"Saves vertex data to a granny file"
+		)
+
 		MAP_ATTRIBUTE
 		( 
 			"updateBoundingBox", 
