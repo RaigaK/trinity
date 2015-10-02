@@ -2093,11 +2093,11 @@ void EveSpaceObject2::SetDnaString( const char* dna )
 // Description:
 //   Create a shield impact effect on this object
 // -----------------------------------------------------------------------------
-int EveSpaceObject2::CreateShieldImpact( const Vector3& position, const Vector3& direction )
+int EveSpaceObject2::CreateShieldImpact( const Vector3& position, const Vector3& direction, float lifeTime )
 {
 	if( m_impactOverlay )
 	{
-		return m_impactOverlay->CreateShieldImpact( position, direction );
+		return m_impactOverlay->CreateShieldImpact( position, direction, lifeTime );
 	}
 	return -1;
 }

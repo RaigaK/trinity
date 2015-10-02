@@ -19,8 +19,7 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ):
 	m_shieldEllipsoidCenter( 0.f, 0.f, 0.f ),
 	m_shieldEllipsoidRadii( 1.f, 1.f, 1.f ),
 	m_shieldImpactDataNextIdx( 1 ),
-	m_armorImpactDataNextIdx( 1 ),
-	m_shieldDataVar( "ImpactShieldDataMap", &m_shieldDataTexture )
+	m_armorImpactDataNextIdx( 1 )
 {
 
 	PrepareResources();
@@ -189,7 +188,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 			texelData->row0 = Vector4( p, shieldData->timeLeft );
 			// also need this intercept position in WS
 			D3DXVec3TransformCoord( &shieldData->interceptPosition, &p, &parentWorldTransform );
-
+	
 			++i;
 		}
 	}
@@ -232,6 +231,7 @@ void EveImpactOverlay::GetBatches( ITriRenderBatchAccumulator* accumulator, TriB
 		return;
 	}
 
+	GlobalStore().RegisterVariable( "ImpactShieldDataMap", &m_shieldDataTexture );
 	const Tr2MeshAreaVector* areas = m_mesh->GetAreas( batchType );
 	m_mesh->GetBatches( accumulator, areas, perObjectData );
 }
@@ -240,7 +240,7 @@ void EveImpactOverlay::GetBatches( ITriRenderBatchAccumulator* accumulator, TriB
 // Description:
 //   Use this method to add a new shield impact
 // --------------------------------------------------------------------------------
-int EveImpactOverlay::CreateShieldImpact( const Vector3& position, const Vector3& direction )
+int EveImpactOverlay::CreateShieldImpact( const Vector3& position, const Vector3& direction, float lifeTime )
 {
 	// fill our struct, but keep it in world space
 	ShieldImpactData sid;
@@ -248,7 +248,8 @@ int EveImpactOverlay::CreateShieldImpact( const Vector3& position, const Vector3
 	D3DXVec3Normalize( &sid.direction, &sid.direction );
 	sid.targetPosition = position;
 	sid.interceptPosition = Vector3( 0.f, 0.f, 0.f );
-	sid.timeLeft = 0.f;
+	sid.lifeTime = lifeTime;
+	sid.timeLeft = 2.f * lifeTime;
 	m_shieldImpactData[ m_shieldImpactDataNextIdx ] = sid;
 	return m_shieldImpactDataNextIdx++;
 }

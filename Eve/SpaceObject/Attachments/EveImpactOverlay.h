@@ -33,6 +33,7 @@ public:
 		Vector3 targetPosition;
 		Vector3 interceptPosition;
 		Vector3 direction;
+		float lifeTime;
 		float timeLeft;
 	};
 
@@ -80,7 +81,7 @@ public:
 	Tr2EffectPtr GetArmorDamageShader( TriBatchType batchType ) const;
 
 	// control shield impacts
-	int CreateShieldImpact( const Vector3& position, const Vector3& direction );
+	int CreateShieldImpact( const Vector3& position, const Vector3& direction, float lifeTime );
 	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
 
 	// control armor impacts
@@ -116,7 +117,6 @@ private:
 
 	// the data texture
 	Tr2TextureAL m_shieldDataTexture;
-	Tr2Variable m_shieldDataVar;
 
 	// what to render
 	Tr2MeshBasePtr m_mesh;

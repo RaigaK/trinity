@@ -287,7 +287,7 @@ public:
 	void SetDnaString( const char* dna );
 
 	// access to impacts
-	int CreateShieldImpact( const Vector3& position, const Vector3& direction );
+	int CreateShieldImpact( const Vector3& position, const Vector3& direction, float lifeTime );
 	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
 	int CreateArmorImpact( const Vector3& position );
 

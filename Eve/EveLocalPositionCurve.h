@@ -56,10 +56,10 @@ public:
 	Vector3d* InterpolatedPosition( Vector3d* out, Be::Time time );
 
 private:
-	IEveSpaceObject2Ptr         m_parentObject;
-	ITriVectorFunctionPtr		m_parentPositionCurve;
-	ITriQuaternionFunctionPtr	m_parentRotationCurve;
-	ITriVectorFunctionPtr		m_alignPositionCurve;
+	IEveSpaceObject2Ptr m_parentObject;
+	ITriVectorFunctionPtr m_parentPositionCurve;
+	ITriQuaternionFunctionPtr m_parentRotationCurve;
+	ITriVectorFunctionPtr m_alignPositionCurve;
 	float m_offset;
 	Vector3 m_value;
 	Vector3 m_boundingBoxSize;
