@@ -109,7 +109,7 @@ bool IntersectSphereAxisAlignedBox( const Vector4& sphere, const Vector3& minBou
 bool IntersectEllipsoidRay( Vector3& out, const Vector3& ellipsoidCenter, const Vector3& ellipsoidRadii, const Vector3& rayOrigin, const Vector3& rayDir )
 {
 	Vector3 v = Vector3( rayDir.x / ellipsoidRadii.x, rayDir.y / ellipsoidRadii.y, rayDir.z / ellipsoidRadii.z );
-	Vector3 s = Vector3( rayOrigin.x / ellipsoidRadii.x, rayOrigin.y / ellipsoidRadii.y, rayOrigin.z / ellipsoidRadii.z );
+	Vector3 s = Vector3( ( rayOrigin.x - ellipsoidCenter.x ) / ellipsoidRadii.x, ( rayOrigin.y - ellipsoidCenter.y ) / ellipsoidRadii.y, ( rayOrigin.z - ellipsoidCenter.z ) / ellipsoidRadii.z );
 	float v_v = D3DXVec3Dot( &v, &v );
 	float v_s = D3DXVec3Dot( &v, &s );
 	float s_s = D3DXVec3Dot( &s, &s );
