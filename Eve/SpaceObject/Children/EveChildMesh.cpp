@@ -20,6 +20,15 @@ EveChildMesh::~EveChildMesh()
 {
 }
 
+bool EveChildMesh::Initialize()
+{
+	if( m_staticTransform )
+	{
+		RebuildLocalTransform();
+	}
+	return true;
+}
+
 void EveChildMesh::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform )
 {
 	if( !m_display )
@@ -144,4 +153,9 @@ void EveChildMesh::UpdateAsyncronous( EveUpdateContext& updateContext, EveSpaceO
 	parent->GetLocalToWorldTransform( localToWorldTransform );
 	UpdateTransform( localToWorldTransform );
 	D3DXMatrixTranspose( &m_vsData.worldTransform, &m_worldTransform );
+}
+
+void EveChildMesh::SetMesh( Tr2MeshBase* mesh )
+{
+	m_mesh = mesh;
 }

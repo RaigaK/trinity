@@ -617,6 +617,28 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		hd.children.push_back( hc );
 	}
 
+	// instanced meshes
+	hd.instancedMeshes.clear();
+	for( auto imit = srcData->m_instancedMeshes.begin(); imit != srcData->m_instancedMeshes.end(); ++imit )
+	{
+		HullInstancedMesh him;
+		him.name = (*imit)->m_name;
+		him.geometryResPath = (*imit)->m_geometryResPath;
+		him.instanceGeometryResPath = (*imit)->m_instanceGeometryResPath;
+		him.areaName = (*imit)->m_areaName;
+		him.areaIndex = (*imit)->m_areaIndex;
+		him.areaCount = (*imit)->m_areaCount;
+		him.shader = (*imit)->m_shader;
+		for( auto tit = (*imit)->m_textures.begin(); tit != (*imit)->m_textures.end(); ++tit )
+		{
+			EveSOFDataTexturePtr textureData = (*tit);
+			TextureData td;
+			td.resFilePath = textureData->m_resFilePath;
+			him.textures[textureData->m_name] = td;
+		}
+		hd.instancedMeshes.push_back( him );
+	}
+
 	// animations
 	hd.animations.clear();
 	for( auto chit = srcData->m_animations.begin(); chit != srcData->m_animations.end(); ++chit )

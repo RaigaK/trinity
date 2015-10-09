@@ -24,6 +24,14 @@ EveChildBillboard::~EveChildBillboard()
 {
 }
 
+bool EveChildBillboard::Initialize()
+{
+	if( m_staticTransform )
+	{
+		RebuildLocalTransform();
+	}
+	return true;
+}
 
 void EveChildBillboard::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform )
 {

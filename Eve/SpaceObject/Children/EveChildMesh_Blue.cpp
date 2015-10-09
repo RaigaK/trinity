@@ -8,6 +8,7 @@ const Be::ClassInfo* EveChildMesh::ExposeToBlue()
     EXPOSURE_BEGIN( EveChildMesh, "" )
         MAP_INTERFACE( EveChildMesh )
 		MAP_INTERFACE( IEveSpaceObjectChild )
+		MAP_INTERFACE( IInitialize )
 
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST	)
 		MAP_ATTRIBUTE( "display", m_display, "", Be::READWRITE | Be::PERSIST )

@@ -27,7 +27,8 @@ BLUE_DECLARE_IVECTOR( ITr2GenericEmitter );
 BLUE_CLASS( EveChildParticleSystem ) :
 	public IEveSpaceObjectChild,
 	public EveChildTransform,
-	public ITr2Renderable
+	public ITr2Renderable,
+	public IInitialize
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -55,6 +56,10 @@ public:
 	void GetShadowBatches( ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData );
 	float GetSortValue();
 	Tr2PerObjectData* GetPerObjectData( ITriRenderBatchAccumulator* accumulator );
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IInitialize
+	virtual bool Initialize();
 
 private:
 	BlueSharedString m_name;

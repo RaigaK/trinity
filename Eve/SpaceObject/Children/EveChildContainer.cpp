@@ -12,7 +12,8 @@
 
 EveChildContainer::EveChildContainer( IRoot* lockobj ):
 	PARENTLOCK( m_objects ),
-	PARENTLOCK( m_curveSets )
+	PARENTLOCK( m_curveSets ),
+	m_display( true )
 {
 }
 
@@ -22,6 +23,10 @@ EveChildContainer::~EveChildContainer()
 
 void EveChildContainer::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform )
 {
+	if( !m_display )
+	{
+		return;
+	}
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
 		(*it)->GetRenderables( frustum, renderables, parentTransform );

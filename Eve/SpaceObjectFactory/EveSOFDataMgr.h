@@ -139,6 +139,18 @@ public:
 		int id;
 	};
 
+	struct HullInstancedMesh
+	{
+		BlueSharedString name;
+		std::string geometryResPath;
+		std::string instanceGeometryResPath;
+		BlueSharedString areaName;
+		BlueSharedString shader;
+		int areaIndex;
+		int areaCount;
+		std::map<BlueSharedString, TextureData> textures;
+	};
+
 	struct HullAnimation
 	{
 		std::string name;
@@ -181,6 +193,7 @@ public:
 		std::vector<LocatorData> locatorTurrets;
 		std::vector<LocatorDirectionData> locatorDamage;
 		std::vector<HullChild> children;
+		std::vector<HullInstancedMesh> instancedMeshes;
 		std::vector<HullAnimation> animations;
 		std::string modelRotationCurvePath;
 		std::string modelTranslationCurvePath;

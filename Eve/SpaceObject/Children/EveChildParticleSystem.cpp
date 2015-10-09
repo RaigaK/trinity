@@ -31,6 +31,15 @@ EveChildParticleSystem::~EveChildParticleSystem()
 {
 }
 
+bool EveChildParticleSystem::Initialize()
+{
+	if( m_staticTransform )
+	{
+		RebuildLocalTransform();
+	}
+	return true;
+}
+
 void EveChildParticleSystem::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform )
 {
 	if( !m_display || !frustum.IsSphereVisible( &m_boundingSphere ) )

@@ -47,6 +47,14 @@ EveSOFDataTexture::EveSOFDataTexture( IRoot* lockobj )
 {}
 
 
+EveSOFDataInstancedMesh::EveSOFDataInstancedMesh( IRoot* lockobj ) :
+	PARENTLOCK( m_textures ),
+	m_areaName( "hull" ),
+	m_areaCount( 1 ),
+	m_areaIndex( 0 )
+{}
+
+
 EveSOFDataGenericString::EveSOFDataGenericString( IRoot* lockobj )
 {}
 
@@ -135,6 +143,7 @@ EveSOFDataHull::EveSOFDataHull( IRoot* lockobj ) :
 	PARENTLOCK( m_locatorTurrets ),
 	PARENTLOCK( m_damageLocators ),
 	PARENTLOCK( m_children ),
+	PARENTLOCK( m_instancedMeshes ),
 	PARENTLOCK( m_animations ),
 	m_buildClass( BUILDCLASS_SHIP ),
 	m_boundingSphere( 0.f, 0.f, 0.f, 0.f ),

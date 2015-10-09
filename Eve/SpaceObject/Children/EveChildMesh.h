@@ -23,7 +23,8 @@ BLUE_DECLARE( EveSpaceObject2 );
 BLUE_CLASS( EveChildMesh ) :
 	public IEveSpaceObjectChild,
 	public EveChildTransform,
-	public ITr2Renderable
+	public ITr2Renderable,
+	public IInitialize
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -53,9 +54,17 @@ public:
 	virtual Tr2PerObjectData* GetPerObjectData( ITriRenderBatchAccumulator* accumulator );
 	
 	/////////////////////////////////////////////////////////////////////////////////////
+	// IInitialize
+	virtual bool Initialize();
+
+	/////////////////////////////////////////////////////////////////////////////////////
 	// PerObjectData
 	void UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shaderType, uint32_t size, void* );
 	uint32_t GetPerObjectDataSize( Tr2RenderContextEnum::ShaderType shaderType ) const;
+
+
+	void SetMesh( Tr2MeshBase* mesh );
+	void SetName( const char* name ) { m_name = BlueSharedString( name ); }
 
 protected:
 	BlueSharedString m_name;

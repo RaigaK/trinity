@@ -44,6 +44,26 @@ public:
 TYPEDEF_BLUECLASS( EveSOFDataTexture );
 BLUE_DECLARE_VECTOR( EveSOFDataTexture );
 
+BLUE_CLASS( EveSOFDataInstancedMesh ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataInstancedMesh( IRoot* lockobj = NULL );
+	~EveSOFDataInstancedMesh() {}
+
+	// data
+	BlueSharedString m_name;
+	std::string m_geometryResPath;
+	std::string m_instanceGeometryResPath;
+	BlueSharedString m_areaName;
+	BlueSharedString m_shader;
+	int m_areaIndex;
+	int m_areaCount;
+	PEveSOFDataTextureVector m_textures;
+};
+TYPEDEF_BLUECLASS( EveSOFDataInstancedMesh );
+BLUE_DECLARE_VECTOR( EveSOFDataInstancedMesh );
 
 BLUE_CLASS( EveSOFDataTransform ) :
 	public IRoot
@@ -405,6 +425,9 @@ public:
 
 	// children
 	PEveSOFDataHullChildVector m_children;
+
+	// instanced meshes
+	PEveSOFDataInstancedMeshVector m_instancedMeshes;
 
 	// animations
 	PEveSOFDataHullAnimationVector m_animations;

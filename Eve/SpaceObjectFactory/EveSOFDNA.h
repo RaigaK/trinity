@@ -68,6 +68,7 @@ public:
 	const char* GetModelTranslationCurvePath() const;
 	const std::vector<EveSOFDataMgr::HullAreas>* GetHullMeshAreas( TriBatchType type ) const;
 	const std::vector<EveSOFDataMgr::HullChild>& GetHullChildren() const;
+	const std::vector<EveSOFDataMgr::HullInstancedMesh>& GetHullInstancedMeshes() const;
 	const std::vector<EveSOFDataMgr::HullAnimation>& GetHullAnimations() const;
 	const std::vector<EveSOFDataMgr::HullDecalData>& GetHullDecals() const;
 	const std::vector<EveSOFDataMgr::HullPlaneSetData>& GetHullPlaneSets() const;

@@ -404,6 +404,15 @@ const std::vector<EveSOFDataMgr::HullChild>& EveSOFDNA::GetHullChildren() const
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Return an array to all the instanced meshes of this hull
+// --------------------------------------------------------------------------------
+const std::vector<EveSOFDataMgr::HullInstancedMesh>& EveSOFDNA::GetHullInstancedMeshes() const
+{
+	return m_hullData->instancedMeshes;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   Return an array of all the animations for children
 // --------------------------------------------------------------------------------
 const std::vector<EveSOFDataMgr::HullAnimation>& EveSOFDNA::GetHullAnimations() const

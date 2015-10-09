@@ -370,6 +370,21 @@ ITr2InstanceData* Tr2InstancedMesh::GetInstanceGeometryResource() const
 
 // --------------------------------------------------------------------------------------
 // Description:
+//   Set a new instance geometry path from the outside. This will trigger an initialize 
+//   of the new geometry resource!
+// Arguments:
+//   path - gr2 res path
+// --------------------------------------------------------------------------------------
+void Tr2InstancedMesh::SetInstanceMeshResPath( const char* path )
+{ 
+	m_instanceGeometryResPath = path;
+
+	// trigger change, this will automatically be triggered when set through python
+	OnModified( (Be::Var*)&m_instanceGeometryResPath );
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
 //   Changes instance geometry resource.
 // Arguments:
 //   res - New instanced geometry resource

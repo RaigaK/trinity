@@ -23,7 +23,7 @@ BLUE_DECLARE_INTERFACE( ITr2GpuBuffer );
 // See Also:
 //   Tr2Mesh
 // --------------------------------------------------------------------------------------
-class Tr2InstancedMesh:
+BLUE_CLASS( Tr2InstancedMesh ):
 	public Tr2Mesh,
 	public Tr2DeviceResource
 {
@@ -62,7 +62,7 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Tr2Mesh
 	const char* GetInstanceMeshResPath() { return m_instanceGeometryResPath.c_str(); }
-	void SetInstanceMeshResPath( const char* path ) { m_instanceGeometryResPath = path; }
+	void SetInstanceMeshResPath( const char* path );
 	int GetInstanceMeshIndex() const { return m_instanceMeshIndex; };
 
 	ITr2InstanceData* GetInstanceGeometryResource() const;

@@ -263,6 +263,25 @@ const Be::ClassInfo* EveSOFDataTexture::ExposeToBlue()
 
 
 
+BLUE_DEFINE( EveSOFDataInstancedMesh );
+const Be::ClassInfo* EveSOFDataInstancedMesh::ExposeToBlue()
+{
+    EXPOSURE_BEGIN( EveSOFDataInstancedMesh, "" )
+        MAP_INTERFACE( EveSOFDataInstancedMesh )
+
+		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "geometryResPath", m_geometryResPath, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "instanceGeometryResPath", m_instanceGeometryResPath, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "shader", m_shader, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "areaName", m_areaName, "Should be a name that matches some existing area preset.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "areaIndex", m_areaIndex, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "areaCount", m_areaCount, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "textures", m_textures, "", Be::READWRITE | Be::PERSIST )
+    EXPOSURE_END()
+}
+
+
+
 BLUE_DEFINE( EveSOFDataHullArea );
 const Be::ClassInfo* EveSOFDataHullArea::ExposeToBlue()
 {
@@ -410,6 +429,8 @@ const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "children", m_children, "List of children", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "animations", m_animations, "List of animations", Be::READWRITE | Be::PERSIST )
+		
+		MAP_ATTRIBUTE( "instancedMeshes", m_instancedMeshes, "List of instanced meshes", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "locatorTurrets", m_locatorTurrets, "Turret locators", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "damageLocators", m_damageLocators, "Damage locators", Be::READWRITE | Be::PERSIST )

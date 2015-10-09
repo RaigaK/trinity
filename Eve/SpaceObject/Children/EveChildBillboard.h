@@ -21,7 +21,8 @@ BLUE_DECLARE( EveSpaceObject2 );
 BLUE_CLASS( EveChildBillboard ) :
 	public IEveSpaceObjectChild,
 	public EveChildTransform,
-	public ITr2Renderable
+	public ITr2Renderable,
+	public IInitialize
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -49,6 +50,10 @@ public:
 	virtual void GetShadowBatches( ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData );
 	virtual float GetSortValue();
 	virtual Tr2PerObjectData* GetPerObjectData( ITriRenderBatchAccumulator* accumulator );
+	
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IInitialize
+	virtual bool Initialize();
 
 private:
 	BlueSharedString m_name;

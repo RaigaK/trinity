@@ -18,7 +18,9 @@
 #include "Eve/SpaceObject/Attachments/EvePlaneSet.h"
 #include "Eve/SpaceObject/Attachments/EveBoosterSet2.h"
 #include "Eve/SpaceObject/Attachments/EveSpaceObjectDecal.h"
+#include "Eve/SpaceObject/Children/EveChildMesh.h"
 #include "Eve/SpaceObject/Utils/EveLocator2.h"
+#include "Tr2InstancedMesh.h"
 #include "Tr2MeshLod.h"
 #include "Tr2MeshArea.h"
 #include "Tr2Effect.h"
@@ -137,6 +139,9 @@ IRootPtr EveSOF::BuildFromDNA( const char* dnaString )
 
 	// model curves
 	SetupModelCurves( newObj, dna );
+
+	// instanced meshes
+	SetupInstancedMeshes( newObj, dna );
 
 	// EveShip2-specific setups
 	EveShip2Ptr newShip;
@@ -870,6 +875,84 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 		}
 	}
 }
+
+
+// --------------------------------------------------------------------------------
+// Description:
+//   add instanced meshes to the ship
+// --------------------------------------------------------------------------------
+void EveSOF::SetupInstancedMeshes( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const
+{
+	const std::vector<EveSOFDataMgr::HullInstancedMesh>& hullInstanced = dna->GetHullInstancedMeshes();
+	for( auto instIt = hullInstanced.begin(); instIt != hullInstanced.end(); ++instIt )
+	{
+		EveSOFDataMgr::HullInstancedMesh him = *instIt;
+
+		Tr2InstancedMeshPtr mesh;
+		mesh.CreateInstance();
+		mesh->SetInstanceMeshResPath( him.instanceGeometryResPath.c_str() );
+		mesh->SetMeshResPath( him.geometryResPath.c_str() );
+
+		Tr2MeshAreaVector* areas = mesh->GetAreas( TRIBATCHTYPE_OPAQUE );
+
+		// find data on this shader from generics, we need it!
+		const EveSOFDataMgr::GenericShaderData* shaderData = dna->GetGenericAreaShaderData( him.shader );
+		if( shaderData )
+		{
+			// every area has it's own shader, nothing we can share here
+			Tr2EffectPtr newShader;
+			newShader.CreateInstance();
+			newShader->StartUpdate();
+
+			// construct res path of the shader
+			std::string shaderPath = std::string( "/" ) + std::string( him.shader.c_str() );
+			StringInsertStubAfter( shaderPath, "/", dna->GetShaderPrefix( dna->IsHullAnimated() ) );
+			shaderPath = dna->GetAreaShaderLocationResPath() + shaderPath;
+			newShader->SetEffectPathName( shaderPath.c_str() );
+
+			// parameters
+			for( auto shaderParamIt = shaderData->parameters.begin(); shaderParamIt != shaderData->parameters.end(); ++shaderParamIt )
+			{
+				const Vector4* paramValue = dna->GetMeshAreaParameter( him.areaName, *shaderParamIt );
+				if( paramValue )
+				{
+					newShader->AddParameterVector4( *shaderParamIt, paramValue );
+				}
+			}
+
+			// shader textures from the hull data
+			for( auto it = him.textures.begin(); it != him.textures.end(); ++it )
+			{
+				dna->ModifyTextureResPath( it->second.resFilePath, it->first.c_str() );
+				newShader->AddResourceTexture2D( it->first, it->second.resFilePath.c_str() );
+			}
+
+			// default shader textures from the generic data
+			for( auto gtit = shaderData->defaultTextures.begin(); gtit != shaderData->defaultTextures.end(); ++gtit )
+			{
+				newShader->AddResourceTexture2D( gtit->first, gtit->second.resFilePath.c_str() );
+			}
+
+			// that's it for setting up this shader, must rebuild cache on it!
+			newShader->EndUpdate();
+
+			// new mesharea
+			Tr2MeshAreaPtr newMeshArea;
+			newMeshArea.CreateInstance();
+			newMeshArea->SetName( him.areaName.c_str() );
+			newMeshArea->SetMaterial( newShader );
+			newMeshArea->SetIndex( him.areaIndex );
+			newMeshArea->SetCount( him.areaCount );
+			areas->Append( newMeshArea );
+		}
+		EveChildMeshPtr childMesh;
+		childMesh.CreateInstance();
+		childMesh->SetName( him.areaName.c_str() );
+		childMesh->SetMesh( (Tr2MeshBase*)mesh );
+		newObj->AddToEffectChildrenList( (IEveSpaceObjectChild*)childMesh );
+	}
+}
+
 
 
 // --------------------------------------------------------------------------------

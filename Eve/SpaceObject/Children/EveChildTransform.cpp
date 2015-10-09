@@ -14,7 +14,10 @@ EveChildTransform::EveChildTransform() :
 
 void EveChildTransform::RebuildLocalTransform()
 {
-	D3DXMatrixTransformation( &m_localTransform, nullptr, nullptr, &m_scaling, nullptr, &m_rotation, &m_translation );
+	if( m_useSRT )
+	{
+		D3DXMatrixTransformation( &m_localTransform, nullptr, nullptr, &m_scaling, nullptr, &m_rotation, &m_translation );
+	}
 }
 
 void EveChildTransform::Transform( const Vector3* scale, const Quaternion* rotation, const Vector3* translation )
