@@ -46,7 +46,8 @@ private:
 
 	// times
 	Be::Time m_startTime;
-	float m_totalTime;
+	float m_delayTime;
+	float m_sweepTime;
 
 	// behaviour
 	bool m_cycle;

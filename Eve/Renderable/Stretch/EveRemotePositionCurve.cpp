@@ -15,7 +15,8 @@ EveRemotePositionCurve::EveRemotePositionCurve(IRoot* lockobj) :
 	m_offsetDir1( 0.f, 0.f, 0.f ),
 	m_offsetDir2( 0.f, 0.f, 0.f ),
 	m_startTime( 0 ),
-	m_totalTime( 1.0 ),
+	m_delayTime( 0.f ),
+	m_sweepTime( 1.f ),
 	m_cycle( false )
 {	
 }
@@ -44,15 +45,20 @@ Vector3* EveRemotePositionCurve::Update( Vector3* in, Be::Time t )
 	}
 	float timeSinceStart = TimeAsFloat( t - m_startTime );
 
-	// loop or not to loop!
 	float s = 0.f;
-	if( m_cycle )
+
+	// delay sweep if set!
+	if( timeSinceStart > m_delayTime )
 	{
-		s = Clamp( fmod( timeSinceStart, m_totalTime ) / m_totalTime, 0.f, 1.f );
-	}
-	else
-	{
-		s = Clamp( timeSinceStart / m_totalTime, 0.f, 1.f );
+		// loop or not to loop!
+		if( m_cycle )
+		{
+			s = Clamp( fmod( ( timeSinceStart - m_delayTime ), m_sweepTime ) / m_sweepTime, 0.f, 1.f );
+		}
+		else
+		{
+			s = Clamp( ( timeSinceStart - m_delayTime ) / m_sweepTime, 0.f, 1.f );
+		}
 	}
 
 	// interpolate current offset
