@@ -11,8 +11,8 @@
 #include "Apex/Apex.h"
 #endif
 #include "Resources/TriGeometryRes.h"
-#include "Tr2ShaderMaterial.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2ShaderMaterial.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2Mesh.h"
 
 CCP_STATS_DECLARE( wodIntSkinnedObjectsAlive, "Trinity/wodIntSkinnedObjectsAlive", false, CST_COUNTER_LOW, "Count of Tr2IntSkinnedObjects alive" );

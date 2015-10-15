@@ -3,7 +3,7 @@
 #include "Tr2VariableStore.h"
 #include "Tr2Renderer.h"
 #include "TriFrustumOrtho.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "TriViewport.h"
 #include "TriLineSet.h"
 

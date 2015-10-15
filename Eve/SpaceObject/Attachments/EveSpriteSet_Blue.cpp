@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "EveSpriteSet.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 BLUE_DEFINE( EveSpriteSet );
 

@@ -12,7 +12,7 @@
 #endif
 #include "Tr2VisibilityResults.h"
 #include "Tr2InteriorMirror.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Tr2LitPerObjectData.h"
 #include "Tr2AtlasTexture.h"
 #include "Tr2InteriorParticleObject.h"
@@ -28,7 +28,7 @@
 #include "Curves/TriCurveSet.h"
 #include "Tr2InteriorCell.h"
 #include "Tr2TextureAtlas.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "TriFrustum.h"
 
 using namespace Tr2RenderContextEnum;

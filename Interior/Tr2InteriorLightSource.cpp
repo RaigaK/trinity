@@ -9,11 +9,11 @@
 #include "Tr2InteriorCell.h"
 #include "Tr2InteriorLightGeometryRenderBatch.h"
 #include "Tr2KelvinColor.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Tr2ConstGeometry.h"
 #include "Curves/TriCurveSet.h"
 #include "Include/TriMath.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "TriViewport.h"
 
 CCP_STATS_DECLARE( wodIntLightsAlive, "Trinity/Tr2IntLightsAlive", false, CST_COUNTER_LOW, 

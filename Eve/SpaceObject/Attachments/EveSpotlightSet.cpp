@@ -7,7 +7,7 @@
 #include "StdAfx.h"
 #include "EveSpotlightSet.h"
 #include "TriRenderBatch.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Utilities/BoundingSphere.h"
 #include "Utilities/MatrixUtils.h"
 #include "Tr2QuadRenderer.h"

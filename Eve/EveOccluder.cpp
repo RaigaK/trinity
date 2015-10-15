@@ -6,7 +6,7 @@
 #include "StdAfx.h"
 #include "EveOccluder.h"
 
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 #include "EveTransform.h"
 #include "include/TriMath.h"

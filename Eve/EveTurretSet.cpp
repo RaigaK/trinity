@@ -6,7 +6,7 @@
 #include "StdAfx.h"
 #include "EveTurretSet.h"
 
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Resources/TriGeometryRes.h"
 #include "Utilities/BoundingSphere.h"
 #include "TriFrustumOrtho.h"

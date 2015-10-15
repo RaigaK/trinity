@@ -3,7 +3,7 @@
 #include "Tr2PrimitiveSet.h"
 #include "Tr2SolidSet.h"
 #include "Tr2LineSet.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 Tr2TranslationTool::Tr2TranslationTool( IRoot* lockobj ):
 	Tr2ManipulationTool( lockobj )

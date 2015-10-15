@@ -4,7 +4,7 @@
 #include "Tr2TextureAtlas.h"
 #include "Tr2AtlasTexture.h"
 #include "Tr2Renderer.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2VariableStore.h"
 
 TriStepRenderAtlas::TriStepRenderAtlas( IRoot *lockobj ) 

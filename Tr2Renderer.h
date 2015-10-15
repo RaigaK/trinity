@@ -5,7 +5,7 @@
 
 #include "TriDebugTextRenderer.h"
 #include "Tr2Blitter.h"
-#include "Tr2EffectDescription.h"
+#include "Shader/Tr2EffectDescription.h"
 
 BLUE_DECLARE( Tr2Effect );
 

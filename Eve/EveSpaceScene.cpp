@@ -5,8 +5,8 @@
 #include "Tr2Renderer.h"
 #include "Tr2PushPopDS.h"
 #include "Tr2PushPopRT.h"
-#include "Tr2Effect.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2Effect.h"
+#include "Shader/Tr2EffectStateManager.h"
 #include "EveLensflare.h"
 #include "Tr2VariableStore.h"
 #include "TriSettingsRegistrar.h"
@@ -28,7 +28,7 @@
 #include "Include/TriMath.h"
 #include "EveDistanceField.h"
 #include "Renderable/EveSceneStaticParticles.h"
-#include "Tr2ShaderBuffer.h"
+#include "Shader/Tr2ShaderBuffer.h"
 
 using namespace Tr2RenderContextEnum;
 

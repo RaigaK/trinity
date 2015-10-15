@@ -8,8 +8,8 @@
 #include "StdAfx.h"
 
 #include "Tr2HighLevelShader.h"
-#include "Tr2ShaderMaterial.h"
-#include "Tr2ShaderPermuteTag.h"
+#include "Shader/Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderPermuteTag.h"
 #include "TriSettingsRegistrar.h"
 
 //TriSetting to force release-like behaviour

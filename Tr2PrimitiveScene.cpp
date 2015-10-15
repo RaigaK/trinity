@@ -3,7 +3,7 @@
 #include "Tr2PrimitiveScene.h"
 #include "TriProjection.h"
 #include "TriView.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2PrimitiveSet.h"
 #include "TriFrustum.h"
 #include "Tr2ManipulationTool.h"

@@ -11,7 +11,7 @@
 #include "Tr2Sprite2dDisplayList.h"
 #include "Tr2Variable.h"
 #include "Tr2DynamicRingBuffer.h"
-#include "Tr2EffectDescription.h"
+#include "Shader/Tr2EffectDescription.h"
 
 BLUE_DECLARE( Tr2Sprite2dScene );
 BLUE_DECLARE( Tr2Sprite2d );

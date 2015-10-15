@@ -2,7 +2,7 @@
 #include "EveCurveLineSet.h"
 #include "Eve/EveConstantBufferFormats.h"
 #include "TriFrustum.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Utilities/BoundingSphere.h"
 #include "Tr2PerObjectData.h"
 #include "TriPoolAllocator.h"

@@ -8,7 +8,7 @@
 #include "TriSettingsRegistrar.h"
 #include "Tr2PerObjectData.h"
 #include "Tr2VertexDefinitionUtilities.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 Tr2ApexRenderer s_apexRenderer;
 Tr2ApexRenderer& g_apexRenderer = s_apexRenderer;

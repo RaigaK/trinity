@@ -3,7 +3,7 @@
 #include "Tr2Renderer.h"
 #include "TriRenderBatch.h"
 #include "TriPoolAllocator.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2Mesh.h"
 #include "Resources/TriGeometryRes.h"
 #include "Utilities/BoundingBox.h"

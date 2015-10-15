@@ -2,11 +2,11 @@
 
 #include "Tr2ShaderParameterDescription.h"
 
-#include "EffectParameter/Tr2FloatParameter.h"
-#include "EffectParameter/Tr2Vector2Parameter.h"
-#include "EffectParameter/Tr2Vector3Parameter.h"
-#include "EffectParameter/Tr2Vector4Parameter.h"
-#include "EffectParameter/TriTextureParameter.h"
+#include "Shader/Parameter/Tr2FloatParameter.h"
+#include "Shader/Parameter/Tr2Vector2Parameter.h"
+#include "Shader/Parameter/Tr2Vector3Parameter.h"
+#include "Shader/Parameter/Tr2Vector4Parameter.h"
+#include "Shader/Parameter/TriTextureParameter.h"
 
 // --------------------------------------------------------------------------------------
 // Description:

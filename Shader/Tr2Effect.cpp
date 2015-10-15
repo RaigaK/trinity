@@ -3,16 +3,16 @@
 
 #include "Tr2Effect.h"
 #include "Tr2Renderer.h"
-#include "EffectParameter/Tr2FloatParameter.h"
-#include "EffectParameter/Tr2Vector2Parameter.h"
-#include "EffectParameter/Tr2Vector3Parameter.h"
-#include "EffectParameter/Tr2Vector4Parameter.h"
-#include "EffectParameter/Tr2Matrix4Parameter.h"
-#include "EffectParameter/TriFloatArrayParameter.h"
-#include "EffectParameter/TriTextureParameter.h"
-#include "EffectParameter/Tr2Texture2DLodParameter.h"
-#include "EffectParameter/Tr2GeometryBufferParameter.h"
-#include "EffectParameter/TriVariableParameter.h"
+#include "Shader/Parameter/Tr2FloatParameter.h"
+#include "Shader/Parameter/Tr2Vector2Parameter.h"
+#include "Shader/Parameter/Tr2Vector3Parameter.h"
+#include "Shader/Parameter/Tr2Vector4Parameter.h"
+#include "Shader/Parameter/Tr2Matrix4Parameter.h"
+#include "Shader/Parameter/TriFloatArrayParameter.h"
+#include "Shader/Parameter/TriTextureParameter.h"
+#include "Shader/Parameter/Tr2Texture2DLodParameter.h"
+#include "Shader/Parameter/Tr2GeometryBufferParameter.h"
+#include "Shader/Parameter/TriVariableParameter.h"
 
 BLUE_DEFINE_INTERFACE( ITr2EffectValue );
 

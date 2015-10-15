@@ -2,7 +2,7 @@
 #include "Tr2ScalingTool.h"
 #include "Tr2SolidSet.h"
 #include "Tr2LineSet.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2Renderer.h"
 
 Tr2ScalingTool::Tr2ScalingTool( IRoot* lockobj )

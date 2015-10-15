@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "TriStepRenderEffect.h"
 #include "Tr2Renderer.h"
-#include "Tr2EffectStateManager.h"
-#include "Tr2Effect.h"
-#include "Tr2ShaderBuffer.h"
+#include "Shader/Tr2EffectStateManager.h"
+#include "Shader/Tr2Effect.h"
+#include "Shader/Tr2ShaderBuffer.h"
 
 CCP_STATS_DECLARE( rsRenderEffectCount, "Trinity/RenderStep/RenderEffectCount", true, CST_COUNTER_LOW, "Calls to TriStepRenderEffect::Execute per frame" );
 

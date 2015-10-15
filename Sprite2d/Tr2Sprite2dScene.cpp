@@ -2,7 +2,7 @@
 #include "Tr2Sprite2dScene.h"
 #include "TriDevice.h"
 #include "Tr2Renderer.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2VariableStore.h"
 #include "Curves/TriCurveSet.h"
 #include "Tr2AtlasTexture.h"

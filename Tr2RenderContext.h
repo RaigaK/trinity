@@ -11,7 +11,7 @@
 BLUE_DECLARE( Tr2RenderContext );
 
 #include "TrinityAL/ITr2RenderContextEvents.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2EffectStateManager.h"
 
 BLUE_DECLARE( Tr2VariableStore );
 BLUE_DECLARE( Tr2RenderContext );

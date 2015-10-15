@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Tr2LineGraph.h"
 #include "Tr2Renderer.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 using namespace Tr2RenderContextEnum;
 

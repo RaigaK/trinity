@@ -10,7 +10,7 @@
 #include "TriSettingsRegistrar.h"
 #include "TriDebugResourceHelper.h"
 #include "TriRenderBatch.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 #define USE_PLATFORM_ANALYZER CCP_STATS_ENABLED
 

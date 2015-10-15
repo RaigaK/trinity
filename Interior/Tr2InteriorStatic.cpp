@@ -9,7 +9,7 @@
 #include "Tr2Mesh.h"
 #include "Tr2InteriorCell.h"
 #include "Tr2LitPerObjectData.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Curves/TriCurveSet.h"
 
 

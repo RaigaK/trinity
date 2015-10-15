@@ -3,7 +3,7 @@
 
 #include "Utilities/BoundingSphere.h"
 #include "Utilities/BoundingBox.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "TriRenderBatch.h"
 #include "TriFrustum.h"
 #include "TriSettingsRegistrar.h"

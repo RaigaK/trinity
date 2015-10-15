@@ -7,8 +7,8 @@
 #include "TriRenderStep.h"
 #include "TriRenderBatch.h"
 #include "ITr2Renderable.h"
-#include "Tr2Effect.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2Effect.h"
+#include "Shader/Tr2EffectStateManager.h"
 #include "Eve/EveSpaceScene.h"
 
 // Render any ITr2Renderable -- just gather its batches and submit.

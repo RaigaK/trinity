@@ -9,7 +9,7 @@
 #include "TriConstants.h"
 #include "Tr2RuntimeInstanceData.h"
 #include "TriDevice.h"
-#include "Tr2ShaderBuffer.h"
+#include "Shader/Tr2ShaderBuffer.h"
 
 BLUE_DEFINE( EveSpaceScene );
 BLUE_DEFINE_INTERFACE( IEveReferencePoint );

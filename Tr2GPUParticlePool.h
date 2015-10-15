@@ -9,7 +9,7 @@
 #include "Tr2DeviceResource.h"
 #include "ID3DTexture.h"
 
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 
 BLUE_DECLARE( TriTextureRes );
 BLUE_DECLARE( Tr2TextureAtlas );

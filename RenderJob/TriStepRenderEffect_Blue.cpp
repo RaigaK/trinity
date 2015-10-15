@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TriStepRenderEffect.h"
-#include "Tr2Effect.h"
-#include "Tr2ShaderBuffer.h"
+#include "Shader/Tr2Effect.h"
+#include "Shader/Tr2ShaderBuffer.h"
 
 BLUE_DEFINE( TriStepRenderEffect );
 

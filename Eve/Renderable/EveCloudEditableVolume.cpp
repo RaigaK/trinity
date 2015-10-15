@@ -11,7 +11,7 @@
 #include "Tr2HostBitmap.h"
 #include "Tr2Renderer.h"
 #include "Curves/TriCurveSet.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2PickingHelperBatch.h"
 
 EveCloudVolumeBall::EveCloudVolumeBall( IRoot* lockobj )

@@ -2,7 +2,7 @@
 #include "Tr2RotationTool.h"
 #include "Tr2PrimitiveSet.h"
 #include "Tr2LineSet.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 Tr2RotationTool::Tr2RotationTool( IRoot* lockobj )
 {

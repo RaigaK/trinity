@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "TriDebugResourceHelper.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 static const char* DEBUG_EFFECT_PATH = "res:/Graphics/Effect/Managed/Utility/Debug.fx";
 static const char* DEBUG_LINE_EFFECT_PATH = "res:/Graphics/Effect/Managed/Utility/DebugLine.fx";

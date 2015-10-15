@@ -7,7 +7,7 @@
 #include "SpaceObject/Attachments/EveSpaceObjectDecal.h"
 #include "Tr2Mesh.h"
 #include "Tr2MeshLod.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Eve/SpaceObject/Utils/EveLocator2.h"
 #include "Utilities/BoundingSphere.h"
 

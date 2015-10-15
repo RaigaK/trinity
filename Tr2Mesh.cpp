@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "Tr2Mesh.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Resources/TriGeometryRes.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Tr2LowLevelShader.h"
 #include "Resources/Tr2LodResource.h"
 

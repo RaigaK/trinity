@@ -3,7 +3,7 @@
 #include <vector>
 #include "include/TriMath.h"
 #include "Resources/TriGeometryRes.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2EffectStateManager.h"
 
 const float PHI_MIN = -XM_PI;
 const float PHI_MAX = XM_PI;

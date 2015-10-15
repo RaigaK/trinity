@@ -6,7 +6,7 @@
 #include "Tr2PerObjectData.h"
 #include "EveUpdateContext.h"
 #include "TriRenderBatch.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 
 using namespace Tr2RenderContextEnum;
 

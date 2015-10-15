@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "Tr2InteriorFlare.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Tr2InteriorCell.h"
 #include "Tr2InteriorFlareData.h"
 #include "TriViewport.h"

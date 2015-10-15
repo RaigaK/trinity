@@ -7,7 +7,7 @@
 #include "StdAfx.h"
 #include "Tr2LightManager.h"
 #include "Tr2Renderer.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2GpuBuffer.h"
 #include "Tr2GpuStructuredBuffer.h"
 

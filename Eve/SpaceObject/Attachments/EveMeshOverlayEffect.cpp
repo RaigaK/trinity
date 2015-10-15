@@ -6,7 +6,7 @@
 
 #include "StdAfx.h"
 #include "EveMeshOverlayEffect.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Curves/TriCurveSet.h"
 
 

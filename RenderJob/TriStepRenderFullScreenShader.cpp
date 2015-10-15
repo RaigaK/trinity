@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "TriStepRenderFullScreenShader.h"
 #include "Tr2Renderer.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2EffectStateManager.h"
 
 TriStepRenderFullScreenShader::TriStepRenderFullScreenShader( IRoot* lockobj )
 {

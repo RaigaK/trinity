@@ -28,7 +28,7 @@
 #define _TriTextureParameter_H_
 
 #include "include/ITriEffectParameter.h"
-#include "Tr2EffectDescription.h"
+#include "Shader/Tr2EffectDescription.h"
 
 BLUE_DECLARE_INTERFACE( ITr2ShaderState );
 BLUE_DECLARE( TriTextureRes );

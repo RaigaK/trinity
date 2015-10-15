@@ -12,7 +12,7 @@
 #include "Tr2ShaderManager.h"
 #include "Tr2ShaderParameterDescription.h"
 #include "Tr2Effect.h"
-#include "EffectParameter/TriTextureParameter.h"
+#include "Shader/Parameter/TriTextureParameter.h"
 #include "Tr2HighLevelShader.h"
 
 

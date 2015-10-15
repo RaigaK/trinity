@@ -4,7 +4,7 @@
 
 
 #include "TriRenderStep.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2EffectStateManager.h"
 
 BLUE_DECLARE( TriStepSetStdRndStates );
 

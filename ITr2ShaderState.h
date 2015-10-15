@@ -3,7 +3,7 @@
 #ifndef ITr2ShaderState_h
 #define ITr2ShaderState_h
 
-#include "Tr2EffectDescription.h"
+#include "Shader/Tr2EffectDescription.h"
 
 BLUE_DECLARE_INTERFACE( ITr2ShaderState );
 

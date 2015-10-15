@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "EveStarfield.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "TriRenderBatch.h"
 #include "include/TriMath.h"
 

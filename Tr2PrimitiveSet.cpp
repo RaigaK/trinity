@@ -2,7 +2,7 @@
 #include "Tr2PrimitiveSet.h"
 #include "TriSettingsRegistrar.h"
 #include "TriRenderBatch.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Tr2PerObjectData.h"
 
 struct PerObjectVSData

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "TriStepSetStandardRenderStates.h"
-#include "Tr2EffectStateManager.h"
+#include "Shader/Tr2EffectStateManager.h"
 
 TriStepSetStdRndStates::TriStepSetStdRndStates( IRoot* lockobj ) :
 	m_renderingMode( Tr2EffectStateManager::RM_OPAQUE )

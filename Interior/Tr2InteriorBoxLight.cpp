@@ -13,7 +13,7 @@
 #include "Tr2AtlasTexture.h"
 #include "Tr2KelvinColor.h"
 #include "TriFrustum.h"
-#include "Tr2ShaderMaterial.h"
+#include "Shader/Tr2ShaderMaterial.h"
 #include "Tr2ConstGeometry.h"
 #include "Curves/TriCurveSet.h"
 

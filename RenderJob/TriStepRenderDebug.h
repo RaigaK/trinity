@@ -4,7 +4,7 @@
 
 
 #include "TriRenderStep.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "include/ITr2DebugRenderer.h"
 #include "include/Rect.h"
 

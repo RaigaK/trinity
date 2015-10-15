@@ -23,7 +23,7 @@
 #include "Tr2BindingVector3.h"
 #include "Eve/EveUpdateContext.h"
 #include "Eve/Animation/EveAnimationSequencer.h"
-#include "Tr2Effect.h"
+#include "Shader/Tr2Effect.h"
 #include "Utils/EveCustomMask.h"
 #include "TriSettingsRegistrar.h"
 #include "Tr2PointLight.h"
