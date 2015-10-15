@@ -47,7 +47,7 @@ void Tr2GpuSharedEmitter::UpdateHash()
 
 void Tr2GpuSharedEmitter::GenerateID()
 {
-	m_id = m_paramsHash & ~( 1 << ( sizeof( uintptr_t ) * 8 - 1 ) );
+	m_id = m_paramsHash & ~( 1 << ( sizeof( uintptr_t ) - 1 ) );
 }
 
 void Tr2GpuSharedEmitter::Update( Be::Time time, Tr2GpuParticleSystem& system, const Matrix& parentTransform, const Vector3& originShift )

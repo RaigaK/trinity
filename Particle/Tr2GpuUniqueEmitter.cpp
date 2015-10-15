@@ -11,7 +11,7 @@ Tr2GpuUniqueEmitter::Tr2GpuUniqueEmitter( IRoot* lockObj )
 	:Tr2GpuSharedEmitter( lockObj ),
 	m_attractorPosition( 0.f, 0.f, 0.f )
 {
-	m_id = uintptr_t( this ) | ( 1 << ( sizeof( uintptr_t ) * 8 - 1 ) );
+	m_id = uintptr_t( this ) | ( 1 << ( sizeof( uintptr_t ) - 1 ) );
 }
 
 void Tr2GpuUniqueEmitter::GenerateID()
