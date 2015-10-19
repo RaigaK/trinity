@@ -71,7 +71,7 @@ void EveImpactOverlay::UpdateSyncronous( EveUpdateContext& updateContext, EveSpa
 	header.v[3] = Vector4( 0.f, 0.f, 0.f, 0.f );
 
 	// update block data
-	m_dataTextureBlockID = dataTextureMgr->RequestBlockData( &header.v[0], m_impactTexelData.size(), m_impactTexelData.empty() ? nullptr : &m_impactTexelData[0].v[0] );
+	m_dataTextureBlockID = dataTextureMgr->RequestBlockData( &header.v[0], (uint32_t)m_impactTexelData.size(), m_impactTexelData.empty() ? nullptr : &m_impactTexelData[0].v[0] );
 }
 
 // --------------------------------------------------------------------------------

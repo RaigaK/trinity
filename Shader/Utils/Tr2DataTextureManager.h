@@ -47,7 +47,7 @@ public:
 	void Update( EveUpdateContext& updateContext );
 
 	// access block IDs
-	int32_t RequestBlockData( const Vector4* headerData, size_t blockLength, const Vector4* blockData );
+	int32_t RequestBlockData( const Vector4* headerData, uint32_t blockLength, const Vector4* blockData );
 
 	// get texture offset
 	int32_t GetTextureOffset( int32_t blockID ) const;

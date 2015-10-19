@@ -140,7 +140,7 @@ void Tr2DataTextureManager::Update( EveUpdateContext& updateContext )
 
 	// keep track of some numbers, just for debugging
 	m_maxTextureCount = pixelOffset;
-	m_maxBlockCount = m_blockData.size();
+	m_maxBlockCount = (uint32_t)m_blockData.size();
 
 	// ok, the texture and the per-block offsets are done, so we don't need the data blocks anymore!
 	m_blockData.clear();
@@ -156,7 +156,7 @@ void Tr2DataTextureManager::Update( EveUpdateContext& updateContext )
 //   blockLength - the number of columns in the data texture (NOT including the header!)
 //   blockData - the block data, column-wise (column0[n], column1[n], column2[n], ...)
 // --------------------------------------------------------------------------------
-int32_t Tr2DataTextureManager::RequestBlockData( const Vector4* headerData, size_t blockLength, const Vector4* blockData )
+int32_t Tr2DataTextureManager::RequestBlockData( const Vector4* headerData, uint32_t blockLength, const Vector4* blockData )
 {
 	// set the data
 	BlockData bd;
