@@ -21,7 +21,7 @@ public:
 	struct BlockData
 	{
 		std::vector<Vector4> header;
-		size_t blockLength;
+		uint32_t blockLength;
 		std::vector<Vector4> data;
 	};
 
@@ -67,8 +67,8 @@ private:
 	std::map<int32_t, int32_t> m_dataTextureOffsets;
 
 	// debug
-	size_t m_maxBlockCount;
-	size_t m_maxTextureCount;
+	uint32_t m_maxBlockCount;
+	uint32_t m_maxTextureCount;
 };
 
 TYPEDEF_BLUECLASS( Tr2DataTextureManager );
