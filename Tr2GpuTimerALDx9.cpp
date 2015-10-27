@@ -15,6 +15,10 @@ Tr2GpuTimerAL::Tr2GpuTimerAL()
 ALResult Tr2GpuTimerAL::Create( Tr2PrimaryRenderContextAL& renderContext )
 {
 	Destroy();
+	if( !renderContext.IsValid() )
+	{
+		return E_INVALIDCALL;
+	}
 
 	CComPtr<IDirect3DQuery9> beginQuery;
 	CComPtr<IDirect3DQuery9> endQuery;
