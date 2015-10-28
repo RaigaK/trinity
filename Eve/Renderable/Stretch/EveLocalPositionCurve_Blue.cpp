@@ -114,6 +114,8 @@ const Be::ClassInfo* EveLocalPositionCurve::ExposeToBlue()
 			Be::READWRITE | Be::PERSIST
 		)
 
+		MAP_ATTRIBUTE( "impactSize", m_impactSize, "Holds the size of the impact effect", Be::READWRITE )
+
 		MAP_METHOD_AND_WRAP_OPTIONAL_ARGS
 		(
 			"__init__",

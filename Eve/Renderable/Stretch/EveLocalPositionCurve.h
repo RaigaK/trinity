@@ -55,6 +55,9 @@ public:
 
 	Vector3d* InterpolatedPosition( Vector3d* out, Be::Time time );
 
+	// setters
+	void SetBehavior( LocalPositionBehavior behavior );
+
 private:
 	IEveSpaceObject2Ptr m_parentObject;
 	ITriVectorFunctionPtr m_parentPositionCurve;
@@ -69,13 +72,13 @@ private:
 
 	// impact data
 	int m_impactEffectIndex;
+	float m_impactSize;
 
 	Vector3* CalculateNearestBoundingPoint( Vector3* in, Be::Time t );
 	Vector3* GetCenterBoundingSphere( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocator( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocatorShieldImpact( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocatorArmorImpact( Vector3* in, Be::Time t );
-	void SetBehavior( LocalPositionBehavior behavior );
 };
 
 TYPEDEF_BLUECLASS(EveLocalPositionCurve);

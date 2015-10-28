@@ -29,6 +29,8 @@ const Be::ClassInfo* EveImpactOverlay::ExposeToBlue()
 		MAP_ATTRIBUTE( "armorImpactDataNextIdx", m_armorImpactDataNextIdx, "", Be::READ )
 
 		MAP_ATTRIBUTE( "armorDamageShader", m_armorDamageShader, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "armorImpactSizeFactor", m_armorImpactSizeFactor, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "armorImpactSizeMax", m_armorImpactSizeMax, "", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "curveSets", m_curveSets, "", Be::READWRITE | Be::PERSIST )
 

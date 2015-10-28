@@ -285,7 +285,7 @@ public:
 	int CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime );
 	bool UpdateShieldImpact( const Vector3& direction, int shieldImpactIndex );
 	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
-	int CreateArmorImpact( int damageLocatorIndex );
+	int CreateArmorImpact( int damageLocatorIndex, float size );
 
 	uint32_t GetPerObjectDataSize( Tr2RenderContextEnum::ShaderType shaderType ) const;
 	void UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shaderType, uint32_t size, void* );

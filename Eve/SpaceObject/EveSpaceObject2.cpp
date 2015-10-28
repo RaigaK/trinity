@@ -2091,11 +2091,11 @@ bool EveSpaceObject2::GetShieldImpactPosition( Vector3& out, int shieldImpactInd
 // Description:
 //   Create an armor impact effect on this object
 // -----------------------------------------------------------------------------
-int EveSpaceObject2::CreateArmorImpact( int damageLocatorIndex )
+int EveSpaceObject2::CreateArmorImpact( int damageLocatorIndex, float size )
 {
 	if( m_impactOverlay )
 	{
-		return m_impactOverlay->CreateArmorImpact( damageLocatorIndex );
+		return m_impactOverlay->CreateArmorImpact( damageLocatorIndex, size );
 	}
 	return -1;
 }

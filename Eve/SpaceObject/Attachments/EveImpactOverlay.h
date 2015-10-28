@@ -55,7 +55,7 @@ public:
 	struct ArmorImpactData
 	{
 		int damageLocatorIndex;
-		float timeLeft;
+		float size;
 	};
 
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ public:
 	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
 
 	// control armor impacts
-	int CreateArmorImpact( int damageLocatorIndex );
+	int CreateArmorImpact( int damageLocatorIndex, float size );
 
 	// helper for checking activity
 	bool HasActivity() const;
@@ -104,6 +104,7 @@ private:
 	// parent object
 	Vector3 m_shieldEllipsoidRadii;
 	Vector3 m_shieldEllipsoidCenter;
+	Vector4 m_parentBoundingSphere;
 
 	// a map of all shield impacts going on at the moment
 	int m_shieldImpactDataNextIdx;
@@ -123,8 +124,10 @@ private:
 	// what to render
 	Tr2MeshBasePtr m_mesh;
 
-	// armor damage shader
+	// armor damage
 	Tr2EffectPtr m_armorDamageShader;
+	float m_armorImpactSizeFactor;
+	float m_armorImpactSizeMax;
 
 	// animate
 	PTriCurveSetVector m_curveSets;

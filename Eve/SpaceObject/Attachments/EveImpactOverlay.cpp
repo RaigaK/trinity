@@ -21,10 +21,13 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	m_maxShieldImpacts( 128 ),
 	m_shieldEllipsoidCenter( 0.f, 0.f, 0.f ),
 	m_shieldEllipsoidRadii( 1.f, 1.f, 1.f ),
+	m_parentBoundingSphere( 0.f, 0.f, 0.f, -1.f ),
 	m_shieldImpactDataNextIdx( 1 ),
 	m_armorImpactDataNextIdx( 1 ),
 	m_dataTextureBlockID( -1 ),
-	m_dataTextureOffset( -1 )
+	m_dataTextureOffset( -1 ),
+	m_armorImpactSizeFactor( 1.f / 77.5f ),
+	m_armorImpactSizeMax( 10.f )
 {
 }
 
@@ -105,6 +108,8 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 
 	// get parent's bounding ellipsoid shape
 	parent->GetShapeEllipsoid( m_shieldEllipsoidCenter, m_shieldEllipsoidRadii );
+	// get parent's radius
+	parent->GetBoundingSphere( m_parentBoundingSphere );
 
 	// need the inverse world matrix
 	Matrix parentWorldTransform, parentInverseWorldTransform;
@@ -146,6 +151,8 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		ArmorImpactData* armorData = &aidit->second;
 		DataRow* texelData = &m_impactTexelData[i];
 
+		// size of impact
+		float size = armorData->size * std::min( m_armorImpactSizeFactor * m_parentBoundingSphere.w, m_armorImpactSizeMax );
 		// get position from damage locator
 		Vector3 tgtPosWS( 0.f, 0.f, 0.f );
 		parent->GetDamageLocatorPosition( &tgtPosWS, armorData->damageLocatorIndex );
@@ -153,7 +160,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		Vector3 tgtPosOS;
 		D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
 		texelData->v[2] = Vector4( tgtPosOS, 0.f );
-		texelData->v[3] = Vector4( 0.f, 0.f, 0.f, 0.f );
+		texelData->v[3] = Vector4( size, 0.f, 0.f, 0.f );
 
 		++i;
 	}
@@ -290,12 +297,12 @@ bool EveImpactOverlay::GetShieldImpactPosition( Vector3& out, int shieldImpactIn
 // Description:
 //   Use this method to add a new armor impact
 // --------------------------------------------------------------------------------
-int EveImpactOverlay::CreateArmorImpact( int damageLocatorIndex )
+int EveImpactOverlay::CreateArmorImpact( int damageLocatorIndex, float size )
 {
 	// fill our struct, but keep it in world space
 	ArmorImpactData aid;
 	aid.damageLocatorIndex = damageLocatorIndex;
-	aid.timeLeft = 0.f;
+	aid.size = size;
 	m_armorImpactData[ m_armorImpactDataNextIdx ] = aid;
 	return m_armorImpactDataNextIdx++;
 }

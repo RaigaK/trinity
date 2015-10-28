@@ -5,12 +5,13 @@
 
 
 EveLocalPositionCurve::EveLocalPositionCurve(IRoot* lockobj) :
-	m_value( 0.0f, 0.0f, 0.0f ),
-	m_boundingBoxSize( 0.0f, 0.0f, 0.0f ),
+	m_value( 0.f, 0.f, 0.f ),
+	m_boundingBoxSize( 0.f, 0.f, 0.f ),
 	m_damageLocatorIndex( -1 ),
 	m_impactEffectIndex( -1 ),
+	m_impactSize( 1.f ),
 	m_behavior ( POS_NONE ),
-	m_offset( 0.0f )
+	m_offset( 0.f )
 {	
 }
 
@@ -237,7 +238,7 @@ Vector3* EveLocalPositionCurve::GetDamageLocatorArmorImpact( Vector3* in, Be::Ti
 		// create a armor impact on the target object
 		if( m_impactEffectIndex == -1 )
 		{
-			m_impactEffectIndex = spaceObject->CreateArmorImpact( m_damageLocatorIndex );
+			m_impactEffectIndex = spaceObject->CreateArmorImpact( m_damageLocatorIndex, m_impactSize );
 		}
 
 		// now use the pos as output
