@@ -2065,24 +2065,11 @@ int EveSpaceObject2::CreateShieldImpact( int damageLocatorIndex, const Vector3& 
 // Description:
 //   Update the shield effec on this object
 // -----------------------------------------------------------------------------
-bool EveSpaceObject2::UpdateShieldImpact( const Vector3& direction, int shieldImpactIndex )
+bool EveSpaceObject2::UpdateShieldImpact( Vector3& out, const Vector3& direction, int shieldImpactIndex )
 {
 	if( m_impactOverlay )
 	{
-		return m_impactOverlay->UpdateShieldImpact( direction, shieldImpactIndex );
-	}
-	return false;
-}
-
-// -----------------------------------------------------------------------------
-// Description:
-//   Hand out the exact intercept position of a given shield impact
-// -----------------------------------------------------------------------------
-bool EveSpaceObject2::GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const
-{
-	if( m_impactOverlay )
-	{
-		return m_impactOverlay->GetShieldImpactPosition( out, shieldImpactIndex );
+		return m_impactOverlay->UpdateShieldImpact( out, direction, shieldImpactIndex );
 	}
 	return false;
 }

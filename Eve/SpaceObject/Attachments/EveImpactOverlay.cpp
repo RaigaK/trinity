@@ -265,30 +265,19 @@ int EveImpactOverlay::CreateShieldImpact( int damageLocatorIndex, const Vector3&
 // --------------------------------------------------------------------------------
 // Description:
 //   Shield impacts are special, they need constant updating with the direction
-//   to the target
+//   to the target. Also it returns the actual impact position
 // --------------------------------------------------------------------------------
-bool EveImpactOverlay::UpdateShieldImpact( const Vector3& direction, int shieldImpactIndex )
+bool EveImpactOverlay::UpdateShieldImpact( Vector3& out, const Vector3& direction, int shieldImpactIndex )
 {
+	// find the impact in our map
 	auto finder = m_shieldImpactData.find( shieldImpactIndex );
 	if( finder == m_shieldImpactData.end() )
 	{
 		return false;
 	}
+	// put new direction in there
 	D3DXVec3Normalize( &finder->second.direction, &direction );
-	return true;
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   Hand out the intercept position of a given impact
-// --------------------------------------------------------------------------------
-bool EveImpactOverlay::GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const
-{
-	auto finder = m_shieldImpactData.find( shieldImpactIndex );
-	if( finder == m_shieldImpactData.end() )
-	{
-		return false;
-	}
+	// and return the old "intercept" position
 	out = finder->second.interceptPosition;
 	return true;
 }

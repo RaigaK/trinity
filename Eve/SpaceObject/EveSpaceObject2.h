@@ -208,6 +208,9 @@ public:
 	int GetInterestingDamageLocatorIndex( const Vector3 &position ) const;
 	int GetGoodDamageLocatorIndex( const Vector3& position );
 	float GetRadius() const;
+	int CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime );
+	bool UpdateShieldImpact( Vector3& out, const Vector3& direction, int shieldImpactIndex );
+	int CreateArmorImpact( int damageLocatorIndex, float size );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IWorldPosition
@@ -282,10 +285,6 @@ public:
 
 	// access to impacts
 	void SetImpactOverlay( EveImpactOverlayPtr overlay );
-	int CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime );
-	bool UpdateShieldImpact( const Vector3& direction, int shieldImpactIndex );
-	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
-	int CreateArmorImpact( int damageLocatorIndex, float size );
 
 	uint32_t GetPerObjectDataSize( Tr2RenderContextEnum::ShaderType shaderType ) const;
 	void UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shaderType, uint32_t size, void* );

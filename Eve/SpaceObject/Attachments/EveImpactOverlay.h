@@ -81,8 +81,7 @@ public:
 
 	// control shield impacts
 	int CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime );
-	bool UpdateShieldImpact( const Vector3& direction, int shieldImpactIndex );
-	bool GetShieldImpactPosition( Vector3& out, int shieldImpactIndex ) const;
+	bool UpdateShieldImpact( Vector3& out, const Vector3& direction, int shieldImpactIndex );
 
 	// control armor impacts
 	int CreateArmorImpact( int damageLocatorIndex, float size );

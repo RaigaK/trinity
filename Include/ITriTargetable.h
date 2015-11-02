@@ -34,6 +34,9 @@ BLUE_INTERFACE(ITriTargetable): IRoot
 	virtual int GetInterestingDamageLocatorIndex( const Vector3 &position ) const = 0;
 	virtual int GetGoodDamageLocatorIndex( const Vector3& position ) = 0;
 	virtual float GetRadius() const = 0;
+	virtual int CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime ) = 0;
+	virtual bool UpdateShieldImpact( Vector3& out, const Vector3& direction, int shieldImpactIndex ) = 0;
+	virtual int CreateArmorImpact( int damageLocatorIndex, float size ) = 0;
 };
 
 

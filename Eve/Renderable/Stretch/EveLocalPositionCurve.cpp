@@ -151,13 +151,6 @@ Vector3* EveLocalPositionCurve::GetDamageLocatorShieldImpact( Vector3* in, Be::T
 			return in;
 		}
 
-		EveSpaceObject2Ptr spaceObject;
-		if( !m_parentObject->QueryInterface( BlueInterfaceIID<EveSpaceObject2>(), (void**)&spaceObject ) )
-		{
-			CCP_LOGERR( "Parent object is not a EveSpaceObject2. Unable to get valid damage locators." );
-			return in;
-		}
-
 		// need shooter's pos
 		Vector3 parentPos;
 		m_alignPositionCurve->GetValueAt( &parentPos, t );
@@ -175,20 +168,14 @@ Vector3* EveLocalPositionCurve::GetDamageLocatorShieldImpact( Vector3* in, Be::T
 		// create a shield impact on the target object
 		if( m_impactEffectIndex == -1 )
 		{
-			m_impactEffectIndex = spaceObject->CreateShieldImpact( m_damageLocatorIndex, parentPos - locatorPos, 2.f );
+			m_impactEffectIndex = target->CreateShieldImpact( m_damageLocatorIndex, parentPos - locatorPos, 2.f );
 		}
 
-		// update shield impact effect
-		if( m_impactEffectIndex != -1 )
-		{
-			spaceObject->UpdateShieldImpact( parentPos - locatorPos, m_impactEffectIndex );
-		}
-
-		// get the position from that shield impact effect
+		// update shield impact effect and get the position from that shield impact effect
 		if( m_impactEffectIndex != -1 )
 		{
 			Vector3 shieldPos;
-			if( spaceObject->GetShieldImpactPosition( shieldPos, m_impactEffectIndex ) )
+			if( target->UpdateShieldImpact( shieldPos, parentPos - locatorPos, m_impactEffectIndex ) )
 			{
 				in->x = shieldPos.x;
 				in->y = shieldPos.y;
@@ -214,13 +201,6 @@ Vector3* EveLocalPositionCurve::GetDamageLocatorArmorImpact( Vector3* in, Be::Ti
 			return in;
 		}
 
-		EveSpaceObject2Ptr spaceObject;
-		if( !m_parentObject->QueryInterface( BlueInterfaceIID<EveSpaceObject2>(), (void**)&spaceObject ) )
-		{
-			CCP_LOGERR( "Parent object is not a EveSpaceObject2. Unable to get valid damage locators." );
-			return in;
-		}
-
 		// need shooter's pos
 		Vector3 parentPos;
 		m_alignPositionCurve->GetValueAt( &parentPos, t );
@@ -238,7 +218,7 @@ Vector3* EveLocalPositionCurve::GetDamageLocatorArmorImpact( Vector3* in, Be::Ti
 		// create a armor impact on the target object
 		if( m_impactEffectIndex == -1 )
 		{
-			m_impactEffectIndex = spaceObject->CreateArmorImpact( m_damageLocatorIndex, m_impactSize );
+			m_impactEffectIndex = target->CreateArmorImpact( m_damageLocatorIndex, m_impactSize );
 		}
 
 		// now use the pos as output
