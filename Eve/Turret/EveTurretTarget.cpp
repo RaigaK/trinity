@@ -16,11 +16,12 @@
 // --------------------------------------------------------------------------------
 EveTurretTarget::EveTurretTarget( IRoot* lockobj ) :
 	m_locator( -1 ),
+	m_impactLength( -1.f ),
+	m_impactDelay( -1.f ),
 	m_shieldImpactID( -1 ),
 	m_position( 0.f, 0.f, 0.f ),
 	m_positionOld( 0.f, 0.f, 0.f ),
 	m_positionOldInfluence( -1.f ),
-	m_dirToSource( 0.f, 0.f, 0.f ),
 	m_positionMiss( 0.f, 0.f, 0.f ),
 	m_missQueue( "EveTurretTarget::m_missQueue" ),
 	m_lastShotIsMiss( false ),
@@ -106,7 +107,8 @@ void EveTurretTarget::StartFireAtLocator( int l, float delay, float length )
 		// ok, we assume we hit! create an impact
 		if( m_object )
 		{
-//			m_shieldImpactID = m_object->CreateShieldImpact( m_locator, m_dirToSource, length );
+			m_impactLength = length;
+			m_impactDelay = delay;
 		}
 	}
 }
@@ -137,7 +139,7 @@ void EveTurretTarget::Update( float deltaT, const Vector3* source )
 	{
 		// update the position & diretion
 		m_object->GetDamageLocatorPosition( &m_position, m_locator );
-		m_dirToSource = *source - m_position;
+		Vector3 dirToSource( *source - m_position );
 
 		// update the miss position
 		m_object->GetMissPosition( &m_position, source, &m_positionMiss );
@@ -157,10 +159,21 @@ void EveTurretTarget::Update( float deltaT, const Vector3* source )
 		}
 
 
+		// what about delayed impact creation?
+		if( m_impactDelay > 0.f )
+		{
+			m_impactDelay -= deltaT;
+			if( m_impactDelay < 0.f )
+			{
+				m_shieldImpactID = m_object->CreateShieldImpact( m_locator, dirToSource, m_impactLength );
+				m_impactDelay = -1.f;
+			}
+		}
+
 		// update the impacts
 		if( m_shieldImpactID != -1 )
 		{
-			m_object->UpdateShieldImpact( m_position, m_dirToSource, m_shieldImpactID );
+			m_object->UpdateShieldImpact( m_position, dirToSource, m_shieldImpactID );
 		}
 	}
 

@@ -14,6 +14,10 @@
 #include "Shader/Utils/Tr2DataTextureManager.h"
 #include "Eve/EveUpdateContext.h"
 
+// settings
+extern bool g_eveSpaceObjectImpactEffectEnabled;
+
+
 EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	PARENTLOCK( m_curveSets ),
 	m_display( true ),
@@ -209,6 +213,13 @@ void EveImpactOverlay::GetBatches( ITriRenderBatchAccumulator* accumulator, TriB
 // --------------------------------------------------------------------------------
 bool EveImpactOverlay::HasActivity() const
 {
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return false;
+	}
+
+	// depends on lists
 	return !m_armorImpactData.empty() || !m_shieldImpactData.empty() || ( m_overallShieldImpact > 0.f );
 }
 
@@ -254,6 +265,12 @@ void EveImpactOverlay::StopAllCurveSets()
 // --------------------------------------------------------------------------------
 int EveImpactOverlay::CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime )
 {
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return -1;
+	}
+
 	// fill our struct, but keep it in world space
 	ShieldImpactData sid;
 	sid.direction = direction;
@@ -291,6 +308,12 @@ bool EveImpactOverlay::UpdateShieldImpact( Vector3& out, const Vector3& directio
 // --------------------------------------------------------------------------------
 int EveImpactOverlay::CreateArmorImpact( int damageLocatorIndex, float size )
 {
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return -1;
+	}
+
 	// fill our struct, but keep it in world space
 	ArmorImpactData aid;
 	aid.damageLocatorIndex = damageLocatorIndex;
@@ -305,6 +328,12 @@ int EveImpactOverlay::CreateArmorImpact( int damageLocatorIndex, float size )
 // --------------------------------------------------------------------------------
 Tr2EffectPtr EveImpactOverlay::GetArmorDamageShader( TriBatchType batchType ) const
 {
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return nullptr;
+	}
+
 	// no activity?
 	if( !HasActivity() )
 	{

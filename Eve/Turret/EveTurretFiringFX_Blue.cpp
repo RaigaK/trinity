@@ -20,7 +20,8 @@ const Be::ClassInfo* EveTurretFiringFX::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "useMuzzleTransform", m_useMuzzleTransform, "Set this and the stretch effect aims from data in the muzzle transform.", Be::READWRITE | Be::PERSIST )
 
-		MAP_ATTRIBUTE( "isFiring", m_isFiring, "IS this effect rendering (because it is firing)", Be::READ )
+		MAP_ATTRIBUTE( "isFiring", m_isFiring, "Is this effect rendering (because it is firing)", Be::READ )
+		MAP_ATTRIBUTE( "firingDuration", m_firingDuration, "How long is the firing animation", Be::READ )
 
 		MAP_ATTRIBUTE( "isLoopFiring", m_isLoopFiring, "some turrets (like miners or salvagers) loop the firing effect endlessly", Be::READWRITE | Be::PERSIST )
 

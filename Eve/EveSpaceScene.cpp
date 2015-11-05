@@ -76,6 +76,10 @@ TRI_REGISTER_SETTING( "eveSpaceSceneMediumUpdateRate", g_eveSpaceSceneMediumUpda
 float g_eveSpaceSceneGammaBrightness = 1.f;
 TRI_REGISTER_SETTING( "eveSpaceSceneGammaBrightness", g_eveSpaceSceneGammaBrightness );
 
+// enabled impact effects
+bool g_eveSpaceObjectImpactEffectEnabled = false;
+TRI_REGISTER_SETTING( "eveSpaceObjectImpactEffectEnabled", g_eveSpaceObjectImpactEffectEnabled );
+
 
 static const char* f_writeDepthOpaqueOverridePath = "res:/Graphics/Effect/Managed/Space/SpaceObject/V3/DepthOnlyV3.fx";
 static Tr2EffectPtr f_writeDepthOpaqueOverride = NULL;

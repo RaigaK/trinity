@@ -51,15 +51,14 @@ private:
 	int m_locator;
 
 	// impacts
+	float m_impactDelay;
+	float m_impactLength;
 	int m_shieldImpactID;
 
 	// actual target position and smoothing
 	Vector3 m_position;
 	Vector3 m_positionOld;
 	float m_positionOldInfluence;
-
-	// direction to source
-	Vector3 m_dirToSource;
 
 	// hit/miss related data
 	Vector3 m_positionMiss;
