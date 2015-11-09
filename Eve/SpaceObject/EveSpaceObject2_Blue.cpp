@@ -404,7 +404,7 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		MAP_METHOD_AND_WRAP( "GetDamageLocatorCount", GetDamageLocatorCount, "Get number of damage locators on this ship" )
 		MAP_METHOD_AND_WRAP( "GetDamageLocator", GetDamageLocator, "Get the position of indexed damage locator, (0,0,0) is returned for indices out of range." )
 		MAP_METHOD_AND_WRAP( "GetTransformedDamageLocator", GetTransformedDamageLocator, "Get the position of indexed damage locator, (0,0,0) is returned for indices out of range." )
-		MAP_METHOD_AND_WRAP( "SetImpactConfiguration", SetImpactConfiguration, "Set the impact configuration." )
+		MAP_METHOD_AND_WRAP( "SetImpactDamageState", SetImpactDamageState, "Set the damage states of shield and armor and hull." )
 		MAP_METHOD_AND_WRAP( "SetImpactAnimation", SetImpactAnimation, "Set the impact's animations." )
 
 		// Temporarily need this to get camera LookAt working. Shouldn't be here for too long <Logi, dec 2012>

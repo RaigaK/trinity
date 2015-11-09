@@ -91,8 +91,8 @@ public:
 	void PlayCurveSet( const std::string& name );
 	void StopCurveSet( const std::string& name );
 
-	// set the configuration
-	void SetConfiguration( ImpactConfiguration cfg );
+	// set the damages
+	void SetDamageState( float shield, float armor, float hull, bool doCreateArmorImpacts );
 
 	// control impacts
 	int CreateImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime );
@@ -143,6 +143,7 @@ private:
 	Tr2EffectPtr m_armorDamageShader;
 	float m_armorImpactSizeFactor;
 	float m_armorImpactSizeMax;
+	size_t m_armorImpactGoalCount;
 
 	// animate
 	PTriCurveSetVector m_curveSets;

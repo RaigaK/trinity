@@ -7,6 +7,7 @@
 #include "StdAfx.h"
 #include "EveImpactOverlay.h"
 
+#include "include/TriMath.h"
 #include "Curves/TriCurveSet.h"
 #include "Utilities/BoundingSphere.h"
 #include "Tr2MeshBase.h"
@@ -16,6 +17,9 @@
 
 // settings
 extern bool g_eveSpaceObjectImpactEffectEnabled;
+
+// consts
+static const float IMPACT_ARMOR_HOLE_TO_DAMAGE_RATIO = 15.f;
 
 
 EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
@@ -31,7 +35,8 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	m_dataTextureBlockID( -1 ),
 	m_dataTextureOffset( -1 ),
 	m_armorImpactSizeFactor( 1.f / 77.5f ),
-	m_armorImpactSizeMax( 10.f )
+	m_armorImpactSizeMax( 10.f ),
+	m_armorImpactGoalCount( 0 )
 {
 }
 
@@ -90,7 +95,7 @@ void EveImpactOverlay::UpdateSyncronous( EveUpdateContext& updateContext, EveSpa
 // --------------------------------------------------------------------------------
 void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSpaceObject2* parent )
 {
-	// first take out the dead ones
+	// first always reduce shield impacts
 	for( auto sidit = m_shieldImpactData.begin(); sidit != m_shieldImpactData.end(); )
 	{
 		sidit->second.timeLeft -= updateContext.GetDeltaT();
@@ -101,6 +106,23 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		else
 		{
 			++sidit;
+		}
+	}
+	// then check if the impact count goal is less than what we have
+	if( m_armorImpactGoalCount < m_armorImpactData.size() )
+	{
+		// ok, we want to have less impacts, so close the holes
+		for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); )
+		{
+			aidit->second.size -= 0.1f * updateContext.GetDeltaT();
+			if( aidit->second.size <= 0.f )
+			{
+				m_armorImpactData.erase(aidit++);
+			}
+			else
+			{
+				++aidit;
+			}
 		}
 	}
 
@@ -265,12 +287,36 @@ void EveImpactOverlay::StopCurveSet( const std::string& name )
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Sets what effects are going to be triggered. Should only change future
-//   impacts
+//   Sets how much percentage is left of your defensives and then calculates
+//   the internal configuration
 // --------------------------------------------------------------------------------
-void EveImpactOverlay::SetConfiguration( ImpactConfiguration cfg )
+void EveImpactOverlay::SetDamageState( float shield, float armor, float hull, bool doCreateArmorImpacts )
 {
-	m_configuration = cfg;
+	// what's left?
+	if( shield > 0.05 )
+	{
+		m_configuration = IMPACT_SHIELD;
+	}
+	else if( armor > 0.05 )
+	{
+		m_configuration = IMPACT_ARMOR;
+	}
+	else if( hull > 0.0 )
+	{
+		m_configuration = IMPACT_HULL;
+	}
+
+	// always calculate the expected/desired number of impact effects
+	m_armorImpactGoalCount = (size_t)( IMPACT_ARMOR_HOLE_TO_DAMAGE_RATIO * Clamp( 1.f - armor, 0.f, 1.f ) );
+
+	// do we forcefully have to create the amror impact holes?
+	if( doCreateArmorImpacts )
+	{
+		for( int i = 0; i < (int)m_armorImpactGoalCount; ++i )
+		{
+			CreateArmorImpact( i, 1.f );
+		}
+	}
 }
 
 // --------------------------------------------------------------------------------

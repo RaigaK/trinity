@@ -9,30 +9,6 @@
 
 BLUE_DEFINE( EveImpactOverlay );
 
-Be::VarChooser EveImpactCfgChooser[] =
-{
-	{
-		"NONE", BeCast( EveImpactOverlay::IMPACT_INVALID ), "Invalid."
-	},
-	{
-		"SHIELD", BeCast( EveImpactOverlay::IMPACT_SHIELD ), "Impact goes into shields."
-	},
-	{
-		"ARMOR", BeCast( EveImpactOverlay::IMPACT_ARMOR ), "Impact goes into armor."
-	},
-	{
-		"HULL", BeCast( EveImpactOverlay::IMPACT_HULL ), "Impact goes into hull."
-	},
-	{ 0 }
-};
-
-BLUE_REGISTER_ENUM_EX( 
-    "EveImpactCfg", 
-	EveImpactOverlay::ImpactConfiguration, 
-    EveImpactCfgChooser,
-    ENUM_REG_ENUM_OBJECT_ON_MODULE
-);
-
 const Be::ClassInfo* EveImpactOverlay::ExposeToBlue()
 {
     EXPOSURE_BEGIN( EveImpactOverlay, "" )
@@ -40,8 +16,9 @@ const Be::ClassInfo* EveImpactOverlay::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST	)
 		MAP_ATTRIBUTE( "display", m_display, "", Be::READWRITE )
-		MAP_ATTRIBUTE( "configuration", m_configuration, "Impact goes into what?", Be::READ | Be::ENUM )
+		MAP_ATTRIBUTE( "configuration", m_configuration, "Impact goes into what?", Be::READ )
 		MAP_ATTRIBUTE( "impactDataNextIdx", m_impactDataNextIdx, "", Be::READ )
+		MAP_ATTRIBUTE( "armorImpactGoalCount", m_armorImpactGoalCount, "", Be::READ )
 
 		MAP_ATTRIBUTE( "mesh", m_mesh, "", Be::READWRITE | Be::PERSIST )
 

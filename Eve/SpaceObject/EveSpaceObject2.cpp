@@ -2050,13 +2050,13 @@ void EveSpaceObject2::SetImpactOverlay( EveImpactOverlayPtr overlay )
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Set the impact overlay configuration: shields up? Armor intact? etc.
+//   Set the impact damage state: how many percent are gone?
 // --------------------------------------------------------------------------------
-void EveSpaceObject2::SetImpactConfiguration( EveImpactOverlay::ImpactConfiguration cfg )
+void EveSpaceObject2::SetImpactDamageState( float shield, float armor, float hull, bool doCreateArmorImpacts )
 {
 	if( m_impactOverlay )
 	{
-		m_impactOverlay->SetConfiguration( cfg );
+		m_impactOverlay->SetDamageState( shield, armor, hull, doCreateArmorImpacts );
 	}
 }
 

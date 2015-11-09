@@ -284,7 +284,7 @@ public:
 
 	// access to impacts
 	void SetImpactOverlay( EveImpactOverlayPtr overlay );
-	void SetImpactConfiguration( EveImpactOverlay::ImpactConfiguration cfg );
+	void SetImpactDamageState( float shield, float armor, float hull, bool doCreateArmorImpacts );
 	void SetImpactAnimation( const std::string& name, bool enable );
 
 	uint32_t GetPerObjectDataSize( Tr2RenderContextEnum::ShaderType shaderType ) const;
