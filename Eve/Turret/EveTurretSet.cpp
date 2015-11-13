@@ -173,7 +173,7 @@ bool EveTurretSet::OnModified( Be::Var* value )
 		// attached firing effect has changed -> relink!
 		InitializeFiringEffect();
 	}
-	else if( IsMatch( value, m_impactEnabled ) )
+	else if( IsMatch( value, m_laserMissBehaviour ) || IsMatch( value, m_projectileMissBehaviour ) || IsMatch( value, m_impactEnabled ) )
 	{
 		m_target->SetBehaviour( m_laserMissBehaviour, m_projectileMissBehaviour, m_impactEnabled );
 	}

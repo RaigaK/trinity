@@ -368,7 +368,7 @@ int EveImpactOverlay::CreateImpact( int damageLocatorIndex, const Vector3& direc
 	case IMPACT_SHIELD:
 		return CreateShieldImpact( damageLocatorIndex, direction, lifeTime );
 	case IMPACT_ARMOR:
-		return CreateArmorImpact( damageLocatorIndex, 1.f );
+		return CreateArmorImpact( damageLocatorIndex, size );
 	case IMPACT_HULL:
 		// todo
 		return -1;

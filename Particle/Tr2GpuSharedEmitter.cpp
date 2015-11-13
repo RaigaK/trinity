@@ -152,7 +152,6 @@ float Tr2GpuSharedEmitter::SpawnParticles(
 	m_emitter.position = positionEnd;
 
 	float total = carryOverCount + deltaTime * m_rate;
-	carryOverCount = total - std::floor( total );
 
 	Vector3 move = m_emitter.position - positionStart;
 	float moveLength = XMVectorGetX( XMVector3Length( move ) );
@@ -163,9 +162,10 @@ float Tr2GpuSharedEmitter::SpawnParticles(
 
 	if( m_emissionDensity > 0 )
 	{
-		Vector3 move = m_emitter.position - positionStart;
 		total += std::min( m_maxDensity, moveLength * m_emissionDensity );
 	}
+
+	carryOverCount = total - std::floor( total );
 	m_emitter.count = int( total );
 
 	if( m_emitter.count )
