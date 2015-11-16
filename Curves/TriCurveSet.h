@@ -34,7 +34,7 @@ public:
 
 	void PlayFrom( double time );
 
-	bool IsPlaying();
+	bool IsPlaying() const;
 
 	// access the name
 	const std::string& GetName() const					{	return m_name;				}

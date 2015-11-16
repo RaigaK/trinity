@@ -220,7 +220,7 @@ float TriCurveSet::GetMaxCurveDuration() const
 	return maxDuration;
 }
 
-bool TriCurveSet::IsPlaying()
+bool TriCurveSet::IsPlaying() const
 {
 	return m_isPlaying;
 }

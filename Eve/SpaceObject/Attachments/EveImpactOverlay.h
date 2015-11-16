@@ -13,6 +13,7 @@
 #include "ITr2GeometryProvider.h"
 #include "Resources/Tr2LodResource.h"
 
+BLUE_DECLARE( Tr2ScalarFader );
 BLUE_DECLARE( TriFrustum );
 BLUE_DECLARE( Tr2MeshBase );
 BLUE_DECLARE( EveUpdateContext );
@@ -21,6 +22,7 @@ BLUE_DECLARE( Tr2Effect );
 BLUE_DECLARE( Tr2GpuUniqueEmitter );
 BLUE_DECLARE( TriCurveSet );
 BLUE_DECLARE_VECTOR( TriCurveSet );
+
 
 BLUE_CLASS( EveImpactOverlay ) :
 	public IInitialize
@@ -91,8 +93,7 @@ public:
 	ImpactConfiguration GetImpactConfiguration() const { return m_configuration; };
 
 	// control animation
-	void PlayCurveSet( const std::string& name );
-	void StopCurveSet( const std::string& name );
+	void ToggleEffect( const std::string& name, bool on );
 
 	// set the damages
 	void SetDamageState( float shield, float armor, float hull, bool doCreateArmorImpacts );
@@ -102,7 +103,9 @@ public:
 	bool UpdateImpact( Vector3& out, const Vector3& direction, int impactIndex );
 
 	// helper for checking activity
-	bool HasActivity() const;
+	bool HasGeneralActivity() const;
+	bool HasShieldActivity() const;
+	bool HasArmorActivity() const;
 
 private:
 	// helper functions to create the different types of impacts
@@ -125,11 +128,6 @@ private:
 	int32_t m_dataTextureBlockID;
 	int32_t m_dataTextureOffset;
 
-	// parent object
-	Vector3 m_shieldEllipsoidRadii;
-	Vector3 m_shieldEllipsoidCenter;
-	Vector4 m_parentBoundingSphere;
-
 	// a map of all impacts going on at the moment
 	std::map<int, ShieldImpactData> m_shieldImpactData;
 	std::map<int, ArmorImpactData> m_armorImpactData;
@@ -146,8 +144,11 @@ private:
 	size_t m_armorImpactGoalCount;
 	Tr2GpuUniqueEmitterPtr m_armorImpactEmitter;
 
-	// animate
-	PTriCurveSetVector m_curveSets;
+	// extenders
+	Tr2ScalarFaderPtr m_shieldHardening;
+	Tr2ScalarFaderPtr m_shieldBoosting;
+	Tr2ScalarFaderPtr m_armorRepairing;
+	Tr2ScalarFaderPtr m_armorBoosting;
 };
 
 TYPEDEF_BLUECLASS( EveImpactOverlay );

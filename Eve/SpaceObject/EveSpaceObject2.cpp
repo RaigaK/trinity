@@ -2116,14 +2116,7 @@ void EveSpaceObject2::SetImpactAnimation( const std::string& name, bool enable )
 {
 	if( m_impactOverlay )
 	{
-		if( enable )
-		{
-			m_impactOverlay->PlayCurveSet( name );
-		}
-		else
-		{
-			m_impactOverlay->StopCurveSet( name );
-		}
+		m_impactOverlay->ToggleEffect( name, enable );
 	}
 }
 

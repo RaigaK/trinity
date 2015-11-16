@@ -5,6 +5,7 @@
     <Filter Include="Source Files"/>
     <Filter Include="Source Files\Apex"/>
     <Filter Include="Source Files\Curves"/>
+    <Filter Include="Source Files\Curves\Fader"/>
     <Filter Include="Source Files\Eve"/>
     <Filter Include="Source Files\Eve\Animation"/>
     <Filter Include="Source Files\Eve\Renderable"/>
@@ -584,6 +585,9 @@
     </ClInclude>
     <ClInclude Include="Curves\TriVectorScaler.h">
       <Filter>Source Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Curves\Fader\Tr2ScalarFader.h">
+      <Filter>Source Files\Curves\Fader</Filter>
     </ClInclude>
     <ClInclude Include="Eve\EveCamera.h">
       <Filter>Source Files\Eve</Filter>
@@ -2294,6 +2298,12 @@
     </ClCompile>
     <ClCompile Include="Curves\TriVectorScaler_Blue.cpp">
       <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Fader\Tr2ScalarFader.cpp">
+      <Filter>Source Files\Curves\Fader</Filter>
+    </ClCompile>
+    <ClCompile Include="Curves\Fader\Tr2ScalarFader_Blue.cpp">
+      <Filter>Source Files\Curves\Fader</Filter>
     </ClCompile>
     <ClCompile Include="Eve\EveCamera.cpp">
       <Filter>Source Files\Eve</Filter>

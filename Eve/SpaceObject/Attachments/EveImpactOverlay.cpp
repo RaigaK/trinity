@@ -9,6 +9,7 @@
 
 #include "include/TriMath.h"
 #include "Curves/TriCurveSet.h"
+#include "Curves/Fader/Tr2ScalarFader.h"
 #include "Utilities/BoundingSphere.h"
 #include "Tr2MeshBase.h"
 #include "Shader/Utils/Tr2DataTextureManager.h"
@@ -24,14 +25,10 @@ static const float IMPACT_ARMOR_HOLE_TO_DAMAGE_RATIO = 15.f;
 
 
 EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
-	PARENTLOCK( m_curveSets ),
 	m_display( true ),
 	m_configuration( IMPACT_INVALID ),
 	m_overallShieldImpact( -1.f ),
 	m_maxShieldImpacts( 8 ),
-	m_shieldEllipsoidCenter( 0.f, 0.f, 0.f ),
-	m_shieldEllipsoidRadii( 1.f, 1.f, 1.f ),
-	m_parentBoundingSphere( 0.f, 0.f, 0.f, -1.f ),
 	m_impactDataNextIdx( 1 ),
 	m_dataTextureBlockID( -1 ),
 	m_dataTextureOffset( -1 ),
@@ -40,6 +37,11 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	m_armorImpactGoalCount( 0 ),
 	m_shieldImpactColorFade( 0.f )
 {
+	// create the faders
+	m_armorBoosting.CreateInstance();
+	m_armorRepairing.CreateInstance();
+	m_shieldBoosting.CreateInstance();
+	m_shieldHardening.CreateInstance();
 }
 
 EveImpactOverlay::~EveImpactOverlay()
@@ -62,7 +64,7 @@ bool EveImpactOverlay::Initialize()
 void EveImpactOverlay::UpdateSyncronous( EveUpdateContext& updateContext, EveSpaceObject2* parent )
 {
 	// do we have something to do at all?
-	if( !HasActivity() )
+	if( !HasGeneralActivity() )
 	{
 		m_dataTextureBlockID = -1;
 		return;
@@ -79,35 +81,50 @@ void EveImpactOverlay::UpdateSyncronous( EveUpdateContext& updateContext, EveSpa
 
 		// the block header is the first column in the data texture, set it!
 		DataRow header;
-		header.v[0] = Vector4( float( m_shieldImpactData.size() ), m_overallShieldImpact, m_shieldImpactColorFade, 0.f );
-		header.v[1] = Vector4( 0.f, 0.f, 0.f, 0.f );
-		header.v[2] = Vector4( float( m_armorImpactData.size() ), 0.f, 0.f, 0.f );
-		header.v[3] = Vector4( 0.f, 0.f, 0.f, 0.f );
+		header.v[0] = Vector4( float( m_shieldImpactData.size() ),
+			m_overallShieldImpact,
+			m_shieldImpactColorFade,
+			0.f );
+		header.v[1] = Vector4( m_shieldHardening->GetFaderValue(),
+			m_shieldBoosting->GetFaderValue(),
+			m_shieldHardening->GetKickInValue(),
+			m_shieldBoosting->GetKickInValue() );
+		header.v[2] = Vector4( float( m_armorImpactData.size() ),
+			0.f,
+			0.f,
+			0.f );
+		header.v[3] = Vector4( m_armorRepairing->GetFaderValue(),
+			m_armorBoosting->GetFaderValue(),
+			m_armorRepairing->GetKickInValue(),
+			m_armorBoosting->GetKickInValue() );
 
 		// update block data
 		m_dataTextureBlockID = dataTextureMgr->RequestBlockData( &header.v[0], (uint32_t)m_impactTexelData.size(), m_impactTexelData.empty() ? nullptr : &m_impactTexelData[0].v[0] );
 	}
 
 	// spawn armor impact particles?
-	if( m_armorImpactEmitter )
+	if( updateContext.GetGpuParticleSystem() )
 	{
-		for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); ++aidit )
+		if( m_armorImpactEmitter )
 		{
-			if( aidit->second.requestSpawnDebris )
+			for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); ++aidit )
 			{
-				// where?
-				Vector3 impactPosWS( 0.f, 0.f, 0.f );
-				parent->GetDamageLocatorPosition( &impactPosWS, aidit->second.damageLocatorIndex );
-				m_armorImpactEmitter->SetPosition( &impactPosWS );
-				// facing?
-				Vector3 impactDirWS( 0.f, 1.f, 0.f );
-				parent->GetDamageLocatorDirection( &impactDirWS, aidit->second.damageLocatorIndex );
-				m_armorImpactEmitter->SetDirection( &impactDirWS );
-				// put together particle update info
-				ITr2GenericEmitter::UpdateArguments args( updateContext.GetTime(), updateContext.GetGpuParticleSystem(), Tr2Renderer::GetIdentityTransform(), updateContext.GetOriginShift() );
-				// do the spawn here once!
-				m_armorImpactEmitter->SpawnOnce( args, Vector3( 0.f, 0.f, 0.f ) );
-				aidit->second.requestSpawnDebris = false;
+				if( aidit->second.requestSpawnDebris )
+				{
+					// where?
+					Vector3 impactPosWS( 0.f, 0.f, 0.f );
+					parent->GetDamageLocatorPosition( &impactPosWS, aidit->second.damageLocatorIndex );
+					m_armorImpactEmitter->SetPosition( &impactPosWS );
+					// facing?
+					Vector3 impactDirWS( 0.f, 1.f, 0.f );
+					parent->GetDamageLocatorDirection( &impactDirWS, aidit->second.damageLocatorIndex );
+					m_armorImpactEmitter->SetDirection( &impactDirWS );
+					// put together particle update info
+					ITr2GenericEmitter::UpdateArguments args( updateContext.GetTime(), updateContext.GetGpuParticleSystem(), Tr2Renderer::GetIdentityTransform(), updateContext.GetOriginShift() );
+					// do the spawn here once!
+					m_armorImpactEmitter->SpawnOnce( args, Vector3( 0.f, 0.f, 0.f ) );
+					aidit->second.requestSpawnDebris = false;
+				}
 			}
 		}
 	}
@@ -153,19 +170,21 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		}
 	}
 
+
+	// update the faders
+	m_armorBoosting->Update( updateContext );
+	m_armorRepairing->Update( updateContext );
+	m_shieldBoosting->Update( updateContext );
+	m_shieldHardening->Update( updateContext );
+
 	// resize the texture data array based on both shield and armor impact
 	m_impactTexelData.resize( std::max( m_shieldImpactData.size(), m_armorImpactData.size() ) );
 
 	// no activity?
-	if( !HasActivity() )
+	if( !HasGeneralActivity() )
 	{
 		return;
 	}
-
-	// get parent's bounding ellipsoid shape
-	parent->GetShapeEllipsoid( m_shieldEllipsoidCenter, m_shieldEllipsoidRadii );
-	// get parent's radius
-	parent->GetBoundingSphere( m_parentBoundingSphere );
 
 	// need the inverse world matrix
 	Matrix parentWorldTransform, parentInverseWorldTransform;
@@ -174,58 +193,66 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 	{
 		parentInverseWorldTransform = parentWorldTransform;
 	}
-	
-	size_t i = 0;
-	for( auto sidit = m_shieldImpactData.begin(); sidit != m_shieldImpactData.end(); ++sidit )
-	{
-		ShieldImpactData* shieldData = &sidit->second;
-		DataRow* texelData = &m_impactTexelData[i];
 
-		// get worldpos of damagelocator from parent
-		Vector3 tgtPosWS( 0.f, 0.f, 0.f );
-		parent->GetDamageLocatorPosition( &tgtPosWS, shieldData->damageLocatorIndex );
-		// convert position and direction into object space
-		Vector3 tgtPosOS, dirOS;
-		D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
-		D3DXVec3TransformNormal( &dirOS, &shieldData->direction, &parentInverseWorldTransform );
-		// intersections
-		Vector3 p( 0.f, 0.f, 0.f );
-		IntersectEllipsoidRay( p, m_shieldEllipsoidCenter, m_shieldEllipsoidRadii, tgtPosOS, dirOS );
-		// "encode" it in texels
-		texelData->v[0] = Vector4( p, shieldData->timeLeft );
-		texelData->v[1] = Vector4( 0.f, 0.f, 0.f, shieldData->lifeTime );
-		// also need this intercept position in WS
-		D3DXVec3TransformCoord( &shieldData->interceptPosition, &p, &parentWorldTransform );
+	if( !m_shieldImpactData.empty() )
+	{
+		// get parent's bounding ellipsoid shape
+		Vector3 shieldEllipsoidRadii( 1.f, 1.f, 1.f ), shieldEllipsoidCenter( 0.f, 0., 0.f );
+		parent->GetShapeEllipsoid( shieldEllipsoidCenter, shieldEllipsoidRadii );
+
+		// shield
+		size_t i = 0;
+		for( auto sidit = m_shieldImpactData.begin(); sidit != m_shieldImpactData.end(); ++sidit )
+		{
+			ShieldImpactData* shieldData = &sidit->second;
+			DataRow* texelData = &m_impactTexelData[i];
+
+			// get worldpos of damagelocator from parent
+			Vector3 tgtPosWS( 0.f, 0.f, 0.f );
+			parent->GetDamageLocatorPosition( &tgtPosWS, shieldData->damageLocatorIndex );
+			// convert position and direction into object space
+			Vector3 tgtPosOS, dirOS;
+			D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
+			D3DXVec3TransformNormal( &dirOS, &shieldData->direction, &parentInverseWorldTransform );
+			// intersections
+			Vector3 p( 0.f, 0.f, 0.f );
+			IntersectEllipsoidRay( p, shieldEllipsoidCenter, shieldEllipsoidRadii, tgtPosOS, dirOS );
+			// "encode" it in texels
+			texelData->v[0] = Vector4( p, shieldData->timeLeft );
+			texelData->v[1] = Vector4( 0.f, 0.f, 0.f, shieldData->lifeTime );
+			// also need this intercept position in WS
+			D3DXVec3TransformCoord( &shieldData->interceptPosition, &p, &parentWorldTransform );
 	
-		++i;
+			++i;
+		}
 	}
 
-	// armor
-	i = 0;
-	for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); ++aidit )
+	if( !m_armorImpactData.empty() )
 	{
-		ArmorImpactData* armorData = &aidit->second;
-		DataRow* texelData = &m_impactTexelData[i];
+		// get parent's bounding sphere
+		Vector4 parentBoundingSphere( 0.f, 0.f, 0.f, -1.f );
+		parent->GetBoundingSphere( parentBoundingSphere );
 
-		// size of impact
-		float size = armorData->size * std::min( m_armorImpactSizeFactor * m_parentBoundingSphere.w, m_armorImpactSizeMax );
-		// get position from damage locator
-		Vector3 tgtPosWS( 0.f, 0.f, 0.f );
-		parent->GetDamageLocatorPosition( &tgtPosWS, armorData->damageLocatorIndex );
-		// convert position and direction into object space
-		Vector3 tgtPosOS;
-		D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
-		texelData->v[2] = Vector4( tgtPosOS, 0.f );
-		texelData->v[3] = Vector4( size, 0.f, 0.f, 0.f );
+		// armor
+		size_t i = 0;
+		for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); ++aidit )
+		{
+			ArmorImpactData* armorData = &aidit->second;
+			DataRow* texelData = &m_impactTexelData[i];
 
-		++i;
-	}
+			// size of impact
+			float size = armorData->size * std::min( m_armorImpactSizeFactor * parentBoundingSphere.w, m_armorImpactSizeMax );
+			// get position from damage locator
+			Vector3 tgtPosWS( 0.f, 0.f, 0.f );
+			parent->GetDamageLocatorPosition( &tgtPosWS, armorData->damageLocatorIndex );
+			// convert position and direction into object space
+			Vector3 tgtPosOS;
+			D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
+			texelData->v[2] = Vector4( tgtPosOS, 0.f );
+			texelData->v[3] = Vector4( size, 0.f, 0.f, 0.f );
 
-	// don't forget the curves
-	Be::Time time = updateContext.GetTime();
-	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
-	{
-		(*it)->Update( time, time );
+			++i;
+		}
 	}
 }
 
@@ -249,7 +276,7 @@ void EveImpactOverlay::GetBatches( ITriRenderBatchAccumulator* accumulator, TriB
 	}
 
 	// anything on shields?
-	if( HasActivity() )
+	if( HasShieldActivity() )
 	{
 		const Tr2MeshAreaVector* areas = m_mesh->GetAreas( batchType );
 		m_mesh->GetBatches( accumulator, areas, perObjectData );
@@ -258,9 +285,9 @@ void EveImpactOverlay::GetBatches( ITriRenderBatchAccumulator* accumulator, TriB
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Small helper function that checks if this impact overlay is active
+//   Small helper function that checks if there is shield activity
 // --------------------------------------------------------------------------------
-bool EveImpactOverlay::HasActivity() const
+bool EveImpactOverlay::HasShieldActivity() const
 {
 	// settings
 	if( !g_eveSpaceObjectImpactEffectEnabled )
@@ -268,8 +295,46 @@ bool EveImpactOverlay::HasActivity() const
 		return false;
 	}
 
-	// depends on lists
-	return !m_armorImpactData.empty() || !m_shieldImpactData.empty() || ( m_overallShieldImpact > 0.f );
+	// general shield display?
+	if( m_overallShieldImpact > 0.f )
+	{
+		return true;
+	}
+
+	// shield?
+	return ( !m_shieldImpactData.empty() || !m_shieldBoosting->IsKickInZero() || !m_shieldHardening->IsKickInZero() );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Small helper function that checks if there is armor activity
+// --------------------------------------------------------------------------------
+bool EveImpactOverlay::HasArmorActivity() const
+{
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return false;
+	}
+
+	// armor?
+	return ( !m_armorImpactData.empty() || !m_armorBoosting->IsZero() || !m_armorRepairing->IsZero() );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Small helper function that checks if there is general activity
+// --------------------------------------------------------------------------------
+bool EveImpactOverlay::HasGeneralActivity() const
+{
+	// settings
+	if( !g_eveSpaceObjectImpactEffectEnabled )
+	{
+		return false;
+	}
+
+	// armor or shield?
+	return HasArmorActivity() || HasShieldActivity();
 }
 
 // --------------------------------------------------------------------------------
@@ -283,32 +348,25 @@ int32_t EveImpactOverlay::GetDataTextureOffset() const
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Easy-to-use access to the internal animation curves
+//   Easy-to-use access to the internal effects/faders
 // --------------------------------------------------------------------------------
-void EveImpactOverlay::PlayCurveSet( const std::string& name )
+void EveImpactOverlay::ToggleEffect( const std::string& name, bool on )
 {
-	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	if( name == "shieldboost" )
 	{
-		if( (*it)->GetName() == name )
-		{
-			(*it)->Play();
-		}
+		m_shieldBoosting->StartFade( on );
 	}
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   Easy-to-use access to the internal animation curves
-// --------------------------------------------------------------------------------
-void EveImpactOverlay::StopCurveSet( const std::string& name )
-{
-	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	else if( name == "shieldhardening" )
 	{
-		if( (*it)->GetName() == name )
-		{
-			(*it)->Play();
-			(*it)->StopOnNextFrame();
-		}
+		m_shieldHardening->StartFade( on );
+	}
+	else if( name == "armorhardening" )
+	{
+		m_armorBoosting->StartFade( on );
+	}
+	else if( name == "armorrepair" )
+	{
+		m_armorRepairing->StartFade( on );
 	}
 }
 
@@ -501,7 +559,7 @@ Tr2EffectPtr EveImpactOverlay::GetArmorDamageShader( TriBatchType batchType ) co
 	}
 
 	// no activity?
-	if( !HasActivity() )
+	if( !HasArmorActivity() )
 	{
 		return nullptr;
 	}

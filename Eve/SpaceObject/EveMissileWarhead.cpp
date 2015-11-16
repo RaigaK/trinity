@@ -324,9 +324,9 @@ EveMissileWarhead::StateChangeEvent EveMissileWarhead::CheckImpact( float deltaT
 	StateChangeEvent evt = EVT_NONE;
 	Vector3 targetPosition, posNow, posLast;
 
-	if( m_state != STATE_TRACKING_FINAL )
+	if( m_state != STATE_TRACKING_FINAL || m_id < 0 )
 	{
-		return EVT_NONE;
+		return evt;
 	}
 	const float estimatedTotalFlyingTime = (estimatedTotalAliveTime + 0.1f) * m_speedModifier;
 	// calc a value from 0 to 1 across the whole (estimated) flying time, (excluding eject-phase time and delay time)
@@ -347,24 +347,21 @@ EveMissileWarhead::StateChangeEvent EveMissileWarhead::CheckImpact( float deltaT
 	float lensq = D3DXVec3LengthSq( &dir );
 	if( lensq <= m_explosionDistance || flight01 >= 1.0f )
 	{
-		if( m_id > -1 )
+		m_explosionPosition = *GetWorldPosition();
+		evt = EVT_EXPLODE;
+		m_state = STATE_EXPLODED;
+		if( target )
 		{
-			m_explosionPosition = *GetWorldPosition();
-			evt = EVT_EXPLODE;
-			m_state = STATE_EXPLODED;
-			if( target )
+			// Check if we've gone past the impact position
+			if( D3DXVec3Dot( &dir, &m_movement ) < 0 )
 			{
-				// Check if we've gone past the impact position
-				if( D3DXVec3Dot( &dir, &m_movement ) < 0 )
-				{
-					m_explosionPosition = targetPosition;
-				}
-				else
-				{
-					m_explosionPosition = posNow;
-				}
-				target->CreateImpact( m_targetLocator, -m_movement, m_impactDuration, 1.f );
+				m_explosionPosition = targetPosition;
 			}
+			else
+			{
+				m_explosionPosition = posNow;
+			}
+			target->CreateImpact( m_targetLocator, -m_movement, m_impactDuration, 1.f );
 		}
 	}
 	return evt;

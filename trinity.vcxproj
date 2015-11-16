@@ -2909,6 +2909,7 @@
     <ClInclude Include="Curves\TriScalarKey.h"/>
     <ClInclude Include="Curves\TriVectorCurve.h"/>
     <ClInclude Include="Curves\TriVectorScaler.h"/>
+    <ClInclude Include="Curves\Fader\Tr2ScalarFader.h"/>
     <ClInclude Include="Eve\EveCamera.h"/>
     <ClInclude Include="Eve\EveConstantBufferFormats.h"/>
     <ClInclude Include="Eve\EveCurveLineSet.h"/>
@@ -3483,6 +3484,8 @@
     <ClCompile Include="Curves\TriVectorCurve_Blue.cpp"/>
     <ClCompile Include="Curves\TriVectorScaler.cpp"/>
     <ClCompile Include="Curves\TriVectorScaler_Blue.cpp"/>
+    <ClCompile Include="Curves\Fader\Tr2ScalarFader.cpp"/>
+    <ClCompile Include="Curves\Fader\Tr2ScalarFader_Blue.cpp"/>
     <ClCompile Include="Eve\EveCamera.cpp"/>
     <ClCompile Include="Eve\EveCamera_Blue.cpp"/>
     <ClCompile Include="Eve\EveCurveLineSet.cpp"/>

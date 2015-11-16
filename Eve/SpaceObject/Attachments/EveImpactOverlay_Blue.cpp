@@ -26,16 +26,16 @@ const Be::ClassInfo* EveImpactOverlay::ExposeToBlue()
 		MAP_ATTRIBUTE( "dataTextureBlockID", m_dataTextureBlockID, "The ID for our part in the big texture.", Be::READ )
 
 		MAP_ATTRIBUTE( "maxShieldImpacts", m_maxShieldImpacts, "", Be::READ )
-		MAP_ATTRIBUTE( "shieldEllipsoidCenter", m_shieldEllipsoidCenter, "", Be::READ )
-		MAP_ATTRIBUTE( "shieldEllipsoidRadii", m_shieldEllipsoidRadii, "", Be::READ )
 		MAP_ATTRIBUTE( "overallShieldImpact", m_overallShieldImpact, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "shieldHardening", m_shieldHardening, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "shieldBoosting", m_shieldBoosting, "", Be::READWRITE )
 
 		MAP_ATTRIBUTE( "armorDamageShader", m_armorDamageShader, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "armorImpactSizeFactor", m_armorImpactSizeFactor, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "armorImpactSizeMax", m_armorImpactSizeMax, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "armorImpactEmitter", m_armorImpactEmitter, "", Be::READWRITE | Be::PERSIST )
-
-		MAP_ATTRIBUTE( "curveSets", m_curveSets, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "armorRepairing", m_armorRepairing, "", Be::READWRITE )
+		MAP_ATTRIBUTE( "armorBoosting", m_armorBoosting, "", Be::READWRITE )
 
     EXPOSURE_END()
 }
