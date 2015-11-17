@@ -25,7 +25,7 @@ Tr2GpuSharedEmitter::Tr2GpuSharedEmitter( IRoot* lockObj )
 	m_position( 0.f, 0.f, 0.f ),
 	m_direction( 0.f, 1.f, 0.f ),
 	m_prevPosition( 0.f, 0.f, 0.f ),
-	m_continiousEmitter( true )
+	m_continuousEmitter( true )
 {
 	memset( &m_emitter, 0, sizeof( m_emitter ) );
 	memset( &m_params, 0, sizeof( m_params ) );
@@ -47,14 +47,24 @@ bool Tr2GpuSharedEmitter::OnModified( Be::Var* )
 	return true;
 }
 
+uintptr_t Tr2GpuSharedEmitter::GetHash( const Tr2GpuParticleSystem::EmitterParams& params ) const
+{
+	return CcpHashFNV1( &params, sizeof( params ) );
+}
+
 void Tr2GpuSharedEmitter::UpdateHash()
 {
-	m_paramsHash = CcpHashFNV1( &m_params, sizeof( m_params ) );
+	m_paramsHash = GetHash( m_params );
 }
 
 void Tr2GpuSharedEmitter::GenerateID()
 {
-	m_id = m_paramsHash & ~( 1 << ( sizeof( uintptr_t ) - 1 ) );
+	m_id = GetID( m_paramsHash );
+}
+
+uintptr_t Tr2GpuSharedEmitter::GetID( uintptr_t hash ) const
+{
+	return hash & ~( 1 << ( sizeof( uintptr_t ) - 1 ) );
 }
 
 // --------------------------------------------------------------------------------
@@ -93,7 +103,7 @@ void Tr2GpuSharedEmitter::Update( const UpdateArguments& arguments )
 		velocity = ( position - m_prevPosition - arguments.originShift ) / dt;
 	}
 
-	if( m_continiousEmitter )
+	if( m_continuousEmitter )
 	{
 		m_carryOver = SpawnParticles( arguments, m_prevPosition + arguments.originShift, position, m_prevVelocity, velocity, m_carryOver, std::min( dt, MAXIMUM_FRAME_TIME ) );
 	}
@@ -182,21 +192,34 @@ float Tr2GpuSharedEmitter::SpawnParticles(
 	return carryOverCount;
 }
 
-void Tr2GpuSharedEmitter::SpawnOnce( const UpdateArguments& arguments, const Vector3& velocity )
+void Tr2GpuSharedEmitter::SpawnOnce( const UpdateArguments& arguments, const Vector3& velocity, float scale )
 {
-	m_emitter.count = int( m_rate );
+	auto emitter = m_emitter;
+	emitter.count = int( m_rate );
 
-	if( m_emitter.count )
+	if( emitter.count )
 	{
-		m_emitter.position = XMVector3TransformCoord( m_position, arguments.parentTransform );
-		m_emitter.positionPrevious = m_emitter.position;
+		emitter.radius *= scale;
+		emitter.position = XMVector3TransformCoord( m_position, arguments.parentTransform );
+		emitter.positionPrevious = m_emitter.position;
 
-		m_emitter.velocity = velocity;
-		m_emitter.velocityPrevious = m_emitter.velocity;
+		emitter.velocity = velocity;
+		emitter.velocityPrevious = m_emitter.velocity;
 
-		m_emitter.direction = XMVector3TransformNormal( m_direction, arguments.parentTransform );
-		m_emitter.directionPrevious = m_emitter.direction;
+		emitter.direction = XMVector3TransformNormal( m_direction, arguments.parentTransform );
+		emitter.directionPrevious = m_emitter.direction;
 
-		arguments.system->Emit( m_emitter, m_id, m_paramsHash, m_params );
+		auto id = m_id;
+		auto hash = m_paramsHash;
+		auto params = m_params;
+		if( scale != 1.0f )
+		{
+			params.sizes *= scale;
+
+			hash = GetHash( params );
+			id = GetID( hash );
+		}
+
+		arguments.system->Emit( emitter, id, hash, params );
 	}
 }

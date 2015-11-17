@@ -139,16 +139,15 @@ private:
 
 	// armor damage
 	Tr2EffectPtr m_armorDamageShader;
-	float m_armorImpactSizeFactor;
-	float m_armorImpactSizeMax;
 	size_t m_armorImpactGoalCount;
+	float m_armorImpactParentSize;
 	Tr2GpuUniqueEmitterPtr m_armorImpactEmitter;
 
 	// extenders
 	Tr2ScalarFaderPtr m_shieldHardening;
 	Tr2ScalarFaderPtr m_shieldBoosting;
 	Tr2ScalarFaderPtr m_armorRepairing;
-	Tr2ScalarFaderPtr m_armorBoosting;
+	Tr2ScalarFaderPtr m_armorHardening;
 };
 
 TYPEDEF_BLUECLASS( EveImpactOverlay );

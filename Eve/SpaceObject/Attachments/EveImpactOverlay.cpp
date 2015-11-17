@@ -22,6 +22,8 @@ extern bool g_eveSpaceObjectImpactEffectEnabled;
 
 // consts
 static const float IMPACT_ARMOR_HOLE_TO_DAMAGE_RATIO = 15.f;
+static const float IMPACT_ARMOR_SIZE_FACTOR = 0.0129f;
+static const float IMPACT_ARMOR_SIZE_MAX = 10.f;
 
 
 EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
@@ -32,13 +34,12 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	m_impactDataNextIdx( 1 ),
 	m_dataTextureBlockID( -1 ),
 	m_dataTextureOffset( -1 ),
-	m_armorImpactSizeFactor( 1.f / 77.5f ),
-	m_armorImpactSizeMax( 10.f ),
 	m_armorImpactGoalCount( 0 ),
+	m_armorImpactParentSize( 0.f ),
 	m_shieldImpactColorFade( 0.f )
 {
 	// create the faders
-	m_armorBoosting.CreateInstance();
+	m_armorHardening.CreateInstance();
 	m_armorRepairing.CreateInstance();
 	m_shieldBoosting.CreateInstance();
 	m_shieldHardening.CreateInstance();
@@ -90,13 +91,13 @@ void EveImpactOverlay::UpdateSyncronous( EveUpdateContext& updateContext, EveSpa
 			m_shieldHardening->GetKickInValue(),
 			m_shieldBoosting->GetKickInValue() );
 		header.v[2] = Vector4( float( m_armorImpactData.size() ),
-			0.f,
+			m_armorImpactParentSize,
 			0.f,
 			0.f );
 		header.v[3] = Vector4( m_armorRepairing->GetFaderValue(),
-			m_armorBoosting->GetFaderValue(),
+			m_armorHardening->GetFaderValue(),
 			m_armorRepairing->GetKickInValue(),
-			m_armorBoosting->GetKickInValue() );
+			m_armorHardening->GetKickInValue() );
 
 		// update block data
 		m_dataTextureBlockID = dataTextureMgr->RequestBlockData( &header.v[0], (uint32_t)m_impactTexelData.size(), m_impactTexelData.empty() ? nullptr : &m_impactTexelData[0].v[0] );
@@ -172,7 +173,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 
 
 	// update the faders
-	m_armorBoosting->Update( updateContext );
+	m_armorHardening->Update( updateContext );
 	m_armorRepairing->Update( updateContext );
 	m_shieldBoosting->Update( updateContext );
 	m_shieldHardening->Update( updateContext );
@@ -233,6 +234,9 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		Vector4 parentBoundingSphere( 0.f, 0.f, 0.f, -1.f );
 		parent->GetBoundingSphere( parentBoundingSphere );
 
+		// cut off the parent size at some hard-coded size, so impacts on giant ships get smaller
+		m_armorImpactParentSize = std::min( parentBoundingSphere.w, IMPACT_ARMOR_SIZE_MAX / IMPACT_ARMOR_SIZE_FACTOR );
+
 		// armor
 		size_t i = 0;
 		for( auto aidit = m_armorImpactData.begin(); aidit != m_armorImpactData.end(); ++aidit )
@@ -241,7 +245,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 			DataRow* texelData = &m_impactTexelData[i];
 
 			// size of impact
-			float size = armorData->size * std::min( m_armorImpactSizeFactor * parentBoundingSphere.w, m_armorImpactSizeMax );
+			float size = armorData->size * IMPACT_ARMOR_SIZE_FACTOR * m_armorImpactParentSize;
 			// get position from damage locator
 			Vector3 tgtPosWS( 0.f, 0.f, 0.f );
 			parent->GetDamageLocatorPosition( &tgtPosWS, armorData->damageLocatorIndex );
@@ -318,7 +322,7 @@ bool EveImpactOverlay::HasArmorActivity() const
 	}
 
 	// armor?
-	return ( !m_armorImpactData.empty() || !m_armorBoosting->IsZero() || !m_armorRepairing->IsZero() );
+	return ( !m_armorImpactData.empty() || !m_armorHardening->IsZero() || !m_armorRepairing->IsZero() );
 }
 
 // --------------------------------------------------------------------------------
@@ -362,7 +366,7 @@ void EveImpactOverlay::ToggleEffect( const std::string& name, bool on )
 	}
 	else if( name == "armorhardening" )
 	{
-		m_armorBoosting->StartFade( on );
+		m_armorHardening->StartFade( on );
 	}
 	else if( name == "armorrepair" )
 	{
@@ -402,7 +406,7 @@ void EveImpactOverlay::SetDamageState( float shield, float armor, float hull, bo
 	{
 		for( int i = 0; i < (int)m_armorImpactGoalCount; ++i )
 		{
-			CreateArmorImpact( i, 1.f );
+			CreateArmorImpact( i, 0.2f + 0.8f * TriRand() );
 		}
 	}
 }

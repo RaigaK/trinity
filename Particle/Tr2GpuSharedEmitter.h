@@ -44,7 +44,7 @@ public:
 								 const Vector3 *positionStart, const Vector3 *positionEnd,
 								 const Vector3 *velocityStart, const Vector3 *velocityEnd,
 								 float deltaTime );
-	void SpawnOnce( const UpdateArguments& arguments, const Vector3& velocity );
+	void SpawnOnce( const UpdateArguments& arguments, const Vector3& velocity, float scale = 1.0f );
 	virtual void SetThreadSafeFlag() {}
 
 	// access
@@ -53,7 +53,11 @@ public:
 
 protected:
 	virtual void GenerateID();
+	uintptr_t GetID( uintptr_t hash ) const;
+
 	void UpdateHash();
+	uintptr_t GetHash( const Tr2GpuParticleSystem::EmitterParams& params ) const;
+
 	float SpawnParticles( 
 		const UpdateArguments& arguments,
 		const Vector3& positionStart, const Vector3& positionEnd,
@@ -78,7 +82,7 @@ protected:
 	Vector3 m_prevDirection;
 	Tr2GpuParticleSystem::Emitter m_emitter;
 	Tr2GpuParticleSystem::EmitterParams m_params;
-	bool m_continiousEmitter;
+	bool m_continuousEmitter;
 };
 
 TYPEDEF_BLUECLASS( Tr2GpuSharedEmitter );

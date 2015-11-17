@@ -1615,6 +1615,16 @@ bool EveSpaceObject2::GetDamageLocatorPosition( Vector3* out, int index )
 	return true;
 }
 
+// --------------------------------------------------------------------------------
+// Description:
+//   Decide if an incoming laser/stretch effect should show its impact effect.
+//   Depends on the shields.
+// --------------------------------------------------------------------------------
+bool EveSpaceObject2::HasImpactConfigurationShield() const
+{
+	return m_impactOverlay && ( m_impactOverlay->GetImpactConfiguration() == EveImpactOverlay::IMPACT_SHIELD );
+}
+
 void EveSpaceObject2::GetImpactPosition( Vector3& out, int damageLocatorIndex, const Vector3& direction )
 {
 	if( !m_impactOverlay || m_impactOverlay->GetImpactConfiguration() != EveImpactOverlay::IMPACT_SHIELD )

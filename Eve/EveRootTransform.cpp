@@ -87,6 +87,11 @@ void EveRootTransform::GetImpactPosition( Vector3& out, int damageLocatorIndex, 
 	GetDamageLocatorPosition( &out, damageLocatorIndex );
 }
 
+bool EveRootTransform::HasImpactConfigurationShield() const
+{
+	return false;
+}
+
 int EveRootTransform::GetClosestDamageLocatorIndex( const Vector3* position )
 {
 	return 0;
