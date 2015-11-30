@@ -17,7 +17,7 @@
 Tr2ScalarFader::Tr2ScalarFader( IRoot* lockobj ) :
 	m_value( 0.f ),
 	m_fading( 0.f ),
-	m_fadeTime( 0.f ),
+	m_fadeTime( -1.f ),
 	m_kickInLength( 3.f )
 {
 }
@@ -38,19 +38,25 @@ void Tr2ScalarFader::Update( EveUpdateContext& updateContext )
 {
 	if( m_fading != 0.f )
 	{
-		m_fadeTime += updateContext.GetDeltaT();
 		m_value += m_fading * updateContext.GetDeltaT();
 		if( m_value < 0.f )
 		{
 			m_value = 0.f;
 			m_fading = 0.f;
-			m_fadeTime = 0.f;
 		}
 		else if( m_value > 1.f )
 		{
 			m_value = 1.f;
 			m_fading = 0.f;
-			m_fadeTime = 0.f;
+		}
+	}
+
+	if( m_fadeTime >= 0.f )
+	{
+		m_fadeTime += updateContext.GetDeltaT();
+		if( m_fadeTime > m_kickInLength )
+		{
+			m_fadeTime = -1.f;
 		}
 	}
 }
@@ -62,7 +68,10 @@ void Tr2ScalarFader::Update( EveUpdateContext& updateContext )
 void Tr2ScalarFader::StartFade( bool isFadeIn )
 {
 	m_fading = isFadeIn ? 1.f / m_kickInLength : -1.f / m_kickInLength;
-	m_fadeTime = 0.f;
+	if( isFadeIn )
+	{
+		m_fadeTime = 0.f;
+	}
 }
 
 // --------------------------------------------------------------------------------
@@ -80,8 +89,8 @@ float Tr2ScalarFader::GetFaderValue() const
 // --------------------------------------------------------------------------------
 float Tr2ScalarFader::GetKickInValue() const
 {
-	// is only during fadein
-	if( m_fading <= 0.f )
+	// is only during fadetime
+	if( m_fadeTime < 0.f )
 	{
 		return 0.f;
 	}
@@ -104,7 +113,7 @@ bool Tr2ScalarFader::IsZero() const
 // --------------------------------------------------------------------------------
 bool Tr2ScalarFader::IsKickInZero() const
 {
-	return ( m_fading <= 0.f );
+	return ( m_fadeTime <= 0.f );
 }
 
 
