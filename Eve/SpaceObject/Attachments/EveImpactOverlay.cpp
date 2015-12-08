@@ -28,6 +28,7 @@ static const float IMPACT_HOLE_TO_HULL_DAMAGE_RATIO = 0.f;
 static const float IMPACT_ARMOR_SIZE_FACTOR = 0.0129f;
 static const float IMPACT_ARMOR_SIZE_MAX = 10.f;
 static const float IMPACT_SHIELD_SIZE_MAX = 2000.f;
+static const float IMPACT_SHIELD_SIZE_MIN = 70.f;
 static const float IMPACT_SHIELD_FADEOUT = 1.5f;
 
 
@@ -231,7 +232,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 	parent->GetBoundingSphere( parentBoundingSphere );
 	// cut off the parent size at some hard-coded size, so shield and armor impacts on giant ships get smaller
 	m_armorImpactParentSize = std::min( parentBoundingSphere.w, IMPACT_ARMOR_SIZE_MAX / IMPACT_ARMOR_SIZE_FACTOR );
-	m_shieldImpactParentSize = std::min( parentBoundingSphere.w, IMPACT_SHIELD_SIZE_MAX );
+	m_shieldImpactParentSize = Clamp( parentBoundingSphere.w, IMPACT_SHIELD_SIZE_MIN, IMPACT_SHIELD_SIZE_MAX );
 
 	if( !m_shieldImpactData.empty() )
 	{
