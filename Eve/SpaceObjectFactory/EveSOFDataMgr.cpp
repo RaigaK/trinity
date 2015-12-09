@@ -630,6 +630,8 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		him.geometryResPath = instMesh->m_geometryResPath;
 		him.instanceGeometryResPath = instMesh->m_instanceGeometryResPath;
 		him.shader = instMesh->m_shader;
+		him.position = instMesh->m_position;
+		him.rotation = instMesh->m_rotation;
 		for( auto tit = instMesh->m_textures.begin(); tit != instMesh->m_textures.end(); ++tit )
 		{
 			EveSOFDataTexturePtr textureData = (*tit);

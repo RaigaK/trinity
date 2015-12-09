@@ -58,6 +58,9 @@ public:
 	std::string m_instanceGeometryResPath;
 	BlueSharedString m_shader;
 	PEveSOFDataTextureVector m_textures;
+	
+	Vector3 m_position;
+	Quaternion m_rotation;
 };
 TYPEDEF_BLUECLASS( EveSOFDataInstancedMesh );
 BLUE_DECLARE_VECTOR( EveSOFDataInstancedMesh );

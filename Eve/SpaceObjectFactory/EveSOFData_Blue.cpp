@@ -274,6 +274,9 @@ const Be::ClassInfo* EveSOFDataInstancedMesh::ExposeToBlue()
 		MAP_ATTRIBUTE( "instanceGeometryResPath", m_instanceGeometryResPath, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "shader", m_shader, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "textures", m_textures, "", Be::READWRITE | Be::PERSIST )
+		
+		MAP_ATTRIBUTE( "position", m_position, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "rotation", m_rotation, "", Be::READWRITE | Be::PERSIST )
     EXPOSURE_END()
 }
 
