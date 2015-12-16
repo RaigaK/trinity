@@ -148,9 +148,6 @@ public:
 		std::string instanceGeometryResPath;
 		BlueSharedString shader;
 		std::map<BlueSharedString, TextureData> textures;
-
-		Vector3 position;
-		Quaternion rotation;
 	};
 
 	struct HullAnimation

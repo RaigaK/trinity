@@ -48,9 +48,7 @@ EveSOFDataTexture::EveSOFDataTexture( IRoot* lockobj )
 
 
 EveSOFDataInstancedMesh::EveSOFDataInstancedMesh( IRoot* lockobj ) :
-	PARENTLOCK( m_textures ),
-	m_position( 0, 0, 0 ),
-	m_rotation( 0, 0, 0, 1 )
+	PARENTLOCK( m_textures )
 {}
 
 

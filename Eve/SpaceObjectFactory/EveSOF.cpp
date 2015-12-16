@@ -939,8 +939,6 @@ void EveSOF::SetupInstancedMeshes( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr
 		}
 		EveChildMeshPtr childMesh;
 		childMesh.CreateInstance();
-		Vector3 scale( 1.f, 1.f, 1.f );
-		childMesh->Transform( &scale, &him.rotation, &him.position );
 		childMesh->SetMesh( (Tr2MeshBase*)mesh );
 		newObj->AddToEffectChildrenList( (IEveSpaceObjectChild*)childMesh );
 	}
