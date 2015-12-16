@@ -196,9 +196,7 @@ void EveSpaceObject2::UpdateSyncronous( EveUpdateContext& updateContext )
 			float( referencePosition.x - m_previousPosition.x ),
 			float( referencePosition.y - m_previousPosition.y ),
 			float( referencePosition.z - m_previousPosition.z ) );
-		Matrix worldInverse;
-		D3DXMatrixInverse( &worldInverse, nullptr, &m_worldTransform );
-		D3DXVec3TransformNormal( &m_positionDelta->m_value, &positionDelta, &worldInverse );
+		D3DXVec3TransformNormal( &m_positionDelta->m_value, &positionDelta, &m_invWorldTransform);
 	}
 	else
 	{
@@ -1546,25 +1544,18 @@ void EveSpaceObject2::GetImpactPosition( Vector3& out, int damageLocatorIndex, c
 		return;
 	}
 
-	Matrix worldTransform, inverseWorldTransform;
-	GetLocalToWorldTransform( worldTransform );
-	if( !D3DXMatrixInverse( &inverseWorldTransform, nullptr, &worldTransform ) )
-	{
-		inverseWorldTransform = worldTransform;
-	}
-
 	Vector3 tgtPosWS( 0.f, 0.f, 0.f );
 	GetDamageLocatorPosition( &tgtPosWS, damageLocatorIndex );
 
 	// convert position and direction into object space
 	Vector3 tgtPosOS, dirOS;
-	D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &inverseWorldTransform );
-	D3DXVec3TransformNormal( &dirOS, &direction, &inverseWorldTransform );
+	D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &m_invWorldTransform );
+	D3DXVec3TransformNormal( &dirOS, &direction, &m_invWorldTransform );
 	
 	Vector3 center, radii;
 	GetShapeEllipsoid(center, radii);
 	IntersectEllipsoidRay( out, center, radii, tgtPosOS, dirOS );
-	D3DXVec3TransformCoord( &out, &out, &worldTransform );
+	D3DXVec3TransformCoord( &out, &out, &m_worldTransform );
 }
 
 bool EveSpaceObject2::GetDamageLocatorDirection( Vector3* out, int index )
@@ -2035,10 +2026,9 @@ bool EveSpaceObject2::UpdateImpact( Vector3& out, const Vector3& direction, int 
 }
 
 
-//GPU ship explosion test
 unsigned EveSpaceObject2::GetDamageLocatorCount() const 
 {
-	return m_persistedDamageLocators.size();
+	return unsigned( m_persistedDamageLocators.size() );
 }
 
 Vector3 EveSpaceObject2::GetDamageLocator( uint32_t index ) const
