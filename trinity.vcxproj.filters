@@ -584,9 +584,6 @@
     <ClInclude Include="Eve\EveConstantBufferFormats.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
-    <ClInclude Include="Eve\EveCurveLineSet.h">
-      <Filter>Source Files\Eve</Filter>
-    </ClInclude>
     <ClInclude Include="Eve\EveDistanceField.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
@@ -597,9 +594,6 @@
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
     <ClInclude Include="Eve\EveLensflare.h">
-      <Filter>Source Files\Eve</Filter>
-    </ClInclude>
-    <ClInclude Include="Eve\EveLineSet.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
     <ClInclude Include="Eve\EveLODHelper.h">
@@ -620,9 +614,6 @@
     <ClInclude Include="Eve\EvePlanet.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
-    <ClInclude Include="Eve\EveProjectBracket.h">
-      <Filter>Source Files\Eve</Filter>
-    </ClInclude>
     <ClInclude Include="Eve\EveRootTransform.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
@@ -630,12 +621,6 @@
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
     <ClInclude Include="Eve\EveSpaceScene.h">
-      <Filter>Source Files\Eve</Filter>
-    </ClInclude>
-    <ClInclude Include="Eve\EveSpherePin.h">
-      <Filter>Source Files\Eve</Filter>
-    </ClInclude>
-    <ClInclude Include="Eve\EveSpherePinIndexTree.h">
       <Filter>Source Files\Eve</Filter>
     </ClInclude>
     <ClInclude Include="Eve\EveStarfield.h">
@@ -803,7 +788,22 @@
     <ClInclude Include="Eve\UI\EveConnector.h">
       <Filter>Source Files\Eve\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Eve\UI\EveCurveLineSet.h">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClInclude>
     <ClInclude Include="Eve\UI\EveLineContainer.h">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\UI\EveLineSet.h">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\UI\EveProjectBracket.h">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\UI\EveSpherePin.h">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\UI\EveSpherePinIndexTree.h">
       <Filter>Source Files\Eve\UI</Filter>
     </ClInclude>
     <ClInclude Include="Font\Tr2FontManager.h">
@@ -2285,12 +2285,6 @@
     <ClCompile Include="Eve\EveCamera_Blue.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
-    <ClCompile Include="Eve\EveCurveLineSet.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveCurveLineSet_Blue.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
     <ClCompile Include="Eve\EveDistanceField.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
@@ -2313,12 +2307,6 @@
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
     <ClCompile Include="Eve\EveLensflare_Blue.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveLineSet.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveLineSet_Blue.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
     <ClCompile Include="Eve\EveLODHelper.cpp">
@@ -2354,12 +2342,6 @@
     <ClCompile Include="Eve\EvePlanet_Blue.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
-    <ClCompile Include="Eve\EveProjectBracket.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveProjectBracket_Blue.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
     <ClCompile Include="Eve\EveRootTransform.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
@@ -2376,15 +2358,6 @@
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
     <ClCompile Include="Eve\EveSpaceScene_Blue.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveSpherePin.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveSpherePinIndexTree.cpp">
-      <Filter>Source Files\Eve</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\EveSpherePin_Blue.cpp">
       <Filter>Source Files\Eve</Filter>
     </ClCompile>
     <ClCompile Include="Eve\EveStarfield.cpp">
@@ -2675,10 +2648,37 @@
     <ClCompile Include="Eve\UI\EveConnector_Blue.cpp">
       <Filter>Source Files\Eve\UI</Filter>
     </ClCompile>
+    <ClCompile Include="Eve\UI\EveCurveLineSet.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveCurveLineSet_Blue.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
     <ClCompile Include="Eve\UI\EveLineContainer.cpp">
       <Filter>Source Files\Eve\UI</Filter>
     </ClCompile>
     <ClCompile Include="Eve\UI\EveLineContainer_Blue.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveLineSet.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveLineSet_Blue.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveProjectBracket.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveProjectBracket_Blue.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveSpherePin.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveSpherePinIndexTree.cpp">
+      <Filter>Source Files\Eve\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\UI\EveSpherePin_Blue.cpp">
       <Filter>Source Files\Eve\UI</Filter>
     </ClCompile>
     <ClCompile Include="Font\Tr2FontManager.cpp">
