@@ -32,6 +32,7 @@ public:
 		POS_CENTER_BOUNDING_POINT,
 		POS_TARGET_DMG_LOCATOR,
 		POS_TARGET_DMG_LOCATOR_IMPACT,
+		POS_OFFSET_POSITION,
 		POS_COUNT,
 	};
 	LocalPositionBehavior m_behavior;
@@ -65,6 +66,7 @@ private:
 	float m_offset;
 	Vector3 m_value;
 	Vector3 m_boundingBoxSize;
+	Vector3 m_positionOffset;
 
 	// damage locator data
 	int m_damageLocatorIndex;
@@ -73,6 +75,7 @@ private:
 	int m_impactEffectIndex;
 	float m_impactSize;
 
+	Vector3* CalculateOffsetPosition( Vector3* in, Be::Time t );
 	Vector3* CalculateNearestBoundingPoint( Vector3* in, Be::Time t );
 	Vector3* GetCenterBoundingSphere( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocator( Vector3* in, Be::Time t );

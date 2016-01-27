@@ -7,6 +7,7 @@
 EveLocalPositionCurve::EveLocalPositionCurve(IRoot* lockobj) :
 	m_value( 0.f, 0.f, 0.f ),
 	m_boundingBoxSize( 0.f, 0.f, 0.f ),
+	m_positionOffset( 0.f, 0.f, 0.f ),
 	m_damageLocatorIndex( -1 ),
 	m_impactEffectIndex( -1 ),
 	m_impactSize( 1.f ),
@@ -17,6 +18,22 @@ EveLocalPositionCurve::EveLocalPositionCurve(IRoot* lockobj) :
 
 EveLocalPositionCurve::~EveLocalPositionCurve()
 {
+}
+
+
+Vector3* EveLocalPositionCurve::CalculateOffsetPosition( Vector3* in, Be::Time t )
+{
+	if( !m_parentPositionCurve )
+	{
+		*in = m_positionOffset;
+	}
+	else
+	{
+		Vector3 parentPos;
+		m_parentPositionCurve->GetValueAt( &parentPos, t );
+		*in = parentPos + m_positionOffset;
+	}
+	return in;
 }
 
 Vector3* EveLocalPositionCurve::CalculateNearestBoundingPoint( Vector3* in, Be::Time t )
@@ -200,6 +217,8 @@ Vector3* EveLocalPositionCurve::Update(
 		return GetDamageLocator( in, t );
 	case POS_TARGET_DMG_LOCATOR_IMPACT:
 		return GetDamageLocatorImpact( in, t );
+	case POS_OFFSET_POSITION:
+		return CalculateOffsetPosition( in, t );
 	default:
 		break;
 	}

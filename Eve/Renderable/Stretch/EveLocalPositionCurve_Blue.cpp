@@ -30,6 +30,11 @@ Be::VarChooser EveLocalPositionChooser[] =
 		BeCast( EveLocalPositionCurve::POS_TARGET_DMG_LOCATOR_IMPACT ),
 		"Use a damage locator of the target object, but with impact effect"
 	},
+	{
+		"offsetPosition",
+		BeCast( EveLocalPositionCurve::POS_OFFSET_POSITION ),
+		"Calculate a position based on an offset from parent position"
+	},
 	{ 0 }
 };
 
@@ -105,6 +110,14 @@ const Be::ClassInfo* EveLocalPositionCurve::ExposeToBlue()
 		(  
 			"offset",         
 			m_offset,         
+			"na", 
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(  
+			"positionOffset",         
+			m_positionOffset,         
 			"na", 
 			Be::READWRITE | Be::PERSIST
 		)
