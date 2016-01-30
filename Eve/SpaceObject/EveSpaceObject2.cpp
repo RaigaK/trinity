@@ -1336,7 +1336,7 @@ bool EveSpaceObject2::IsAnimated() const
 {
 	if( !m_shadowEffect )
 	{
-		CCP_LOGWARN( "EveSpaceObject2::IsAnimated No shadow effect found for %s, returning false", m_name );
+		CCP_LOGWARN( "EveSpaceObject2::IsAnimated No shadow effect found for %s, returning false", m_name.c_str() );
 		return false;
 	}
 
