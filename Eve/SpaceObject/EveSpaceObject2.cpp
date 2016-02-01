@@ -17,6 +17,7 @@
 #include "Eve/SpaceObject/Attachments/Sets/EveSpriteSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EveSpotlightSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EvePlaneSet.h"
+#include "Eve/SpaceObject/Attachments/Sets/EveSpriteLineSet.h"
 #include "Attachments/EveImpactOverlay.h"
 #include "Tr2MeshLod.h"
 #include "Tr2GrannyAnimation.h"
@@ -65,6 +66,7 @@ EveSpaceObject2::EveSpaceObject2( IRoot* lockobj ) :
 	PARENTLOCK( m_spriteSets ),
 	PARENTLOCK( m_spotlightSets ),
 	PARENTLOCK( m_planeSets ),
+	PARENTLOCK( m_spriteLineSets ),
 	PARENTLOCK( m_children ),
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_overlayEffects ),
@@ -1094,6 +1096,10 @@ void EveSpaceObject2::RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer )
 	{
 		(*it)->RegisterWithQuadRenderer( quadRenderer );
 	}
+	for( auto it = m_spriteLineSets.begin(); it != m_spriteLineSets.end(); ++it )
+	{
+		( *it )->RegisterWithQuadRenderer( quadRenderer );
+	}
 }
 
 // --------------------------------------------------------------------------------
@@ -1126,6 +1132,10 @@ void EveSpaceObject2::AddQuadsToQuadRenderer( Tr2QuadRenderer& quadRenderer )
 	for( auto it = m_spotlightSets.begin(); it != m_spotlightSets.end(); ++it )
 	{
 		(*it)->AddToQuadRenderer( quadRenderer, m_worldTransform, m_spaceObjectShipData.y, m_spaceObjectShipData.x, bones, boneCount );
+	}
+	for( auto it = m_spriteLineSets.begin(); it != m_spriteLineSets.end(); ++it )
+	{
+		( *it )->AddToQuadRenderer( quadRenderer, m_worldTransform, m_spaceObjectShipData.y, bones, boneCount );
 	}
 }
 
@@ -1879,6 +1889,15 @@ void EveSpaceObject2::AddSpotlightSet( EveSpotlightSetPtr newSpotlightSet )
 void EveSpaceObject2::AddPlaneSet( EvePlaneSetPtr newPlaneSet )
 {
 	m_planeSets.Append( newPlaneSet->GetRawRoot() );
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Add a new spritelineset to this object from the outside
+// --------------------------------------------------------------------------------
+void EveSpaceObject2::AddSpriteLineSet( EveSpriteLineSetPtr newSpriteLineSet )
+{
+	m_spriteLineSets.Append( newSpriteLineSet->GetRawRoot() );
 }
 
 // --------------------------------------------------------------------------------

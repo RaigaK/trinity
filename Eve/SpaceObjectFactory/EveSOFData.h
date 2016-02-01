@@ -216,6 +216,42 @@ TYPEDEF_BLUECLASS( EveSOFDataHullSpriteSet );
 BLUE_DECLARE_VECTOR( EveSOFDataHullSpriteSet );
 
 
+BLUE_CLASS( EveSOFDataHullSpriteLineSetItem ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullSpriteLineSetItem( IRoot* lockobj = NULL );
+	~EveSOFDataHullSpriteLineSetItem() {}
+
+	// per-hull data of a sprite line set
+	Vector3 m_position, m_scaling;
+	Quaternion m_rotation;
+	float m_spacing, m_blinkRate, m_blinkPhaseShift, m_minScale, m_maxScale, m_falloff;
+	int m_boneIndex, m_groupIndex;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullSpriteLineSetItem );
+BLUE_DECLARE_VECTOR( EveSOFDataHullSpriteLineSetItem );
+
+
+BLUE_CLASS( EveSOFDataHullSpriteLineSet ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullSpriteLineSet( IRoot* lockobj = NULL );
+	~EveSOFDataHullSpriteLineSet() {}
+
+	// animated?
+	std::string m_name;
+	bool m_skinned;
+	// items
+	PEveSOFDataHullSpriteLineSetItemVector m_items;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullSpriteLineSet );
+BLUE_DECLARE_VECTOR( EveSOFDataHullSpriteLineSet );
+
+
 BLUE_CLASS( EveSOFDataHullBoosterItem ) :
 	public IRoot
 {
@@ -418,6 +454,7 @@ public:
 	PEveSOFDataHullSpriteSetVector m_spriteSets;
 	PEveSOFDataHullSpotlightSetVector m_spotlightSets;
 	PEveSOFDataHullPlaneSetVector m_planeSets;
+	PEveSOFDataHullSpriteLineSetVector m_spriteLineSets;
 	bool m_hasImpactEffect;
 
 	// decals

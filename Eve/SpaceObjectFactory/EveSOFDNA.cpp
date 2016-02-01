@@ -388,11 +388,20 @@ const std::vector<EveSOFDataMgr::HullSpotlightSetData>& EveSOFDNA::GetHullSpotli
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Return an array to all the spotlightsets on this hull
+//   Return an array to all the spritesets on this hull
 // --------------------------------------------------------------------------------
 const std::vector<EveSOFDataMgr::HullSpriteSetData>& EveSOFDNA::GetHullSpriteSets() const
 {
 	return m_hullData->spriteSets;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Return an array to all the spritelinesets on this hull
+// --------------------------------------------------------------------------------
+const std::vector<EveSOFDataMgr::HullSpriteLineSetData>& EveSOFDNA::GetHullSpriteLineSets() const
+{
+	return m_hullData->spriteLineSets;
 }
 
 // --------------------------------------------------------------------------------

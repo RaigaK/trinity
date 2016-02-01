@@ -7,7 +7,6 @@
 #ifndef EvePlaneSet_H
 #define EvePlaneSet_H
 
-//#include "Tr2DeviceResource.h"
 #include "ITr2GeometryProvider.h"
 #include "ITr2Renderable.h"
 

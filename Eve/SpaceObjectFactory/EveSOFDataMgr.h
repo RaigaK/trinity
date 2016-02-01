@@ -104,7 +104,21 @@ public:
 	struct HullSpriteSetData
 	{
 		bool skinned;
-		std::vector<HullSpriteSetItemData> m_items;
+		std::vector<HullSpriteSetItemData> items;
+	};
+
+	struct HullSpriteLineSetItemData
+	{
+		Vector3 position, scaling;
+		Quaternion rotation;
+		float spacing, blinkRate, blinkPhaseShift, minScale, maxScale, falloff;
+		int boneIndex, groupIndex;
+	};
+
+	struct HullSpriteLineSetData
+	{
+		bool skinned;
+		std::vector<HullSpriteLineSetItemData> items;
 	};
 
 	struct HullAreas
@@ -181,6 +195,7 @@ public:
 		std::vector<HullSpriteSetData> spriteSets;
 		std::vector<HullSpotlightSetData> spotlightSets;
 		std::vector<HullPlaneSetData> planeSets;
+		std::vector<HullSpriteLineSetData> spriteLineSets;
 		bool hasImpactEffect;
 		std::vector<HullAreas> opaqueAreas;
 		std::vector<HullAreas> decalAreas;

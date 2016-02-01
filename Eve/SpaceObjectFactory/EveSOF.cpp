@@ -13,6 +13,7 @@
 #include "Eve/SpaceObject/EveShip2.h"
 #include "Eve/SpaceObject/EveStation2.h"
 #include "Eve/SpaceObject/Attachments/Sets/EveSpriteSet.h"
+#include "Eve/SpaceObject/Attachments/Sets/EveSpriteLineSet.h"
 #include "Eve/SpaceObject/Attachments/EveTrailsSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EveSpotlightSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EvePlaneSet.h"
@@ -132,6 +133,7 @@ IRootPtr EveSOF::BuildFromDNA( const char* dnaString )
 	SetupSpriteSets( newObj, dna );
 	SetupSpotlightSets( newObj, dna );
 	SetupPlaneSets( newObj, dna );
+	SetupSpriteLineSets( newObj, dna );
 	SetupEffects( newObj, dna );
 
 	// attachments to ship
@@ -466,7 +468,7 @@ void EveSOF::SetupSpriteSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) c
 			spriteSet->SetEffect( spriteSetData->skinned ? m_spriteSetEffectSkinned : m_spriteSetEffect );
 		}
 		// add all the individual items
-		for( auto ssiit = spriteSetData->m_items.begin(); ssiit != spriteSetData->m_items.end(); ++ssiit )
+		for( auto ssiit = spriteSetData->items.begin(); ssiit != spriteSetData->items.end(); ++ssiit )
 		{
 			const EveSOFDataMgr::HullSpriteSetItemData* itemData = &(*ssiit);
 
@@ -685,6 +687,67 @@ void EveSOF::SetupPlaneSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) co
 		obj->AddPlaneSet( planeSet );
 	}
 
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   This is where it is all going to happen
+// --------------------------------------------------------------------------------
+void EveSOF::SetupSpriteLineSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	// cycle over all spritelinesets of this hull
+	const std::vector<EveSOFDataMgr::HullSpriteLineSetData>& hullSpriteLineSets = dna->GetHullSpriteLineSets();
+	for( auto slsit = hullSpriteLineSets.begin(); slsit != hullSpriteLineSets.end(); ++slsit )
+	{
+		const EveSOFDataMgr::HullSpriteLineSetData* spriteLineSetData = &( *slsit );
+
+		// create a spriteset for this ship
+		EveSpriteLineSetPtr spriteLineSet;
+		spriteLineSet.CreateInstance();
+		// set shader
+		spriteLineSet->Setup( m_spriteSetEffectPool, spriteLineSetData->skinned );
+		// add all the individual items
+		for( auto slsiit = spriteLineSetData->items.begin(); slsiit != spriteLineSetData->items.end(); ++slsiit )
+		{
+			const EveSOFDataMgr::HullSpriteLineSetItemData* itemData = &( *slsiit );
+
+			// faction data?
+			const EveSOFDataMgr::FactionSpriteSetColorData* factionSpriteData = dna->GetFactionSpriteSetData( slsiit->groupIndex );
+			if( !factionSpriteData )
+			{
+				// This spritelineset item is not used for this faction.
+				continue;
+			}
+
+			// create spritelineset items
+			EveSpriteLineSetItemPtr spriteLineSetItem;
+			spriteLineSetItem.CreateInstance();
+
+			// set it up the per-faction data
+			spriteLineSetItem->m_color = factionSpriteData->color;
+
+			// set it up the per-hull data
+			spriteLineSetItem->m_blinkPhaseShift = slsiit->blinkPhaseShift;
+			spriteLineSetItem->m_blinkRate = slsiit->blinkRate;
+			spriteLineSetItem->m_boneIndex = slsiit->boneIndex;
+			spriteLineSetItem->m_falloff = slsiit->falloff;
+			spriteLineSetItem->m_maxScale = slsiit->maxScale;
+			spriteLineSetItem->m_minScale = slsiit->minScale;
+			spriteLineSetItem->m_position = slsiit->position;
+			spriteLineSetItem->m_rotation = slsiit->rotation;
+			spriteLineSetItem->m_scaling = slsiit->scaling;
+			spriteLineSetItem->m_spacing = slsiit->spacing;
+
+			// put it into spriteset
+			spriteLineSet->Add( spriteLineSetItem );
+		}
+		// spriteset needs internal rebuild
+		spriteLineSet->Rebuild();
+		// put set onto ship
+		obj->AddSpriteLineSet( spriteLineSet );
+	}
 }
 
 // --------------------------------------------------------------------------------

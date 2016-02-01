@@ -234,6 +234,43 @@ const Be::ClassInfo* EveSOFDataHullSpriteSet::ExposeToBlue()
 
 
 
+BLUE_DEFINE( EveSOFDataHullSpriteLineSetItem );
+const Be::ClassInfo* EveSOFDataHullSpriteLineSetItem::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataHullSpriteLineSetItem, "" )
+		MAP_INTERFACE( EveSOFDataHullSpriteLineSetItem )
+
+		MAP_ATTRIBUTE( "position", m_position, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "scaling", m_scaling, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "rotation", m_rotation, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "spacing", m_spacing, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "blinkRate", m_blinkRate, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "blinkPhaseShift", m_blinkPhaseShift, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "minScale", m_minScale, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "maxScale", m_maxScale, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "falloff", m_falloff, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "boneIndex", m_boneIndex, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "groupIndex", m_groupIndex, "", Be::READWRITE | Be::PERSIST )
+		EXPOSURE_END()
+}
+
+
+
+BLUE_DEFINE( EveSOFDataHullSpriteLineSet );
+const Be::ClassInfo* EveSOFDataHullSpriteLineSet::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataHullSpriteLineSet, "" )
+		MAP_INTERFACE( EveSOFDataHullSpriteLineSet )
+
+		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "skinned", m_skinned, "Is this spriteset bone-animated.", Be::READWRITE | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "items", m_items, "The items in this spritelineset", Be::READWRITE | Be::PERSIST )
+		EXPOSURE_END()
+}
+
+
+
 BLUE_DEFINE( EveSOFDataHullBooster );
 const Be::ClassInfo* EveSOFDataHullBooster::ExposeToBlue()
 {
@@ -433,6 +470,7 @@ const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 		MAP_ATTRIBUTE( "spriteSets", m_spriteSets, "The spritesets", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "spotlightSets", m_spotlightSets, "The spotlightsets", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "planeSets", m_planeSets, "The planesets", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "spriteLineSets", m_spriteLineSets, "The spritelinesets", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "hasImpactEffect", m_hasImpactEffect, "Does this hull get an impact effect?", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "hullDecals", m_hullDecals, "The hull decals", Be::READWRITE | Be::PERSIST )

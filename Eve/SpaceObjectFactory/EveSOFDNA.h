@@ -77,6 +77,7 @@ public:
 	const std::vector<EveSOFDataMgr::HullPlaneSetData>& GetHullPlaneSets() const;
 	const std::vector<EveSOFDataMgr::HullSpotlightSetData>& GetHullSpotlightSets() const;
 	const std::vector<EveSOFDataMgr::HullSpriteSetData>& GetHullSpriteSets() const;
+	const std::vector<EveSOFDataMgr::HullSpriteLineSetData>& GetHullSpriteLineSets() const;
 	const std::vector<EveSOFDataMgr::LocatorData>& GetHullTurretLocators() const;
 	const std::vector<EveSOFDataMgr::LocatorDirectionData>& GetHullDamageLocators() const;
 

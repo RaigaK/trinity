@@ -445,7 +445,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hssid.minScale = spriteSetItemData->m_minScale;
 			hssid.position = spriteSetItemData->m_position;
 			hssid.groupIndex = spriteSetItemData->m_groupIndex;
-			hssd.m_items.push_back( hssid );
+			hssd.items.push_back( hssid );
 		}
 		hd.spriteSets.push_back( hssd );
 	}
@@ -510,6 +510,35 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hpsd.items.push_back( pssid );
 		}
 		hd.planeSets.push_back( hpsd );
+	}
+
+	// spritelinesets
+	hd.spriteLineSets.clear();
+	for( auto slsit = srcData->m_spriteLineSets.begin(); slsit != srcData->m_spriteLineSets.end(); ++slsit )
+	{
+		EveSOFDataHullSpriteLineSetPtr spriteLineSetData = ( *slsit );
+
+		HullSpriteLineSetData hslsd;
+		hslsd.skinned = spriteLineSetData->m_skinned;
+		for( auto slsiit = spriteLineSetData->m_items.begin(); slsiit != spriteLineSetData->m_items.end(); ++slsiit )
+		{
+			EveSOFDataHullSpriteLineSetItemPtr spriteLineSetItemData = ( *slsiit );
+
+			HullSpriteLineSetItemData hslsid;
+			hslsid.blinkPhaseShift = spriteLineSetItemData->m_blinkPhaseShift;
+			hslsid.blinkRate = spriteLineSetItemData->m_blinkRate;
+			hslsid.boneIndex = spriteLineSetItemData->m_boneIndex;
+			hslsid.falloff = spriteLineSetItemData->m_falloff;
+			hslsid.maxScale = spriteLineSetItemData->m_maxScale;
+			hslsid.minScale = spriteLineSetItemData->m_minScale;
+			hslsid.position = spriteLineSetItemData->m_position;
+			hslsid.groupIndex = spriteLineSetItemData->m_groupIndex;
+			hslsid.scaling = spriteLineSetItemData->m_scaling;
+			hslsid.rotation = spriteLineSetItemData->m_rotation;
+			hslsid.spacing = spriteLineSetItemData->m_spacing;
+			hslsd.items.push_back( hslsid );
+		}
+		hd.spriteLineSets.push_back( hslsd );
 	}
 
 	// hulldecals

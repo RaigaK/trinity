@@ -110,22 +110,22 @@ bool EveSpriteSet::OnPrepareResources()
 		{
 			auto sprite = m_sprites[i];
 			auto& vertex = m_buffer[i];
-			vertex.m_position = sprite->m_position;
+			vertex.position = sprite->m_position;
 			uint32_t color = sprite->m_color;
-			vertex.m_color = 
+			vertex.color = 
 				( ( color & 0xff0000 ) >> 16 ) |
 				( color & 0xff00ff00 ) |
 				( ( color & 0xff ) << 16 );
 			color = sprite->m_warpColor;
-			vertex.m_warpColor = 
+			vertex.warpColor = 
 				( ( color & 0xff0000 ) >> 16 ) |
 				( color & 0xff00ff00 ) |
 				( ( color & 0xff ) << 16 );
-			vertex.m_blinkPhase = sprite->m_blinkPhase;
-			vertex.m_blinkRate = sprite->m_blinkRate;
-			vertex.m_minScale = sprite->m_minScale;
-			vertex.m_maxScale = sprite->m_maxScale;
-			vertex.m_falloff = sprite->m_falloff;
+			vertex.blinkPhase = sprite->m_blinkPhase;
+			vertex.blinkRate = sprite->m_blinkRate;
+			vertex.minScale = sprite->m_minScale;
+			vertex.maxScale = sprite->m_maxScale;
+			vertex.falloff = sprite->m_falloff;
 		}
 
 		m_spriteData.resize( n );
@@ -226,7 +226,7 @@ void EveSpriteSet::AddBoosterGlowToQuadRenderer( Tr2QuadRenderer& quadRenderer, 
 	auto n = m_spriteData.size();
 
 	XMVector3TransformCoordStream( reinterpret_cast
-		<XMFLOAT3*>( &m_buffer[0].m_position ), 
+		<XMFLOAT3*>( &m_buffer[0].position ), 
 		sizeof( PoolVertex ), 
 		reinterpret_cast<XMFLOAT3*>( &m_spriteData[0].position ), 
 		sizeof( SpriteData ), 
@@ -243,10 +243,10 @@ void EveSpriteSet::AddBoosterGlowToQuadRenderer( Tr2QuadRenderer& quadRenderer, 
 	{
 		auto& vert = m_buffer[i];
 		vert.activation = zDirX;
-		vert.m_blinkRate = zDirY;
-		vert.m_falloff = zDirZ;
-		vert.m_color = ( vert.m_color & 0xffffff ) | gain;
-		vert.m_warpColor = ( vert.m_warpColor & 0xffffff ) | warp;
+		vert.blinkRate = zDirY;
+		vert.falloff = zDirZ;
+		vert.color = ( vert.color & 0xffffff ) | gain;
+		vert.warpColor = ( vert.warpColor & 0xffffff ) | warp;
 	}
 	quadRenderer.AddQuads( m_effectHash, &m_buffer[0], m_sprites.GetSize() );
 }
@@ -281,7 +281,7 @@ void EveSpriteSet::AddToQuadRenderer( Tr2QuadRenderer& quadRenderer, const Matri
 	if( !m_skinned )
 	{
 		XMVector3TransformCoordStream( 
-			reinterpret_cast<XMFLOAT3*>( &m_buffer[0].m_position ), 
+			reinterpret_cast<XMFLOAT3*>( &m_buffer[0].position ), 
 			sizeof( PoolVertex ), 
 			reinterpret_cast<XMFLOAT3*>( &m_spriteData[0] ), 
 			sizeof( SpriteData ), 
@@ -298,13 +298,13 @@ void EveSpriteSet::AddToQuadRenderer( Tr2QuadRenderer& quadRenderer, const Matri
 				TriMatrixCopyFrom3x4( &m, &bones[boneIndex] );
 				XMVECTOR position = XMVector3TransformCoord( XMLoadFloat3( reinterpret_cast<XMFLOAT3*>( &m_spriteData[i] ) ), m );
 				XMStoreFloat3A( 
-					reinterpret_cast<XMFLOAT3*>( &m_buffer[i].m_position ), 
+					reinterpret_cast<XMFLOAT3*>( &m_buffer[i].position ), 
 					XMVector3TransformCoord( position, world ) );
 			}
 			else
 			{
 				XMStoreFloat3A( 
-					reinterpret_cast<XMFLOAT3*>( &m_buffer[i].m_position ), 
+					reinterpret_cast<XMFLOAT3*>( &m_buffer[i].position ), 
 					XMVector3TransformCoord( XMLoadFloat3( reinterpret_cast<XMFLOAT3*>( &m_spriteData[i] ) ), world ) );
 			}
 		}

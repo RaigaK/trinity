@@ -31,6 +31,28 @@ public:
 	EveSpriteSet( IRoot* lockobj = NULL );
 	~EveSpriteSet();
 
+	// structs
+	struct PoolVertex
+	{
+		Vector3 position;
+		D3DXFLOAT16 activation;
+		D3DXFLOAT16 blinkPhase;
+		D3DXFLOAT16 blinkRate;
+		D3DXFLOAT16 minScale;
+		D3DXFLOAT16 maxScale;
+		D3DXFLOAT16 falloff;
+		uint32_t color;
+		uint32_t warpColor;
+
+		static const Tr2VertexDefinition& GetDefinition();
+	};
+
+	struct SpriteData
+	{
+		Vector3 position;
+		uint32_t boneIndex;
+	};
+
 	// Note: Call Clear, Add (as many times as needed), then PrepareResources
 	void Clear();
 	void Add( const Vector3& pos, float blinkRate, float blinkPhase, float minScale, float maxScale, float falloff, const Color& color, const Color& warpColor );
@@ -86,27 +108,8 @@ private:
 	unsigned int m_vertexCount;
 	Tr2VertexBufferAL m_vertexBuffer;
 
-	struct PoolVertex
-	{
-		Vector3 m_position;
-		D3DXFLOAT16 activation;
-		D3DXFLOAT16 m_blinkPhase;
-		D3DXFLOAT16 m_blinkRate;
-		D3DXFLOAT16 m_minScale;
-		D3DXFLOAT16 m_maxScale;
-		D3DXFLOAT16 m_falloff;
-		uint32_t m_color;
-		uint32_t m_warpColor;
-
-		static const Tr2VertexDefinition& GetDefinition();
-	};
+	// buffers for globals quadrenderer
 	TrackableStdVector<PoolVertex> m_buffer;
-
-	struct SpriteData
-	{
-		Vector3 position;
-		uint32_t boneIndex;
-	};
 	TrackableStdVector<SpriteData> m_spriteData;
 };
 
