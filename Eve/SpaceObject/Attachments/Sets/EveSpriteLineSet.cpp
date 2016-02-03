@@ -108,8 +108,7 @@ bool EveSpriteLineSet::OnPrepareResources()
 		D3DXMatrixRotationQuaternion( &m, &spriteLine->m_rotation );
 
 		// how many sprites on this line?
-		float len = spriteLine->m_scaling.x;
-		size_t numOfSprites = size_t( len / spriteLine->m_spacing );
+		size_t numOfSprites = size_t( spriteLine->m_scaling.x );
 
 		// increase buffer
 		totalBufferSize += numOfSprites;
