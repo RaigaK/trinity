@@ -126,6 +126,14 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		)
 
 		MAP_ATTRIBUTE
+		(
+			"locatorSets",
+			m_locatorSets,
+			"Set of Blue structure lists of locators identified by a name",
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
 		(    
 			"translationCurve",
 			m_ballPosition,

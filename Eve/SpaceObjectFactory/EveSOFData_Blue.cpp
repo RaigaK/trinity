@@ -360,6 +360,18 @@ const Be::ClassInfo* EveSOFDataHullLocator::ExposeToBlue()
 }
 
 
+BLUE_DEFINE( EveSOFDataHullLocatorSet );
+const Be::ClassInfo* EveSOFDataHullLocatorSet::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataHullLocatorSet, "" )
+		MAP_INTERFACE( EveSOFDataHullLocatorSet )
+
+		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "locators", m_locators, "", Be::READWRITE | Be::PERSIST )
+	EXPOSURE_END()
+}
+
+
 BLUE_DEFINE( EveSOFDataTransform );
 const Be::ClassInfo* EveSOFDataTransform::ExposeToBlue()
 {
@@ -486,6 +498,7 @@ const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "locatorTurrets", m_locatorTurrets, "Turret locators", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "damageLocators", m_damageLocators, "Damage locators", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "locatorSets", m_locatorSets, "Damage locators", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "modelRotationCurvePath", m_modelRotationCurvePath, "Model rotation curve path", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "modelTranslationCurvePath", m_modelTranslationCurvePath, "Model translation curve path", Be::READWRITE | Be::PERSIST )

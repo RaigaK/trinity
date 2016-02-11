@@ -63,6 +63,7 @@ EveSpaceObject2::EveSpaceObject2( IRoot* lockobj ) :
 	PARENTLOCK( m_decals ),
 	PARENTLOCK( m_locators ),
 	PARENTLOCK( m_observers ),
+	PARENTLOCK( m_locatorSets ),
 	PARENTLOCK( m_spriteSets ),
 	PARENTLOCK( m_spotlightSets ),
 	PARENTLOCK( m_planeSets ),

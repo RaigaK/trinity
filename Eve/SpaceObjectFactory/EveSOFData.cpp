@@ -173,6 +173,7 @@ EveSOFDataHull::EveSOFDataHull( IRoot* lockobj ) :
 	PARENTLOCK( m_distortionAreas ),
 	PARENTLOCK( m_locatorTurrets ),
 	PARENTLOCK( m_damageLocators ),
+	PARENTLOCK( m_locatorSets ),
 	PARENTLOCK( m_children ),
 	PARENTLOCK( m_instancedMeshes ),
 	PARENTLOCK( m_animations ),
@@ -229,6 +230,12 @@ EveSOFDataHullDecal::EveSOFDataHullDecal( IRoot* lockobj ) :
 EveSOFDataHullLocator::EveSOFDataHullLocator( IRoot* lockobj )
 {
 	D3DXMatrixIdentity( &m_transform );
+}
+
+
+EveSOFDataHullLocatorSet::EveSOFDataHullLocatorSet( IRoot* lockobj ) :
+	PARENTLOCK( m_locators )
+{
 }
 
 

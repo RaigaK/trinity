@@ -637,6 +637,24 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		hd.locatorDamage.push_back( ldd );
 	}
 
+	// locator sets
+	hd.locatorSets.clear();
+	for( auto lsit = srcData->m_locatorSets.begin(); lsit != srcData->m_locatorSets.end(); ++lsit )
+	{
+		EveSOFDataHullLocatorSetPtr locatorSet = (*lsit);
+
+		for( auto lit = locatorSet->m_locators.begin(); lit != locatorSet->m_locators.end(); ++lit )
+		{
+			EveSOFDataTransformPtr locatorData = (*lit);
+
+			LocatorDirectionData ldd;
+			ldd.position = locatorData->m_position;
+			ldd.rotation = locatorData->m_rotation;
+			ldd.boneIndex = locatorData->m_boneIndex;
+			hd.locatorSets[locatorSet->m_name].push_back( ldd );
+		}
+	}
+
 	// children
 	hd.children.clear();
 	for( auto chit = srcData->m_children.begin(); chit != srcData->m_children.end(); ++chit )

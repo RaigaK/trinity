@@ -324,6 +324,22 @@ TYPEDEF_BLUECLASS( EveSOFDataHullLocator );
 BLUE_DECLARE_VECTOR( EveSOFDataHullLocator );
 
 
+BLUE_CLASS( EveSOFDataHullLocatorSet ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullLocatorSet( IRoot* lockobj = NULL );
+	~EveSOFDataHullLocatorSet() {}
+
+	// data
+	BlueSharedString m_name;
+	PEveSOFDataTransformVector m_locators;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullLocatorSet );
+BLUE_DECLARE_VECTOR( EveSOFDataHullLocatorSet );
+
+
 BLUE_CLASS( EveSOFDataHullChild ) :
 	public IRoot
 {
@@ -467,6 +483,7 @@ public:
 	// locators
 	PEveSOFDataHullLocatorVector m_locatorTurrets;
 	PEveSOFDataTransformVector m_damageLocators;
+	PEveSOFDataHullLocatorSetVector m_locatorSets;
 
 	// children
 	PEveSOFDataHullChildVector m_children;

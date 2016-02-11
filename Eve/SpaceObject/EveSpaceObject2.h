@@ -49,7 +49,8 @@ BLUE_DECLARE( EveTransform );
 BLUE_DECLARE( EveCustomMask );
 BLUE_DECLARE( TriCurveSet );
 BLUE_DECLARE_VECTOR( TriCurveSet );
-
+BLUE_DECLARE( EveLocatorSets );
+BLUE_DECLARE_VECTOR( EveLocatorSets );
 BLUE_DECLARE( TriObserverLocal );
 BLUE_DECLARE_VECTOR( TriObserverLocal );
 
@@ -448,6 +449,9 @@ protected:
 	ITriQuaternionFunctionPtr m_modelRotation;
 	ITriVectorFunctionPtr m_modelTranslation;
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// locator sets
+	PEveLocatorSetsVector m_locatorSets;
 	PEveDamageLocatorStructureList m_persistedDamageLocators;
 	
 	/////////////////////////////////////////////////////////////////////////////////////

@@ -207,6 +207,7 @@ public:
 		HullBoosterData boosters;
 		std::vector<LocatorData> locatorTurrets;
 		std::vector<LocatorDirectionData> locatorDamage;
+		std::map<BlueSharedString, std::vector<LocatorDirectionData>> locatorSets;
 		std::vector<HullChild> children;
 		std::vector<HullInstancedMesh> instancedMeshes;
 		std::vector<HullAnimation> animations;
