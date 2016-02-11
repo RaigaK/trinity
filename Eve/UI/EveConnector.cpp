@@ -17,7 +17,9 @@ EveConnector::EveConnector( IRoot* lockobj ) :
 	m_animationScale( 1.f ),
 	m_animationSpeed( 0.f ),
 	m_width( 1.f ),
-	m_isAnimated( false )
+	m_lineLength( 1.f ),
+	m_isAnimated( false ),
+	m_autoScaleAnimation( false )
 {
 }
 
@@ -40,8 +42,8 @@ void EveConnector::Update( EveUpdateContext& context )
 
 void EveConnector::AddLine( EveCurveLineSet* lineSet )
 {
-	float length;
-	Vector3 v;
+	float length, angle;
+	Vector3 v, v2, v3;
 	Vector3 n( 0, 1, 0 );
 
 	// Currently we assume we always project onto the x,0,z plane. This may change later on, in that case using sourcePosition
@@ -50,24 +52,33 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 	{
 	case StraightAnchor:
 		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
+		m_lineLength = D3DXVec3Length( D3DXVec3Subtract( &v2, &v, &m_destPosition ) );
 		AddStraightLine( lineSet, m_destPosition, v );
 		break;
 	case CurvedAnchor:
 		TriVectorRotateToPlane( &v, &m_destPosition, &m_sourcePosition, &n );
+		D3DXVec3Subtract( &v2, &m_destPosition, &m_sourcePosition );
+		D3DXVec3Subtract( &v3, &v, &m_sourcePosition );
+		length = D3DXVec3Length( &v2 );
+		angle = acos( D3DXVec3Dot( D3DXVec3Normalize( &v2, &v2 ), D3DXVec3Normalize( &v3, &v3 ) ) );
+		m_lineLength = length * angle;
 		AddSpheredSegment( lineSet, m_destPosition, v, m_sourcePosition );
 		break;
 	case XZ_Circle:
 		v = m_destPosition - m_sourcePosition;
 		length = D3DXVec3Length( &v );
+		m_lineLength = TRI_PI * length * 0.5f;
 		AddCircle( lineSet, m_sourcePosition, length );
 		break;
 	case XZ_CircleStraight:
 		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
 		v = v - m_sourcePosition;
 		length = D3DXVec3Length( &v );
+		m_lineLength = TRI_PI * length * 0.5f;
 		AddCircle( lineSet, m_sourcePosition, length );
 		break;
 	case PointToPoint:
+		m_lineLength = D3DXVec3Length( D3DXVec3Subtract( &v, &m_sourcePosition, &m_destPosition ) );
 		AddStraightLine( lineSet, m_sourcePosition, m_destPosition );
 		break;
 	default:
@@ -79,13 +90,19 @@ inline void EveConnector::AnimateSegment( EveCurveLineSet* lineSet, int lineID )
 {
 	if( m_isAnimated )
 	{
-		// Scale the animation by length so we get a more consistent size/speed
-		// For it to look good we will need to do some falloff scaling in the shader as well
-		// This doesn't quite work for circles at the moment, will have to figure out a
-		// good consistent way to do this
-		Vector3 d = m_sourcePosition - m_destPosition;
-		float length = D3DXVec3Length( &d );
-		lineSet->ChangeLineAnimation( lineID, (Vector4)m_animationColor, m_animationSpeed / length, length / m_animationScale );
+		if( m_autoScaleAnimation )
+		{
+			float speed = m_animationSpeed;
+			if( m_lineLength != 0 )
+			{
+				speed = m_animationSpeed / m_lineLength;
+			}
+			lineSet->ChangeLineAnimation( lineID, (Vector4)m_animationColor, speed, m_lineLength * m_animationScale );
+		}
+		else
+		{
+			lineSet->ChangeLineAnimation( lineID, (Vector4)m_animationColor, m_animationSpeed, m_animationScale );
+		}
 	}
 }
 

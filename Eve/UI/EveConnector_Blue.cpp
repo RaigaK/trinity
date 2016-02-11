@@ -56,6 +56,7 @@ const Be::ClassInfo* EveConnector::ExposeToBlue()
 		MAP_ATTRIBUTE( "animationScale", m_animationScale, "", Be::READWRITE | Be::PERSIST );
 		MAP_ATTRIBUTE( "animationSpeed", m_animationSpeed, "", Be::READWRITE | Be::PERSIST );
 		MAP_ATTRIBUTE( "isAnimated", m_isAnimated, "", Be::READWRITE | Be::PERSIST );
+		MAP_ATTRIBUTE( "autoScaleAnimation", m_autoScaleAnimation, "", Be::READWRITE | Be::PERSIST );
 
 		MAP_ATTRIBUTE( "destPosition", m_destPosition, "", Be::READWRITE | Be::PERSIST );
 		MAP_ATTRIBUTE( "sourcePosition", m_sourcePosition, "", Be::READWRITE | Be::PERSIST );

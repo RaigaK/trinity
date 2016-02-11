@@ -43,8 +43,10 @@ private:
 	float m_animationSpeed;
 	float m_animationScale;
 	float m_width;
+	float m_lineLength;
 
 	bool m_isAnimated;
+	bool m_autoScaleAnimation;
 
 	// Some helper functions(inline)
 	void AnimateSegment( EveCurveLineSet* lineSet, int lineID );

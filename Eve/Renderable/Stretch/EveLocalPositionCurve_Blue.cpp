@@ -55,7 +55,7 @@ const Be::ClassInfo* EveLocalPositionCurve::ExposeToBlue()
 			"behavior",
 			m_behavior,
 			"Chooses between position calculation behaviour.",
-			Be::READWRITE | Be::ENUM, 
+			Be::READWRITE | Be::PERSIST | Be::ENUM, 
 			EveLocalPositionChooser
 		)
 

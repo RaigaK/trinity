@@ -12,7 +12,8 @@
 #include "ITr2Renderable.h"
 
 EveLineContainer::EveLineContainer( IRoot* lockobj ) :
-	PARENTLOCK( m_connectors )
+	PARENTLOCK( m_connectors ),
+	m_display( true )
 {
 }
 
@@ -38,6 +39,11 @@ void EveLineContainer::Update( EveUpdateContext& context )
 
 void EveLineContainer::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform )
 {
+	if( !m_display )
+	{
+		return;
+	}
+
 	if( m_lineSet )
 	{
 		m_lineSet->GetRenderables( frustum, renderables, parentTransform );
