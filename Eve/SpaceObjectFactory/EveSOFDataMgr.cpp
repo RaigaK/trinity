@@ -869,9 +869,7 @@ bool EveSOFDataMgr::LoadRaceData( EveSOFDataPtr srcData )
 void EveSOFDataMgr::GenerateRaceData( RaceData& rd, EveSOFDataRacePtr srcData ) const
 {
 	// booster data
-	rd.boosters.color = srcData->m_booster->m_color;
 	rd.boosters.scale = srcData->m_booster->m_scale;
-	rd.boosters.textureResPath = srcData->m_booster->m_textureResPath;
 	rd.boosters.glowScale = srcData->m_booster->m_glowScale;
 	rd.boosters.glowColor = srcData->m_booster->m_glowColor;
 	rd.boosters.haloColor = srcData->m_booster->m_haloColor;

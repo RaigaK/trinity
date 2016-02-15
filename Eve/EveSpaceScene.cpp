@@ -2028,6 +2028,11 @@ bool EveSpaceScene::Initialize()
 		SetShLightingManager( manager );
 	}
 
+	for( auto it = begin( m_objects ); it != end( m_objects ); ++it )
+	{
+		( *it )->RegisterWithQuadRenderer( *Tr2QuadRenderer::Instance() );
+	}
+
 	return true;
 }
 

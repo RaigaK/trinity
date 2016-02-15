@@ -8,7 +8,6 @@ const Be::ClassInfo* EveBoosterSet2::ExposeToBlue()
     EXPOSURE_BEGIN( EveBoosterSet2, "" )
         MAP_INTERFACE( EveBoosterSet2 )
 		MAP_INTERFACE( IInitialize )
-		MAP_INTERFACE( INotify )
         MAP_INTERFACE( ITr2Renderable )
 
 		MAP_ATTRIBUTE
@@ -18,7 +17,6 @@ const Be::ClassInfo* EveBoosterSet2::ExposeToBlue()
 			"",
 			Be::READWRITE | Be::PERSIST
 		)
-		MAP_ATTRIBUTE( "volumetric", m_isVolumetric, "booster uses volumetric shader", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "physicsUpdate", m_physicsUpdate, "This enables updating of the boosters trails based on physics sim", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "destinyUpdate", m_destinyUpdate, "This enables updating speed etc. from destiny simulation", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "drawDebugInfo", m_drawDebugInfo, "Enable debug drawing", Be::READWRITE )

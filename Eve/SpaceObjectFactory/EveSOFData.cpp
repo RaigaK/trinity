@@ -121,7 +121,6 @@ EveSOFDataBoosterShape::EveSOFDataBoosterShape( IRoot* lockobj ) :
 	
 
 EveSOFDataBooster::EveSOFDataBooster( IRoot* lockobj ) :
-	m_color( 0.f, 0.f, 0.f, 0.f ),
 	m_scale( 1.f, 1.f, 1.f, 1.f ),
 	m_glowScale( 1.f ),
 	m_glowColor( 0.f, 0.f, 0.f, 0.f ),

@@ -68,7 +68,6 @@ EveBoosterSet2::EveBoosterSet2( IRoot* lockobj ) :
 	m_parentSpeed( 0.f ),
 	m_parentRotation( 0.f, 0.f, 0.f, 1.f ),
 	m_vertexDeclHandle( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
-	m_isVolumetric( false ),
 	m_maxVel( 250.f ),
 	m_lastAccFactor( 0.f ),
 	m_lastValue( 0.f ),
@@ -195,21 +194,11 @@ EveBoosterSet2::~EveBoosterSet2()
 // --------------------------------------------------------------------------------
 bool EveBoosterSet2::Initialize()
 {
-	PrepareResources();
-	return true;
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   If someone changed some data of the boosters we must re-create
-// --------------------------------------------------------------------------------
-bool EveBoosterSet2::OnModified( Be::Var* val )
-{
-	if( IsMatch( val, m_isVolumetric ) )
+	if( m_glows )
 	{
-		ReleaseResources( TRISTORAGE_ALL );
-		PrepareResources();
+		m_glows->UseQuadRenderer( true, false );
 	}
+	PrepareResources();
 	return true;
 }
 
@@ -247,13 +236,8 @@ float EveBoosterSet2::CalculateIntensity( const Vector3& acceleration, Be::Time 
 		accFactor = 1.f;
 	}
 
-	float speedMultiplier = 0.5f;
-	float accMultiplier = 0.5f;
-	if( m_isVolumetric )
-	{
-		speedMultiplier = 0.8f;
-		accMultiplier = 0.2f;
-	}
+	float speedMultiplier = 0.8f;
+	float accMultiplier = 0.2f;
 
 	// dampening (like drum noise)
 	accFactor = accFactor * 0.2f + m_lastAccFactor * 0.8f;
@@ -409,19 +393,11 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 	// grab pos/dir/scale from the local transform matrix
 	Vector3 pos( localMatrix->_41, localMatrix->_42, localMatrix->_43 );
 	Vector3 dir( localMatrix->_31, localMatrix->_32, localMatrix->_33 );
-	float scale;
-	if( m_isVolumetric )
+	float scale = std::max( D3DXVec3Length( &localMatrix->GetX() ),  D3DXVec3Length( &localMatrix->GetY() ) );
+	D3DXVec3Normalize( &dir, &dir );
+	if( scale < 3.f )
 	{
-		scale = std::max( D3DXVec3Length( &localMatrix->GetX() ),  D3DXVec3Length( &localMatrix->GetY() ) );
-		D3DXVec3Normalize( &dir, &dir );
-		if( scale < 3.f )
-		{
-			dir *= scale / 3.f;
-		}
-	}
-	else
-	{
-		scale = D3DXVec3Length( &dir );
+		dir *= scale / 3.f;
 	}
 
 	float seed = float( rand() ) / float( RAND_MAX ) * 0.7f;
@@ -447,16 +423,9 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 	{
 		if( hasTrail )
 		{
-			if( m_isVolumetric )
-			{
-				Matrix offset = *localMatrix;
-				offset.GetTranslation() -= offset.GetZ() * 0.5f;
-				m_trails->Add( &offset, scale );
-			}
-			else
-			{
-				m_trails->Add( localMatrix, scale );
-			}
+			Matrix offset = *localMatrix;
+			offset.GetTranslation() -= offset.GetZ() * 0.5f;
+			m_trails->Add( &offset, scale );
 		}
 	}
 
@@ -497,15 +466,6 @@ void EveBoosterSet2::SetData(
 	m_haloColor = *haloColor;
 	m_warpHaloColor = *warpHaloColor;
 	m_alwaysOn = alwaysOn;
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   Sets if the booster is using a volumetric shader
-// --------------------------------------------------------------------------------
-void EveBoosterSet2::SetVolumetric( bool isVolumetric )
-{
-	m_isVolumetric = isVolumetric;
 }
 
 // --------------------------------------------------------------------------------
@@ -595,7 +555,7 @@ bool EveBoosterSet2::OnPrepareResources()
 	}
 
 	// create star-shape geometry as "indexed" geometry
-	auto shape = m_isVolumetric && Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? BOX : STAR;
+	auto shape = Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? BOX : STAR;
 	CR_RETURN_VAL(	
 		m_vertexBuffer.Create(	4 * EVE_BOOSTER_PLANES_COUNT[shape] * sizeof( BoosterVertex ), 
 								USAGE_IMMUTABLE, 
@@ -832,7 +792,7 @@ void EveBoosterSet2::SubmitGeometry( Tr2RenderContext& renderContext )
 	// how many indiviual boosters are in this set?
 	unsigned int boosterCount = (unsigned int)m_singleBoosters.size();
 
-	auto shape = m_isVolumetric && Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? BOX : STAR;
+	auto shape = Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? BOX : STAR;
 	Tr2IndexBufferAL* indexBuffer = Tr2Renderer::GetQuadListIndexBuffer( EVE_BOOSTER_PLANES_COUNT[shape] );
 	if( !indexBuffer )
 	{

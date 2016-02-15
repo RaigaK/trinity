@@ -85,7 +85,6 @@ public:
 // --------------------------------------------------------------------------------
 BLUE_CLASS( EveBoosterSet2 ):
 	public IInitialize,
-	public INotify,
 	public ITr2GeometryProvider,
 	public Tr2DeviceResource,
 	public ITr2Renderable
@@ -109,10 +108,6 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IInitialize
 	bool Initialize();
-
-	//////////////////////////////////////////////////////////////////////////
-	// INotify
-	bool OnModified( Be::Var* val );
 	
 	//////////////////////////////////////////////////////////////////////////////////////
 	// ITr2GeometryProvider
@@ -165,7 +160,6 @@ public:
 		const Color* haloColor, 
 		const Color* warpHaloColor, 
 		bool alwaysOn );
-	void SetVolumetric( bool isVolumetric );
 	void SetLightData( float offset, float flickerAmplitude, float flickerFrequency, float radius, const Color& color, float warpRadius, const Color& warpColor );
 	void SetEffect( Tr2EffectPtr effect );
 	void SetGlow( EveSpriteSetPtr glow );
@@ -239,8 +233,6 @@ private:
 		uint32_t atlasIndex1;
 	};
 	std::vector<SingleBoosterData> m_singleBoosters;
-
-	bool m_isVolumetric;
 
 	// booster gain
 	float m_maxVel;
