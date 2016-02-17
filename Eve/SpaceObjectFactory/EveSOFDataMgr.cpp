@@ -1128,14 +1128,6 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		gd.decalShaderData[ shaderData->m_shader ] = gsd;
 	}
 
-	// texture extensions
-	gd.textureExtensions.clear();
-	for( auto teit = srcData->m_textureExtensions.begin(); teit != srcData->m_textureExtensions.end(); ++teit )
-	{
-		EveSOFDataKeyValuePtr texExData = (*teit);
-		gd.textureExtensions[ texExData->m_key ] = texExData->m_value;
-	}
-
 	// hull area parameters
 	gd.hullAreaParameters.clear();
 	for( auto hait = srcData->m_hullAreas.begin(); hait != srcData->m_hullAreas.end(); ++hait )

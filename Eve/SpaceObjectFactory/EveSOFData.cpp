@@ -26,10 +26,6 @@ EveSOFDataParameter::EveSOFDataParameter( IRoot* lockobj ) :
 {}
 
 
-EveSOFDataKeyValue::EveSOFDataKeyValue( IRoot* lockobj )
-{}
-
-
 EveSOFDataFactionHullArea::EveSOFDataFactionHullArea( IRoot* lockobj ) :
 	PARENTLOCK( m_parameters )
 {}
@@ -91,7 +87,6 @@ EveSOFDataGeneric::EveSOFDataGeneric( IRoot* lockobj ) :
 	PARENTLOCK( m_materialPrefixes ),
 	PARENTLOCK( m_areaShaders ),
 	PARENTLOCK( m_decalShaders ),
-	PARENTLOCK( m_textureExtensions ),
 	PARENTLOCK( m_hullAreas ),
 	PARENTLOCK( m_variants )
 {}

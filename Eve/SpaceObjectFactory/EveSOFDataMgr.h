@@ -380,8 +380,6 @@ public:
 		// shader-specific data
 		std::map<BlueSharedString, GenericShaderData> areaShaderData;
 		std::map<BlueSharedString, GenericShaderData> decalShaderData;
-		// texture extensions
-		std::map<BlueSharedString, BlueSharedString> textureExtensions;
 		// damage
 		GenericDamageData damage;
 		// hull area parameter overloads
