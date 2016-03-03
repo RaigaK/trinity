@@ -441,6 +441,8 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		)
 
 		MAP_ATTRIBUTE( "lights", m_lights, "List of dynamic lights", Be::READ | Be::PERSIST );
+
+		MAP_ATTRIBUTE( "externalParameters", m_externalParameters, "List of external parameters to bind to object elements", Be::READ | Be::PERSIST )
 		
 		
     EXPOSURE_END()

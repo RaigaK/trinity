@@ -73,6 +73,7 @@ EveSpaceObject2::EveSpaceObject2( IRoot* lockobj ) :
 	PARENTLOCK( m_overlayEffects ),
 	PARENTLOCK( m_effectChildren ),
 	PARENTLOCK( m_lights ),
+	PARENTLOCK( m_externalParameters ),
 	m_display( true ),
 	m_update( true ),
 	m_enableShadow( true ),

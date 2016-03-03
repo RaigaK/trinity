@@ -58,6 +58,8 @@ BLUE_DECLARE( EveSceneStaticParticles );
 BLUE_DECLARE( Tr2ShaderBuffer );
 BLUE_DECLARE( Tr2DataTextureManager );
 BLUE_DECLARE( Tr2GpuParticleSystem );
+BLUE_DECLARE( Tr2ExternalParameter );
+BLUE_DECLARE_VECTOR( Tr2ExternalParameter );
 
 enum TAASampling { TAA_NONE=0, TAA_RANDOM=1, TAA_2X=2, TAA_3X=3, TAA_4X=4 };
 
@@ -427,6 +429,8 @@ protected:
 
 	// ballpark of this scene
 	IEveBallparkPtr m_ballpark;
+
+	PTr2ExternalParameterVector m_externalParameters;
 
 	Vector3 PickInfinity( int x, int y, Matrix proj, Matrix view );
 

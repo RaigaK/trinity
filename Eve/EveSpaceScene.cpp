@@ -120,6 +120,7 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_lensflares ),
 	PARENTLOCK( m_distanceFields ),
+	PARENTLOCK( m_externalParameters ),
 	m_display( true ),
 	m_update( true ),
 	m_enableShadows( true ),

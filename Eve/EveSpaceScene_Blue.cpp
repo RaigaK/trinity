@@ -585,6 +585,8 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 			"Quad renderer used for batch-rendering of space object attachments" )
 
 		MAP_PROPERTY( "gpuParticleSystem", GetGpuParticleSystem, SetGpuParticleSystem, "" );
+
+		MAP_ATTRIBUTE( "externalParameters", m_externalParameters, "List of external parameters to bind to scene elements", Be::READ | Be::PERSIST )
     EXPOSURE_END()
 }
 

@@ -65,6 +65,9 @@ BLUE_DECLARE( EveAnimationSequencer );
 BLUE_DECLARE( Tr2PointLight );
 BLUE_DECLARE_VECTOR( Tr2PointLight );
 
+BLUE_DECLARE( Tr2ExternalParameter );
+BLUE_DECLARE_VECTOR( Tr2ExternalParameter );
+
 struct granny_skeleton;
 
 class TriFrustum;
@@ -518,6 +521,8 @@ protected:
 private:
 	bool m_isAnimated;
 	EveAnimationSequencerPtr m_animationSequencer;
+
+	PTr2ExternalParameterVector m_externalParameters;
 
 };
 
