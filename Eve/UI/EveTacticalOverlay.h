@@ -22,16 +22,11 @@ public:
 	~EveTacticalOverlayTrackObject() {}
 
 	void UpdatePosition( EveUpdateContext& updateContext );
-	//void CalculatePixelSize( const TriFrustum& frustum );
-
 	inline Vector3 GetPosition() { return m_position; }
-
-
 
 private:
 	ITriVectorFunctionPtr m_positionCurve;
 	Vector3 m_position;
-	//float m_lod;
 };
 TYPEDEF_BLUECLASS( EveTacticalOverlayTrackObject );
 BLUE_DECLARE_VECTOR( EveTacticalOverlayTrackObject );
@@ -46,13 +41,9 @@ public:
 
 	EveTacticalOverlay( IRoot* lockobj = NULL );
 	~EveTacticalOverlay();
-	//using IEveSpaceObject2::Lock;
-	//using IEveSpaceObject2::Unlock;
 
 	struct SphereConnectorVertex
 	{
-		//Vector3 targetPosition;
-		//Vector2 miscData;
 		Vector4 instanceData;
 		static const Tr2VertexDefinition& GetDefinition();
 	};
@@ -68,14 +59,12 @@ public:
 	// INotify
 	bool OnModified( Be::Var* value );
 
-	//////////////////////////////////////////////////////////////////////////////////////
 	// IEveSpaceObject2
 	void UpdateSyncronous( EveUpdateContext& updateContext );
 	void UpdateAsyncronous( EveUpdateContext& updateContext ) {}
 	void RenderDebugInfo( Tr2RenderContext& renderContext ) {}
 	void GetRenderables( const TriFrustum& frustum, std::vector<ITr2Renderable*>& renderables, const Matrix& parentTransform );
-	bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const { sphere = Vector4( 0, 0, 0, 100000 ); return true; }
-
+	bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const { return false; }
 	// This version of the function should perform an update on the model / ball position
 	void GetModelCenterWorldPosition( Vector3 &position, Be::Time t ) { position = Vector3( 0, 0, 0 ); }
 
@@ -83,7 +72,7 @@ public:
 	void GetCurrentModelCenterWorldPosition( Vector3 &position ) { position = Vector3( 0, 0, 0 ); }
 
 	// If possible, return an AABB in local coordinates
-	bool GetLocalBoundingBox( Vector3 &min, Vector3 &max ) { min = Vector3( -10000, -10000, -10000 ); max = Vector3( 10000, 10000, 10000 ); return true; }
+	bool GetLocalBoundingBox( Vector3 &min, Vector3 &max ) { return false; }
 
 	// Get the local to world transform
 	void GetLocalToWorldTransform( Matrix &transform ) const { D3DXMatrixIdentity( &transform ); }
@@ -99,7 +88,6 @@ private:
 	unsigned m_connectorEffectHash;
 	unsigned m_anchorEffectHash;
 
-	//std::vector<Vector3> m_positions;
 	std::vector<Vector3> m_anchorBuffer;
 	std::vector<SphereConnectorVertex> m_connectorBuffer;
 

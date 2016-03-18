@@ -37,8 +37,7 @@ const Tr2VertexDefinition& EveTacticalOverlay::AnchorVertex::GetDefinition()
 	if( s_definition.empty() )
 	{
 		Tr2VertexDefinition& vd = s_definition;
-		vd.Add( vd.FLOAT32_1, vd.TEXCOORD, 5 );  // Corner
-
+		vd.Add( vd.FLOAT32_1, vd.TEXCOORD, 5 );
 		vd.Add( vd.FLOAT32_3, vd.POSITION, 0, 1, 1 );
 	}
 	return s_definition;
@@ -50,11 +49,8 @@ const Tr2VertexDefinition& EveTacticalOverlay::SphereConnectorVertex::GetDefinit
 	if( s_definition.empty() )
 	{
 		Tr2VertexDefinition& vd = s_definition;
-		vd.Add( vd.FLOAT32_1, vd.TEXCOORD, 5 );  // Corner
-		vd.Add( vd.FLOAT32_4, vd.TEXCOORD, 0, 1, 1 );  // xyz - position; w - 
-		//vd.Add( vd.FLOAT32_3, vd.POSITION, 0, 1, 1 );
-		//vd.Add( vd.FLOAT32_2, vd.TEXCOORD, 0, 1, 1 );
-		//vd.Add( vd.FLOAT32_3, vd.TEXCOORD, 1, 1, 1 );
+		vd.Add( vd.FLOAT32_1, vd.TEXCOORD, 5 );
+		vd.Add( vd.FLOAT32_4, vd.TEXCOORD, 0, 1, 1 );
 	}
 	return s_definition;
 }
@@ -215,7 +211,6 @@ void EveTacticalOverlay::GetRenderables( const TriFrustum& frustum, std::vector<
 			direction.x = 0.01;
 		}
 		Vector3 positionPlane = m_rootPosition + direction * distance;
-		
 		Vector4 bs;
 		BoundingSphereFromPoints( bs, position, positionPlane );
 		if( !frustum.IsSphereVisible( &bs ) )
@@ -227,10 +222,10 @@ void EveTacticalOverlay::GetRenderables( const TriFrustum& frustum, std::vector<
 		float segments = GetSubdivisionCount( pixelDiameter, m_connectorSegmentsLow, m_connectorSegmentsMedium, m_connectorSegmentsHigh );
 		if( segments != 0 )
 		{
-			// Wide arches need more segments and relatively fewer are needed for narrow ones
 			Vector2 planarDiff( positionPlane.x - position.x, positionPlane.z - position.z );
 			float length = D3DXVec2Length( &planarDiff );
 			float height = abs( position.y - positionPlane.y );
+			// Wide arches need more segments to look good
 			segments *= 1.f + m_arcSegmentMultiplier * length / height;
 			requestedSegments += segments * m_segmentCountMultiplier;
 			if( m_requestedSegmentsLast && m_requestedSegmentsLast > m_targetSegmentCount )
