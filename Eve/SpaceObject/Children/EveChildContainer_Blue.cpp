@@ -17,6 +17,7 @@ const Be::ClassInfo* EveChildContainer::ExposeToBlue()
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "objects", m_objects, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "curveSets", m_curveSets, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "hideOnLowQuality", m_hideOnLowQuality, "Disables all childs in this container on low quality mode.", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "translation", m_translation, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "rotation", m_rotation, "", Be::READWRITE | Be::PERSIST )

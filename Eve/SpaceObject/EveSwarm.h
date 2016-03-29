@@ -218,10 +218,16 @@ protected:
 	const Matrix* GetTurretTransform() const;
 	
 	void UpdateBoosters( EveUpdateContext& updateContext ) {}
+	void UpdateWorldTransform( Be::Time time );
+
 private:
 	std::vector<SwarmVehicle> m_vehicles;
 	std::vector<SwarmVehicleDebug> m_debugInfo;
 	PEveSwarmRenderableVector m_renderables;
+
+	void UpdateSwarm( Be::Time t );
+	Vector3d m_origin;
+	Be::Time m_timeLast;
 
 	// Which fighter is being shot
 	int m_targetIndex;

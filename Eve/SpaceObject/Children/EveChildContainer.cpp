@@ -8,16 +8,18 @@
 
 #include "Utilities/BoundingSphere.h"
 #include "Curves/TriCurveSet.h"
+#include "Tr2Renderer.h"
 #include "Eve/EveUpdateContext.h"
 #include "TriObserverLocal.h"
 
 
-EveChildContainer::EveChildContainer( IRoot* lockobj ):
+EveChildContainer::EveChildContainer( IRoot* lockobj ) :
 	EveChildTransform(),
 	PARENTLOCK( m_objects ),
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_observers ),
-	m_display( true )
+	m_display( true ),
+	m_hideOnLowQuality( false )
 {
 }
 
@@ -31,6 +33,11 @@ void EveChildContainer::GetRenderables( const TriFrustum& frustum, std::vector<I
 	{
 		return;
 	}
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
 		(*it)->GetRenderables( frustum, renderables, parentTransform, parentLod );
@@ -39,8 +46,13 @@ void EveChildContainer::GetRenderables( const TriFrustum& frustum, std::vector<I
 
 bool EveChildContainer::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query ) const
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return false;
+	}
+
 	bool success = false;
-	Vector4 bSphere( 0, 0, 0, -1 );
+	Vector4 bSphere( 0.f, 0.f, 0.f, -1.f );
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
 		if( (*it)->GetBoundingSphere( bSphere ) )
@@ -54,6 +66,11 @@ bool EveChildContainer::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery 
 	
 void EveChildContainer::UpdateSyncronous( EveUpdateContext& updateContext, IEveSpaceObject2* spaceObjectParent, IEveSpaceObjectChild* childParent )
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
 		(*it)->UpdateSyncronous( updateContext, nullptr, this );
@@ -66,6 +83,11 @@ void EveChildContainer::UpdateSyncronous( EveUpdateContext& updateContext, IEveS
 
 void EveChildContainer::UpdateAsyncronous( EveUpdateContext& updateContext, IEveSpaceObject2* spaceObjectParent, IEveSpaceObjectChild* childParent )
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	Matrix localToWorldTransform;
 	if( spaceObjectParent )
 	{
@@ -102,6 +124,11 @@ void EveChildContainer::GetLocalToWorldTransform( Matrix& transform ) const
 
 void EveChildContainer::ChangeLOD( Tr2Lod lod )
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
 		(*it)->ChangeLOD( lod );
@@ -110,6 +137,11 @@ void EveChildContainer::ChangeLOD( Tr2Lod lod )
 
 void EveChildContainer::PlayCurveSet( const std::string& name )
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
 		if( (*it)->GetName() == name )
@@ -123,8 +155,14 @@ void EveChildContainer::PlayCurveSet( const std::string& name )
 		(*it)->PlayCurveSet( name );
 	}
 }
+
 void EveChildContainer::StopCurveSet( const std::string& name )
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return;
+	}
+
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
 		if( (*it)->GetName() == name )
@@ -138,8 +176,14 @@ void EveChildContainer::StopCurveSet( const std::string& name )
 		(*it)->StopCurveSet( name );
 	}
 }
+
 float EveChildContainer::GetCurveSetDuration( const std::string& name ) const
 {
+	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )
+	{
+		return 0.f;
+	}
+
 	float maxDuration = 0.f;
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{

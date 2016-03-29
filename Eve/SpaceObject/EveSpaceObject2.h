@@ -338,7 +338,7 @@ protected:
 	void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData ) const;
 	void GetBatchesFromOverlayVector( ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData, TriBatchType batchType );
 
-	void UpdateWorldTransform( Be::Time time );
+	virtual void UpdateWorldTransform( Be::Time time );
 	friend class EveShip2Builder;
 
 	std::string m_name;

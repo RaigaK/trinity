@@ -43,6 +43,7 @@ public:
 protected:
 	BlueSharedString m_name;
 	bool m_display;
+	bool m_hideOnLowQuality;
 	PIEveSpaceObjectChildVector m_objects;
 	PTriCurveSetVector m_curveSets;
 	PTriObserverLocalVector m_observers;

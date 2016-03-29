@@ -150,6 +150,9 @@ EveSwarm::EveSwarm( IRoot* lockobj ) :
 	m_firingIndex( 0 ),
 	m_worldAcceleration( 0, 0, 0 ),
 
+	m_origin( UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN, UNINITIALIZED_ORIGIN ),
+	m_timeLast( 0 ),
+
 	m_swarmingEnabled( false ),
 	m_debugSize( 24.f ),
 	m_count( 1 ),
@@ -212,8 +215,21 @@ void EveSwarm::RebuildCachedData( BlueAsyncRes* p )
 // --------------------------------------------------------------------------------
 void EveSwarm::UpdateSyncronous( EveUpdateContext& updateContext )
 {
-	Vector3 velocityLast = m_worldVelocity;
 	EveShip2::UpdateSyncronous( updateContext );
+	if( m_swarmingEnabled )
+	{
+		UpdateSwarm( updateContext.GetTime() );
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   From EveShip2
+// --------------------------------------------------------------------------------
+void EveSwarm::UpdateWorldTransform( Be::Time time )
+{
+	Vector3 velocityLast = m_worldVelocity;
+	EveShip2::UpdateWorldTransform( time );
 	m_worldAcceleration = m_worldVelocity - velocityLast;
 }
 
@@ -247,12 +263,6 @@ void EveSwarm::UpdateAsyncronous( EveUpdateContext& context )
 {
 	EveShip2::UpdateAsyncronous( context );
 
-	float timeSeconds = context.GetDeltaT() * m_behavior.m_timeMultiplier;
-	if( timeSeconds > m_behavior.m_maxTime )
-	{
-		timeSeconds = m_behavior.m_maxTime;
-	}
-
 	if( !m_swarmingEnabled || m_count == 0 )
 	{
 		m_squadBoundsMax = Vector3( 0, 0, 0 );
@@ -269,7 +279,67 @@ void EveSwarm::UpdateAsyncronous( EveUpdateContext& context )
 		}
 		return;
 	}
+
+	// Update world transforms
+	auto rit = m_renderables.begin();
+	for( unsigned i = 0; i < m_vehicles.size() && rit != m_renderables.end(); i++, rit++ )
+	{
+		Matrix world;
+		D3DXMatrixAffineTransformation( &world, 1.f, nullptr, &(m_vehicles[i].rotation), &(m_vehicles[i].position) );
+		(*rit)->SetWorldTransform( world );
+		
+		if( m_boosters )
+		{
+			Be::Time time = context.GetTime();
+			float deltaT = context.GetDeltaT();
+			float speed = D3DXVec3Length( &m_vehicles[i].velocity );
+			m_boosters->Update( deltaT, time, world, speed, m_vehicles[i].acceleration, m_vehicles[i].rotation, i );
+			(*rit)->SetBoosterIntensity( m_boosters->GetBoosterIntensity() );
+		}
+		(*rit)->SetShaderData( m_vsData, m_psData );
+	}
+	if( m_boosters )
+	{
+		Be::Time time = context.GetTime();
+		float deltaT = context.GetDeltaT();
+		m_boosters->UpdateTrails( deltaT, time );
+	}
+}
+
+
+void EveSwarm::UpdateSwarm( Be::Time t )
+{
+	if( t == m_timeLast )
+	{
+		return;
+	}
+	if( !m_timeLast )
+	{
+		m_timeLast = t;
+	}
 	
+	UpdateWorldTransform( t );
+	float timeSeconds = TimeAsFloat( t - m_timeLast ) * m_behavior.m_timeMultiplier;
+	if( timeSeconds > m_behavior.m_maxTime )
+	{
+		timeSeconds = m_behavior.m_maxTime;
+	}
+	m_timeLast = t;
+
+	Vector3 originShift( 0.f, 0.f, 0.f );
+	Vector3d originNow( 0.0, 0.0, 0.0 );
+	IEveReferencePointPtr refObject( BlueCastPtr( m_ballPosition ) );
+	if( refObject )
+	{
+		refObject->GetReferencePoint( &originNow, t );
+		if( m_origin.x != UNINITIALIZED_ORIGIN )
+		{
+			m_origin = m_origin - originNow;
+			originShift = m_origin.AsVector3();
+		}
+		m_origin = originNow;
+	}
+
 	BoundingBoxInitialize( m_squadBoundsMin, m_squadBoundsMax );
 
 	if( !m_started )
@@ -285,7 +355,7 @@ void EveSwarm::UpdateAsyncronous( EveUpdateContext& context )
 	{
 		for( unsigned i = 0; i < m_vehicles.size(); i++ )
 		{
-			m_vehicles[i].position += context.GetOriginShift();
+			m_vehicles[i].position += originShift;
 		}
 	}
 
@@ -333,6 +403,7 @@ void EveSwarm::UpdateAsyncronous( EveUpdateContext& context )
 		m_vehicles[i].velocity = m_vehicles[i].velocity + m_vehicles[i].acceleration * timeSeconds;
 		TriVectorClampLength( &m_vehicles[i].velocity, maxSpeed );
 		m_vehicles[i].position += m_vehicles[i].velocity * timeSeconds;
+		UpdateOrientation( &m_vehicles[i], timeSeconds );
 		BoundingBoxUpdate( m_squadBoundsMin, m_squadBoundsMax, m_vehicles[i].position );
 	}
 
@@ -350,34 +421,7 @@ void EveSwarm::UpdateAsyncronous( EveUpdateContext& context )
 			m_vehicles[i].position += d;
 		}
 	}
-
-	// Update world transforms
-	auto rit = m_renderables.begin();
-	for( unsigned i = 0; i < m_vehicles.size() && rit != m_renderables.end(); i++, rit++ )
-	{
-		Matrix world;
-		UpdateOrientation( &m_vehicles[i], timeSeconds );
-		D3DXMatrixAffineTransformation( &world, 1.f, nullptr, &(m_vehicles[i].rotation), &(m_vehicles[i].position) );
-		(*rit)->SetWorldTransform( world );
-		
-		if( m_boosters )
-		{
-			Be::Time time = context.GetTime();
-			float deltaT = context.GetDeltaT();
-			float speed = D3DXVec3Length( &m_vehicles[i].velocity );
-			m_boosters->Update( deltaT, time, world, speed, m_vehicles[i].acceleration, m_vehicles[i].rotation, i );
-			(*rit)->SetBoosterIntensity( m_boosters->GetBoosterIntensity() );
-		}
-		(*rit)->SetShaderData( m_vsData, m_psData );
-	}
-	if( m_boosters )
-	{
-		Be::Time time = context.GetTime();
-		float deltaT = context.GetDeltaT();
-		m_boosters->UpdateTrails( deltaT, time );
-	}
 }
-
 // --------------------------------------------------------------------------------
 // Description:
 //   Registers space object attachments (sprite and spotlight sets) with quad 
@@ -510,6 +554,8 @@ void EveSwarm::GetModelCenterWorldPosition( Vector3 &position, Be::Time t )
 {
 	if( m_swarmingEnabled )
 	{
+		UpdateWorldTransform( t );
+		UpdateSwarm( t );
 		position = ( m_squadBoundsMax + m_squadBoundsMin ) * 0.5f;
 	}
 	else
