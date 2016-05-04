@@ -7,6 +7,7 @@
 #include "Tr2LightManager.h"
 #include "Eve/EveUpdateContext.h"
 #include "Eve/SpaceObject/EveSpaceObject2.h"
+#include "Eve/SpaceObject/Children/EveChildContainer.h"
 
 extern float g_eveSpaceObjectResourceUnloadingTimeThreshold;
 extern float g_eveSpaceSceneMediumDetailThreshold;
@@ -208,4 +209,36 @@ void EveEffectRoot2::GetPerObjectStructs( EveSpaceObjectVSData& vsData, EveSpace
 	psData.shipData.y = 1.f;
 	// boundingsphere
 	psData.shipData.w = 1.f;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Plays all "top level" curve sets.
+// --------------------------------------------------------------------------------
+void EveEffectRoot2::Start()
+{
+	for( auto cit = m_effectChildren.begin(); cit != m_effectChildren.end(); cit++ )
+	{
+		EveChildContainerPtr cont;
+		if( (*cit)->QueryInterface(BlueInterfaceIID<EveChildContainer>(), (void**)&cont, BEQI_SILENT ) )
+		{
+			cont->PlayAllCurveSets();
+		}
+	}
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Stops all "top level" curve sets.
+// --------------------------------------------------------------------------------
+void EveEffectRoot2::Stop()
+{
+	for( auto cit = m_effectChildren.begin(); cit != m_effectChildren.end(); cit++ )
+	{
+		EveChildContainerPtr cont;
+		if( (*cit)->QueryInterface(BlueInterfaceIID<EveChildContainer>(), (void**)&cont, BEQI_SILENT ) )
+		{
+			cont->StopAllCurveSets();
+		}
+	}
 }

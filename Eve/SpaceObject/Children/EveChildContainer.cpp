@@ -156,6 +156,22 @@ void EveChildContainer::PlayCurveSet( const std::string& name )
 	}
 }
 
+void EveChildContainer::PlayAllCurveSets()
+{
+	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
+	{
+		(*it)->Play();
+	}
+}
+
+void EveChildContainer::StopAllCurveSets()
+{
+	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
+	{
+		(*it)->Stop();
+	}
+}
+
 void EveChildContainer::StopCurveSet( const std::string& name )
 {
 	if( m_hideOnLowQuality && Tr2Renderer::IsLowQuality() )

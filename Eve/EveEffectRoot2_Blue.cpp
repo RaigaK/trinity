@@ -98,5 +98,8 @@ const Be::ClassInfo* EveEffectRoot2::ExposeToBlue()
 			Be::READWRITE | Be::PERSIST
 		)
 
+		MAP_METHOD_AND_WRAP( "Start", Start, "Play all top level curveSets" )
+		MAP_METHOD_AND_WRAP( "Stop", Stop, "Stop all top level curveSets." )
+
     EXPOSURE_END();
 }

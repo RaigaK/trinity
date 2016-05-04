@@ -44,6 +44,9 @@ public:
 	bool GetLocalBoundingBox( Vector3 &min, Vector3 &max );
 	void GetLocalToWorldTransform( Matrix &transform ) const;
 
+	void Start();
+	void Stop();
+
 private:
 	// general
 	std::string m_name;

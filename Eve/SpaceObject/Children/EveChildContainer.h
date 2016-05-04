@@ -40,6 +40,9 @@ public:
 	void StopCurveSet( const std::string& name );
 	float GetCurveSetDuration( const std::string& name ) const;
 
+	void PlayAllCurveSets();
+	void StopAllCurveSets();
+
 protected:
 	BlueSharedString m_name;
 	bool m_display;
