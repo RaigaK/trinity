@@ -9,6 +9,7 @@
 #include "EveLODHelper.h"
 #include "IEveSpaceObject2.h"
 #include "Eve/SpaceObject/Children/IEveSpaceObjectChild.h"
+#include "Tr2ShLightingManager.h"
 
 BLUE_DECLARE( Tr2PointLight );
 BLUE_DECLARE_VECTOR( Tr2PointLight );
@@ -17,7 +18,8 @@ BLUE_DECLARE( EveEffectRoot2 );
 
 class EveEffectRoot2:
 	public IEveSpaceObject2,
-	public IInitialize
+	public IInitialize,
+	public ITr2SecondaryLightSource
 {
 public:
     EXPOSE_TO_BLUE();
@@ -43,6 +45,11 @@ public:
 	void GetModelCenterWorldPosition( Vector3 &position ) const;
 	bool GetLocalBoundingBox( Vector3 &min, Vector3 &max );
 	void GetLocalToWorldTransform( Matrix &transform ) const;
+
+	//////////////////////////////////////////////////////////////////////////////////////
+	// ITr2SecondaryLightSource
+	virtual void RegisterSecondaryLightSource( Tr2ShLightingManager& );
+	virtual void UnregisterSecondaryLightSource( Tr2ShLightingManager& );
 
 	void Start();
 	void Stop();
@@ -72,6 +79,10 @@ private:
 	Matrix m_worldTransform;
 	Matrix m_lastUpdateMatrix;
 	Matrix m_localTransform;
+
+	float m_secondaryLightingSphereRadiusLocal;
+	float m_secondaryLightingSphereRadiusWorld;
+	Color m_secondaryLightingEmissiveColor;
 
 	// PlacementObservers
 	PTriObserverLocalVector m_observers;

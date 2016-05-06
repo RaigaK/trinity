@@ -8,6 +8,7 @@ const Be::ClassInfo* EveEffectRoot2::ExposeToBlue()
     EXPOSURE_BEGIN( EveEffectRoot2, "" )
 		MAP_INTERFACE( IEveSpaceObject2 )
 		MAP_INTERFACE( IInitialize )
+		MAP_INTERFACE( ITr2SecondaryLightSource )
 
 		MAP_ATTRIBUTE
 		(
@@ -98,6 +99,16 @@ const Be::ClassInfo* EveEffectRoot2::ExposeToBlue()
 			Be::READWRITE | Be::PERSIST
 		)
 
+		MAP_ATTRIBUTE( 
+			"secondaryLightingSphereRadius", 
+			m_secondaryLightingSphereRadiusLocal, 
+			"Radius of secondary light source", 
+			Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( 
+			"secondaryLightingEmissiveColor", 
+			m_secondaryLightingEmissiveColor, 
+			"Color of the secondary light source", 
+			Be::READWRITE | Be::PERSIST )
 		MAP_METHOD_AND_WRAP( "Start", Start, "Play all top level curveSets" )
 		MAP_METHOD_AND_WRAP( "Stop", Stop, "Stop all top level curveSets." )
 

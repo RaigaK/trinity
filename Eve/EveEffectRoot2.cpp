@@ -26,7 +26,10 @@ EveEffectRoot2::EveEffectRoot2( IRoot* lockobj ) :
 	m_startTime( 0 ),
 	m_effectDuration( -1 ),
 	m_lodLevel( TR2_LOD_HIGH ),
-	m_dynamicLODSelection( false )
+	m_dynamicLODSelection( false ),
+	m_secondaryLightingSphereRadiusLocal( 0.5f ),
+	m_secondaryLightingSphereRadiusWorld( 0.5f ),
+	m_secondaryLightingEmissiveColor( 0.f, 0.f, 0.f, 0.f )
 {
 }
 
@@ -43,6 +46,7 @@ void EveEffectRoot2::UpdateSyncronous( EveUpdateContext& updateContext )
 
 	D3DXMatrixTransformation( &m_localTransform, 0, 0, &m_scaling, 0, &m_rotation, &m_translation );
 	D3DXMatrixMultiply( &m_lastUpdateMatrix, &m_localTransform, &m_worldTransform );
+	m_secondaryLightingSphereRadiusWorld = m_secondaryLightingSphereRadiusLocal * ( m_scaling.x + m_scaling.y + m_scaling.z ) / 3.f;
 
 	for( TriObserverLocalVector::iterator it = m_observers.begin(); it != m_observers.end(); ++it )
 	{
@@ -209,6 +213,21 @@ void EveEffectRoot2::GetPerObjectStructs( EveSpaceObjectVSData& vsData, EveSpace
 	psData.shipData.y = 1.f;
 	// boundingsphere
 	psData.shipData.w = 1.f;
+}
+
+void EveEffectRoot2::RegisterSecondaryLightSource( Tr2ShLightingManager& manager )
+{
+	static const Color s_noAlbedoColor( 0.f, 0.f, 0.f, 0.f );
+	manager.RegisterSecondaryLightSource( 
+		&m_worldTransform.GetTranslation(), 
+		&m_secondaryLightingSphereRadiusWorld, 
+		&s_noAlbedoColor, 
+		&m_secondaryLightingEmissiveColor );
+}
+
+void EveEffectRoot2::UnregisterSecondaryLightSource( Tr2ShLightingManager& manager )
+{
+	manager.UnregisterSecondaryLightSource( &m_worldTransform.GetTranslation() );
 }
 
 // --------------------------------------------------------------------------------
