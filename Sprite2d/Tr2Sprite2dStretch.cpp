@@ -26,6 +26,7 @@ Tr2Sprite2dStretch::Tr2Sprite2dStretch( IRoot* lockobj ) :
 	m_fillCenter( true ),
 	m_dpiScaleBehavior( S2D_SSC_ALIGN_BOTTOMRIGHT )
 {
+	std::fill( std::begin( m_vertices ), std::end( m_vertices ), Tr2Sprite2dD3DVertex() );
 }
 
 void Tr2Sprite2dStretch::GatherSprites( Tr2Sprite2dScene* renderer )

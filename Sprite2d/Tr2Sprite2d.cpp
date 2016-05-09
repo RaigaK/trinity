@@ -17,6 +17,7 @@ Tr2Sprite2d::Tr2Sprite2d( IRoot* lockobj ) :
 	m_saturation( 1.0f ),
 	m_effectOpacity( 1.0f )
 {
+	std::fill( std::begin( m_vertices ), std::end( m_vertices ), Tr2Sprite2dD3DVertex() );
 }
 
 Tr2Sprite2d::~Tr2Sprite2d()

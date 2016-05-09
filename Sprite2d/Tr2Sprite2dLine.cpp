@@ -24,6 +24,7 @@ Tr2Sprite2dLine::Tr2Sprite2dLine( IRoot* lockobj /*= NULL */ ) :
 	m_textureOffsetBase(0.0),
 	m_textureOffset(0.0)
 {
+	std::fill( std::begin( m_vertices ), std::end( m_vertices ), Tr2Sprite2dD3DVertex() );
 }
 
 void Tr2Sprite2dLine::GatherSprites( Tr2Sprite2dScene* renderer )

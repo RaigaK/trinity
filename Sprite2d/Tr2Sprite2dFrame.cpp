@@ -39,6 +39,7 @@ Tr2Sprite2dFrame::Tr2Sprite2dFrame( IRoot* lockobj ) :
 	m_cachedCornerSize( 0 ),
 	m_fillCenter( true )
 {
+	std::fill( std::begin( m_vertices ), std::end( m_vertices ), Tr2Sprite2dD3DVertex() );
 }
 
 Tr2Sprite2dFrame::~Tr2Sprite2dFrame()
