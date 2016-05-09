@@ -8,6 +8,7 @@
 #include "Tr2SBit.h"
 
 
+// cppcheck-suppress uninitMemberVar
 Tr2SBitWrapper::Tr2SBitWrapper( IRoot* lockobj /*= NULL */ ) :
 	manager( NULL )
 {

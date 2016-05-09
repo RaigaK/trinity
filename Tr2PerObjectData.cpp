@@ -34,9 +34,11 @@ void Tr2PerObjectData::SetPerObjectDataToDevice( Tr2ConstantBufferAL** buffers,
 }
 
 
+// cppcheck-suppress uninitMemberVar
 Tr2PerObjectDataStandard::Tr2PerObjectDataStandard()
 	: m_vertexShaderFloatBufferSize( 0 )
-{}
+{
+}
 
 void Tr2PerObjectDataStandard::UpdateConstantBuffer(	Tr2RenderContextEnum::ShaderType type, 
 														Tr2ConstantBufferAL& buffer, 
@@ -87,6 +89,7 @@ void Tr2PerObjectDataStandard::UpdateConstantBuffer(	Tr2RenderContextEnum::Shade
 	}
 }
 
+// cppcheck-suppress uninitMemberVar
 Tr2PerObjectDataPrePass::Tr2PerObjectDataPrePass()
 	: m_vertexShaderFloatBufferSize( 0 )
 {}

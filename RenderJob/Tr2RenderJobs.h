@@ -49,7 +49,8 @@ private:
 	struct TRenderThread
 	{
 		TRenderThread()
-		: m_handle( 0 ),
+		: m_threadId( 0 ),
+		m_handle( 0 ),
 		m_kickThreadEvent( 0 ),
 		m_listReadyEvent( 0 )
 		{}

@@ -3,6 +3,8 @@
 #include "Tr2Renderer.h"
 
 TriStepSetRenderState::TriStepSetRenderState( IRoot* lockobj )
+	:m_state( static_cast<Tr2RenderContextEnum::RenderState>( 0 ) ),
+	m_value( 0 )
 {
 }
 

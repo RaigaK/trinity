@@ -13,7 +13,10 @@ class Tr2SkinnedModelBuilderBlend :
 public:
     EXPOSE_TO_BLUE();
 
-	Tr2SkinnedModelBuilderBlend( IRoot* lockobj = NULL ) {}
+	Tr2SkinnedModelBuilderBlend( IRoot* lockobj = NULL ) 
+		:m_power( 0 )
+	{
+	}
 	~Tr2SkinnedModelBuilderBlend() {}
 
 	// blendshape name

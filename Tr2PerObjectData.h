@@ -61,6 +61,7 @@ private:
 class Tr2PerObjectDataPSBuffer : public Tr2PerObjectData
 {
 public:
+	// cppcheck-suppress uninitMemberVar
 	Tr2PerObjectDataPSBuffer()
 		: m_pixelShaderFloatBufferSize( 0 )
 	{
@@ -244,6 +245,7 @@ class Tr2PerAreaDataSkinned : public Tr2PerObjectData
 {
 public:
 
+	// cppcheck-suppress uninitMemberVar
 	Tr2PerAreaDataSkinned() : 
 		m_jointCount( 0 ),
 		m_perObjectDataPtr( NULL )

@@ -8,6 +8,7 @@
 Tr2GrannyAnimationLayer::Tr2GrannyAnimationLayer() :
 	m_modelInstance( nullptr ),
 	m_trackMask( nullptr ),
+	m_trackMaskName( nullptr ),
 	m_defaultBoneWeight( 0.f ),
 	m_boneCount( 0 )
 {

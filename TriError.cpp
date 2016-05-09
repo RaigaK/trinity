@@ -33,7 +33,7 @@ void ReportErrorV(
 		if (!edsc)
 			edsc = "unknown description";
 	}
-	sprintf_s(buff, "HRES:%X - %s(%s)\n", hr, estr, edsc);
+	sprintf_s(buff, "HRES:%X - %s(%s)\n", unsigned( hr ), estr, edsc);
 	size_t idx = strlen(buff);
 	if (format){		
 		int wrote = vsnprintf_s(buff+idx, bufsize - idx, _TRUNCATE, format, va);

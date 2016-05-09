@@ -143,7 +143,7 @@ void TriShadowMap::ReleaseResources( TriStorage s )
 void TriShadowMap::GetDescription( std::string& desc )
 {
 	char buffer[64];
-	sprintf_s( buffer, sizeof(buffer), "TriShadowMap %d", m_size );
+	sprintf_s( buffer, sizeof(buffer), "TriShadowMap %u", m_size );
 	desc = std::string( buffer );
 }
 #endif

@@ -10,6 +10,10 @@ Tr2EffectStageInput::Tr2EffectStageInput()
 	, m_shader ( INVALID )
 	, m_constantValueSize( 0 )
 {
+	constantValues[0] = 0;
+	threadGroupSize[0] = 0;
+	threadGroupSize[1] = 0;
+	threadGroupSize[2] = 0;
 }
 
 Tr2EffectDescription::Tr2EffectDescription()

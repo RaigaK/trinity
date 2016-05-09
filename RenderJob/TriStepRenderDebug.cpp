@@ -16,6 +16,7 @@ using namespace Tr2RenderContextEnum;
 TriStepRenderDebug::TriStepRenderDebug( IRoot* lockobj ) : 
 	m_data( NULL ),
 	m_numPrimitives( 0 ),
+	m_lineSet( nullptr ),
 	m_projectedText( "TriStepRenderDebug/m_projectedText" ),
 	m_autoClear( true )
 {

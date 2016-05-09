@@ -4,10 +4,6 @@
 #include "Resources/TriGeometryRes.h"
 
 
-const std::string Tr2InteriorClippingBatch::s_batchTypeName = "Tr2InteriorClippingBatch";
-const std::string Tr2InteriorStencilMaskBatch::s_batchTypeName = "Tr2InteriorStencilMaskBatch";
-const std::string Tr2InteriorBackgroundCubemapBatch::s_batchTypeName = "Tr2InteriorBackgroundCubemapBatch";
-
 // -----------------------------------------------------------------------------------------------------
 // Description
 //   Sets a user clip plane and per-frame data, including a float to indicate cull mode inversion.

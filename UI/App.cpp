@@ -119,6 +119,8 @@ App::App()
     mFixedWindow( false ),
 	mIsMaximized( false ),
 	mIsHidden( false ),
+	mWindowStyle( 0xffffffff ),
+	mWindowClient(),
 	mSendToggleEvent( false )
 #if BLUE_WITH_PYTHON
 	, m_eventHandler( NULL ),

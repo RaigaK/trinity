@@ -122,6 +122,7 @@ TriDevice::TriDevice(IRoot* lockobj) :
 	mDeviceLost( true ),
 	m_deviceType( TriDevice::DEVICE_TYPE_HARDWARE ),
 
+	mDisplay( false ),
 	mAdapter ( 0 ),
 	mTickInterval ( 10 ), // ten ms between ticks
 	m_ignoreInvalidate ( false ),

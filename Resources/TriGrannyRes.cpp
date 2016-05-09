@@ -1564,7 +1564,7 @@ GrannyMaterialWrapper::GrannyMaterialWrapper(granny_material * gmat, unsigned in
 					// set into the dict.
 					PyDict_SetItemString(m_dictionary, tmpbuf, matString);
 					
-					sprintf_s(tmpbuf,"%d_%d_%s_%s", meshIndex, areaIndex, materialMap->Usage, defs->Name);
+					sprintf_s(tmpbuf,"%u_%u_%s_%s", meshIndex, areaIndex, materialMap->Usage, defs->Name);
 					PyDict_SetItemString(flatStringDictionary, tmpbuf, matString);
 					// Adding all strings (used to be a break here) 
 				}

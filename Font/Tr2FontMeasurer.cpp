@@ -53,6 +53,7 @@ struct delete_disposer
 // Tr2FontRenderData holds the data from one AddText call
 struct Tr2FontRenderData
 {
+	// cppcheck-suppress uninitMemberVar
 	Tr2FontRenderData()
 		:tail( nullptr ), 
 		bitmapCount( 0 ) 

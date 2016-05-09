@@ -5,12 +5,6 @@
 
 BLUE_DEFINE_INTERFACE( ITr2GeometryProvider );
 
-const std::string TriRenderBatch::s_batchTypeName = "TriRenderBatch";
-const std::string TriGeometryBatch::s_batchTypeName = "TriGeometryBatch";
-const std::string TriDynamicGeometryBatch::s_batchTypeName = "TriDynamicGeometryBatch";
-const std::string TriForwardingBatch::s_batchTypeName = "TriForwardingBatch";
-const std::string TriClippingBatch::s_batchTypeName = "TriClippingBatch";
-
 TriRenderBatchStore::TriRenderBatchStore( TriPoolAllocator* allocator ) :
 	ITriRenderBatchAccumulator( allocator ),
 	m_batchCount( 0 ),
@@ -172,7 +166,11 @@ void TriGeometryBatch::SetGeometryResource( TriGeometryRes* val )
 
 
 TriDynamicGeometryBatch::TriDynamicGeometryBatch()
-	: m_dynamicVertexBuffer( nullptr )
+	: m_dynamicVertexBuffer( nullptr ),
+	m_meshIndex( 0 ),
+	m_areaIndex( 0 ),
+	m_areaCount( 1 ),
+	m_reversed( false )
 {}
 
 void TriDynamicGeometryBatch::SubmitGeometry( Tr2RenderContext& renderContext )

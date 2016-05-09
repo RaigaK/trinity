@@ -45,9 +45,9 @@ public:
 	// For debugging in PIX
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return Tr2InteriorClippingBatch::s_batchTypeName; 
+		static const std::string name = "Tr2InteriorClippingBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 private:
 	// Local copy of the per-frame data
@@ -115,9 +115,9 @@ public:
 	// For debugging in PIX
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return Tr2InteriorStencilMaskBatch::s_batchTypeName; 
+		static const std::string name = "Tr2InteriorStencilMaskBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 private:
 	int m_stencilWrite;
@@ -153,9 +153,9 @@ public:
 	// For debugging in PIX
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return Tr2InteriorBackgroundCubemapBatch::s_batchTypeName; 
+		static const std::string name = "Tr2InteriorBackgroundCubemapBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 };
 
 // --------------------------------------------------------------------------------------

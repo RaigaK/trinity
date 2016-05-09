@@ -534,9 +534,9 @@ public:
 	// For debugging in PIX
 	virtual const std::string& GetBatchTypeName( void ) const 
 	{ 
-		return Tr2ApexBatch::s_batchTypeName; 
+		static const std::string name = "Tr2ApexBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 private:
 	Tr2ApexMesh* m_mesh;
@@ -548,8 +548,6 @@ private:
 	bool m_reversedOrder;
 	Tr2RenderContextEnum::Topology m_primitiveType;
 };
-
-const std::string Tr2ApexBatch::s_batchTypeName = "Tr2ApexBatch";
 
 class Tr2ApexMesh : 
 	public physx::apex::NxUserRenderResource,

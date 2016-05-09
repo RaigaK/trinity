@@ -37,7 +37,8 @@ Tr2InteriorPlaceable::Tr2InteriorPlaceable( IRoot* lockobj ) :
 	m_previousUpdateTime( 0 ),
 	m_transitionFinished( false ),
 	m_probeOffset( 0.f, 0.f, 0.f ),
-	m_depthOffset( 0.f )
+	m_depthOffset( 0.f ),
+	m_stencilParams()
 {
     D3DXMatrixIdentity( &m_transform );
 

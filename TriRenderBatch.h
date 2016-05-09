@@ -95,9 +95,9 @@ public:
 	// Gets the batch type name for PIX debugging
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return TriRenderBatch::s_batchTypeName; 
+		static const std::string name = "TriRenderBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 	// Next render batch in the linked-list
 	TriRenderBatch* m_next;
@@ -194,9 +194,9 @@ public:
 	// Gets the batch type name for PIX debugging
 	virtual const std::string& GetBatchTypeName( void ) const 
 	{ 
-		return TriGeometryBatch::s_batchTypeName; 
+		static const std::string name = "TriGeometryBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 protected:
     TriGeometryResPtr m_geometryResource;
@@ -247,9 +247,9 @@ public:
 	// Gets the batch type name for PIX debugging
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return TriDynamicGeometryBatch::s_batchTypeName; 
+		static const std::string name = "TriDynamicGeometryBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 private:
     TriGeometryResPtr m_geometryResource;
@@ -289,9 +289,9 @@ public:
 	// Gets the batch type name for PIX debugging
 	virtual const std::string& GetBatchTypeName( void ) const
 	{ 
-		return TriForwardingBatch::s_batchTypeName; 
+		static const std::string name = "TriForwardingBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 private:
 	ITr2GeometryProviderPtr m_geom;
@@ -325,9 +325,9 @@ public:
 	// Gets the batch type name for PIX debugging
 	virtual const std::string& GetBatchTypeName( void ) const 
 	{ 
-		return TriClippingBatch::s_batchTypeName; 
+		static const std::string name = "TriClippingBatch";
+		return name; 
 	}
-	static const std::string s_batchTypeName;
 
 	virtual void SetInvertedCullMode( bool invert ) { m_isCullModeInverted = invert; }
 	void UseClipPlane( bool usePlane ) { m_useClipPlane = usePlane; }
