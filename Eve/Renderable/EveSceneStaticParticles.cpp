@@ -253,7 +253,7 @@ void EveSceneStaticParticles::Rebuild()
 	}
 		
 	// alloc big buffer in the particle system
-	ParticleBufferItem* currentParticleBufferItem = (ParticleBufferItem*)instanceData->GetData( (unsigned int)particleBufferSize );
+	ParticleBufferItem* currentParticleBufferItem = static_cast<ParticleBufferItem*>( instanceData->GetData( (unsigned int)particleBufferSize ) );
 
 	// run over all the clusters and build
 	for( auto it = m_clusters.begin(); it != m_clusters.end(); ++it )
