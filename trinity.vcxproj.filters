@@ -651,12 +651,6 @@
     <ClInclude Include="Eve\Animation\EveAnimationState.h">
       <Filter>Source Files\Eve\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Eve\Renderable\EveCloud.h">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="Eve\Renderable\EveCloudEditableVolume.h">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClInclude>
     <ClInclude Include="Eve\Renderable\EveMetaball.h">
       <Filter>Source Files\Eve\Renderable</Filter>
     </ClInclude>
@@ -760,6 +754,12 @@
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Children\EveChildTransform.h">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\Children\EveCloud.h">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\Children\EveCloudEditableVolume.h">
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Children\IEveSpaceObjectChild.h">
@@ -2406,18 +2406,6 @@
     <ClCompile Include="Eve\Animation\EveAnimationState_Blue.cpp">
       <Filter>Source Files\Eve\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="Eve\Renderable\EveCloud.cpp">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\Renderable\EveCloudEditableVolume.cpp">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\Renderable\EveCloudEditableVolume_Blue.cpp">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\Renderable\EveCloud_Blue.cpp">
-      <Filter>Source Files\Eve\Renderable</Filter>
-    </ClCompile>
     <ClCompile Include="Eve\Renderable\EveMetaball.cpp">
       <Filter>Source Files\Eve\Renderable</Filter>
     </ClCompile>
@@ -2617,6 +2605,18 @@
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildTransform.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloud.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloud_Blue.cpp">
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Utils\EveCustomMask.cpp">

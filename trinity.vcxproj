@@ -2930,8 +2930,6 @@
     <ClInclude Include="Eve\Animation\EveAnimationData.h"/>
     <ClInclude Include="Eve\Animation\EveAnimationSequencer.h"/>
     <ClInclude Include="Eve\Animation\EveAnimationState.h"/>
-    <ClInclude Include="Eve\Renderable\EveCloud.h"/>
-    <ClInclude Include="Eve\Renderable\EveCloudEditableVolume.h"/>
     <ClInclude Include="Eve\Renderable\EveMetaball.h"/>
     <ClInclude Include="Eve\Renderable\EveMetaballItem.h"/>
     <ClInclude Include="Eve\Renderable\EveMetaballTables.h"/>
@@ -2967,6 +2965,8 @@
     <ClInclude Include="Eve\SpaceObject\Children\EveChildMesh.h"/>
     <ClInclude Include="Eve\SpaceObject\Children\EveChildParticleSystem.h"/>
     <ClInclude Include="Eve\SpaceObject\Children\EveChildTransform.h"/>
+    <ClInclude Include="Eve\SpaceObject\Children\EveCloud.h"/>
+    <ClInclude Include="Eve\SpaceObject\Children\EveCloudEditableVolume.h"/>
     <ClInclude Include="Eve\SpaceObject\Children\IEveSpaceObjectChild.h"/>
     <ClInclude Include="Eve\SpaceObject\Utils\EveCustomMask.h"/>
     <ClInclude Include="Eve\SpaceObject\Utils\EveLocator2.h"/>
@@ -3519,10 +3519,6 @@
     <ClCompile Include="Eve\Animation\EveAnimationSequencer_Blue.cpp"/>
     <ClCompile Include="Eve\Animation\EveAnimationState.cpp"/>
     <ClCompile Include="Eve\Animation\EveAnimationState_Blue.cpp"/>
-    <ClCompile Include="Eve\Renderable\EveCloud.cpp"/>
-    <ClCompile Include="Eve\Renderable\EveCloudEditableVolume.cpp"/>
-    <ClCompile Include="Eve\Renderable\EveCloudEditableVolume_Blue.cpp"/>
-    <ClCompile Include="Eve\Renderable\EveCloud_Blue.cpp"/>
     <ClCompile Include="Eve\Renderable\EveMetaball.cpp"/>
     <ClCompile Include="Eve\Renderable\EveMetaballItem.cpp"/>
     <ClCompile Include="Eve\Renderable\EveMetaballItem_Blue.cpp"/>
@@ -3590,6 +3586,10 @@
     <ClCompile Include="Eve\SpaceObject\Children\EveChildParticleSystem.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildParticleSystem_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildTransform.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloud.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume_Blue.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveCloud_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveCustomMask.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveCustomMask_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveLocator2.cpp"/>
