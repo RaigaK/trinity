@@ -3575,6 +3575,8 @@
     <ClCompile Include="Eve\SpaceObject\Children\EveChildBillboard_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildBulletStorm.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildBulletStorm_Blue.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveChildCloud.cpp"/>
+    <ClCompile Include="Eve\SpaceObject\Children\EveChildCloud_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildContainer.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildContainer_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildExplosion.cpp"/>
@@ -3586,10 +3588,8 @@
     <ClCompile Include="Eve\SpaceObject\Children\EveChildParticleSystem.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildParticleSystem_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildTransform.cpp"/>
-    <ClCompile Include="Eve\SpaceObject\Children\EveCloud.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Children\EveCloudEditableVolume_Blue.cpp"/>
-    <ClCompile Include="Eve\SpaceObject\Children\EveCloud_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveCustomMask.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveCustomMask_Blue.cpp"/>
     <ClCompile Include="Eve\SpaceObject\Utils\EveLocator2.cpp"/>
