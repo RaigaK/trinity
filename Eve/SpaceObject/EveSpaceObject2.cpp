@@ -524,12 +524,6 @@ void EveSpaceObject2::GetShadowBatches( ITriRenderBatchAccumulator* batches, con
 	{
 		mesh = m_mesh;
 	}
-	else
-	{
-		// Restore the mesh for the shadow
-		SelectMeshLevelOfDetail();
-		mesh = m_mesh;
-	}
 
 	if( !mesh || mesh->IsHidden() )
 	{
