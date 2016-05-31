@@ -30,9 +30,20 @@ EveSwarmRenderable::~EveSwarmRenderable()
 
 void EveSwarmRenderable::GetBatches( ITriRenderBatchAccumulator* batches, TriBatchType batchType, const Tr2PerObjectData* perObjectData )
 {
-	if( m_mesh )
+	if( !m_mesh )
 	{
-		m_mesh->GetBatches( batches, m_mesh->GetAreas( batchType ), perObjectData );
+		return;
+	}
+	
+	Tr2MeshAreaVector* areas = m_mesh->GetAreas( batchType );
+	// transparent needs sorted meshareas
+	if( batchType != TRIBATCHTYPE_TRANSPARENT )
+	{
+		m_mesh->GetBatches( batches, areas, perObjectData );
+	}
+	else
+	{
+		GetSortedBatchesFromMeshAreaVector( areas, batches, perObjectData, m_mesh, &m_worldTransform );
 	}
 }
 

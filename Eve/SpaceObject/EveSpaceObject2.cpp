@@ -53,6 +53,72 @@ static BlueStructureDefinition EveDamageLocatorStructureDef[] =
 	{0} 
 };
 
+void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, 
+										 ITriRenderBatchAccumulator* batches, 
+										 const Tr2PerObjectData* perObjectData,
+										 const Tr2MeshBase* mesh,
+										 const Matrix* worldTransform )
+{
+	TriGeometryRes* geomRes = mesh->GetGeometryResource();
+
+	if( !geomRes || !geomRes->IsGood() )
+	{
+		return;
+	}
+	
+	int meshIx = mesh->GetMeshIndex();
+
+	// build a sortable mesharea item list
+	Tr2MeshAreaItemList meshAreasToSort("EveSpaceObject2/SortMeshAreaVector");
+	meshAreasToSort.reserve( areas->size() );
+	for( Tr2MeshAreaVector::const_iterator it = areas->begin(); it != areas->end(); ++it )
+	{
+		Tr2MeshAreaPtr meshArea = *it;
+		if( !meshArea->IsHidden() )
+		{
+			// get center of this area in object-space
+			Vector3 minBBox, maxBBox, centerBBox( 0.f, 0.f, 0.f );
+			if( geomRes->GetAreaBoundingBox( meshIx, meshArea->GetIndex(), minBBox, maxBBox ) )
+			{
+				centerBBox = 0.5f * ( maxBBox + minBBox );
+			}
+			// put center in world-space
+			D3DXVec3TransformCoord( &centerBBox, &centerBBox, worldTransform );
+			// calc distance to camera
+			Vector3 d = Tr2Renderer::GetViewPosition() - centerBBox;
+			// put together a sortable item
+			Tr2MeshAreaItem item;
+			item.m_meshArea = meshArea;
+			item.m_distance = D3DXVec3LengthSq( &d );
+			meshAreasToSort.push_back( item );
+		}
+	}
+
+	// Sort the list back to front
+	std::sort( meshAreasToSort.begin(), meshAreasToSort.end() );
+
+
+	for( Tr2MeshAreaItemList::iterator it = meshAreasToSort.begin(); it != meshAreasToSort.end(); ++it )
+	{
+		Tr2MeshArea* area = it->m_meshArea;
+		ITr2ShaderMaterial* material = area->GetMaterialInterface();
+		if( area->IsHidden() || !material )
+		{
+			continue;
+		}
+		TriGeometryBatch* batch = batches->Allocate<TriGeometryBatch>();
+		// Note that this can fail if the accumulator can't add more batches!
+		if( batch )
+		{
+			batch->SetShaderMaterial( material );
+			batch->SetPerObjectData( perObjectData );
+			batch->SetGeometryResource( geomRes );
+			batch->SetMeshParameters( meshIx, area->GetIndex(), area->GetCount() );
+
+			batches->Commit( batch );
+		}
+	}
+}
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -503,7 +569,7 @@ void EveSpaceObject2::GetBatches( ITriRenderBatchAccumulator* batches, TriBatchT
 		}
 		else
 		{
-			GetSortedBatchesFromMeshAreaVector( areas, batches, perObjectData );
+			GetSortedBatchesFromMeshAreaVector( areas, batches, perObjectData, m_mesh, &m_worldTransform );
 		}
 	}
 
@@ -571,80 +637,6 @@ float EveSpaceObject2::GetSortValue()
 	return distance;
 }
 
-
-// ---------------------------------------------------------------------------------------
-//  Description:
-//    Given a pointer to a mesh area vector, gathers TriGeometryBatches for each of the
-//    areas. Order of batches is sorted, based upon distance to camera.
-// Arguments:
-//   areas - mesharea vector to collect from
-//   batches - accumulator for the new batches
-//   perObjectData - the per-object data for these batches
-// ---------------------------------------------------------------------------------------
-void EveSpaceObject2::GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, 
-														  ITriRenderBatchAccumulator* batches, 
-														  const Tr2PerObjectData* perObjectData ) const
-{
-	TriGeometryRes* geomRes = m_mesh->GetGeometryResource();
-
-	if( !geomRes || !geomRes->IsGood() )
-	{
-		return;
-	}
-
-	int meshIx = m_mesh->GetMeshIndex();
-
-	// build a sortable mesharea item list
-	Tr2MeshAreaItemList meshAreasToSort("EveSpaceObject2/SortMeshAreaVector");
-	meshAreasToSort.reserve( areas->size() );
-	for( Tr2MeshAreaVector::const_iterator it = areas->begin(); it != areas->end(); ++it )
-	{
-		Tr2MeshAreaPtr meshArea = *it;
-		if( !meshArea->IsHidden() )
-		{
-			// get center of this area in object-space
-			Vector3 minBBox, maxBBox, centerBBox( 0.f, 0.f, 0.f );
-			if( geomRes->GetAreaBoundingBox( meshIx, meshArea->GetIndex(), minBBox, maxBBox ) )
-			{
-				centerBBox = 0.5f * ( maxBBox + minBBox );
-			}
-			// put center in world-space
-			D3DXVec3TransformCoord( &centerBBox, &centerBBox, &m_worldTransform );
-			// calc distance to camera
-			Vector3 d = Tr2Renderer::GetViewPosition() - centerBBox;
-			// put together a sortable item
-			Tr2MeshAreaItem item;
-			item.m_meshArea = meshArea;
-			item.m_distance = D3DXVec3LengthSq( &d );
-			meshAreasToSort.push_back( item );
-		}
-	}
-
-	// Sort the list back to front
-	std::sort( meshAreasToSort.begin(), meshAreasToSort.end() );
-
-
-	for( Tr2MeshAreaItemList::iterator it = meshAreasToSort.begin(); it != meshAreasToSort.end(); ++it )
-	{
-		Tr2MeshArea* area = it->m_meshArea;
-		ITr2ShaderMaterial* material = area->GetMaterialInterface();
-		if( area->IsHidden() || !material )
-		{
-			continue;
-		}
-		TriGeometryBatch* batch = batches->Allocate<TriGeometryBatch>();
-		// Note that this can fail if the accumulator can't add more batches!
-		if( batch )
-		{
-			batch->SetShaderMaterial( material );
-			batch->SetPerObjectData( perObjectData );
-			batch->SetGeometryResource( geomRes );
-			batch->SetMeshParameters( meshIx, area->GetIndex(), area->GetCount() );
-
-			batches->Commit( batch );
-		}
-	}
-}
 
 // ---------------------------------------------------------------------------------------
 //  Description:

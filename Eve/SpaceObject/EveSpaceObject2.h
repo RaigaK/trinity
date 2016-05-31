@@ -110,6 +110,23 @@ struct EveSpaceObjectPSData
 	Vector4 shLightingCoefficients[Tr2ShLightingManager::PACKED_COEFFICIENT_COUNT];
 };
 
+// ---------------------------------------------------------------------------------------
+//  Description:
+//    Given a pointer to a mesh area vector, gathers TriGeometryBatches for each of the
+//    areas. Order of batches is sorted, based upon distance to camera.
+// Arguments:
+//   areas - mesharea vector to collect from
+//   batches - accumulator for the new batches
+//   perObjectData - the per-object data for these batches
+//   mesh - mesh containing the geometry to be rendered
+//   worldTransform - world transform of the object the areas/mesh belong to
+// ---------------------------------------------------------------------------------------
+void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, 
+										 ITriRenderBatchAccumulator* batches, 
+										 const Tr2PerObjectData* perObjectData,
+										 const Tr2MeshBase* mesh,
+										 const Matrix* worldTransform );
+
 // --------------------------------------------------------------------------------
 // Description:
 //   EveSpaceObject2 is a base class for objects in space in Eve - namely stations and ships.
@@ -335,7 +352,6 @@ protected:
 	void PrepareForAnimation();
 	void FreeAnimationData();
 	void SelectMeshLevelOfDetail();
-	void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas, ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData ) const;
 	void GetBatchesFromOverlayVector( ITriRenderBatchAccumulator* batches, const Tr2PerObjectData* perObjectData, TriBatchType batchType );
 
 	virtual void UpdateWorldTransform( Be::Time time );
