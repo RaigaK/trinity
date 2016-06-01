@@ -27,7 +27,18 @@ static std::string s_dnaCommands[] = {
 	"mesh",					// CMD_MESH
 	"respathinsert",		// CMD_RESPATHINSERT
 	"variant",				// CMD_VARIANT
+	"class",				// CMD_CLASS
 };
+
+static std::string s_dnaClasses[] = {
+	"ship",					// BUILDCLASS_SHIP
+	"mobile",				// BUILDCLASS_MOBILE
+	"stationary",			// BUILDCLASS_STATIONARY
+	"swarm",				// BUILDCLASS_SWARM
+};
+
+static_assert( sizeof( s_dnaClasses ) / sizeof( s_dnaClasses[0] ) == EveSOFDataHull::BUILDCLASS_COUNT, 
+			  "number of items in s_dnaClasses array does not match the number of items in EveSOFDataHull::BuildClass" );
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -133,6 +144,17 @@ bool EveSOFDNA::ValidateContent()
 				{
 					return false;
 				}
+			}
+			break;
+		case CMD_CLASS:
+			// has one argument
+			if( cit->second.size() != 1 )
+			{
+				return false;
+			}
+			if( std::find( std::begin( s_dnaClasses ), std::end( s_dnaClasses ), cit->second[0] ) == std::end( s_dnaClasses ) )
+			{
+				return false;
 			}
 			break;
 		}
@@ -627,6 +649,15 @@ const char* EveSOFDNA::GetModelTranslationCurvePath() const
 // --------------------------------------------------------------------------------
 EveSOFDataHull::BuildClass EveSOFDNA::GetBuildClass() const
 {
+	std::vector<std::string> commandArgs;
+	if( GetDnaCommandArgs( CMD_CLASS, commandArgs ) && !commandArgs.empty() )
+	{
+		auto found = std::find( std::begin( s_dnaClasses ), std::end( s_dnaClasses ), commandArgs[0] );
+		if( found != std::end( s_dnaClasses ) )
+		{
+			return EveSOFDataHull::BuildClass( found - std::begin( s_dnaClasses ) );
+		}
+	}
 	return m_hullData->buildClass;
 }
 

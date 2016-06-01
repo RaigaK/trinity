@@ -428,6 +428,8 @@ public:
 		BUILDCLASS_MOBILE,
 		BUILDCLASS_STATIONARY,
 		BUILDCLASS_SWARM,
+
+		BUILDCLASS_COUNT,
 	};
 
 	// impact effect type

@@ -35,6 +35,7 @@ public:
 		CMD_MESH,
 		CMD_RESPATHINSERT,
 		CMD_VARIANT,
+		CMD_CLASS,
 		CMD_MAX
 	}; 
 
