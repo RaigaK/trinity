@@ -59,6 +59,8 @@ private:
 	float m_localDuration;
 	// Duration of the global explosion
 	float m_globalDuration;
+	// Relative variance of local explosion scale
+	float m_localExplosionScaleVariance;
 
 	// Child containing local explosion effect
 	IEveSpaceObjectChildPtr m_localExplosion;

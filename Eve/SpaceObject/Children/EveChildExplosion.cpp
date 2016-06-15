@@ -19,6 +19,7 @@ EveChildExplosion::EveChildExplosion( IRoot* lockobj )
 	m_wreckSwitchTime( 0.f ),
 	m_localDuration( 0.f ),
 	m_globalDuration( 0.f ),
+	m_localExplosionScaleVariance( 0.f ),
 	m_localExplosionTransforms( "EveExplosion::m_localExplosionOrigins" ),
 	m_sharedObjects( "EveExplosion::m_sharedObjects" ),
 	m_playTime( 0.f ),
@@ -121,8 +122,9 @@ void EveChildExplosion::UpdateSyncronous(
 			{
 				if( m_nextLocalExplosion < m_localExplosionTransforms.size() )
 				{
+					float scale = std::max( 0.0001f, 1.0f + ( float( rand() ) / float( RAND_MAX ) * 2.0f - 1.0f ) * m_localExplosionScaleVariance );
 					XMVECTOR det;
-					Matrix transform = m_localExplosionTransforms[m_nextLocalExplosion];
+					Matrix transform( XMMatrixMultiply( XMMatrixScaling( scale, scale, scale ), m_localExplosionTransforms[m_nextLocalExplosion] ) );
 					transform.GetTranslation() = XMVector3TransformCoord( transform.GetTranslation(), XMMatrixInverse( &det, m_localTransform ) );
 					SpawnLocalExplosion( transform );
 					++m_nextLocalExplosion;
