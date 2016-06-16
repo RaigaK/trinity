@@ -23,13 +23,17 @@ public:
 	~EveTacticalOverlayTrackObject() {}
 
 	void UpdatePosition( EveUpdateContext& updateContext );
+	inline Vector3 GetVelocity() { return m_velocity; }
 	inline Vector3 GetPosition() { return m_position; }
 	inline float GetRadius() { return m_radius; }
+	inline bool IsAggressive() { return m_aggressive; }
 
 private:
 	ITriVectorFunctionPtr m_positionCurve;
 	Vector3 m_position;
+	Vector3 m_velocity;
 	float m_radius;
+	bool m_aggressive;
 };
 TYPEDEF_BLUECLASS( EveTacticalOverlayTrackObject );
 BLUE_DECLARE_VECTOR( EveTacticalOverlayTrackObject );
@@ -55,6 +59,13 @@ public:
 	struct AnchorVertex
 	{
 		Vector4 instanceData;
+		static const Tr2VertexDefinition& GetDefinition();
+	};
+	
+	struct VelocityConnectorVertex
+	{
+		Vector4 instanceData;
+		Vector4 instanceData2;
 		static const Tr2VertexDefinition& GetDefinition();
 	};
 	
@@ -86,11 +97,14 @@ public:
 private:
 	Tr2EffectPtr m_connectorEffect;
 	Tr2EffectPtr m_anchorEffect;
+	Tr2EffectPtr m_velocityEffect;
 	Tr2QuadRenderer::EffectKey m_connectorEffectHash;
 	Tr2QuadRenderer::EffectKey m_anchorEffectHash;
+	Tr2QuadRenderer::EffectKey m_velocityEffectHash;
 
 	std::vector<AnchorVertex> m_anchorBuffer;
 	std::vector<SphereConnectorVertex> m_connectorBuffer;
+	std::vector<VelocityConnectorVertex> m_velocityBuffer;
 
 	float m_connectorSegmentsLow;
 	float m_connectorSegmentsMedium;
@@ -110,8 +124,10 @@ private:
 	Vector4 m_ranges;
 
 	PEveTacticalOverlayTrackObjectVector m_trackObjects;
+	EveTacticalOverlayTrackObjectPtr m_interestObject;
 	ITriVectorFunctionPtr m_positionCurve;
 	Vector3 m_rootPosition;
+	Vector3 m_rootVelocity;
 	
 	// local variable store for passing parameters to effects
 	Tr2VariableStorePtr m_variableStore;

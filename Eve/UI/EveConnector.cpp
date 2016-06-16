@@ -47,7 +47,7 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 	float length, angle;
 	Vector3 v, v2, v3;
 	Vector3 n( 0, 1, 0 );
-
+	bool fade = false;
 	// Currently we assume we always project onto the x,0,z plane. This may change later on, in that case using sourcePosition
 	// as a point in the plane and for the relative position
 	switch( m_type )
@@ -85,12 +85,13 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 		{
 			D3DXVec3Scale( &v, D3DXVec3Normalize( &v, &v ), m_length );
 			v += m_sourcePosition;
+			fade = true;
 		}
 		else
 		{
 			v = m_destPosition;
 		}
-		AddStraightLine( lineSet, m_sourcePosition, v );
+		AddStraightLine( lineSet, m_sourcePosition, v, fade );
 		break;
 	case Orbit:
 		AddOrbit( lineSet, m_destPosition, m_length, m_normal );
@@ -160,9 +161,14 @@ inline void EveConnector::AddOrbit( EveCurveLineSet* lineSet, const Vector3& cen
 	AddStraightLine( lineSet, m_sourcePosition, planeDir );
 }
 
-inline void EveConnector::AddStraightLine( EveCurveLineSet* lineSet, const Vector3& source, const Vector3& destination )
+inline void EveConnector::AddStraightLine( EveCurveLineSet* lineSet, const Vector3& source, const Vector3& destination, bool fadeEnd )
 {
-	int id = lineSet->AddStraightLine( source, (Vector4)m_color, destination, (Vector4)m_color, m_width );
+	Vector4 endColor = (Vector4)m_color;
+	if( fadeEnd )
+	{
+		endColor *= 0;
+	}
+	int id = lineSet->AddStraightLine( source, (Vector4)m_color, destination, endColor, m_width );
 	AnimateSegment( lineSet, id );
 
 }

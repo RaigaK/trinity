@@ -20,7 +20,9 @@ extern float g_eveSpaceSceneVisibilityThreshold;
 
 EveTacticalOverlayTrackObject::EveTacticalOverlayTrackObject( IRoot* lockobj ) :
 	m_position( 0, 0, 0 ),
-	m_radius( 0 )
+	m_velocity( 0, 0, 0 ),
+	m_radius( 0 ),
+	m_aggressive( false )
 {
 }
 
@@ -29,6 +31,7 @@ void EveTacticalOverlayTrackObject::UpdatePosition( EveUpdateContext& updateCont
 	if( m_positionCurve )
 	{
 		m_positionCurve->GetValueAt( &m_position, updateContext.GetTime() );
+		m_positionCurve->GetValueDotAt( &m_velocity, updateContext.GetTime() );
 	}
 }
 
@@ -57,11 +60,25 @@ const Tr2VertexDefinition& EveTacticalOverlay::SphereConnectorVertex::GetDefinit
 	return s_definition;
 }
 
+const Tr2VertexDefinition& EveTacticalOverlay::VelocityConnectorVertex::GetDefinition()
+{
+	static Tr2VertexDefinition s_definition;
+	if( s_definition.empty() )
+	{
+		Tr2VertexDefinition& vd = s_definition;
+		vd.Add( vd.FLOAT32_1, vd.TEXCOORD, 5 );
+		vd.Add( vd.FLOAT32_4, vd.TEXCOORD, 0, 1, 1 );
+		vd.Add( vd.FLOAT32_4, vd.TEXCOORD, 1, 1, 1 );
+	}
+	return s_definition;
+}
+
 EveTacticalOverlay::EveTacticalOverlay( IRoot* lockobj ) :
 	PARENTLOCK( m_trackObjects ),
 	m_ranges( 200000.f, 50000.f, 1.f, 50.f ),
 	m_connectorEffectHash( 0 ),
 	m_anchorEffectHash( 0 ),
+	m_velocityEffectHash( 0 ),
 	m_connectorSegmentsLow( 2 ),
 	m_connectorSegmentsMedium( 5 ),
 	m_connectorSegmentsHigh( 9 ),
@@ -85,12 +102,14 @@ EveTacticalOverlay::~EveTacticalOverlay()
 	m_variableStore = nullptr;
 	SetVariableStore( m_anchorEffect );
 	SetVariableStore( m_connectorEffect );
+	SetVariableStore( m_velocityEffect );
 }
 
 bool EveTacticalOverlay::Initialize()
 {
 	SetVariableStore( m_anchorEffect );
 	SetVariableStore( m_connectorEffect );
+	SetVariableStore( m_velocityEffect );
 	return true;
 }
 
@@ -104,6 +123,10 @@ bool EveTacticalOverlay::OnModified( Be::Var* value )
 	{
 		SetVariableStore( m_connectorEffect );
 	}
+	else if( IsMatch( value, m_velocityEffect ) )
+	{
+		SetVariableStore( m_velocityEffect );
+	}
 	return true;
 }
 
@@ -111,13 +134,18 @@ void EveTacticalOverlay::RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer
 {
 	if( m_connectorEffect )
 	{
-		m_connectorEffectHash = m_connectorEffect->GetHashValue() + (((uint64_t)this) << 32);
+		m_connectorEffectHash = m_connectorEffect->GetHashValue() + (((uint64_t)(Tr2Effect*)m_connectorEffect) << 32);
 		quadRenderer.RegisterEffect( m_connectorEffectHash, sizeof( SphereConnectorVertex ), 1, SphereConnectorVertex::GetDefinition(), m_connectorEffect );
 	}
 	if( m_anchorEffect )
 	{
-		m_anchorEffectHash = m_anchorEffect->GetHashValue() + (((uint64_t)this) << 32);
+		m_anchorEffectHash = m_anchorEffect->GetHashValue() + (((uint64_t)(Tr2Effect*)m_anchorEffect) << 32);
 		quadRenderer.RegisterEffect( m_anchorEffectHash, sizeof( AnchorVertex ), 1, AnchorVertex::GetDefinition(), m_anchorEffect );
+	}
+	if( m_velocityEffect )
+	{
+		m_velocityEffectHash = m_velocityEffect->GetHashValue() + (((uint64_t)(Tr2Effect*)m_velocityEffect) << 32);
+		quadRenderer.RegisterEffect( m_velocityEffectHash, sizeof( VelocityConnectorVertex ), 1, VelocityConnectorVertex::GetDefinition(), m_velocityEffect );
 	}
 }
 
@@ -126,6 +154,7 @@ void EveTacticalOverlay::UpdateSyncronous( EveUpdateContext& updateContext )
 	if( m_positionCurve )
 	{
 		m_positionCurve->GetValueAt( &m_rootPosition, updateContext.GetTime() );
+		m_positionCurve->GetValueDotAt( &m_rootVelocity, updateContext.GetTime() );
 	}
 
 	for( auto it = m_trackObjects.begin(); it != m_trackObjects.end(); it++ )
@@ -180,6 +209,7 @@ void EveTacticalOverlay::RegisterVariables()
 {
 	m_variableStore->RegisterVariable( "PlanePosition", m_rootPosition );
 	m_variableStore->RegisterVariable( "Fadeout", m_ranges );
+	m_variableStore->RegisterVariable( "RootVelocity", m_rootVelocity );
 }
 
 void EveTacticalOverlay::SetVariableStore( Tr2Effect* effect )
@@ -196,6 +226,9 @@ void EveTacticalOverlay::GetRenderables( const TriFrustum& frustum, std::vector<
 {
 	m_connectorBuffer.clear();
 	m_anchorBuffer.clear();
+	m_velocityBuffer.clear();
+	
+	VelocityConnectorVertex vtx;
 	Vector3 up( 0, 1, 0 );
 	float distanceThreshold = ( m_ranges.x + m_ranges.y ) * m_ranges.z;
 	float requestedSegments = 0.f;
@@ -258,19 +291,51 @@ void EveTacticalOverlay::GetRenderables( const TriFrustum& frustum, std::vector<
 			vtx.instanceData2 = floor( radius ) + interestReducedIntensity;
 			m_connectorBuffer.push_back(vtx);
 		}
+		// Object properties(radius and movement)
+		for( float i = 0; i < 3; i++ )
+		{
+			if( i == 1.f && !((*it)->IsAggressive()) )
+			{
+				continue;
+			}
+			VelocityConnectorVertex vtx;
+			vtx.instanceData = Vector4( position, i );
+			float blink = i == 1 ? 0.9f : 0.f;
+			vtx.instanceData2 = Vector4( (*it)->GetVelocity(), floor( radius ) + blink );
+			m_velocityBuffer.push_back( vtx );
+		}
 	}
+
+	// Add velocity for your ship
+	vtx.instanceData = Vector4( m_rootPosition, 0.f );
+	vtx.instanceData2 = Vector4( m_rootVelocity, floor( m_ranges.w ) );
+	m_velocityBuffer.push_back( vtx );
+	// And blinking velocities for selected target
+	if( m_interestObject )
+	{
+		// Your velocity at the target
+		vtx.instanceData = Vector4( m_interestObject->GetPosition(), 0.f );
+		vtx.instanceData2 = Vector4( m_rootVelocity, floor( m_interestObject->GetRadius() ) + 0.9f );
+		m_velocityBuffer.push_back( vtx );
+		// And target at your ship
+		vtx.instanceData = Vector4( m_rootPosition, 0 );
+		vtx.instanceData2 = Vector4( m_interestObject->GetVelocity(), floor( m_ranges.w ) + 0.9f );
+		m_velocityBuffer.push_back( vtx );
+	}
+
 	m_totalSegmentsLast = (float)m_connectorBuffer.size();
 	m_requestedSegmentsLast = requestedSegments;
 }
 
 void EveTacticalOverlay::AddQuadsToQuadRenderer( Tr2QuadRenderer& quadRenderer )
 {
-	if( !m_connectorEffectHash || !m_anchorEffectHash )
+	if( !m_connectorEffectHash || !m_anchorEffectHash || !m_velocityEffectHash )
 	{
 		return;
 	}
 
 	quadRenderer.AddQuads( m_connectorEffectHash, &m_connectorBuffer[0], m_connectorBuffer.size() );
 	quadRenderer.AddQuads( m_anchorEffectHash, &m_anchorBuffer[0], m_anchorBuffer.size() );
+	quadRenderer.AddQuads( m_velocityEffectHash, &m_velocityBuffer[0], m_velocityBuffer.size() );
 }
 
