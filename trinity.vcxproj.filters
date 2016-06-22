@@ -264,6 +264,9 @@
     <ClInclude Include="Tr2PrimitiveSet.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tr2PrimitiveText.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="Tr2ProjectBoundingBoxBracket.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -1735,6 +1738,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2PrimitiveSet_Blue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tr2PrimitiveText_Blue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2ProjectBoundingBoxBracket.cpp">
