@@ -835,6 +835,9 @@ public:
 	// what is the pattern's material target?
 	bool m_isTargetMtl1, m_isTargetMtl2, m_isTargetMtl3, m_isTargetMtl4;
 
+	// mirrored at yz plane?
+	bool m_isMirrored;
+
 	// pattern textures res path
 	PEveSOFDataTextureVector m_patternTextures;
 
