@@ -242,6 +242,13 @@ const Be::ClassInfo* App::ExposeToBlue()
 			"Processes messages (one iteration of a typical message loop). Returns false if WM_QUIT is\n"
 			"received, otherwise returns true."
 		)
+
+		MAP_METHOD_AND_WRAP
+		(
+			"SetIcon",
+			SetIcon,
+			"Sets application icon from the given .bmp file"
+		)
 	EXPOSURE_END()
 
 }

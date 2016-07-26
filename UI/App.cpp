@@ -1103,3 +1103,9 @@ Be::Result<std::string> App::CreateDevice( unsigned int adapter, Tr2PresentParam
 
 	return Be::Result<std::string>();
 }
+
+void App::SetIcon(const wchar_t* filename)
+{
+	HANDLE hIcon = LoadImageW(NULL, filename, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+	::SendMessage( mHwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+}

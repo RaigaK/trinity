@@ -129,6 +129,8 @@ private:
 
 	Tr2MouseCursorPtr m_cursor;
 
+	void SetIcon(const wchar_t* filename);
+
 public:
 	void Quit();
 	void MoveWindow( int x, int y, Be::Optional<int> width, Be::Optional<int> height );
