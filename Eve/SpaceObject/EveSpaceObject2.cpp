@@ -362,7 +362,7 @@ void EveSpaceObject2::UpdateAsyncronous( EveUpdateContext& updateContext )
 		}
 		else
 		{
-			m_psData.customMaskTargets[ i ] = Vector4( 0.f, 0.f, 0.f, 0.f );
+			EveCustomMask::ZeroPerObjectData( i, &m_vsData, &m_psData );
 		}
 	}
 
