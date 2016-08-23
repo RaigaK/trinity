@@ -104,6 +104,7 @@ EveSOFDataGenericHullDamage::EveSOFDataGenericHullDamage( IRoot* lockobj ) :
 
 EveSOFDataGeneric::EveSOFDataGeneric( IRoot* lockobj ) :
 	PARENTLOCK( m_materialPrefixes ),
+	PARENTLOCK( m_customMaterialPrefixes ),
 	PARENTLOCK( m_areaShaders ),
 	PARENTLOCK( m_decalShaders ),
 	PARENTLOCK( m_hullAreas ),

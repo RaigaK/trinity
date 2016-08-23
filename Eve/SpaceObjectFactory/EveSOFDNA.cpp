@@ -113,7 +113,7 @@ bool EveSOFDNA::ValidateContent()
 		switch( cmd )
 		{
 		case CMD_MESH:
-			// number of arguments must be number of materials
+			// number of arguments must number of materials
 			if( m_genericData->materialPrefixes.size() != cit->second.size() )
 			{
 				return false;
@@ -161,12 +161,20 @@ bool EveSOFDNA::ValidateContent()
 			}
 			break;
 		case CMD_PATTERN:
-			// has one argument: the pattern name
-			if( cit->second.size() != 1 )
+			// has two argument: the pattern name and the material name
+			if( cit->second.size() != 2 )
 			{
 				return false;
 			}
 			if( !m_dataMgr->HasPatternData( cit->second[0].c_str() ) )
+			{
+				return false;
+			}
+			if( cit->second[1].compare( "none" ) == 0 )
+			{
+				continue;
+			}
+			else if( !m_dataMgr->HasMaterialData( cit->second[1].c_str() ) )
 			{
 				return false;
 			}
@@ -802,18 +810,18 @@ const Vector4* EveSOFDNA::GetMeshAreaParameter( const BlueSharedString& areaDesi
 	CCP_STATS_ZONE( __FUNCTION__ );
 
 	// do we have a dna mesh command for this?
-	std::vector<std::string> meshCommandArgs;
-	if( GetDnaCommandArgs( CMD_MESH, meshCommandArgs ) )
+	std::vector<std::string> commandArgs;
+	if( GetDnaCommandArgs( CMD_MESH, commandArgs ) )
 	{
 		// indentify material paramater and material index
 		EveSOFUtilsParameterName param( m_genericData, parameterName.c_str() );
-		if( param.IsValid() && ( param.GetMaterialIdx() < (int32_t)meshCommandArgs.size() ) )
+		if( param.IsValid() && ( param.GetMaterialIdx() < (int32_t)commandArgs.size() ) )
 		{
 			// some materials are not flagged as blocked for overrides
 			if( !( blockededMaterials & ( 1 << param.GetMaterialIdx() ) ) )
 			{
 				// get the material from the lib
-				const EveSOFDataMgr::MaterialData* materialData = m_dataMgr->GetMaterialData( meshCommandArgs[ param.GetMaterialIdx() ].c_str() );
+				const EveSOFDataMgr::MaterialData* materialData = m_dataMgr->GetMaterialData( commandArgs[ param.GetMaterialIdx() ].c_str() );
 				if( materialData ) 
 				{
 					BlueSharedString pn( param.GetShortName() );
@@ -826,6 +834,18 @@ const Vector4* EveSOFDNA::GetMeshAreaParameter( const BlueSharedString& areaDesi
 			}
 		}
 	}
+
+	// do we have a dna patten command for this?
+	/*
+	if( GetDnaCommandArgs( CMD_PATTERN, commandArgs ) )
+	{
+		// indentify material paramater and material index
+		EveSOFUtilsParameterName param( m_genericData, parameterName.c_str() );
+		if( param.IsValid() && ( param.GetMaterialIdx() < (int32_t)commandArgs.size() ) )
+		{
+		}
+	}
+	*/
 
 	// do we have it in the generic data?
 	const Vector4* res = SearchForParameterData( m_genericData->hullAreaParameters, areaDesignation, parameterName );

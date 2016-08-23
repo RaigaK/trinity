@@ -1007,6 +1007,7 @@ public:
 
 	// shader material pre-fixes
 	PEveSOFDataGenericStringVector m_materialPrefixes;
+	PEveSOFDataGenericStringVector m_customMaterialPrefixes;
 
 	// shader-specific data
 	PEveSOFDataGenericShaderVector m_areaShaders;

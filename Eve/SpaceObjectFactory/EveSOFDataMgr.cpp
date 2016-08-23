@@ -1291,6 +1291,15 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		gd.materialPrefixes.push_back( str->m_str );
 	}
 
+	// shader custom material name prefixes
+	gd.customMaterialPrefixes.clear();
+	for( auto cmpit = srcData->m_customMaterialPrefixes.begin(); cmpit != srcData->m_customMaterialPrefixes.end(); ++cmpit )
+	{
+		EveSOFDataGenericStringPtr str = ( *cmpit );
+
+		gd.customMaterialPrefixes.push_back( str->m_str );
+	}
+
 	// area shader-specific data
 	gd.areaShaderData.clear();
 	for( auto asit = srcData->m_areaShaders.begin(); asit != srcData->m_areaShaders.end(); ++asit )

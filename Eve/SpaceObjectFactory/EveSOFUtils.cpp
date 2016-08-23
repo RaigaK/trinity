@@ -23,6 +23,20 @@ EveSOFUtilsParameterName::EveSOFUtilsParameterName( const EveSOFDataMgr::Generic
 			{
 				m_materialIdx = int32_t(i);
 				StringRemove( m_shortname, genericData->materialPrefixes[i].c_str() );
+				return;
+			}
+		}
+	}
+	// now try to find the custom material prefix and with that indentify the index
+	for( size_t i = 0; i < genericData->customMaterialPrefixes.size(); ++i )
+	{
+		if( StringStartsWithI( m_shortname.c_str(), genericData->customMaterialPrefixes[i].c_str() ) )
+		{
+			if( i < genericData->customMaterialPrefixes.size() )
+			{
+				m_materialIdx = int32_t( i );
+				StringRemove( m_shortname, genericData->customMaterialPrefixes[i].c_str() );
+				return;
 			}
 		}
 	}

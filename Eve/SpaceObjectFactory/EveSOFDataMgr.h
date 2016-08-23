@@ -425,6 +425,7 @@ public:
 		std::string decalShaderLocation;
 		// material perfixes
 		std::vector<std::string> materialPrefixes;
+		std::vector<std::string> customMaterialPrefixes;
 		// shader-specific data
 		std::map<BlueSharedString, GenericShaderData> areaShaderData;
 		std::map<BlueSharedString, GenericShaderData> decalShaderData;
