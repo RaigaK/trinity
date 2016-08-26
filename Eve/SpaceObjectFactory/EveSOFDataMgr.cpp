@@ -1310,12 +1310,6 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
-		for( auto stit = shaderData->m_textures.begin(); stit != shaderData->m_textures.end(); ++stit )
-		{
-			EveSOFDataGenericStringPtr texData = (*stit);
-			gsd.textures.push_back( BlueSharedString( texData->m_str ) );
-		}
-
 		gd.areaShaderData[ shaderData->m_shader ] = gsd;
 	}
 
@@ -1342,12 +1336,6 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		{
 			EveSOFDataGenericStringPtr paramData = (*spit);
 			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
-		}
-
-		for( auto stit = shaderData->m_textures.begin(); stit != shaderData->m_textures.end(); ++stit )
-		{
-			EveSOFDataGenericStringPtr texData = (*stit);
-			gsd.textures.push_back( BlueSharedString( texData->m_str ) );
 		}
 
 		gd.decalShaderData[ shaderData->m_shader ] = gsd;

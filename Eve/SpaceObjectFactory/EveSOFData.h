@@ -964,9 +964,8 @@ public:
 
 	BlueSharedString m_shader;
 
-	// complete list of parameters & textures
+	// complete list of parameters
 	PEveSOFDataGenericStringVector m_parameters;
-	PEveSOFDataGenericStringVector m_textures;
 
 	// default textures & parameters
 	PEveSOFDataTextureVector m_defaultTextures;
