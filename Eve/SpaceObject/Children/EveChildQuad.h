@@ -8,12 +8,14 @@
 #define EveChildQuad_H
 
 #include "IEveSpaceObjectChild.h"
+#include "EveChildTransform.h"
 #include "ITr2Renderable.h"
 
 BLUE_DECLARE( Tr2Effect );
 
 BLUE_CLASS( EveChildQuad ) :
 	public IEveSpaceObjectChild,
+	public EveChildTransform,
 	public ITr2Renderable,
 	public IInitialize
 {
@@ -54,14 +56,17 @@ public:
 private:
 	struct Quad
 	{
-		Vector3 m_position;
-		D3DXFLOAT16 m_color[4];
-		Vector2 m_scale;
-		float m_rotation;
-		float m_brightness;
-	};
+		Vector4 m_parentTransform0;
+		Vector4 m_parentTransform1;
+		Vector4 m_parentTransform2;
 
-	Matrix m_worldTransform;
+		Vector4 m_localTransform0;
+		Vector4 m_localTransform1;
+		Vector4 m_localTransform2;
+
+		D3DXFLOAT16 m_color[4];
+		D3DXFLOAT16 m_brightness[2];
+	};
 
 	BlueSharedString m_name;
 	Tr2EffectPtr m_effect;
@@ -69,8 +74,7 @@ private:
 	Quad m_quad;
 
 	Vector3 m_position;
-	float m_rotation;
-	Vector2 m_scale;
+	float m_viewRotation;
 	Color m_color;
 	float m_brightness;
 
