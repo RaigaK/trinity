@@ -1292,6 +1292,13 @@ void EveSpaceScene::GatherBatches( Tr2RenderContext& renderContext )
 
 	if( m_impostorManager )
 	{
+		uint32_t size = 2;
+		uint32_t threshold = uint32_t( g_eveSpaceSceneLowDetailThreshold ) / 2;
+		while( size * 2 < threshold )
+		{
+			size *= 2;
+		}
+		m_impostorManager->SetItemSize( size, size );
 		m_impostorManager->BeginUpdate();
 	}
 

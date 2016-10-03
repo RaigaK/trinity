@@ -193,6 +193,26 @@ void Tr2ImpostorManager::Create(
 
 // --------------------------------------------------------------------------------------
 // Description:
+//   Sets billboard size.
+// Arguments:
+//   width - Billboard width
+//   height - Billboard height
+// --------------------------------------------------------------------------------------
+void Tr2ImpostorManager::SetItemSize( uint32_t width, uint32_t height )
+{
+	if( m_itemWidth == width && m_itemHeight == height )
+	{
+		return;
+	}
+	m_itemWidth = width;
+	m_itemHeight = height;
+
+	Initialize();
+}
+
+
+// --------------------------------------------------------------------------------------
+// Description:
 //   Resets the manager: deletes all billboards.  
 // --------------------------------------------------------------------------------------
 void Tr2ImpostorManager::Reset()

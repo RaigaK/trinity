@@ -78,6 +78,8 @@ public:
 		Be::OptionalWithDefaultValue<uint32_t, 16> itemWidth, 
 		Be::OptionalWithDefaultValue<uint32_t, 16> itemHeigh );
 
+	void SetItemSize( uint32_t width, uint32_t height );
+
 	bool Add( ITr2ImpostorSource* object, const ITr2ImpostorSource::ImpostorHash& hash );
 
 	void BeginUpdate();
