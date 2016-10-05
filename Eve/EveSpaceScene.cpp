@@ -1449,6 +1449,7 @@ void EveSpaceScene::UpdateImpostors()
 
 		PopulatePerFramePSData( m_perFramePS );
 		PopulatePerFrameVSData( m_perFrameVS );
+		m_perFrameVS.FogFactors.z = 0;
 		ApplyPerFrameData( renderContext );
 
 		spaceObject->GetImpostorBatches( frustum, m_primaryBatches );
