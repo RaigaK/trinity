@@ -298,12 +298,18 @@ void EveSOFDNA::SetupCustomData()
 		auto finder = m_genericData->variants.find( BlueSharedString( variantCommandArgs[0] ) );
 		if( finder != m_genericData->variants.end() )
 		{
+			// what area?
+			std::vector<EveSOFDataMgr::HullAreas>* targetArea = &m_customHullData.opaqueAreas;
+			if( finder->second.isTransparent )
+			{
+				targetArea = &m_customHullData.transparentAreas;
+			}
 			// for now only use a single additive area
 			for( auto it = m_hullData->opaqueAreas.begin(); it != m_hullData->opaqueAreas.end(); ++it )
 			{
-				m_customHullData.opaqueAreas.push_back( finder->second );
-				m_customHullData.opaqueAreas.back().index = it->index;
-				m_customHullData.opaqueAreas.back().count = it->count;
+				targetArea->push_back( finder->second.hullAreaData );
+				targetArea->back().index = it->index;
+				targetArea->back().count = it->count;
 			}
 		}
 	}

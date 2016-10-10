@@ -1347,8 +1347,16 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 	gd.variants.clear();
 	for( auto vit = srcData->m_variants.begin(); vit != srcData->m_variants.end(); ++vit )
 	{
-		EveSOFDataHullAreaPtr variantData = ( *vit );
-		gd.variants[variantData->m_name] = LoadHullAreaData( variantData );
+		EveSOFDataGenericVariantPtr variantData = ( *vit );
+
+		VariantData vd;
+		if( variantData->m_hullArea )
+		{
+			vd.hullAreaData = LoadHullAreaData( variantData->m_hullArea );
+		}
+		vd.isTransparent = variantData->m_isTransparent;
+
+		gd.variants[variantData->m_name] = vd;
 	}
 }
 

@@ -433,6 +433,14 @@ public:
 		std::map<BlueSharedString, Vector4> defaultParameters;
 	};
 
+	struct VariantData
+	{
+		// what area does it go into?
+		bool isTransparent;
+		// the area data
+		HullAreas hullAreaData;
+	};
+
 	struct GenericData
 	{
 		// shader locations
@@ -451,7 +459,7 @@ public:
 		// hull area parameter overloads
 		std::map<BlueSharedString, FactionAreaData> hullAreaParameters;
 		// variants
-		std::map<BlueSharedString, HullAreas> variants;
+		std::map<BlueSharedString, VariantData> variants;
 		// swarm behavior
 		EveSwarm::BehaviorProperties swarmBehavior;
 	};
