@@ -126,6 +126,12 @@ const Be::ClassInfo* EveChildExplosion::ExposeToBlue()
 			SetLocalExplosionTransforms, 
 			"Assigns transforms for local explosions.\n"
 			":param transforms: list of matricies to be used as local explosion transforms" )
+		MAP_METHOD_AND_WRAP( 
+			"SetGlobalExplosionOffset", 
+			SetGlobalExplosionOffset, 
+			"Sets the global explosion offset.\n"
+			":param offset: Vector3 that to be used as the global explosion offset should be in local coordinates" )
+			
     EXPOSURE_END()
 }
 

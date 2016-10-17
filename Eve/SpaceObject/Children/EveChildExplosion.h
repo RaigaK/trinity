@@ -31,6 +31,7 @@ public:
 	void Play();
 	void Stop();
 	void SetLocalExplosionTransforms( const std::vector<Matrix>& transforms );
+	void SetGlobalExplosionOffset( const Vector3& offset );
 
 	void UpdateSyncronous( EveUpdateContext& updateContext, IEveSpaceObject2* spaceObjectParent, IEveSpaceObjectChild* childParent );
 	void RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer );
@@ -97,6 +98,7 @@ private:
 
 	// Local explosion scaling
 	Vector3 m_globalExplosionScaling;
+	Vector3 m_globalExplosionOffset;
 	
 	// Is the effect playing
 	bool m_isPlaying;

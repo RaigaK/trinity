@@ -114,6 +114,17 @@ void EveChildExplosion::SetLocalExplosionTransforms( const std::vector<Matrix>& 
 
 // --------------------------------------------------------------------------------------
 // Description:
+//   Assigns transforms to be used for local explosions
+// Arguments:
+//   transforms - Transforms for local explosions
+// --------------------------------------------------------------------------------------
+void EveChildExplosion::SetGlobalExplosionOffset( const Vector3& offset )
+{
+	m_globalExplosionOffset = offset;
+}
+
+// --------------------------------------------------------------------------------------
+// Description:
 //   Implements IEveSpaceObjectChild interface. If the effect is playing this function
 //   spawns explosions.
 // Arguments:
@@ -177,12 +188,9 @@ void EveChildExplosion::UpdateSyncronous(
 					if( BeClasses->CopyTo( m_globalExplosion, (IRoot**)&m_globalExplosionInstance.p ) )
 					{	
 						Quaternion rotation = Quaternion( 0.0, 0.0 ,0.0, 1.0 );
-						Vector3 translation = Vector3( 0.0, 0.0, 0.0 );
 						
-						Vector3 scaling = m_globalExplosionScaling;
-
 						m_globalExplosionContainer.CreateInstance();
-						m_globalExplosionContainer->SetupWithStaticRotation(&scaling, &rotation, &translation, TR2_LOD_LOW );
+						m_globalExplosionContainer->SetupWithStaticRotation(&m_globalExplosionScaling, &rotation, &m_globalExplosionOffset, TR2_LOD_LOW );
 
 						m_globalExplosionContainer->m_objects.Append( m_globalExplosionInstance );
 						
