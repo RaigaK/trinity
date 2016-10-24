@@ -323,6 +323,7 @@ public:
 	void SetDamageLocators( const EveDamageLocator* damageLocators, size_t damageLocatorCount );
 	Vector3 GetDamageLocator( uint32_t index ) const;
 	Vector3 GetDamageLocatorDirection( uint32_t index ) const;
+	Vector3 GetDamageLocatorDirectionLocal( uint32_t index ) const { return GetDamageLocatorDirection( index ); }
 	const LocatorStructureList* GetLocatorsForSet( const char* setName ) const;
 	void AddCustomMask( EveCustomMaskPtr newCustomMask );
 
