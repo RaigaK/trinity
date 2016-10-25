@@ -30,6 +30,9 @@ public:
 	const std::string& GetResPath() const;
 	void SetResPath( const std::string& val );
 
+	bool IsAnimationEnabled() const;
+	void SetAnimationEnabled( bool enabled );
+
 	void	SetSharedGeometryRes( TriGeometryResPtr res );
 	void	SetUseMeshBinding( bool enable ) { m_useMeshBinding = enable; }
 
@@ -123,6 +126,7 @@ private:
 	bool m_debugRenderJointNames;
 
 	bool	m_useMeshBinding;
+	bool m_animationEnabled;
 
 	granny_file_info* GetFileInfo() const;
 	Tr2GrannyAnimationLayer* GetAnimationLayer( const char* name );

@@ -557,6 +557,11 @@ protected:
 	// Observer position
 	virtual Matrix GetObserverTransform();
 private:
+
+#if BLUE_WITH_PYTHON
+	static PyObject* PyTransformLocators( PyObject* self, PyObject* args );
+#endif
+
 	bool m_isAnimated;
 	EveAnimationSequencerPtr m_animationSequencer;
 

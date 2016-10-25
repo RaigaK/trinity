@@ -25,7 +25,8 @@ Tr2GrannyAnimation::Tr2GrannyAnimation( IRoot* lockobj ) :
 	m_debugRenderJointNames( false ),
 	m_baseLayer( 1.f ),
 	m_modelIndex( 0 ),
-	m_meshBindingIndex( -1 )
+	m_meshBindingIndex( -1 ),
+	m_animationEnabled( true )
 {
 }
 
@@ -465,6 +466,16 @@ void Tr2GrannyAnimation::SetResPath( const std::string& val )
 	Initialize();
 }
 
+bool Tr2GrannyAnimation::IsAnimationEnabled() const
+{
+	return m_animationEnabled;
+}
+
+void Tr2GrannyAnimation::SetAnimationEnabled( bool enabled )
+{
+	m_animationEnabled = enabled;
+}
+
 const std::string& Tr2GrannyAnimation::GetModel() const
 {
 	return m_model;
@@ -652,7 +663,7 @@ void Tr2GrannyAnimation::ClearAnimations()
 
 void Tr2GrannyAnimation::PrePhysicsAnimation( Be::Time time, const Matrix &modelTransform )
 {
-	if( IsInitialized() )
+	if( IsInitialized() && m_animationEnabled )
 	{
 		float animationTime = Tr2Renderer::GetAnimationTime();
 

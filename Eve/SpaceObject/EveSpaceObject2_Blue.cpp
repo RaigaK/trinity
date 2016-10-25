@@ -2,12 +2,120 @@
 #include "EveSpaceObject2.h"
 #include "TriConstants.h"
 #include "Vector3.h"
+#include "Tr2GrannyAnimation.h"
+#include "Utilities/MatrixUtils.h"
 
 BLUE_DEFINE_INTERFACE( IEveSpaceObjectChild );
 BLUE_DEFINE_INTERFACE( IEveSpaceObject2 );
 BLUE_DEFINE_INTERFACE( IEveShadowCaster );
 BLUE_DEFINE_INTERFACE( IEveLightReceiver );
 BLUE_DEFINE_ABSTRACT( EveSpaceObject2 );
+
+#if BLUE_WITH_PYTHON
+
+namespace
+{
+	void TransformLocator( Vector3& position, Quaternion& rotation, int boneIndex, Tr2GrannyAnimation* animation )
+	{
+		if( boneIndex > 0 && animation && animation->IsInitialized() )
+		{
+			size_t boneCount = size_t( animation->GetMeshBoneCount() );
+			if( boneCount )
+			{
+				const granny_matrix_3x4* bones = animation->GetMeshBoneMatrixList();
+				Matrix boneTF;
+				D3DXMatrixIdentity( &boneTF );
+				TriMatrixCopyFrom3x4( &boneTF, &bones[boneIndex] );
+				position = XMVector3TransformCoord( position, boneTF );
+
+				rotation = XMQuaternionMultiply( rotation, XMQuaternionRotationMatrix( boneTF ) );
+			}
+		}
+	}
+}
+
+PyObject* EveSpaceObject2::PyTransformLocators( PyObject* self, PyObject* args )
+{
+	auto pThis = BluePythonCast<EveSpaceObject2*>( self );
+	PyObject* pyLocators = nullptr;
+	if( !PyArg_ParseTuple( args, "O", &pyLocators ) )
+	{
+		return nullptr;
+	}
+	if( auto locators = BluePythonCast<LocatorStructureList*>( pyLocators ) )
+	{
+		PyObject* result = PyList_New( ssize_t( locators->GetSize() ) );
+		for( size_t i = 0; i < locators->GetSize(); ++i )
+		{
+			auto& locator = ( *locators )[i];
+
+			Vector3 position = locator.position;
+			Quaternion rotation = locator.direction;
+			TransformLocator( position, rotation, locator.boneIndex, pThis->m_animationUpdater );
+
+			PyObject* tuple = PyTuple_New( 3 );
+			PyTuple_SetItem( tuple, 0, Py_BuildValue( "(fff)", position.x, position.y, position.z ) );
+			PyTuple_SetItem( tuple, 1, Py_BuildValue( "(ffff)", rotation.x, rotation.y, rotation.z, rotation.w ) );
+			PyTuple_SetItem( tuple, 2, PyInt_FromLong( locator.boneIndex ) );
+			PyList_SetItem( result, ssize_t( i ), tuple );
+		}
+		return result;
+	}
+	else if( auto locators = BluePythonCast<EveDamageLocatorStructureList*>( pyLocators ) )
+	{
+		PyObject* result = PyList_New( ssize_t( locators->GetSize() ) );
+		for( size_t i = 0; i < locators->GetSize(); ++i )
+		{
+			auto& locator = ( *locators )[i];
+
+			Vector3 position = locator.m_position;
+			Quaternion rotation = locator.m_impactDirection;
+			TransformLocator( position, rotation, locator.m_boneIndex, pThis->m_animationUpdater );
+
+			PyObject* tuple = PyTuple_New( 3 );
+			PyTuple_SetItem( tuple, 0, Py_BuildValue( "(fff)", position.x, position.y, position.z ) );
+			PyTuple_SetItem( tuple, 1, Py_BuildValue( "(ffff)", rotation.x, rotation.y, rotation.z, rotation.w ) );
+			PyTuple_SetItem( tuple, 2, PyInt_FromLong( locator.m_boneIndex ) );
+			PyList_SetItem( result, ssize_t( i ), tuple );
+		}
+		return result;
+	}
+	else if( PySequence_Check( pyLocators ) )
+	{
+		PyObject* result = PyList_New( ssize_t( locators->GetSize() ) );
+		for( ssize_t i = 0; ; ++i )
+		{
+			auto item = PySequence_GetItem( pyLocators, i );
+			if( !item )
+			{
+				PyErr_Clear();
+				break;
+			}
+			Vector3 position;
+			Quaternion rotation;
+
+			if( !PyTuple_Check( item ) || !BlueExtractVector( PyTuple_GET_ITEM( item, 0 ), position, 3 ) || 
+				!BlueExtractVector( PyTuple_GET_ITEM( item, 1 ), rotation, 4 ) || !PyInt_Check( PyTuple_GET_ITEM( item, 2 ) ) )
+			{
+				Py_DECREF( item );
+				return PyErr_SetString( PyExc_TypeError, "arument must be a sequence of (position, rotation, boneIndex) tuples" ), nullptr;
+			}
+			int boneIndex = int( PyInt_AsLong( PyTuple_GET_ITEM( item, 2 ) ) );
+			
+			TransformLocator( position, rotation, boneIndex, pThis->m_animationUpdater );
+
+			PyObject* tuple = PyTuple_New( 3 );
+			PyTuple_SetItem( tuple, 0, Py_BuildValue( "(fff)", position.x, position.y, position.z ) );
+			PyTuple_SetItem( tuple, 1, Py_BuildValue( "(ffff)", rotation.x, rotation.y, rotation.z, rotation.w ) );
+			PyTuple_SetItem( tuple, 2, PyInt_FromLong( boneIndex ) );
+			PyList_SetItem( result, ssize_t( i ), tuple );
+			Py_DECREF( item );
+		}
+		return result;
+	}
+	return PyErr_SetString( PyExc_TypeError, "arument must be a sequence of (position, rotation, boneIndex) tuples" ), nullptr;
+}
+#endif
 
 const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 {
@@ -459,7 +567,15 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		MAP_ATTRIBUTE( "lights", m_lights, "List of dynamic lights", Be::READ | Be::PERSIST );
 
 		MAP_ATTRIBUTE( "externalParameters", m_externalParameters, "List of external parameters to bind to object elements", Be::READ | Be::PERSIST )
-		
+
+#if BLUE_WITH_PYTHON
+		MAP_METHOD( 
+			"TransformLocators",
+			PyTransformLocators,
+			"Transforms a sequence of locators using current bone setup\n"
+			":param locators: Locator data (position, rotation, boneIndex)\n"
+			":type locators: sequence[((float, float, float), (float, float, float, float), int)]" )
+#endif
 		
     EXPOSURE_END()
 }

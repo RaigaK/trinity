@@ -34,6 +34,13 @@ const Be::ClassInfo* Tr2GrannyAnimation::ExposeToBlue()
 			Be::READWRITE
 		)
 
+		MAP_ATTRIBUTE
+		( 
+			"animationEnabled", m_animationEnabled, 
+			"Enable/disable animation update",
+			Be::READWRITE
+		)
+
 		MAP_METHOD_AND_WRAP
 		(
 			"PlayAnimation",
