@@ -116,8 +116,17 @@ private:
 	float m_end;
 	bool m_isLoop;
 
+	struct DrawCall
+	{
+		uint16_t vertexOffset;
+		uint16_t vertexCount;
+		uint16_t indexOffset;
+		uint16_t indexCount;
+	};
+
 	TrackableStdVector<uint16_t> m_renderIndices;
 	TrackableStdVector<Tr2Sprite2dD3DVertex> m_renderVertices;
+	TrackableStdVector<DrawCall> m_drawCalls;
 };
 
 TYPEDEF_BLUECLASS( Tr2Sprite2dLineTrace );

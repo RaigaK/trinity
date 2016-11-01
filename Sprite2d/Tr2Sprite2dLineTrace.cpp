@@ -24,6 +24,7 @@ PARENTLOCK( m_vertices ),
 	m_isLoop( false ),
 	m_renderIndices( "Tr2Sprite2dLineTrace/m_renderIndices" ),
 	m_renderVertices( "Tr2Sprite2dLineTrace/m_renderVertices" ),
+	m_drawCalls( "Tr2Sprite2dLineTrace/m_drawCalls" ),
 	m_textureWidth( 1.0f),
 	m_textureOffset( 0.0f ),
 	m_textureOffsetAccum( 0.0f ),
@@ -65,6 +66,13 @@ void Tr2Sprite2dLineTrace::GatherSprites( Tr2Sprite2dScene* renderer )
 		SetRegularRenderState( renderer );
 
 		m_renderVertices.reserve( GetEstimatedVertexCount() );
+
+		DrawCall dc;
+		dc.indexCount = 0;
+		dc.indexOffset = 0;
+		dc.vertexCount = 0;
+		dc.vertexOffset = 0;
+		m_drawCalls.push_back( dc );
 
 		m_length = CalcLength();
 		float lastRelativeLength = 0.0f;
@@ -174,6 +182,8 @@ void Tr2Sprite2dLineTrace::GatherSprites( Tr2Sprite2dScene* renderer )
 			fromColor = toColor;
 			lastRelativeLength = relativeLength;
 		}
+		m_drawCalls.back().vertexCount = uint16_t( m_renderVertices.size() ) - m_drawCalls.back().vertexOffset;
+		m_drawCalls.back().indexCount = uint16_t( m_renderIndices.size() ) - m_drawCalls.back().indexOffset;
 
 		m_isDirty = false;
 	}
@@ -181,7 +191,10 @@ void Tr2Sprite2dLineTrace::GatherSprites( Tr2Sprite2dScene* renderer )
 	renderer->PushTranslation( m_translation );
 
 	SetValidatedTextures( renderer );
-	renderer->RenderTriangleVerts( &m_renderVertices[0], (unsigned int)m_renderVertices.size(), &m_renderIndices[0], (uint16_t)m_renderIndices.size() );
+	for( auto it = m_drawCalls.begin(); it != m_drawCalls.end(); ++it )
+	{
+		renderer->RenderTriangleVerts( &m_renderVertices[it->vertexOffset], it->vertexCount, &m_renderIndices[it->indexOffset], it->indexCount );
+	}
 
 	renderer->PopTranslation();
 }
@@ -202,19 +215,22 @@ ITr2SpriteObject* Tr2Sprite2dLineTrace::PickPoint( float x, float y, Tr2Sprite2d
 
 		Vector2 p( x, y );
 
-		for( size_t i = 0; i < m_renderIndices.size() / 3; ++i )
+		for( auto it = m_drawCalls.begin(); it != m_drawCalls.end(); ++it )
 		{
-			auto ix0 = m_renderIndices[i * 3];
-			auto ix1 = m_renderIndices[i * 3 + 1];
-			auto ix2 = m_renderIndices[i * 3 + 2];
-
-			auto v0 = m_renderVertices[ix0];
-			auto v1 = m_renderVertices[ix1];
-			auto v2 = m_renderVertices[ix2];
-
-			if( renderer->IsInsideTriangle( p, *(Vector2*)&v0.position, *(Vector2*)&v1.position, *(Vector2*)&v2.position ) )
+			for( size_t i = 0; i < size_t( it->indexCount / 3 ); ++i )
 			{
-				return this;
+				auto ix0 = m_renderIndices[i * 3 + it->indexOffset];
+				auto ix1 = m_renderIndices[i * 3 + it->indexOffset + 1];
+				auto ix2 = m_renderIndices[i * 3 + it->indexOffset + 2];
+
+				auto v0 = m_renderVertices[ix0 + it->vertexOffset];
+				auto v1 = m_renderVertices[ix1 + it->vertexOffset];
+				auto v2 = m_renderVertices[ix2 + it->vertexOffset];
+
+				if( renderer->IsInsideTriangle( p, *(Vector2*)&v0.position, *(Vector2*)&v1.position, *(Vector2*)&v2.position ) )
+				{
+					return this;
+				}
 			}
 		}
 	}
@@ -321,6 +337,62 @@ void Tr2Sprite2dLineTrace::AddSegment(
 	// Rotate 90 degrees
 	Vector2 normal(d.y, -d.x);
 
+	uint32_t totalVertexCount = uint32_t( m_renderVertices.size() ) - m_drawCalls.back().vertexOffset;
+	uint32_t totalIndexCount = uint32_t( m_renderIndices.size() ) - m_drawCalls.back().indexOffset;
+	uint32_t segmentVertices = 4;
+	uint32_t segmentIndices = 6;
+	if( capAngleTo != 0.0f)
+	{
+		if ( m_cornerType == CORNERTYPE_MITER)
+		{
+			segmentVertices += 1;
+			segmentIndices += 6;
+		}
+		else
+		{
+			float jointWidth = halfWidth * 2.0f;
+
+			// calculate joint angle
+			float startAngle = atan2( normal.y, normal.x );
+			float endAngle = startAngle + capAngleTo;
+			float angleDiff = endAngle - startAngle;
+
+			// calculate arc length and number of steps
+			float arcLength = angleDiff * m_lineWidth;
+
+			unsigned int numSteps = (unsigned int)arcLength / 4;
+
+			if( numSteps < 2 )
+				numSteps = 2;
+			++numSteps;
+	
+			if( numSteps > jointWidth )
+			{
+				numSteps = (unsigned int)m_lineWidth;
+			}
+
+			segmentVertices += numSteps;
+			segmentIndices += ( numSteps - 1 ) * 3;
+		}
+	}
+	if( totalIndexCount + segmentIndices >= renderer->GetMaxIndexCountPerDrawCall() || totalVertexCount + segmentVertices >= renderer->GetMaxVertexCountPerDrawCall() )
+	{
+		m_drawCalls.back().vertexCount = uint16_t( m_renderVertices.size() ) - m_drawCalls.back().vertexOffset;
+		m_drawCalls.back().indexCount = uint16_t( m_renderIndices.size() ) - m_drawCalls.back().indexOffset;
+
+		DrawCall dc;
+		dc.vertexOffset = uint16_t( m_renderVertices.size() );
+		dc.vertexCount = 0;
+		dc.indexOffset = uint16_t( m_renderIndices.size() );
+		dc.indexCount = 0;
+		m_drawCalls.push_back( dc );
+
+		auto v0 = m_renderVertices[m_renderVertices.size() - 2];
+		auto v1 = m_renderVertices[m_renderVertices.size() - 1];
+		m_renderVertices.push_back( v0 );
+		m_renderVertices.push_back( v1 );
+	}
+
 	Tr2Sprite2dVertexBase verts[4];
 
 	// v0 - top left
@@ -374,12 +446,13 @@ void Tr2Sprite2dLineTrace::AddSegment(
 		4 );
 
 	// Update index buffer
-	m_renderIndices.push_back( 0 + oldSize );
-	m_renderIndices.push_back( 1 + oldSize );
-	m_renderIndices.push_back( 3 + oldSize );
-	m_renderIndices.push_back( 3 + oldSize );
-	m_renderIndices.push_back( 1 + oldSize );
-	m_renderIndices.push_back( 2 + oldSize );
+	auto indexOffset = m_drawCalls.back().vertexOffset;
+	m_renderIndices.push_back( 0 + oldSize - indexOffset );
+	m_renderIndices.push_back( 1 + oldSize - indexOffset );
+	m_renderIndices.push_back( 3 + oldSize - indexOffset );
+	m_renderIndices.push_back( 3 + oldSize - indexOffset );
+	m_renderIndices.push_back( 1 + oldSize - indexOffset );
+	m_renderIndices.push_back( 2 + oldSize - indexOffset );
 
 	// Construct joint
 	if( capAngleTo != 0.0f)
@@ -475,6 +548,7 @@ void Tr2Sprite2dLineTrace::AddRoundJoint(
 	float a = startAngle;
 	uint16_t vertexCount = (uint16_t)m_renderVertices.size();
 	
+	auto indexOffset = m_drawCalls.back().vertexOffset;
 	for( unsigned int i = 0; i < numSteps; ++i )
 	{
 		// Set position
@@ -505,9 +579,9 @@ void Tr2Sprite2dLineTrace::AddRoundJoint(
 		// Update index buffer
 		if( i > 0 )
 		{
-			m_renderIndices.push_back( -1 + vertexCount );
-			m_renderIndices.push_back(  0 + vertexCount );
-			m_renderIndices.push_back( fanBase );
+			m_renderIndices.push_back( -1 + vertexCount - indexOffset );
+			m_renderIndices.push_back(  0 + vertexCount - indexOffset );
+			m_renderIndices.push_back( fanBase - indexOffset );
 		}
 
 		a += stepSize;
@@ -597,25 +671,26 @@ void Tr2Sprite2dLineTrace::AddMiterJoint(
 	}
 
 	// Update render index
+	auto indexOffset = m_drawCalls.back().vertexOffset;
 	if (sign == 1.0)
 	{
-		m_renderIndices.push_back( -2 + vertexCount );
-		m_renderIndices.push_back( fanBase );
-		m_renderIndices.push_back(  0 + vertexCount );
+		m_renderIndices.push_back( -2 + vertexCount - indexOffset );
+		m_renderIndices.push_back( fanBase - indexOffset );
+		m_renderIndices.push_back(  0 + vertexCount - indexOffset );
 
-		m_renderIndices.push_back( 2 + vertexCount );
-		m_renderIndices.push_back( fanBase );
-		m_renderIndices.push_back(  0 + vertexCount );
+		m_renderIndices.push_back( 2 + vertexCount - indexOffset );
+		m_renderIndices.push_back( fanBase - indexOffset );
+		m_renderIndices.push_back(  0 + vertexCount - indexOffset );
 	}
 	else
 	{
-		m_renderIndices.push_back( -1 + vertexCount );
-		m_renderIndices.push_back( fanBase );
-		m_renderIndices.push_back(  0 + vertexCount );
+		m_renderIndices.push_back( -1 + vertexCount - indexOffset );
+		m_renderIndices.push_back( fanBase - indexOffset );
+		m_renderIndices.push_back(  0 + vertexCount - indexOffset );
 
-		m_renderIndices.push_back( 1 + vertexCount );
-		m_renderIndices.push_back( fanBase );
-		m_renderIndices.push_back( 0 + vertexCount );
+		m_renderIndices.push_back( 1 + vertexCount - indexOffset );
+		m_renderIndices.push_back( fanBase - indexOffset );
+		m_renderIndices.push_back( 0 + vertexCount - indexOffset );
 	}
 
 	m_renderVertices.resize( vertexCount + 1 );
@@ -660,6 +735,8 @@ void Tr2Sprite2dLineTrace::ClearVertices()
 	m_renderVertices.shrink_to_fit();
 	m_renderIndices.clear();
 	m_renderIndices.shrink_to_fit();
+	m_drawCalls.clear();
+	m_drawCalls.shrink_to_fit();
 	m_textureOffsetAccum = 0.0f;
 }
 
