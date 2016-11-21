@@ -933,7 +933,7 @@ std::pair<Vector3, Vector3> EveSpaceObject2::CalculateSkinnedBoundingBoxFromTran
 {
 	Vector3 bbMin, bbMax;
 	BoundingBoxInitialize( bbMin, bbMax );
-	if( m_dynamicBoundingSphere )
+	if( m_dynamicBoundingSphereEnabled )
 	{
 		m_animationUpdater->CalculateSkinnedBoundingBoxFromTransform( transform, bbMin, bbMax, m_geometryResFromMesh->GetGrannyInfo() );
 	}

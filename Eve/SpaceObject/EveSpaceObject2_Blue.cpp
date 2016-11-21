@@ -394,7 +394,7 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 			Be::READWRITE | Be::PERSIST
 		)
 		
-		MAP_ATTRIBUTE( "isAnimated", m_isAnimated, "Indicate if object is animated", Be::READ )
+		MAP_ATTRIBUTE( "dynamicBoundingSphereEnabled", m_dynamicBoundingSphereEnabled, "Indicate if object uses dynamic bounding spheres", Be::READ | Be::PERSIST )
 
 		MAP_METHOD_AND_WRAP( "GetBoneCount", GetBoneCount, "Returns the number of bones in the granny." )
 		MAP_METHOD_AND_WRAP
