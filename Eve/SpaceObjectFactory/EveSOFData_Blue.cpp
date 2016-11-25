@@ -139,16 +139,15 @@ BLUE_DEFINE( EveSOFDataHullPlaneSet );
 Be::VarChooser EveSOFDataHullPlaneSetUsageChooser[] =
 {
 	{
-		"Standard",
-			BeCast( EveSOFDataHullPlaneSet::USAGE_STANDARD ),
-			"Standard planeset"
+		"Standard", BeCast( EveSOFDataHullPlaneSet::USAGE_STANDARD ), "Standard planeset"
 	},
 	{
-		"Hologram",
-			BeCast( EveSOFDataHullPlaneSet::USAGE_HOLOGRAM),
-			"Hologram planeset"
-		},
-		{ 0 }
+		"Hologram", BeCast( EveSOFDataHullPlaneSet::USAGE_HOLOGRAM), "Hologram planeset"
+	},
+	{
+		"Video", BeCast( EveSOFDataHullPlaneSet::USAGE_VIDEO ), "Video planeset"
+	},
+	{ 0 }
 };
 
 BLUE_REGISTER_ENUM_EX( 

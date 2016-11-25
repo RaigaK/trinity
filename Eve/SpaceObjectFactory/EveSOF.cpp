@@ -675,6 +675,7 @@ void EveSOF::SetupPlaneSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) co
 		switch (planeSetData->usage)
 		{
 		case EveSOFDataHullPlaneSet::USAGE_STANDARD:
+		case EveSOFDataHullPlaneSet::USAGE_VIDEO:
 			effectResPath = "res:/graphics/effect/managed/space/spaceobject/fx/planeglow.fx";
 			if( planeSetData->skinned )
 			{

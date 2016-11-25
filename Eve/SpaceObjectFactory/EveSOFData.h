@@ -263,6 +263,7 @@ public:
 	{
 		USAGE_STANDARD = 0,
 		USAGE_HOLOGRAM,
+		USAGE_VIDEO,
 	};
 
 	// data
