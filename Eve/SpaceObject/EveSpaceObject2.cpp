@@ -243,7 +243,6 @@ Matrix EveSpaceObject2::GetObserverTransform()
 void EveSpaceObject2::UpdateSyncronous( EveUpdateContext& updateContext )
 {
 	Be::Time time = updateContext.GetTime();
-	D3DXMatrixTranspose( &m_vsData.worldTransformLast, &m_worldTransform );
 	
 	UpdateWorldTransform( time );
 
@@ -1766,6 +1765,13 @@ void EveSpaceObject2::UnloadLodIfNeeded( Be::Time time )
 
 void EveSpaceObject2::UpdateWorldTransform( Be::Time time )
 {
+	if( m_lastUpdateTransformTime == time )
+	{
+		return;
+	}
+	m_lastUpdateTransformTime = time;
+	D3DXMatrixTranspose( &m_vsData.worldTransformLast, &m_worldTransform );
+
 	if( m_ballPosition )
 	{
 		m_ballPosition->Update( &m_worldPosition, time );

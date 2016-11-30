@@ -502,6 +502,14 @@ void Tr2Effect::RebuildCachedDataInternal()
 			RebuildCachedDataForEffect( *m_shader, *this, m_parametersForPasses );
 			RebuildSamplerOverrides();
 		}
+		else
+		{
+			m_parametersForPasses.clear();
+		}
+	}
+	else
+	{
+		m_parametersForPasses.clear();
 	}
 
 	// It's ok to pass in NULL values to these functions so that the parameters

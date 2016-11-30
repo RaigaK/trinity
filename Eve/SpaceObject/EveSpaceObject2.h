@@ -544,6 +544,7 @@ protected:
 	float m_dirtLevel;
 	
 	Be::Time m_lastCurveUpdateTime;
+	Be::Time m_lastUpdateTransformTime;
 	// Children transforms
 
 	Vector3d m_previousPosition;
