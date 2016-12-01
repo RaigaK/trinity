@@ -555,6 +555,7 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		MAP_METHOD_AND_WRAP( "ClearImpactDamage", ClearImpactDamage, "Clear all the impact/damage effects." )
 		MAP_METHOD_AND_WRAP( "CreateImpact", CreateImpact, "debug only" );
 		MAP_METHOD_AND_WRAP( "CreateImpactFromPosition", CreateImpactFromPosition, "Creates an impact facing a position" );
+		MAP_METHOD_AND_WRAP( "IsImpostor", IsImpostor, "Is this object in the impostor mode?" );
 
 		// Temporarily need this to get camera LookAt working. Shouldn't be here for too long <Logi, dec 2012>
 		MAP_PROPERTY_READONLY

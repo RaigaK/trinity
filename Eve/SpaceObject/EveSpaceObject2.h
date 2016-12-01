@@ -302,6 +302,7 @@ public:
 	// access to visiblity
 	float GetEstimatedPixelDiameter() const;
 	bool IsInFrustum() const;
+	bool IsImpostor() const;
 
 	// access curve sets
 	void UpdateCurveSet( const std::string& name, Be::Time time );
@@ -362,7 +363,6 @@ public:
 	// external parameters
 	void AddExternalParameter( Tr2ExternalParameter* externalParameter );
 
-	bool IsImpostor() const;
 protected:
 	// LODing
 	void UnloadLodIfNeeded( Be::Time time );
