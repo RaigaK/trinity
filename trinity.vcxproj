@@ -2790,7 +2790,6 @@
     <ClInclude Include="EveSprite2dBracket.h"/>
     <ClInclude Include="EveSprite2dBracketRenderer.h"/>
     <ClInclude Include="GrannyBoneOffset.h"/>
-    <ClInclude Include="ID3DTexture.h"/>
     <ClInclude Include="IRenderCallback.h"/>
     <ClInclude Include="ITr2AttributeGenerator.h"/>
     <ClInclude Include="ITr2EffectValue.h"/>
@@ -2801,6 +2800,7 @@
     <ClInclude Include="ITr2ShaderMaterial.h"/>
     <ClInclude Include="ITr2ShaderState.h"/>
     <ClInclude Include="ITr2SkinnedObject.h"/>
+    <ClInclude Include="ITr2TextureProvider.h"/>
     <ClInclude Include="ITr2VisibilityQueryable.h"/>
     <ClInclude Include="ITr2VisualizationModeRenderer.h"/>
     <ClInclude Include="ITr2WorldTransformUpdater.h"/>

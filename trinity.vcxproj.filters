@@ -51,9 +51,6 @@
     <ClInclude Include="GrannyBoneOffset.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ID3DTexture.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="IRenderCallback.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -82,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ITr2SkinnedObject.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ITr2TextureProvider.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ITr2VisibilityQueryable.h">
