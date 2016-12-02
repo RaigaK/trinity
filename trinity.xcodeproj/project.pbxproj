@@ -1290,10 +1290,10 @@
 			fileRef = 000003A0000044b827000cae;
 			};
 		000005B4000044b827000cae = {
-			name = ID3DTexture.h;
+			name = IRenderCallback.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ID3DTexture.h;
+			path = IRenderCallback.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -1334,10 +1334,10 @@
 			fileRef = 00000044000044b827000cae;
 			};
 		000005BC000044b827000cae = {
-			name = ITr2GeometryProvider.h;
+			name = ITr2PhysicsUpdater.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2GeometryProvider.h;
+			path = ITr2PhysicsUpdater.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -3206,10 +3206,10 @@
 			fileRef = 00000422000044b827000cae;
 			};
 		000005C4000044b827000cae = {
-			name = ITr2ShaderMaterial.h;
+			name = ITr2ShaderState.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2ShaderMaterial.h;
+			path = ITr2ShaderState.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -5741,8 +5741,8 @@
 				000005B8000044b827000cae,
 				000005BA000044b827000cae,
 				000005BC000044b827000cae,
-				000005BE000044b827000cae,
 				00000010000044b827000cae,
+				000005BE000044b827000cae,
 				000005C0000044b827000cae,
 				000005C2000044b827000cae,
 				000005C4000044b827000cae,
@@ -7081,10 +7081,10 @@
 			sourceTree = "<group>";
 			};
 		000005C8000044b827000cae = {
-			name = ITr2SkinnedObject.h;
+			name = ITr2TextureProvider.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2SkinnedObject.h;
+			path = ITr2TextureProvider.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -8391,10 +8391,10 @@
 			fileRef = 0000034C000044b827000cae;
 			};
 		000005B8000044b827000cae = {
-			name = ITr2AttributeGenerator.h;
+			name = ITr2EffectValue.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2AttributeGenerator.h;
+			path = ITr2EffectValue.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -11700,10 +11700,10 @@
 			sourceTree = "<group>";
 			};
 		000005BA000044b827000cae = {
-			name = ITr2EffectValue.h;
+			name = ITr2GeometryProvider.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2EffectValue.h;
+			path = ITr2GeometryProvider.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -13478,10 +13478,10 @@
 			fileRef = 000001B0000044b827000cae;
 			};
 		000005B6000044b827000cae = {
-			name = IRenderCallback.h;
+			name = ITr2AttributeGenerator.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = IRenderCallback.h;
+			path = ITr2AttributeGenerator.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -13676,10 +13676,10 @@
 			name = Renderable;
 			};
 		000005BE000044b827000cae = {
-			name = ITr2PhysicsUpdater.h;
+			name = ITr2PickableScene.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2PhysicsUpdater.h;
+			path = ITr2PickableScene.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -13772,10 +13772,10 @@
 			sourceTree = "<group>";
 			};
 		000005C0000044b827000cae = {
-			name = ITr2PickableScene.h;
+			name = ITr2Renderable.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2PickableScene.h;
+			path = ITr2Renderable.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -15543,10 +15543,10 @@
 			fileRef = 00000226000044b827000cae;
 			};
 		000005C6000044b827000cae = {
-			name = ITr2ShaderState.h;
+			name = ITr2SkinnedObject.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2ShaderState.h;
+			path = ITr2SkinnedObject.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
@@ -17016,10 +17016,10 @@
 			sourceTree = "<group>";
 			};
 		000005C2000044b827000cae = {
-			name = ITr2Renderable.h;
+			name = ITr2ShaderMaterial.h;
 			fileEncoding = 4;
 			lastKnownFileType = sourcecode.cpp.h;
-			path = ITr2Renderable.h;
+			path = ITr2ShaderMaterial.h;
 			isa = PBXFileReference;
 			sourceTree = "<group>";
 			};
