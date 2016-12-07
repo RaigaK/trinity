@@ -141,16 +141,16 @@ void EveAnimationStateMachine::ForceState( EveSpaceObject2* owner, const std::st
 	GoToState( owner, name );
 }
 
-const char* EveAnimationStateMachine::GetEndStateName( )
+std::string EveAnimationStateMachine::GetEndStateName()
 {
 	ssize_t pendingStateSize = m_pendingStates.GetSize();
 	if( pendingStateSize == 0 && m_currentState )
 	{
-		return m_currentState->GetName().c_str();
+		return m_currentState->GetName();
 	}
 	else if( pendingStateSize > 0 )
 	{
-		return m_pendingStates[ pendingStateSize - 1 ]->GetName().c_str();
+		return m_pendingStates[ pendingStateSize - 1 ]->GetName();
 	}
 	return "";
 }
