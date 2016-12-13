@@ -21,6 +21,10 @@ const Be::ClassInfo* Tr2EulerRotation::ExposeToBlue()
 		MAP_ATTRIBUTE( "pitchCurve", m_pitchCurve, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "rollCurve", m_rollCurve, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "currentValue", m_currentValue, "", Be::READ )
-		MAP_METHOD_AND_WRAP( "GetValueAt", GetValueAt, "GetValueAt( time )" );
+		MAP_METHOD_AND_WRAP( 
+			"GetValueAt", 
+			GetValueAt, 
+			"Return curve value at the specified time\n"
+			":param time: input time" );
     EXPOSURE_END()
 }

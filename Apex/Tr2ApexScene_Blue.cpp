@@ -188,7 +188,10 @@ const Be::ClassInfo* Tr2ApexScene::ExposeToBlue()
 		(
 			"CreatePlane",
 			CreatePlane,
-			"Convenience helper method to create a plane in the physx scene"
+			"Convenience helper method to create a plane in the physx scene\n"
+			":param position: point on a plane\n"
+			":param normal: plane normal\n"
+			":param distance: "
 		)
 
 

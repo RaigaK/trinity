@@ -15,7 +15,12 @@ const Be::ClassInfo* Tr2MayaAnimationEngine::ExposeToBlue()
 		MAP_ATTRIBUTE( "curves", m_curves, "", Be::READ | Be::PERSIST )		
 		MAP_ATTRIBUTE( "hermiteSegments", m_hermiteSegments, "", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "bezierSegments", m_bezierSegments, "", Be::READ | Be::PERSIST )
-		MAP_METHOD_AND_WRAP( "evaluate", evaluate, "(int curveIndex, float time)" )
+		MAP_METHOD_AND_WRAP( 
+			"evaluate", 
+			evaluate, 
+			"Evaluate curve at a given time\n"
+			":param idx: curve index\n"
+			":param time: time value" )
 	EXPOSURE_END()
 }
 

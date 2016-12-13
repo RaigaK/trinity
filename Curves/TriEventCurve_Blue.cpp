@@ -76,7 +76,9 @@ const Be::ClassInfo* TriEventCurve::ExposeToBlue()
 			"AddKey", 
 			AddKey, 
 			"Adds a key with a string value. This string value is passed to\n"
-			"the handler when the key is triggered."
+			"the handler when the key is triggered.\n"
+			":param time: key time\n"
+			":param evtName: event name"
 		)
 
 #if BLUE_WITH_PYTHON
@@ -85,19 +87,52 @@ const Be::ClassInfo* TriEventCurve::ExposeToBlue()
 			"AddCallableKey", 
 			AddCallableKey, 
 			"Adds a key with a callable. This callable is called when the key\n"
-			"is triggered."
+			"is triggered.\n"
+			":param time: key time\n"
+			":param cb: callback callable\n"
+			":param args: arguments for the cb"
 		)
 #endif
 
-		MAP_METHOD_AND_WRAP( "RemoveKey", RemoveKey, "" );
-		MAP_METHOD_AND_WRAP( "GetKeyCount", GetKeyCount, "" );
-		MAP_METHOD_AND_WRAP( "GetKeyTime", GetKeyTime, "" );
-		MAP_METHOD_AND_WRAP( "GetKeyValue", GetKeyValue, "" );
-		MAP_METHOD_AND_WRAP( "SetKeyTime", SetKeyTime, "" );
-		MAP_METHOD_AND_WRAP( "SetKeyValue", SetKeyValue, "" );
+		MAP_METHOD_AND_WRAP( 
+			"RemoveKey", 
+			RemoveKey, 
+			"Removes a key\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( "GetKeyCount", GetKeyCount, "Returns number of keys" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyValue", 
+			GetKeyValue, 
+			"Returns key value\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyTime", 
+			GetKeyTime, 
+			"Returns key time\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyValue", 
+			SetKeyValue, 
+			"Changes key value\n"
+			":param idx: key index\n"
+			":param value: new key value" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyTime", 
+			SetKeyTime, 
+			"Changes key time.\n"
+			":param idx: key index\n"
+			":param time: new key time" );
 #if BLUE_WITH_PYTHON
-        MAP_METHOD_AND_WRAP( "GetCallableKeyValue", GetCallableKeyValue, "" );
-        MAP_METHOD_AND_WRAP( "GetCallableKeyArgs", GetCallableKeyArgs, "" );
+        MAP_METHOD_AND_WRAP( 
+			"GetCallableKeyValue", 
+			GetCallableKeyValue, 
+			"Returns callable associated with the key\n"
+			":param idx: key index" );
+        MAP_METHOD_AND_WRAP( 
+			"GetCallableKeyArgs", 
+			GetCallableKeyArgs, 
+			"Returns callable arguments for the key\n"
+			":param idx: key index" );
 #endif
 
     EXPOSURE_END()

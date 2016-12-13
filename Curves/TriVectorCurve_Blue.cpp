@@ -79,12 +79,13 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		(
 			"AddKey",
 			AddKey,                    
-			"use:  curve.AddKey( t, v, l, r, i )\r\n" 
-			"pre:  't' is of type double. 'v', 'l', 'r' are tuples of three floats.\r\n"				
-			"      'i' is of type integer.\r\n" 
-			"post: A key with time, value, left, right and interpolation\r\n" 
-			"      according to arguments has been added to 'curve' and the\r\n" 
-			"      curve has been updated accordingly.\r\n" 
+			"Adds a new key to the curve\n"
+			":param time: key time\n"
+			":param value: key value\n"
+			":param leftTangent: left tangent value\n"
+			":param rightTangent: right tangent value\n"
+			":param interpolation: interpolation type\n"
+			":rtype: None"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -93,8 +94,10 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"GetKey",
 			PyGetKey,
-			"use:  curve.GetKey( i )\r\n" 				
-			"pre: 'i' is of type int\r\n" 
+			"Get key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":rtype: TriColorKey"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -103,8 +106,12 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"SetKey",
 			PySetKey,
-			"use:  curve.SetKey( i, key )\r\n" 				
-			"pre: 'i' is of type int and key is of type TriVectorKey\r\n" 
+			"Change the key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":param key: new key\n"
+			":type key: TriColorKey\n"
+			":rtype: None"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -113,9 +120,10 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"RemoveKey",
 			PyRemoveKey,
-			"use:  curve.RemoveKey( i )\r\n" 				
-			"pre: 'i' is of type int\r\n" 
-			"post: The key at index 'i' has been removed\r\n"
+			"Removes the key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":rtype: None"
 		)
 
 #if BLUE_WITH_PYTHON
@@ -125,7 +133,8 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"GetCurrentPos",
 			GetCurrentPos,
-			"use:  curve.GetCurrentPos( )\r\n" 				
+			"Maps the given time to curve time\n"
+			":param time: input time"
 		)
 #endif
 
@@ -135,11 +144,8 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"Sort",
 			Sort,                      
-			"use:  curve.Sort( t )\r\n" 				
-			"post: The keys of the curve have been sorted and 'curve.length'\r\n" 
-			"      updated.\r\n"
-			"note: This function should be called if keys are added to the\r\n"
-			"      key list with other methods than 'curve.AddKey()'.\r\n" 
+			"This function should be called if keys are added to the\r\n"
+			"key list with other methods than 'curve.AddKey()'.\r\n" 
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -148,9 +154,8 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"ScaleTime",
 			ScaleTime,                      
-			"use:  curve.ScaleTime( s )\r\n" 				
-			"pre: 's' is of type float\r\n" 
-			"post: All keys of 'curve' have had their time scaled by 's'\r\n"
+			"Rescales time for all keys\n"
+			":param scale: time scale"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -159,9 +164,8 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"ScaleValue",
 			ScaleValue,
-			"use:  curve.ScaleValue( s )\r\n" 				
-			"pre: 's' is of type float\r\n" 
-			"post: All keys of 'curve' have had their value scaled by 's'\r\n"
+			"Rescales values for all keys\n"
+			":param scale: value scale"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -170,10 +174,15 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"CheckProximity",
 			PyCheckProximity,
-			"use:  curve.CheckProximity( curve, range, stopAtFirst )\r\n" 				
-			"pre: 'curve' is of type TriVectorCurve\r\n" 
-			"post: Returns a list of time ranges at which the proximity between\r\n"
-			"this and 'curve' is less than 'range'\r\n"
+			"Returns a list of time ranges at which the proximity between\n"
+			"this and 'curve' is less than 'range'\n"
+			":param curve: another curve\n"
+			":type curve: ITriVectorCurve\n"
+			":param range: minimal distance\n"
+			":type range: float\n"
+			":param stopAtFirst:\n"
+			":type stopAtFirst: Optional[int]\n"
+			":rtype: list[long]"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -182,10 +191,15 @@ const Be::ClassInfo* TriVectorCurve::ExposeToBlue()
 		( 
 			"CheckProximityToPoint",
 			PyCheckProximityToPoint,
-			"use:  curve.CheckProximityToPoint( point, range ,stopAtFirst )\r\n" 				
-			"pre: 'point' is of type TriVector\r\n" 
-			"post: Returns a list of time ranges at which the proximity between\r\n"
-			"this and 'point' is less than 'range'\r\n"
+			"Returns a list of time ranges at which the proximity between\n"
+			"this and 'point' is less than 'range'\n"
+			":param point: point position\n"
+			":type point: ITriVector\n"
+			":param range: minimal distance\n"
+			":type range: float\n"
+			":param stopAtFirst:\n"
+			":type stopAtFirst: Optional[int]\n"
+			":rtype: list[long]"
 		)
 
 	EXPOSURE_END()

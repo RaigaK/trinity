@@ -55,7 +55,15 @@ const Be::ClassInfo* Tr2GrannyVector3Curve::ExposeToBlue()
 		MAP_INTERFACE( ITriFunction )
 		MAP_INTERFACE( ITriCurveLength )
 		MAP_INTERFACE( ICustomPersist )
-		MAP_METHOD("CreateFromPoints", PyCreateFromPoints, "(timeDeltaBetweenPoints, vector3Points)")
+		MAP_METHOD(
+			"CreateFromPoints", 
+			PyCreateFromPoints, 
+			"Creates the curve from specified control points\n"
+			":param timeDelta: time interval between sample points\n"
+			":type timeDelta: float\n"
+			":param points: sequence of control points\n"
+			":type points: list[(float, float, float)]\n"
+			":rtype: None" )
 		MAP_ATTRIBUTE("currentValue", m_value, "current sampled value", Be::READ )
 		MAP_ATTRIBUTE("timeOffset", m_timeOffset, "internal time offset", Be::READWRITE )
 		MAP_ATTRIBUTE("cycle", m_cycle, "should the animation be cycled", Be::READWRITE )

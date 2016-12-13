@@ -79,12 +79,18 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		(
 			"AddKey",
 			PyAddKey,                    
-			"use:  curve.AddKey( t, v, l, r, i )\r\n" 
-			"pre:  't' is of type double. 'v', 'l', 'r' are of type float.\r\n"				
-			"      'i' is of type integer.\r\n" 
-			"post: A key with time, value, left, right and interpolation\r\n" 
-			"      according to arguments has been added to 'curve' and the\r\n" 
-			"      curve has been updated acordingly.\r\n" 
+			"Adds a new key to the curve\n"
+			":param time: key time\n"
+			":type time: float\n"
+			":param value: key value\n"
+			":type value: ITriQuaternion | (float, float, float, float)\n" 
+			":param leftTangent: left tangent value\n"
+			":type leftTangent: ITriQuaternion | (float, float, float, float)\n" 
+			":param rightTangent: right tangent value\n"
+			":type rightTangent: ITriQuaternion | (float, float, float, float)\n" 
+			":param interpolation: interpolation type\n"
+			":type interpolation: int\n"
+			":rtype: None"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -93,11 +99,8 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"Sort",
 			Sort,                      
-			"use:  curve.Sort( t )\r\n" 				
-			"post: The keys of the curve have been sorted and 'curve.length'\r\n" 
-			"      updated.\r\n"
-			"note: This function should be called if keys are added to the\r\n"
-			"      key list with other methods than 'curve.AddKey()'.\r\n" 
+			"This function should be called if keys are added to the\r\n"
+			"key list with other methods than 'curve.AddKey()'.\r\n" 
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -106,9 +109,8 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"ScaleTime",
 			ScaleTime,                      
-			"use:  curve.ScaleTime( s )\r\n" 				
-			"pre: 's' is of type float\r\n" 
-			"post: All keys of 'curve' have had their time scaled by 's'\r\n"
+			"Rescales time for all keys\n"
+			":param scale: time scale"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -117,9 +119,8 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"ScaleValue",
 			ScaleValue,
-			"use:  curve.ScaleValue( s )\r\n" 				
-			"pre: 's' is of type float\r\n" 
-			"post: All keys of 'curve' have had their value scaled by 's'\r\n"
+			"Rescales values for all keys\n"
+			":param scale: value scale"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -128,8 +129,10 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"GetKey",
 			PyGetKey,
-			"use:  curve.GetKey( i )\r\n" 				
-			"pre: 'i' is of type int\r\n" 
+			"Get key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":rtype: TriQuaternionKey"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -138,8 +141,12 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"SetKey",
 			PySetKey,
-			"use:  curve.SetKey( i, key )\r\n" 				
-			"pre: 'i' is of type int and key is of type TriQuaternionKey\r\n" 
+			"Change the key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":param key: new key\n"
+			":type key: TriQuaternionKey\n"
+			":rtype: None"
 		)
 		
 		////////////////////////////////////////////////////////////////////////////
@@ -148,9 +155,10 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"RemoveKey",
 			PyRemoveKey,
-			"use:  curve.RemoveKey( i )\r\n" 				
-			"pre: 'i' is of type int\r\n" 
-			"post: The key at index 'i' has been removed\r\n"
+			"Removes the key at the specified index\n"
+			":param idx: key index\n"
+			":type idx: int\n"
+			":rtype: None"
 		)
 
 		////////////////////////////////////////////////////////////////////////////
@@ -159,7 +167,8 @@ const Be::ClassInfo* TriRotationCurve::ExposeToBlue()
 		( 
 			"GetCurrentPos",
 			GetCurrentPos,
-			"use:  curve.GetCurrentPos( )\r\n" 				
+			"Maps the given time to curve time\n"
+			":param time: input time"
 		)
 
 	EXPOSURE_END()

@@ -30,8 +30,18 @@ const Be::ClassInfo* Tr2ClothingRes::ExposeToBlue()
 		MAP_PROPERTY_READONLY( "biggestMaxDistance", GetBiggestMaxDistance, "returns the biggest max distance of any vertex in any physical mesh" )
 		MAP_PROPERTY_READONLY( "numBones", GetNumBones, "Returns the number of bones" )
 
-		MAP_METHOD_AND_WRAP( "GetGraphicalLodValue", GetGraphicalLodValue, "returns the actual LOD value of any particular level, normally this is just the identity map" )
-		MAP_METHOD_AND_WRAP( "GetBoneName", GetBoneName, "returns the name of the given bone" )
+		MAP_METHOD_AND_WRAP( 
+			"GetGraphicalLodValue", 
+			GetGraphicalLodValue, 
+			"returns the actual LOD value of any particular level, normally this is just the identity map\n"
+			":param lodLevel: LOD level"
+			)
+		MAP_METHOD_AND_WRAP( 
+			"GetBoneName", 
+			GetBoneName, 
+			"returns the name of the given bone\n"
+			":param bone: bone index"
+			)
 
 		MAP_METHOD_AND_WRAP( "SafeReload", SafeReload, "Check if a simulation is in progress, and if so delays the Reload until simulation has stepped." )
 

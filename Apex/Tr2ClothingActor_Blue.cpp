@@ -66,7 +66,14 @@ const Be::ClassInfo* Tr2ClothingActor::ExposeToBlue()
 		MAP_ATTRIBUTE( "morphRes", m_morphRes, "TriGrannyRes to be used for morph targets", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "morphResMeshIndex", m_morphResMeshIndex, "MeshIndex in morphRes to be used for morph targets", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "morphResEpsilon", m_morphResEpsilon, "Tolerance for mapping morphRes vertices to cloth vertices", Be::READWRITE | Be::PERSIST )
-		MAP_METHOD   ( "SetMorphResWeights", PySetMorphResWeights, "Sets the list of floats with the blend weights; the length should match the number of morph targets" )
+		MAP_METHOD( 
+			"SetMorphResWeights", 
+			PySetMorphResWeights, 
+			"Sets the list of floats with the blend weights; the length should match the number of morph targets\n"
+			":param weights: list of weights\n"
+			":type weights: list[float]\n"
+			":rtype: bool | None"
+			)
 		MAP_METHOD_AND_WRAP( "GetWorldBoundingBox", GetWorldBoundingBox, "Returns two vec3s with the bounding box of this actor." )
 
 		MAP_PROPERTY

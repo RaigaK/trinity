@@ -99,7 +99,11 @@ const Be::ClassInfo* TriCurveSet::ExposeToBlue()
 			":jessica-favorite:\n"
 			":jessica-icon: timeline/play.png"
 			)
-		MAP_METHOD_AND_WRAP( "PlayFrom", PlayFrom, "Play this curve set from the given time (in seconds)" )
+		MAP_METHOD_AND_WRAP( 
+			"PlayFrom", 
+			PlayFrom, 
+			"Play this curve set from the given time (in seconds)\n"
+			":param time: start time offset in seconds" )
 		MAP_METHOD_AND_WRAP( 
 			"Stop", 
 			Stop, 
@@ -108,15 +112,21 @@ const Be::ClassInfo* TriCurveSet::ExposeToBlue()
 			":jessica-icon: timeline/stop.png"
 			)
 		MAP_METHOD_AND_WRAP( "StopOnNextFrame", StopOnNextFrame, "Stop the playback of this curveset on the next frame" )
-		MAP_METHOD_AND_WRAP( "StopAfter", StopAfter, "Stop the playback of this curveset after the given number of seconds" )
+		MAP_METHOD_AND_WRAP( 
+			"StopAfter", 
+			StopAfter, 
+			"Stop the playback of this curveset after the given number of seconds\n"
+			":param time: time in seconds" )
 		MAP_METHOD_AND_WRAP( "GetMaxCurveDuration", GetMaxCurveDuration, "Gets the duration of the longest non-cycling curve" )
 
 		MAP_METHOD_AND_WRAP
 		(
 			"StopAfterWithCallback",
 			StopAfterWithCallback,
-			"Stop the playback of this curveset after the given number of seconds, issuing a callback to Python when the playback stops"
-		)
+			"Stop the playback of this curveset after the given number of seconds, issuing a callback to Python when the playback stops\n"
+			":param time: time in seconds\n"
+			":param cb: callback function"
+			)
 
     EXPOSURE_END()
 }

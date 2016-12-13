@@ -89,20 +89,80 @@ const Be::ClassInfo* Tr2ScalarCurve::ExposeToBlue()
 		MAP_ATTRIBUTE_WITH_CHOOSER( "interpolation", m_interpolation, "", Be::READWRITE | Be::PERSIST | Be::ENUM, ScalarInterpolationChooser )
 		MAP_ATTRIBUTE( "keys", m_keys, "These are the keys of the curve", Be::PERSISTONLY )
 
-		MAP_METHOD_AND_WRAP( "AddKey", AddKey, "AddKey( time, value )" );
-		MAP_METHOD_AND_WRAP( "RemoveKey", RemoveKey, "RemoveKey( index )" );
-		MAP_METHOD_AND_WRAP( "GetKeyCount", GetKeyCount, "GetKeyCount( )" );
-		MAP_METHOD_AND_WRAP( "GetValueAt", GetValue, "GetValueAt( time )" );
-		MAP_METHOD_AND_WRAP( "GetKeyValue", GetKeyValue, "GetKeyValue( index )" );
-		MAP_METHOD_AND_WRAP( "GetKeyTime", GetKeyTime, "GetKeyTime( index )" );
-		MAP_METHOD_AND_WRAP( "GetKeyLeftTangent", GetKeyLeftTangent, "GetKeyLeftTangent( index )" );
-		MAP_METHOD_AND_WRAP( "GetKeyRightTangent", GetKeyRightTangent, "GetKeyRightTangent( index )" );
-		MAP_METHOD_AND_WRAP( "GetKeyInterpolation", GetKeyInterpolation, "GetKeyInterpolation( index )" );
-		MAP_METHOD_AND_WRAP( "SetKeyValue", SetKeyValue, "SetKeyValue( index, value )" );
-		MAP_METHOD_AND_WRAP( "SetKeyTime", SetKeyTime, "SetKeyTime( index, time ). \nYou need to call Sort() afterwards, to make sure the keys are in the correct order." );
-		MAP_METHOD_AND_WRAP( "SetKeyLeftTangent", SetKeyLeftTangent, "SetKeyLeftTangent( index, value )" );
-		MAP_METHOD_AND_WRAP( "SetKeyRightTangent", SetKeyRightTangent, "SetKeyRightTangent( index, value )" );
-		MAP_METHOD_AND_WRAP( "SetKeyInterpolation", SetKeyInterpolation, "SetKeyInterpolation( index, interpolation )" );
+		MAP_METHOD_AND_WRAP( 
+			"AddKey", 
+			AddKey, 
+			"Adds a new key\n"
+			":param time: key time\n"
+			":param value: key value"
+			);
+		MAP_METHOD_AND_WRAP( 
+			"RemoveKey", 
+			RemoveKey, 
+			"Removes a key\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( "GetKeyCount", GetKeyCount, "Returns number of keys" );
+		MAP_METHOD_AND_WRAP( 
+			"GetValueAt", 
+			GetValue, 
+			"Returns curve value at a given time\n"
+			":param time: input time" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyValue", 
+			GetKeyValue, 
+			"Returns key value\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyTime", 
+			GetKeyTime, 
+			"Returns key time\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyLeftTangent", 
+			GetKeyLeftTangent, 
+			"Returns key left tangent value\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyRightTangent", 
+			GetKeyRightTangent, 
+			"Returns key left tangent value\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"GetKeyInterpolation", 
+			GetKeyInterpolation, 
+			"Returns interpolation type for the key\n"
+			":param idx: key index" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyValue", 
+			SetKeyValue, 
+			"Changes key value\n"
+			":param idx: key index\n"
+			":param value: new key value" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyTime", 
+			SetKeyTime, 
+			"Changes key time.\n"
+			"You need to call Sort() afterwards, to make sure the keys are in the correct order.\n"
+			":param idx: key index\n"
+			":param time: new key time" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyLeftTangent", 
+			SetKeyLeftTangent, 
+			"Changes key left tangent value"
+			":param idx: key index\n"
+			":param value: new key left tangent value" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyRightTangent", 
+			SetKeyRightTangent, 
+			"Changes key right tangent value"
+			":param idx: key index\n"
+			":param value: new key left tangent value" );
+		MAP_METHOD_AND_WRAP( 
+			"SetKeyInterpolation", 
+			SetKeyInterpolation, 
+			"Changes key interpolation type\n"
+			":param idx: key index\n"
+			":param interpolation: new interpolation type" );
 		MAP_METHOD_AND_WRAP( "Sort", Sort, "Sort the keys by time" );
     EXPOSURE_END()
 }
