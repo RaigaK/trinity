@@ -21,7 +21,9 @@ void TriDevice::UpdateCursor() {}
 
 void TriDevice::HandleRenderTick(  Be::Time realTime, Be::Time simTime )
 {
+#if BLUE_WITH_PYTHON
 	AutoTasklet _at( PyOS->GetTaskletTimer(), "TriDevice::HandleRenderTick" );
+#endif
 
 	if( !mDisplay )
 	{

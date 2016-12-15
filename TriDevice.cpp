@@ -388,7 +388,9 @@ bool TriDevice::GetAsyncLoadDisabled()					{ return  Tr2Renderer::m_disableAsync
 
 void TriDevice::Update( Be::Time realTime, Be::Time simTime )
 {
+#if BLUE_WITH_PYTHON
 	AutoTasklet _at( PyOS->GetTaskletTimer(), "TriDevice::Update" );
+#endif
 
 	TriSrand( simTime );
 
