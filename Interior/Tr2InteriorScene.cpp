@@ -19,8 +19,6 @@
 #include "Tr2PushPopDS.h"
 #include "Tr2PushPopRT.h"
 
-#include "include/ITr2DebugRenderer.h"
-
 #include "TriLineSet.h"
 #include "Tr2InteriorPlaceable.h"
 #include "Tr2InteriorStatic.h"
@@ -32,8 +30,6 @@
 #include "TriFrustum.h"
 
 using namespace Tr2RenderContextEnum;
-
-extern ITr2DebugRendererPtr g_debugRenderer;
 
 CCP_STATS_DECLARE( wodInteriorSceneShadowsNeedUpdating, "Trinity/Tr2InteriorScene/ShadowsNeedUpdating", true, CST_COUNTER_LOW, "Number of spotlight shadows that need updating" );
 CCP_STATS_DECLARE( wodInteriorSceneShadowsUpdated, "Trinity/Tr2InteriorScene/ShadowsUpdated", true, CST_COUNTER_LOW, "Number of spotlight shadows updated" );
