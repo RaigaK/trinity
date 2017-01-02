@@ -135,6 +135,7 @@ public:
 	void Quit();
 	void MoveWindow( int x, int y, Be::Optional<int> width, Be::Optional<int> height );
 	void Minimize( Be::OptionalWithDefaultValue<bool, true> minimize );
+	void Maximize( Be::OptionalWithDefaultValue<bool, true> maximize );
 	TriRect* GetClientRect( int );
 	TriRect* GetWindowRect();
 	bool IsActive();

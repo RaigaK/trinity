@@ -116,8 +116,16 @@ const Be::ClassInfo* App::ExposeToBlue()
 		(
 			"Minimize",
 			Minimize,	
-			"minimizes the window\n" 
+			"minimizes or restores the window\n" 
 			":param minimize: minimize or restore the window"
+		)
+		
+		MAP_METHOD_AND_WRAP
+		(
+			"Maximize",
+			Maximize,	
+			"maximizes or restores the window\n" 
+			":param maximize: maximize or restore the window"
 		)
 		
 #if BLUE_WITH_PYTHON

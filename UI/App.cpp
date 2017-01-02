@@ -472,6 +472,28 @@ void App::Minimize( Be::OptionalWithDefaultValue<bool, true> minimize )
 	{
 		glfwIconifyWindow( reinterpret_cast<GLFWwindow*>( mHwnd ) );
 	}
+	else
+	{
+		glfwRestoreWindow( reinterpret_cast<GLFWwindow*>( mHwnd ) );
+	}
+#endif
+}
+
+void App::Maximize( Be::OptionalWithDefaultValue<bool, true> maximize )
+{
+#ifdef _WIN32
+	::ShowWindow(mHwnd, maximize ? SW_MAXIMIZE : SW_RESTORE);
+#elif defined( __ORBIS__ )
+#elif defined( __ANDROID__ )
+#else
+	if( maximize )
+	{
+		glfwMaximizeWindow( reinterpret_cast<GLFWwindow*>( mHwnd ) );
+	}
+	else
+	{
+		glfwRestoreWindow( reinterpret_cast<GLFWwindow*>( mHwnd ) );
+	}
 #endif
 }
 
