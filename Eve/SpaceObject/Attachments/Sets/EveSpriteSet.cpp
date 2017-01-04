@@ -63,6 +63,7 @@ EveSpriteSet::~EveSpriteSet()
 
 bool EveSpriteSet::Initialize()
 {
+	UseQuadRenderer( true, false );
 	PrepareResources();
 	return true;
 }
