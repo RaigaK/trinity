@@ -149,6 +149,10 @@ void Tr2LightManager::AddPointLight( const Vector3& position, float radius, cons
 
 ALResult Tr2LightManager::ClearLightIndices( Tr2RenderContext& renderContext )
 {
+	if( !m_indexBuffer )
+	{
+		return S_OK;
+	}
 	const uint32_t clear[] = { 0, 0, 0, 0 };
 	return renderContext.ClearUav( *m_indexBuffer->GetGpuBuffer( 0 ), clear );
 }
