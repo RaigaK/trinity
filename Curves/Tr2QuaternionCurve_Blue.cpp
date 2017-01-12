@@ -45,7 +45,7 @@ const Be::ClassInfo* Tr2QuaternionKey::ExposeToBlue()
 // --------------------------------------------------------------------------------------
 const Be::ClassInfo* Tr2QuaternionCurve::ExposeToBlue()
 {
-	EXPOSURE_BEGIN( Tr2QuaternionCurve, "" )
+	EXPOSURE_BEGIN( Tr2QuaternionCurve, ":jessica-icon: tree/trirotationcurve.png" )
 		MAP_INTERFACE( Tr2QuaternionCurve )
 		MAP_INTERFACE( ITriFunction )
 		MAP_INTERFACE( IInitialize )

@@ -7,7 +7,7 @@ BLUE_DEFINE( Tr2MayaScalarCurve );
 
 const Be::ClassInfo* Tr2MayaScalarCurve::ExposeToBlue()
 {
-    EXPOSURE_BEGIN( Tr2MayaScalarCurve, "" )
+    EXPOSURE_BEGIN( Tr2MayaScalarCurve, ":jessica-icon: tree/triscalarcurve.png" )
         MAP_INTERFACE( Tr2MayaScalarCurve )
 		MAP_INTERFACE( ITriFunction )
 		MAP_INTERFACE( ITriScalarFunction )
