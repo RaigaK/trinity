@@ -1020,24 +1020,12 @@ void Tr2ParticleSystem::UpdateViewDependentData( const Matrix& worldTransform )
 
 	m_shouldSortVisible = false;
 
+	m_worldTransform = worldTransform;
+
 	if( !m_bufferDirty && !m_requiresSorting )
 	{
 		return;
 	}
-
-	XMMATRIX invWorldTransform = worldTransform;
-	XMVECTOR determinant;
-	invWorldTransform = XMMatrixInverse( &determinant, invWorldTransform );
-
-	const float sortingPointEpsilon = 0.001f;
-	XMVECTOR sortingReferencePoint = XMVector3TransformCoord( Tr2Renderer::GetViewPosition(), 
-														invWorldTransform );
-	XMVECTOR lengthSq = XMVector3LengthSq( XMVectorSubtract( sortingReferencePoint, *m_sortingReferencePoint ) );
-	if( !m_bufferDirty && XMVectorGetX( lengthSq ) < sortingPointEpsilon )
-	{
-		return;
-	}
-	*m_sortingReferencePoint = sortingReferencePoint;
 
 	if( !m_vertexBuffer.IsValid() )
 	{
@@ -1084,6 +1072,19 @@ void Tr2ParticleSystem::SortParticles()
 	{
 		return;
 	}
+	
+	XMMATRIX invWorldTransform = m_worldTransform;
+	XMVECTOR determinant;
+	invWorldTransform = XMMatrixInverse( &determinant, invWorldTransform );
+
+	const float sortingPointEpsilon = 0.001f;
+	XMVECTOR sortingReferencePoint = XMVector3TransformCoord( Tr2Renderer::GetViewPosition(), invWorldTransform );
+	XMVECTOR lengthSq = XMVector3LengthSq( XMVectorSubtract( sortingReferencePoint, *m_sortingReferencePoint ) );
+	if( !m_bufferDirty && XMVectorGetX( lengthSq ) < sortingPointEpsilon )
+	{
+		return;
+	}
+	*m_sortingReferencePoint = sortingReferencePoint;
 
 	if( m_aliveCount > 0 )
 	{
