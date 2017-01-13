@@ -6,6 +6,8 @@
 #include "StdAfx.h"
 #include "EveTurretFiringFX.h"
 
+BLUE_DEFINE_INTERFACE( IEveFiringEffectElement );
+
 BLUE_DEFINE( EveTurretFiringFX );
 
 const Be::ClassInfo* EveTurretFiringFX::ExposeToBlue()

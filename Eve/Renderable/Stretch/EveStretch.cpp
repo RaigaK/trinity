@@ -383,3 +383,85 @@ void EveStretch::SetIsNegZForward( bool val )
 	m_isNegZForward = val;
 }
 
+float EveStretch::GetCurveDuration()
+{
+	float maxDuration = 0;
+	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	{
+		maxDuration = std::max( maxDuration, ( *it )->GetMaxCurveDuration() / ( *it )->GetTimeScale() );
+	}
+	return maxDuration;
+}
+
+void EveStretch::StartFiring( float delay )
+{
+	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	{
+		auto curveSet = *it;
+		if( curveSet )
+		{
+			if( curveSet->GetName() == "play_start" )
+			{
+				curveSet->PlayFrom( -delay );
+				StartMoving();
+			}
+			else if( curveSet->GetName() == "play_loop" )
+			{
+				curveSet->PlayFrom( -delay );
+			}
+			else if( curveSet->GetName() == "play_end" )
+			{
+				curveSet->Stop();
+			}
+		}
+	}
+}
+
+void EveStretch::StopFiring()
+{
+	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it )
+	{
+		auto curveSet = *it;
+		if( curveSet )
+		{
+			if( curveSet->GetName() == "play_start" )
+			{
+				curveSet->Stop();
+				StartMoving();
+			}
+			else if( curveSet->GetName() == "play_loop" )
+			{
+				curveSet->Stop();
+			}
+			else if( curveSet->GetName() == "play_end" )
+			{
+				curveSet->Play();
+			}
+		}
+	}
+}
+
+void EveStretch::SetFiringTransform( const Matrix& source, const Vector3& dest )
+{
+	SetSourceTransform( source );
+	SetDestinationPosition( dest );
+	SetIsNegZForward( true );
+}
+
+void EveStretch::SetFiringTransform( const Vector3& source, const Vector3& dest )
+{
+	SetSourcePosition( source );
+	SetDestinationPosition( dest );
+	SetIsNegZForward( true );
+}
+
+void EveStretch::DisplayEndPoints( bool displaySource, bool displayDest )
+{
+	SetDisplaySourceObject( displaySource );
+	SetDisplayDestObject( displayDest );
+}
+
+void EveStretch::UpdateInactive( EveUpdateContext& updateContext )
+{
+	UpdateCurves( updateContext );
+}

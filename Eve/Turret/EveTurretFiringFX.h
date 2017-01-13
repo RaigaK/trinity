@@ -11,8 +11,8 @@
 #include "TriFrustum.h"
 
 // forwards
-BLUE_DECLARE( EveStretch );
-BLUE_DECLARE_VECTOR( EveStretch );
+BLUE_DECLARE_INTERFACE( IEveFiringEffectElement );
+BLUE_DECLARE_IVECTOR( IEveFiringEffectElement );
 class EveUpdateContext;
 
 // --------------------------------------------------------------------------------
@@ -58,8 +58,6 @@ public:
 	// rendering
 	void UpdateVisibility( const TriFrustum& frustum );
 	void GetRenderables( std::vector<ITr2Renderable*>& renderables );
-	// bounds
-	bool GetBoundingSphere( Vector4& bounds ) const;
 
 	// query: get the number of per-muzzle effects
 	unsigned int GetPerMuzzleEffectCount() const;
@@ -146,7 +144,7 @@ private:
 	PerMuzzleData m_perMuzzleData[MUZZLECOUNT_MAX];
 
 	// vector of stretch effect
-	PEveStretchVector m_stretch;
+	PIEveFiringEffectElementVector m_stretch;
 };
 
 TYPEDEF_BLUECLASS( EveTurretFiringFX );

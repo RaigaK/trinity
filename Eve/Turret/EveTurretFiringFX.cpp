@@ -216,17 +216,8 @@ float EveTurretFiringFX::GetCurveDuration()
 	// check all stretch effects and see if we have to start them
 	for( unsigned int i = 0; i < m_stretch.size(); ++i )
 	{
-		EveStretchPtr stretchEffect = m_stretch[ i ];
-		for( unsigned int c = 0; c < stretchEffect->GetCurveSetCount(); ++c )
-		{
-			// get curveset to check for correct name
-			TriCurveSetPtr curveSet = stretchEffect->GetCurveSet( c );
-			float l = curveSet->GetMaxCurveDuration() / curveSet->GetTimeScale();
-			if( l > maxDuration )
-			{
-				maxDuration = l;
-			}
-		}
+		auto stretchEffect = m_stretch[ i ];
+		maxDuration = std::max( maxDuration, stretchEffect->GetCurveDuration() );
 	}
 	return maxDuration;
 }
@@ -289,28 +280,8 @@ float EveTurretFiringFX::GetFiringPeakTime() const
 void EveTurretFiringFX::StartMuzzleEffect( int muzzleID )
 {
 	// fire!
-	EveStretchPtr stretchEffect = m_stretch[ muzzleID ];
-	for( unsigned int c = 0; c < stretchEffect->GetCurveSetCount(); ++c )
-	{
-		// get curveset to check for correct name
-		TriCurveSetPtr curveSet = stretchEffect->GetCurveSet( c );
-		if( curveSet )
-		{
-			if( curveSet->GetName() == "play_start" )
-			{
-				curveSet->PlayFrom( -m_perMuzzleData[ muzzleID ].currentStartDelay );
-				stretchEffect->StartMoving();
-			}
-			else if( curveSet->GetName() == "play_loop" )
-			{
-				curveSet->PlayFrom( -m_perMuzzleData[ muzzleID ].currentStartDelay );
-			}
-			else if( curveSet->GetName() == "play_end" )
-			{
-				curveSet->Stop();
-			}
-		}
-	}
+	auto stretchEffect = m_stretch[ muzzleID ];
+	stretchEffect->StartFiring( m_perMuzzleData[muzzleID].currentStartDelay );
 
 	// set this effect to started
 	m_perMuzzleData[ muzzleID ].started = true;
@@ -332,27 +303,8 @@ void EveTurretFiringFX::StopFiring()
 	for( unsigned int m = 0; m < m_stretch.size(); ++m )
 	{
 		// get the running effect
-		EveStretchPtr stretchEffect = m_stretch[ m ];
-		for( unsigned int c = 0; c < stretchEffect->GetCurveSetCount(); ++c )
-		{
-			// get curveset to check for correct name
-			TriCurveSetPtr curveSet = stretchEffect->GetCurveSet( c );
-			if( curveSet )
-			{
-				if( curveSet->GetName() == "play_start" )
-				{
-					curveSet->Stop();
-				}
-				else if( curveSet->GetName() == "play_loop" )
-				{
-					curveSet->Stop();
-				}
-				else if( curveSet->GetName() == "play_end" )
-				{
-					curveSet->Play();
-				}
-			}
-		}
+		auto stretchEffect = m_stretch[ m ];
+		stretchEffect->StopFiring();
 
 		// set this effect to ended
 		m_perMuzzleData[ m ].started = false;
@@ -413,7 +365,7 @@ bool EveTurretFiringFX::Update( EveUpdateContext& updateContext )
 
 		if( m_perMuzzleData[i].elapsedTime < m_firingDuration || m_isLoopFiring )
 		{
-			EveStretchPtr stretchEffect = m_stretch[i];
+			auto stretchEffect = m_stretch[i];
 
 			// do not do all calculations if we are not firing -> waste
 			if( m_isFiring )
@@ -451,20 +403,15 @@ bool EveTurretFiringFX::Update( EveUpdateContext& updateContext )
 					if( m_useMuzzleTransform )
 					{
 						// pass the whole transform to the stretch effect
-						stretchEffect->SetSourceTransform( m_perMuzzleData[i].muzzleTransform );
+						stretchEffect->SetFiringTransform( m_perMuzzleData[i].muzzleTransform, m_endPosition );
 					}
 					else
 					{
 						// extract the point from the transform matrix
-						stretchEffect->SetSourcePosition( Vector3( m_perMuzzleData[i].muzzleTransform._41, m_perMuzzleData[i].muzzleTransform._42, m_perMuzzleData[i].muzzleTransform._43 ) );
+						stretchEffect->SetFiringTransform( m_perMuzzleData[i].muzzleTransform.GetTranslation(), m_endPosition );
 					}
-					// target
-					stretchEffect->SetDestinationPosition( m_endPosition );
 					// toggle source and dest effects
-					stretchEffect->SetDisplaySourceObject( GetDisplaySourceObject() );
-					stretchEffect->SetDisplayDestObject( GetDisplayDestObject() );
-					// direction
-					stretchEffect->SetIsNegZForward( true );
+					stretchEffect->DisplayEndPoints( GetDisplaySourceObject(), GetDisplayDestObject() );
 				}
 
 				stretchEffect->Update( updateContext );
@@ -473,7 +420,7 @@ bool EveTurretFiringFX::Update( EveUpdateContext& updateContext )
 			{
 				// ALWAYS update the stretcher, no matter if it fires ot not, there might be some
 				// curveset animation going on!
-				stretchEffect->UpdateCurves( updateContext );
+				stretchEffect->UpdateInactive( updateContext );
 			}
 		}
 	}
@@ -524,42 +471,10 @@ void EveTurretFiringFX::GetRenderables( std::vector<ITr2Renderable*>& renderable
 		{
 			if ( m_firingDuration >= m_perMuzzleData[i].elapsedTime || m_isLoopFiring )
 			{
-				m_stretch[i]->GetRenderables( renderables, nullptr );
+				m_stretch[i]->GetRenderables( renderables );
 			}
 		}
 	}
-}
-
-// --------------------------------------------------------------------------------
-// Description:
-//   Get the bounds for the firing effect.
-// Arguments:
-//   bounds - the bounding sphere for the firing effect
-// Return value:
-//   true if the firing effect has a valid bounding sphere, false otherwise
-// --------------------------------------------------------------------------------
-bool EveTurretFiringFX::GetBoundingSphere( Vector4& bounds ) const
-{
-	if( !m_display || !m_isFiring )
-	{
-		return false;
-	}
-
-	bool boundsInitialized = false;
-	Vector4 v;
-	Matrix m;
-	for( unsigned int i = 0; i < m_stretch.size(); ++i )
-	{
-		if( m_perMuzzleData[i].started && ( m_firingDuration >= m_perMuzzleData[i].elapsedTime || m_isLoopFiring ) )
-		{
-			if( m_stretch[i]->GetBoundingSphere( v, EVE_BOUNDS_WITH_CHILDREN ) )
-			{
-				BoundingSphereSetOrUpdate( v, bounds, boundsInitialized );
-				boundsInitialized = true;
-			}
-		}
-	}
-	return boundsInitialized;
 }
 
 // --------------------------------------------------------------------------------

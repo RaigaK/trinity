@@ -7,11 +7,13 @@
 #include "Eve/EveTransform.h"
 #include "Curves/TriCurveSet.h"
 #include "Curves/Tr2ScalarCurve.h"
+#include "Eve/IEveFiringEffectElement.h"
 
 BLUE_DECLARE( EveStretch );
 BLUE_DECLARE( TriFloat );
 
 class EveStretch:
+	public IEveFiringEffectElement,
 	public IEveTransform,
 	public IEveSpaceObject2
 {
@@ -59,10 +61,20 @@ public:
 
 	void UpdateCurves( EveUpdateContext& updateContext );
 	void Start();
-	void StartMoving();
+
+
+	virtual void SetDestObjectScale( float scale ) { m_destObjectScale = scale; };
+	virtual void StartMoving();
+	virtual float GetCurveDuration();
+	virtual void StartFiring( float delay );
+	virtual void StopFiring();
+
+	virtual void SetFiringTransform( const Matrix& source, const Vector3& dest );
+	virtual void SetFiringTransform( const Vector3& source, const Vector3& dest );
+	virtual void DisplayEndPoints( bool displaySource, bool displayDest );
+	virtual void UpdateInactive( EveUpdateContext& updateContext );
 
 	void SetSourceObjectScale( float scale ) { m_sourceObjectScale = scale; };
-	void SetDestObjectScale( float scale ) { m_destObjectScale = scale; };
 private:
 	Tr2Lod m_lodLevel;
 	Be::Time m_lastCurveUpdateTime;
