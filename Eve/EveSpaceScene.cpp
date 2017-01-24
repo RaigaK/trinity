@@ -159,8 +159,6 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 	m_reflectionMapTransformVar( "ReflectionMapTransform", Tr2Renderer::GetIdentityTransform() ),
 	m_suncVecVar( "SunVec", Vector3( 0.0f, 0.0f, 1.0f )),
 	m_shadowLightnessVar( "ShadowLightness", 0.0f ),
-	m_fogType( 0.f ),
-	m_fogBlur( 0.f ),
 	m_nebulaIntensity( 1.f ),
 	m_planetScale( 1e6 ),
 	m_planetCameraScale( 1e6 ),
@@ -203,7 +201,7 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 
 	m_ambientColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
 	m_fogColor = Color( 0.25f, 0.25f, 0.25f, 1.0f );
-	m_fogEnd = m_fogStart = m_fogMax = 0.0f;
+	m_fogEnd = m_fogStart = 0.0f;
 
 	m_pickEffect.CreateInstance();
 	m_pickEffect->SetEffectPathName( s_evePickingEffectPath );
@@ -2109,10 +2107,6 @@ void EveSpaceScene::PopulatePerFramePSData( PerFramePSData &data )
 	data.AmbientColor = Vector3( m_ambientColor.r, m_ambientColor.g, m_ambientColor.b );
 	data.NebulaIntensity = m_nebulaBrightnessOverride > 0.0f ? m_nebulaBrightnessOverride : m_nebulaIntensity;
 	data.FogColor = Vector4( m_fogColor.r, m_fogColor.g, m_fogColor.b, 0.f );
-
-	// ps data of fog
-	data.FogFactors.x = m_fogType;
-	data.FogFactors.y = m_fogBlur;
 
 	// ps gamma brightness
 	data.GammaBrightness = g_eveSpaceSceneGammaBrightness;

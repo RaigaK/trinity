@@ -211,7 +211,7 @@ protected:
 
 		// MiscData
 		float Time;
-		Vector2 FogFactors;
+		Vector2 Unused;
 		float GammaBrightness;
 	};
 	double m_viewProjectLastD[16];
@@ -414,8 +414,6 @@ protected:
 	float m_fogStart; // Depth at which fogging starts
 	float m_fogEnd; // Depth at which fog does not get stronger
 	float m_fogMax; // Maximum strength of fog, range [0,1], at m_fogEnd distance.
-	float m_fogType; // blend between static fog color and dynamic nebula background
-	float m_fogBlur; // blur level of dynamic nebula background
 
 	PerFramePSData m_perFramePS;
 	PerFrameVSData m_perFrameVS;

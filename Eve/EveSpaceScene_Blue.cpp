@@ -498,8 +498,6 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 		MAP_ATTRIBUTE( "fogStart", m_fogStart, "Depth at which fogging starts.\n:jessica-group: Fog", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "fogEnd", m_fogEnd, "Depth at which the fog does not get thicker.\n:jessica-group: Fog", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "fogMax", m_fogMax, "Maximum strength of fog at end depth, range [0,1].\n:jessica-group: Fog", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "fogType", m_fogType, "Blend between static fog color (0.0) and dynamic nebula background (1.0).\n:jessica-group: Fog", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "fogBlur", m_fogBlur, "Blur level of dynamic nebula background.\n:jessica-group: Fog", Be::READWRITE | Be::PERSIST )
 		
 		MAP_ATTRIBUTE( "shadowMap", m_shadowMap, "Shadow map used to shadow the whole space scene.", Be::READWRITE )
 
