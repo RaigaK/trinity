@@ -13,7 +13,11 @@ class Tr2LitPerObjectData : public Tr2PerObjectDataStandard
 {
 public:
 	// Constructor
-	Tr2LitPerObjectData() : m_numPointLights( 0 ){}
+	Tr2LitPerObjectData() 
+		: m_numPointLights( 0 )
+	{
+		m_padding[0] = m_padding[1] = m_padding[2] = 0;
+	}
 
 	// --------------------------------------------------------------------------------------
 	// Description:
@@ -48,16 +52,16 @@ public:
 	//   numPointLights - The number of active point lights
 	//   numSpotLights - The number of active spot lights
 	// ----------------------------------------------------------------------------------
-	void SetLightsActive( unsigned int numPointLights, unsigned int numSpotLights )
+	void SetLightsActive( int32_t numPointLights, int32_t numSpotLights )
 	{
 		m_numPointLights = numPointLights;
 	}
 
 private:
 	// Number of point lights
-	int m_numPointLights;
+	int32_t m_numPointLights;
 	// Padding
-	int m_padding[3];
+	int32_t m_padding[3];
 };
 
 // --------------------------------------------------------------------------------------
@@ -68,7 +72,11 @@ class Tr2LitPerObjectDataSkinned : public Tr2PerObjectDataSkinned
 {
 public:
 	// Constructor
-	Tr2LitPerObjectDataSkinned() : m_numPointLights( 0 ) {}
+	Tr2LitPerObjectDataSkinned() 
+		: m_numPointLights( 0 ) 
+	{
+		m_padding[0] = m_padding[1] = m_padding[2] = 0;
+	}
 
 	// --------------------------------------------------------------------------------------
 	// Description:
@@ -110,9 +118,9 @@ public:
 
 private:
 	// Number of point lights
-	int m_numPointLights;
+	int32_t m_numPointLights;
 	// Padding
-	int m_padding[3];
+	int32_t m_padding[3];
 };
 
 // --------------------------------------------------------------------------------------

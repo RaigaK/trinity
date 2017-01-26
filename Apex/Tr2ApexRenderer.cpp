@@ -389,8 +389,6 @@ public:
 private:
 	bool OnPrepareResources()
 	{
-		USE_MAIN_THREAD_RENDER_CONTEXT();
-
 		// Buffer might exist, if we're coming back from a lost device state
 		// and the buffer was created in the managed pool.
 		if( !m_indexBuffer.IsValid() )

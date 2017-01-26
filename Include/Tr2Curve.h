@@ -144,6 +144,7 @@ Tr2CurveBase<Key, KeyList, KeyValue>::Tr2CurveBase( IRoot* lockobj ):
 	m_interpolation = LINEAR;
 	m_timeOffset = 0.f;
 	m_timeScale = 1.f;
+	m_localTime = 0;
 }
 
 template <class Key, class KeyList, class KeyValue>

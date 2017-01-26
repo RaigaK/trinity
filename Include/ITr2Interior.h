@@ -516,6 +516,10 @@ struct ITr2InteriorSHLightingSolver
 class Tr2ProjectedPerLightData : public Tr2PerObjectDataStandard
 {
 public:
+	Tr2ProjectedPerLightData()
+		:m_projectedTexture( nullptr )
+	{
+	}
 	void SetProjectedTexture( TriTextureRes* textureRes )
 	{
 		if( textureRes && textureRes->IsGood() )
@@ -551,6 +555,10 @@ template<typename BaseClass>
 class Tr2ShadowPerLightData : public BaseClass
 {
 public:
+	Tr2ShadowPerLightData()
+		:m_shadowTexture( nullptr )
+	{
+	}
 	void SetShadowTexture( Tr2AtlasTexture* atlasTexture )
 	{
 		if( atlasTexture )

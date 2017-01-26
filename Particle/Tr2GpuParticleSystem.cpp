@@ -627,6 +627,7 @@ void Tr2GpuParticleSystem::RunSimulation( float dt, const Vector3& originShift, 
 	updateCB.width = float( m_positions[0]->GetWidth() );
 	updateCB.height = float( m_positions[0]->GetHeight() );
 	updateCB.originShift = originShift;
+	updateCB.padding0 = updateCB.padding1 = 0;
 	FillAndSetConstants( m_updateCB, updateCB, Tr2RenderContextEnum::PIXEL_SHADER, Tr2Renderer::GetPerObjectPSStartRegister(), renderContext );
 	Tr2Renderer::DrawScreenQuad( m_update );
 }

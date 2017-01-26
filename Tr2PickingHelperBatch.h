@@ -9,6 +9,7 @@ class Tr2PickingHelperBatch: public TriRenderBatch
 {
 public:
 	Tr2PickingHelperBatch()
+		:m_areaId( 0 )
 	{
 		static Tr2EffectPtr s_effect;
 		if( !s_effect )

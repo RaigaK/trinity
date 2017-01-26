@@ -318,7 +318,7 @@ void Tr2HighLevelShader::LoadFXFile()
 			}
 			for( unsigned i = 0; i < count; ++i )
 			{
-				FileRecord record;
+				ShaderFileRecord record;
 				record.offset = header[i * 3 + 1];
 				record.size = header[i * 3 + 2];
 				m_compiledPermutations[header[i * 3]] = record;
@@ -399,7 +399,7 @@ void Tr2HighLevelShader::LoadFXFile()
 			}
 			for( unsigned i = 0; i < count; ++i )
 			{
-				FileRecord record;
+				ShaderFileRecord record;
 				record.offset = header[i * 3 + 1];
 				record.size = header[i * 3 + 2];
 				m_compiledPermutations[header[i * 3]] = record;

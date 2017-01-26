@@ -23,7 +23,10 @@
 class Tr2InteriorClippingBatch : public TriClippingBatch
 {
 public:
-	// Destructor
+	Tr2InteriorClippingBatch()
+	{
+	}
+
 	virtual ~Tr2InteriorClippingBatch() {}
 
 	// Sets the local copy of the per-frame data

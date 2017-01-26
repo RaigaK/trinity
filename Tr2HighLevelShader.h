@@ -126,7 +126,7 @@ private:
 	bool m_bReloadShader;
 
 	// Per-permutation compiled file information
-	struct FileRecord
+	struct ShaderFileRecord
 	{
 		// Compiled code offset into the file 
 		unsigned offset;
@@ -138,7 +138,7 @@ private:
 
 	// Map from permuteIndex to offset+size in compiled
 	// shader file
-	std::map<unsigned, FileRecord> m_compiledPermutations;
+	std::map<unsigned, ShaderFileRecord> m_compiledPermutations;
 
 	// String table from FXT file
 	char* m_stringTable;
