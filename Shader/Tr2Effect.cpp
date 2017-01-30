@@ -1484,7 +1484,7 @@ void ConvertEffectConstant( const Tr2EffectConstant& constant,
     {
         OTr2FloatParameter* newFloat = new OTr2FloatParameter();
         newFloat->m_name = BlueSharedString( constant.name );
-        newFloat->m_value = *reinterpret_cast<const float*>( constantValues + constant.offset );
+        newFloat->m_value = *reinterpret_cast<const float*>( static_cast<const void*>( constantValues + constant.offset ) );
         adder( newFloat );
         newFloat->Unlock(); // Remove the original lock created by 'new'.
     }
