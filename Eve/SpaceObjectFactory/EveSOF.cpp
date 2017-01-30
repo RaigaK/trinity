@@ -1415,6 +1415,7 @@ void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 		ship->AddLocator( locator );
 		set->Add( &biit->transform, &biit->functionality, biit->hasTrail, biit->atlasIndex0, biit->atlasIndex1 );
 	}
+	glow->Rebuild();
 
 	// add it to ship
 	set->PrepareResources();
