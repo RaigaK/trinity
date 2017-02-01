@@ -98,6 +98,7 @@ public:
 	bool RenderBackgroundPass( Tr2RenderContext& renderContext );
 	void BeginRender( Tr2RenderContext& renderContext );
 	void EndRender( Tr2RenderContext& renderContext );
+	void Render3DUI( Tr2RenderContext& renderContext );
 	void PopulateAndApplyPerFrameData( Tr2RenderContext& renderContext );
 
 	void GatherBatches( Tr2RenderContext& renderContext );
@@ -350,6 +351,7 @@ protected:
 	PEveTransformVector		m_backgroundObjects;
 	PEvePlanetVector		m_planets;
 	PIEveSpaceObject2Vector m_objects;
+	PIEveSpaceObject2Vector m_uiObjects;
 	IEveSpaceObject2Ptr		m_warpTunnel;
 	PTriCurveSetVector		m_curveSets;
 	PEveLensflareVector		m_lensflares;
@@ -487,7 +489,12 @@ private:
 	void UpdateQuadRenderer( 
 		const TriFrustum& frustum,
 		const std::vector<ShadowReceiver>& objectsReceivingShadow, 
-		const std::vector<IEveSpaceObject2*>& objectsNotReceivingShadow, 
+		const std::vector<IEveSpaceObject2*>& objectsNotReceivingShadow,
+		Tr2RenderContext& renderContext );
+
+	void UpdateQuadRenderer( 
+		const TriFrustum& frustum,
+		PIEveSpaceObject2Vector& objects,
 		Tr2RenderContext& renderContext );
 
 	Tr2QuadRenderer* GetQuadRenderer() const;

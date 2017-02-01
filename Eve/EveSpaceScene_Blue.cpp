@@ -290,6 +290,14 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 
 		MAP_ATTRIBUTE
 		( 
+			"uiObjects", 
+			m_uiObjects, 
+			"Objects in space", 
+			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		( 
 			"debugRenderer", 
 			m_debugRenderer, 
 			"Object used for rendering debug information", 

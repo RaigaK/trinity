@@ -123,6 +123,7 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 	PARENTLOCK( m_backgroundObjects ),
 	PARENTLOCK( m_planets ),
 	PARENTLOCK( m_objects ),
+	PARENTLOCK( m_uiObjects ),
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_lensflares ),
 	PARENTLOCK( m_distanceFields ),
@@ -218,6 +219,7 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 
 	m_planets.SetNotify( this );
 	m_objects.SetNotify( this );
+	m_uiObjects.SetNotify( this );
 	
 	m_dataTextureMgr.CreateInstance();
 	m_postProcessPSBuffer.CreateInstance();
@@ -366,11 +368,16 @@ void EveSpaceScene::Update( Be::Time realTime, Be::Time simTime )
 		{
 			(*it)->UpdateSyncronous( m_updateContext );
 		}
+		for( IEveSpaceObject2Vector::const_iterator it = m_uiObjects.begin(); it != m_uiObjects.end(); ++it )
+		{
+			(*it)->UpdateSyncronous( m_updateContext );
+		}
 	}
 	{
 		CCP_STATS_ZONE( "UpdateAsyncronous" );
 
 		Tr2ParallelDo( m_objects.begin(), m_objects.end(), [&]( IEveSpaceObject2* obj ) { obj->UpdateAsyncronous( m_updateContext ); } );
+		Tr2ParallelDo( m_uiObjects.begin(), m_uiObjects.end(), [&]( IEveSpaceObject2* obj ) { obj->UpdateAsyncronous( m_updateContext ); } );
 	}
 
 	// Update the sun direction from the ball
@@ -1534,6 +1541,29 @@ void EveSpaceScene::UpdateQuadRenderer(
 			objectsNotReceivingShadow[i]->AddQuadsToQuadRenderer( frustum, quadRenderer );
 		}
 	} );
+	
+	quadRenderer.BeginRendering( renderContext );
+}
+
+// --------------------------------------------------------------------------------------
+void EveSpaceScene::UpdateQuadRenderer( 
+	const TriFrustum& frustum,
+	PIEveSpaceObject2Vector& objects,
+	Tr2RenderContext& renderContext )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	auto& quadRenderer = *Tr2QuadRenderer::Instance();
+
+	Tr2ParallelFor( Tr2BlockedRange<size_t>( 0, objects.size(), 20 ), [&] ( Tr2BlockedRange<size_t> range ) 
+	{
+		for( auto i = range.begin(); i != range.end(); ++i )
+		{
+			auto obj = objects[i];
+			obj->AddQuadsToQuadRenderer( frustum, quadRenderer );
+		}
+	} );
+
 	quadRenderer.BeginRendering( renderContext );
 }
 
@@ -1895,8 +1925,6 @@ void EveSpaceScene::EndRender( Tr2RenderContext& renderContext )
 		}
 	}
 
-	RenderDebugInfo( renderContext );
-
 	renderContext.m_esm.EndManagedRendering();
 
 	// Clear shadow object list
@@ -1921,6 +1949,63 @@ void EveSpaceScene::EndRender( Tr2RenderContext& renderContext )
 
 	m_viewProjectLast = Tr2Renderer::GetViewTransform() * currentProj; 
 	ClearVariableStore();
+}
+
+// --------------------------------------------------------------------------------------
+void EveSpaceScene::Render3DUI( Tr2RenderContext& renderContext )
+{
+	RenderDebugInfo( renderContext );
+
+	Matrix identity = Tr2Renderer::GetIdentityTransform();
+	std::vector<ITr2Renderable*> renderables;
+	Tr2RenderableSortList transparentObjects;
+
+	TriFrustum& frustum = m_frameData.frustum;
+	frustum.DeriveFrustum( &Tr2Renderer::GetViewTransform(), &Tr2Renderer::GetViewPosition(), &Tr2Renderer::GetProjectionTransform(), Tr2Renderer::GetViewport() );
+
+	PopulatePerFramePSData( m_perFramePS );
+	PopulatePerFrameVSData( m_perFrameVS );
+	
+	Tr2ParallelDo( m_uiObjects.begin(), m_uiObjects.end(), [&]( IEveSpaceObject2* obj ) { obj->UpdateVisibility( m_frameData.frustum, identity ); } );
+
+	for( auto it = m_uiObjects.begin(); it != m_uiObjects.end(); ++it )
+	{
+		IEveSpaceObject2* obj = *it;
+		obj->GetRenderables( renderables, nullptr );
+	}
+
+	GetAllBatchesFromRenderables( renderables, transparentObjects, m_secondaryBatches );
+	PrepareTransparentBatch( transparentObjects, m_secondaryBatches );
+	
+	UpdateQuadRenderer( frustum, m_uiObjects, renderContext );
+	Tr2QuadRenderer::Instance()->GetBatches( TRIBATCHTYPE_OPAQUE, m_secondaryBatches[TRIBATCHTYPE_OPAQUE] );
+	Tr2QuadRenderer::Instance()->GetBatches( TRIBATCHTYPE_ADDITIVE, m_secondaryBatches[TRIBATCHTYPE_ADDITIVE] );
+	
+	FinalizeBatches( m_secondaryBatches );
+
+	renderContext.m_esm.BeginManagedRendering();
+
+	SetNoShadow();
+	ApplyPerFrameData( renderContext );
+
+	// --------------------------------------------------------------------------------------
+	RenderOpaqueBatches( m_secondaryBatches, renderContext );
+
+	renderContext.m_esm.UnsetAllTextures();
+	renderContext.SetReadOnlyDepth( true );
+	RenderTransparentBatches( m_secondaryBatches, renderContext );
+	renderContext.m_esm.UnsetAllTextures();
+	renderContext.SetReadOnlyDepth( false );
+	
+	Tr2QuadRenderer::Instance()->DoneRendering( renderContext );
+
+	renderContext.m_esm.EndManagedRendering();
+
+	ClearBatches( m_secondaryBatches );
+
+	// Don't leave vertex/pixel shaders assigned - this is so we don't clash with classic rendering.
+	CR( renderContext.SetShader( nullShader[PIXEL_SHADER] ) );
+	CR( renderContext.SetShader( nullShader[VERTEX_SHADER] ) );	
 }
 
 void EveSpaceScene::PopulateAndApplyPerFrameData( Tr2RenderContext& renderContext ) 
@@ -1969,6 +2054,9 @@ ITr2MultiPassScene::RenderPassResult EveSpaceScene::RenderPass( PassType pass, T
 		break;
 	case RP_SET_PERFRAME_DATA:
 		PopulateAndApplyPerFrameData( renderContext );
+		break;
+	case RP_RENDER_UI:
+		Render3DUI( renderContext );
 		break;
 	default:
 		break;
@@ -2176,6 +2264,11 @@ bool EveSpaceScene::Initialize()
 	}
 
 	for( auto it = begin( m_objects ); it != end( m_objects ); ++it )
+	{
+		( *it )->RegisterWithQuadRenderer( *Tr2QuadRenderer::Instance() );
+	}
+
+	for( auto it = begin( m_uiObjects ); it != end( m_uiObjects ); ++it )
 	{
 		( *it )->RegisterWithQuadRenderer( *Tr2QuadRenderer::Instance() );
 	}

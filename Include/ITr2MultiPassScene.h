@@ -37,6 +37,7 @@ BLUE_INTERFACE( ITr2MultiPassScene ) : public IRoot
 		RP_MAIN_RENDER,
 		RP_DEPTH_PASS,
 		RP_SET_PERFRAME_DATA,
+		RP_RENDER_UI,
 		RP_COUNT,
 	};
 
