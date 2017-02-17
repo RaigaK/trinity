@@ -270,6 +270,10 @@ void EveSpherePin::GetRenderables( std::vector<ITr2Renderable*>& renderables )
 // ------------------------------------------------------------------------------------------------------
 void EveSpherePin::GetRenderables( std::vector<ITr2Renderable*>& renderables, Tr2ImpostorManager* impostors )
 {
+	if( !m_display )
+	{
+		return;
+	}
 	// cull!
 //	if( frustum.IsSphereVisible( &boundingSphere ) )
 	{
