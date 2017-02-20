@@ -126,6 +126,7 @@ void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matri
 		return;
 	}
 	
+	m_isVisible = true;
 	UpdateViewDependentData( frustum, parentTransform );
 	
 	if( m_mesh )
@@ -144,11 +145,6 @@ void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matri
 				else if( estimatedSize >= g_eveSpaceSceneLowDetailThreshold )
 				{
 					m_lodLevel = TR2_LOD_MEDIUM;
-				}
-
-				if( estimatedSize > m_visibilityThreshold )
-				{
-					m_isVisible = true;
 				}
 			}
 		}
