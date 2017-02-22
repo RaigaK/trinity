@@ -1213,6 +1213,8 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 {
 	// default textures
 	gd.resPathDefaultAlliance = srcData->m_resPathDefaultAlliance;
+	gd.resPathDefaultCorp = srcData->m_resPathDefaultCorp;
+	gd.resPathDefaultCeo = srcData->m_resPathDefaultCeo;
 
 	// shader locations
 	gd.shaderPrefix = srcData->m_shaderPrefix;

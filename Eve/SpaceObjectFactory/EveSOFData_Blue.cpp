@@ -186,9 +186,11 @@ BLUE_DEFINE( EveSOFDataHullPlaneSet );
 
 Be::VarChooser EveSOFDataHullPlaneSetUsageChooser[] =
 {
-	{	"Standard", BeCast( EveSOFDataHullPlaneSet::USAGE_STANDARD ), "Standard planeset" },
-	{	"AllianceLogo", BeCast( EveSOFDataHullPlaneSet::USAGE_ALLIANCE_LOGO ), "Alliance logo planeset" },
-	{	"Video", BeCast( EveSOFDataHullPlaneSet::USAGE_VIDEO ), "Video planeset" },
+	{ "Standard", BeCast( EveSOFDataHullPlaneSet::USAGE_STANDARD ), "Standard planeset" },
+	{ "AllianceLogo", BeCast( EveSOFDataHullPlaneSet::USAGE_ALLIANCE_LOGO ), "Alliance logo planeset" },
+	{ "Video", BeCast( EveSOFDataHullPlaneSet::USAGE_VIDEO ), "Video planeset" },
+	{ "CorpLogo", BeCast( EveSOFDataHullPlaneSet::USAGE_CORP_LOGO ), "Corporation logo planeset" },
+	{ "CeoPortrait", BeCast( EveSOFDataHullPlaneSet::USAGE_CEO_PORTRAIT ), "Ceo portrait planeset" },
 	{ 0 }
 };
 BLUE_REGISTER_ENUM_EX( "HullPlanesetUsage", EveSOFDataHullPlaneSet::Usage, EveSOFDataHullPlaneSetUsageChooser, ENUM_REG_ENUM_OBJECT_ON_MODULE );
@@ -937,15 +939,9 @@ const Be::ClassInfo* EveSOFDataGeneric::ExposeToBlue()
     EXPOSURE_BEGIN( EveSOFDataGeneric, "" )
         MAP_INTERFACE( EveSOFDataGeneric )
 
-		MAP_ATTRIBUTE(
-			"resPathDefaultAlliance", 
-			m_resPathDefaultAlliance, 
-			"The texture for the default alliance logo\n"
-			":jessica-group: DefaultTextures\n"
-			":jessica-widget: filepath\n"
-			":jessica-file-filter: texture",
-			Be::READWRITE | Be::PERSIST
-		)
+		MAP_ATTRIBUTE( "resPathDefaultAlliance", m_resPathDefaultAlliance, "The texture for the default alliance logo\n:jessica-group: DefaultTextures\n:jessica-widget: filepath\n:jessica-file-filter: texture", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "resPathDefaultCorp", m_resPathDefaultCorp, "The texture for the default corp logo\n:jessica-group: DefaultTextures\n:jessica-widget: filepath\n:jessica-file-filter: texture", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "resPathDefaultCeo", m_resPathDefaultCeo, "The texture for the default ceo logo\n:jessica-group: DefaultTextures\n:jessica-widget: filepath\n:jessica-file-filter: texture", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "areaShaderLocation", m_areaShaderLocation, "The location of all the area shaders\n:jessica-group: ShaderInfo", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "decalShaderLocation", m_decalShaderLocation, "The location of all the decal shaders\n:jessica-group: ShaderInfo", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "shaderPrefix", m_shaderPrefix, "A prefix for all shaders\n:jessica-group: ShaderInfo", Be::READWRITE | Be::PERSIST )

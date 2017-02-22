@@ -316,6 +316,8 @@ public:
 		USAGE_STANDARD = 0,
 		USAGE_ALLIANCE_LOGO,
 		USAGE_VIDEO,
+		USAGE_CORP_LOGO,
+		USAGE_CEO_PORTRAIT,
 	};
 
 	// data
@@ -1115,6 +1117,8 @@ public:
 
 	// default textures
 	std::string m_resPathDefaultAlliance;
+	std::string m_resPathDefaultCorp;
+	std::string m_resPathDefaultCeo;
 
 	// shader locations
 	std::string m_shaderPrefix;

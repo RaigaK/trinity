@@ -458,6 +458,8 @@ public:
 	{
 		// default textures
 		std::string resPathDefaultAlliance;
+		std::string resPathDefaultCorp;
+		std::string resPathDefaultCeo;
 		// shader locations
 		std::string shaderPrefix, shaderPrefixAnimated;
 		std::string areaShaderLocation;
