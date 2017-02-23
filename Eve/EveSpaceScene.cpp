@@ -2721,10 +2721,14 @@ void EveSpaceScene::RenderPlanets( Tr2RenderContext& renderContext )
 		CCP_STATS_GPU_ZONE( "RenderPlanets/RenderOpaqueBatches" );
 		RenderOpaqueBatches( m_secondaryBatches, renderContext );
 	}
+	renderContext.m_esm.UnsetAllTextures();
+	renderContext.SetReadOnlyDepth( true );
 	{
 		CCP_STATS_GPU_ZONE( "RenderPlanets/RenderTransparentBatches" );
 		RenderTransparentBatches( m_secondaryBatches, renderContext );
 	}
+	renderContext.m_esm.UnsetAllTextures();
+	renderContext.SetReadOnlyDepth( false );
 	ClearBatches( m_secondaryBatches );
 
 	// Put view/projection back to normal
