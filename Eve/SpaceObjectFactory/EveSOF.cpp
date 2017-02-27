@@ -29,6 +29,7 @@
 #include "Tr2InstancedMesh.h"
 #include "Tr2MeshLod.h"
 #include "Tr2MeshArea.h"
+#include "Tr2RuntimeInstanceData.h"
 #include "Shader/Tr2Effect.h"
 #include "Shader/Parameter/TriTextureParameter.h"
 #include "Shader/Parameter/Tr2Vector4Parameter.h"
@@ -1045,7 +1046,27 @@ void EveSOF::SetupInstancedMeshes( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr
 
 		Tr2InstancedMeshPtr mesh;
 		mesh.CreateInstance();
-		mesh->SetInstanceMeshResPath( him->instanceGeometryResPath.c_str() );
+
+		Tr2VertexDefinition instanceDef;
+		instanceDef.Add( Tr2VertexDefinition::FLOAT32_4, Tr2VertexDefinition::TEXCOORD, 0 );
+		instanceDef.Add( Tr2VertexDefinition::FLOAT32_4, Tr2VertexDefinition::TEXCOORD, 1 );
+		instanceDef.Add( Tr2VertexDefinition::FLOAT32_4, Tr2VertexDefinition::TEXCOORD, 2 );
+		instanceDef.Add( Tr2VertexDefinition::INT32_1, Tr2VertexDefinition::TEXCOORD, 3 );
+
+		if( !him->instances.empty() )
+		{
+			Tr2RuntimeInstanceDataPtr instanceData;
+			instanceData.CreateInstance();
+			instanceData->SetLayout( instanceDef );
+			auto dest = instanceData->GetData( unsigned( him->instances.size() ) );
+			memcpy( dest, &him->instances[0], sizeof( him->instances[0] ) * him->instances.size() );
+			instanceData->UpdateData();
+			mesh->SetInstanceGeometryRes( instanceData );
+		}
+		else
+		{
+			mesh->SetInstanceMeshResPath( him->instanceGeometryResPath.c_str() );
+		}
 		mesh->SetMeshResPath( him->geometryResPath.c_str() );
 
 		Tr2MeshAreaVector* areas = mesh->GetAreas( TRIBATCHTYPE_OPAQUE );

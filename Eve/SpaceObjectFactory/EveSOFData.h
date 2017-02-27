@@ -45,6 +45,18 @@ public:
 TYPEDEF_BLUECLASS( EveSOFDataTexture );
 BLUE_DECLARE_VECTOR( EveSOFDataTexture );
 
+
+struct EveSofDataMeshInstance
+{
+	Quaternion rotation;
+	Vector3 scaling;
+	Vector3 translation;
+	int32_t boneIndex;
+};
+
+BLUE_DECLARE_STRUCTURE_LIST( EveSofDataMeshInstance );
+
+
 BLUE_CLASS( EveSOFDataInstancedMesh ) :
 	public IRoot
 {
@@ -57,6 +69,7 @@ public:
 	BlueSharedString m_name;
 	Tr2Lod m_lowestLodVisible;
 	std::string m_geometryResPath;
+	PEveSofDataMeshInstanceStructureList m_instances;
 	std::string m_instanceGeometryResPath;
 	BlueSharedString m_shader;
 	PEveSOFDataTextureVector m_textures;

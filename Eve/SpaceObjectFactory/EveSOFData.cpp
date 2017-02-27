@@ -59,10 +59,23 @@ EveSOFDataTexture::EveSOFDataTexture( IRoot* lockobj )
 {}
 
 
+static BlueStructureDefinition s_eveSOFMeshInstanceDef[] =
+{
+	{ "rotation",	 Be::FLOAT32_4,	0 },
+	{ "scaling",	 Be::FLOAT32_3,	16 },
+	{ "translation", Be::FLOAT32_3,	28 },
+	{ "boneIndex",   Be::INT32_1,	40 },
+	{ 0 }
+};
+
+
 EveSOFDataInstancedMesh::EveSOFDataInstancedMesh( IRoot* lockobj ) :
 	m_lowestLodVisible( TR2_LOD_LOW ),
-	PARENTLOCK( m_textures )
-{}
+	PARENTLOCK( m_textures ),
+	PARENTLOCK( m_instances )
+{
+	m_instances.SetStructureDefinition( s_eveSOFMeshInstanceDef );
+}
 
 
 EveSOFDataGenericString::EveSOFDataGenericString( IRoot* lockobj )

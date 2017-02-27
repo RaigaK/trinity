@@ -739,6 +739,17 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		him.lowestLodVisible = instMesh->m_lowestLodVisible;
 		him.geometryResPath = instMesh->m_geometryResPath;
 		him.instanceGeometryResPath = instMesh->m_instanceGeometryResPath;
+		him.instances.reserve( instMesh->m_instances.size() );
+		for( auto iit = instMesh->m_instances.begin(); iit != instMesh->m_instances.end(); ++iit )
+		{
+			HullMeshInstance instance;
+			Matrix transform( XMMatrixTranspose( XMMatrixTransformation( Vector3( 0, 0, 0 ), Quaternion( 0, 0, 0, 1 ), iit->scaling, Vector3( 0, 0, 0 ), iit->rotation, iit->translation ) ) );
+			instance.transform0 = *reinterpret_cast<Vector4*>( &transform.GetX() );
+			instance.transform1 = *reinterpret_cast<Vector4*>( &transform.GetY() );
+			instance.transform2 = *reinterpret_cast<Vector4*>( &transform.GetZ() );
+			instance.boneIndex = iit->boneIndex;
+			him.instances.push_back( instance );
+		}
 		him.shader = instMesh->m_shader;
 		for( auto tit = instMesh->m_textures.begin(); tit != instMesh->m_textures.end(); ++tit )
 		{

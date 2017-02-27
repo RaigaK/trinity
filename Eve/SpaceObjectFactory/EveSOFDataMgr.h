@@ -197,6 +197,14 @@ public:
 		int groupIndex;
 	};
 
+	struct HullMeshInstance
+	{
+		Vector4 transform0;
+		Vector4 transform1;
+		Vector4 transform2;
+		int boneIndex;
+	};
+
 	struct HullInstancedMesh
 	{
 		BlueSharedString name;
@@ -205,6 +213,7 @@ public:
 		std::string instanceGeometryResPath;
 		BlueSharedString shader;
 		std::map<BlueSharedString, TextureData> textures;
+		std::vector<HullMeshInstance> instances;
 	};
 
 	struct HullAnimation
