@@ -719,7 +719,7 @@ void EveBoosterSet2::SetCount( unsigned count )
 		EveBoosterSet2RenderablePtr renderable;
 		renderable.CreateInstance();
 		renderable->m_boosterSet = this;
-		m_boosterRenderables.Append( ((ITr2Renderable*)renderable)->GetRootObject() );
+		m_boosterRenderables.Append( renderable->GetRawRoot() );
 	}
 }
 
@@ -763,7 +763,7 @@ void EveBoosterSet2::Update( float deltaT, Be::Time t, const Matrix& parentMatri
 		EveBoosterSet2RenderablePtr renderable;
 		renderable.CreateInstance();
 		renderable->m_boosterSet = this;
-		m_boosterRenderables.Append( ((ITr2Renderable*)renderable)->GetRootObject() );
+		m_boosterRenderables.Append( renderable->GetRawRoot() );
 	}
 	if( (unsigned)boosterInstance > m_boosterRenderables.size() )
 	{

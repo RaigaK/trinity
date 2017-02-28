@@ -536,7 +536,7 @@ bool Tr2SkinnedModelBuilder::CreateEffect( Tr2Effect ** effect, bool allowPrepar
 		}
 		OTriFloatArrayParameter* newFloatArray = new OTriFloatArrayParameter();  // Creates object with 1 lock
 		newFloatArray->m_name = BlueSharedString( m_extraArrayOf[i] );
-		(*effect)->m_parameters.Insert( -1, (ITriEffectParameter*)newFloatArray );		
+		(*effect)->m_parameters.Insert( -1, newFloatArray->GetRawRoot() );		
 	}
 
 	// make sure, all array parameters are cleared, because we will insert & fill them later

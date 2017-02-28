@@ -571,7 +571,7 @@ void TriDevice::RebuildDeviceResourcesInPython()
 		for( Py_ssize_t i = 0; i<n; i++ )
 		{
 			BluePy item(keys.Get(i));
-			BluePy result(PyOS->CallMethodWithTrap(item, "OnCreate", "OnCreate", "(N)", PyOS->WrapBlueObject((ITriDevice*)this)));
+			BluePy result(PyOS->CallMethodWithTrap(item, "OnCreate", "OnCreate", "(N)", PyOS->WrapBlueObject(GetRawRoot())));
 			if (!result) 
 			{
 				PyOS->PyError();
