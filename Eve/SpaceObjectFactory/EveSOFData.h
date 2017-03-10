@@ -628,6 +628,9 @@ public:
 
 	// description
 	std::string m_description;
+	
+	// hull category used for validation
+	BlueSharedString m_category;
 
 	// class
 	BuildClass m_buildClass;
