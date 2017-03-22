@@ -6,10 +6,14 @@
 #include "SpaceObject/EveShip2.h"
 #include "Resources/TriGrannyRes.h"
 
+BLUE_DECLARE( EveShip2 );
 BLUE_DECLARE( EveShip2Builder);
 BLUE_DECLARE( EveSpriteSet );
 BLUE_DECLARE( EveSpotlightSet );
-BLUE_DECLARE( Tr2Mesh );
+BLUE_DECLARE( TriGrannyRes );
+BLUE_DECLARE_VECTOR( TriGrannyRes );
+BLUE_DECLARE( EveSOFDataHull );
+BLUE_DECLARE_VECTOR( EveSOFDataHull );
 
 class EveShip2Builder:
      public IRoot
@@ -42,6 +46,7 @@ protected:
 
 	static void StaticBuildAsync( void* context );
 	void BuildAsync( const BlueScriptCallback& pyCallback );
+	bool CombineHullGeometry();
 
 	static void StaticNotifyBuildDone( void* context );
 
@@ -76,6 +81,12 @@ protected:
 	CcpAtomic<uint32_t> m_notifyBuildDoneId;
 	BlueScriptCallback m_doneCallbackToPython;
 	bool m_buildSucceeded;
+
+	// source hull files
+	PTriGrannyResVector m_grannyResources;
+	PEveSOFDataHullVector m_hulls;
+	// dest granny path
+	std::string m_outputFilename;
 };
 
 TYPEDEF_BLUECLASS( EveShip2Builder );
