@@ -45,6 +45,7 @@ void TriVariable::CopyValueToEffect(	Tr2RenderContextEnum::ShaderType inputType,
 	case TRIVARIABLE_TEXTURE_RES:
 		{
 			uint32_t samplerIx = *destHandle;
+			bool isUav = ( size & RESOURCE_FLAG_UAV ) != 0;
 			auto colorSpace = ( size & RESOURCE_FLAG_SRGB ) != 0 ? Tr2RenderContextEnum::COLOR_SPACE_SRGB : Tr2RenderContextEnum::COLOR_SPACE_LINEAR;
 			Tr2TextureAL* tex = nullptr;
 			if( m_texture )
@@ -53,11 +54,25 @@ void TriVariable::CopyValueToEffect(	Tr2RenderContextEnum::ShaderType inputType,
 			}
 			if( tex )
 			{		
-				renderContext.m_esm.ApplyTexture( inputType, samplerIx, *tex, colorSpace );
+				if( isUav )
+				{
+					renderContext.SetUav( inputType, samplerIx, *tex );
+				}
+				else
+				{
+					renderContext.m_esm.ApplyTexture( inputType, samplerIx, *tex, colorSpace );
+				}
 			}
 			else
 			{
-				renderContext.m_esm.ApplyTexture( inputType, samplerIx, nullTX, colorSpace );
+				if( isUav )
+				{
+					renderContext.SetUav( inputType, samplerIx, nullGB );
+				}
+				else
+				{
+					renderContext.m_esm.ApplyTexture( inputType, samplerIx, nullTX, colorSpace );
+				}
 			}
 			break;
 		}
