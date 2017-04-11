@@ -223,7 +223,7 @@ void EveMobile::UpdateVisibility( const TriFrustum& frustum, const Matrix& paren
 // --------------------------------------------------------------------------------
 void EveMobile::GetRenderables( std::vector<ITr2Renderable*>& renderables, Tr2ImpostorManager* impostors )
 {
-	if( !m_isVisible )
+	if( !m_display )
 	{
 		return;
 	}

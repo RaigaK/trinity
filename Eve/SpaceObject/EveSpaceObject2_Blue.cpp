@@ -63,7 +63,7 @@ PyObject* EveSpaceObject2::PyTransformLocators( PyObject* self, PyObject* args )
 	}
 	else if( PySequence_Check( pyLocators ) )
 	{
-		PyObject* result = PyList_New( ssize_t( locators->GetSize() ) );
+		PyObject* result = PyList_New( PySequence_Size( pyLocators ) );
 		for( ssize_t i = 0; ; ++i )
 		{
 			auto item = PySequence_GetItem( pyLocators, i );
