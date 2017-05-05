@@ -79,9 +79,12 @@ void Tr2BoneMatrixCurve::AddKey_( float time, const Matrix& value )
 // --------------------------------------------------------------------------------------
 void Tr2BoneMatrixCurve::Sort( void )
 {
-	if ( m_keys.size() > 1 )
+	if( !m_keys.empty() )
 	{
-		m_keys.Sort( (IList::CompareFn)CompareKeys, NULL );
+		if( m_keys.size() > 1 )
+		{
+			m_keys.Sort( ( IList::CompareFn )CompareKeys, NULL );
+		}
 		// We might have added a key passed the length of the curve
 		if ( m_keys.back()->m_time > m_length )
 		{
@@ -98,6 +101,8 @@ void Tr2BoneMatrixCurve::Sort( void )
 			}
 		}
 	}
+	m_lastKey = nullptr;
+	m_nextKey = nullptr;
 }
 
 // --------------------------------------------------------------------------------------

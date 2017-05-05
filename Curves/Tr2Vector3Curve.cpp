@@ -43,10 +43,12 @@ void Tr2Vector3Curve::AddKey_( float time, const Vector3& value )
 
 void Tr2Vector3Curve::Sort( )
 {
-	if ( m_keys.size() > 1 )
+	if( !m_keys.empty() )
 	{
-		m_keys.Sort( (IList::CompareFn)CompareKeys, NULL );
-
+		if( m_keys.size() > 1 )
+		{
+			m_keys.Sort( ( IList::CompareFn )CompareKeys, NULL );
+		}
 		if ( m_keys.back()->m_time > m_length )
 		{
 			Tr2Vector3Key* back = m_keys.back();
@@ -65,6 +67,8 @@ void Tr2Vector3Curve::Sort( )
 			}
 		}
 	}
+	m_lastKey = nullptr;
+	m_nextKey = nullptr;
 }
 
 Vector3 Tr2Vector3Curve::GetKeyLeftTangent( unsigned int idx )

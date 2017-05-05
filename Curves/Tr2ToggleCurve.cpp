@@ -50,10 +50,30 @@ bool Tr2ToggleCurve::Initialize()
 // --------------------------------------------------------------------------------------
 void Tr2ToggleCurve::Sort()
 {
-	if ( m_keys.size() > 1 )
+	if( !m_keys.empty() )
 	{
-		m_keys.Sort( (IList::CompareFn)CompareKeys, NULL );		
+		if( m_keys.size() > 1 )
+		{
+			m_keys.Sort( ( IList::CompareFn )CompareKeys, NULL );
+		}
+		// We might have added a key passed the length of the curve
+		if( m_keys.back()->m_time > m_length )
+		{
+			auto back = m_keys.back();
+			float preLength = m_length;
+			auto endValue = m_endValue;
+
+			m_length = back->m_time;
+			m_endValue = back->m_value;
+			if( preLength > 0.0f )
+			{
+				back->m_time = preLength;
+				back->m_value = endValue;
+			}
+		}
 	}
+	m_lastKey = nullptr;
+	m_nextKey = nullptr;
 }
 
 // --------------------------------------------------------------------------------------

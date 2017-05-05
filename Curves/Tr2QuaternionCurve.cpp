@@ -72,9 +72,12 @@ void Tr2QuaternionCurve::AddKey_( float time, const Quaternion& value )
 // --------------------------------------------------------------------------------------
 void Tr2QuaternionCurve::Sort()
 {
-	if ( m_keys.size() > 1 )
+	if( !m_keys.empty() )
 	{
-		m_keys.Sort( (IList::CompareFn)CompareKeys, NULL );
+		if( m_keys.size() > 1 )
+		{
+			m_keys.Sort( ( IList::CompareFn )CompareKeys, NULL );
+		}
 		// We might have added a key passed the length of the curve
 		if ( m_keys.back()->m_time > m_length )
 		{
@@ -91,6 +94,8 @@ void Tr2QuaternionCurve::Sort()
 			}
 		}
 	}
+	m_lastKey = nullptr;
+	m_nextKey = nullptr;
 }
 
 // --------------------------------------------------------------------------------------
