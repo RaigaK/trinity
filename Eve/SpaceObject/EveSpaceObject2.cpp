@@ -1082,11 +1082,16 @@ void EveSpaceObject2::PushRenderables( std::vector<ITr2Renderable*>& renderables
 			p->GetRenderables( renderables );
 		}
 	}
-	
+
 	for( auto ecIt = m_effectChildren.begin(); ecIt != m_effectChildren.end(); ++ecIt )
 	{
-		(*ecIt)->GetRenderables( renderables );
+		if( (*ecIt)->IsAlwaysOn() || DisplayChildren() )
+		{
+			(*ecIt)->GetRenderables( renderables );
+		}
 	}
+	
+	
 	
 	// are decals visible?
 	if( DisplayDecals() && m_mesh && m_isMeshVisible )
@@ -1322,7 +1327,10 @@ void EveSpaceObject2::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2Quad
 	}
 	for( auto it = m_effectChildren.begin(); it != m_effectChildren.end(); ++it )
 	{
-		( *it )->AddQuadsToQuadRenderer( frustum, quadRenderer );
+		if( DisplayChildren() || (*it)->IsAlwaysOn() )
+		{
+			(*it)->AddQuadsToQuadRenderer( frustum, quadRenderer );
+		}
 	}
 }
 
@@ -2694,7 +2702,10 @@ void EveSpaceObject2::GetLights( Tr2LightManager& lightManager ) const
 	}
 	for( auto it = m_effectChildren.begin(); it != m_effectChildren.end(); ++it )
 	{
-		( *it )->GetLights( lightManager );
+		if( DisplayChildren() || ( *it )->IsAlwaysOn() )
+		{
+			( *it )->GetLights( lightManager );
+		}
 	}
 }
 

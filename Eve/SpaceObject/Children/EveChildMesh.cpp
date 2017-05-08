@@ -229,3 +229,8 @@ void EveChildMesh::Setup( const Vector3* scale, const Quaternion* rotation, cons
 	m_lowestLodVisible = lowestLodVisible;
 }
 
+bool EveChildMesh::IsAlwaysOn()
+{
+	return true;
+}
+
