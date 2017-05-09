@@ -55,8 +55,8 @@ float GetAutoClamppedTangent( float prevTime, float prevValue, float time, float
 		return 0;
 	}
 
-	float valueDiff = abs( prevValue - nextValue );
-	float keyDistance = abs( value - prevValue ) / valueDiff;
+	float valueDiff = std::abs( prevValue - nextValue );
+	float keyDistance = std::abs( value - prevValue ) / valueDiff;
 	keyDistance = std::min( 1.f, std::min( keyDistance, 1 - keyDistance ) * 6 );
 
 	float autoTangent = ( nextValue - prevValue ) / ( nextTime - prevTime );
@@ -131,7 +131,7 @@ float Tr2CurveScalar::GetValue( double time ) const
 
 	float t = GetLocalTime( time );
 
-	if( m_lastSegment >= 0 && m_lastSegment + 1 < count )
+	if( m_lastSegment + 1 < count )
 	{
 		// try cached last segment first
 		auto& k0 = m_keys[m_lastSegment];
