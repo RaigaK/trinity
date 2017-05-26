@@ -59,7 +59,7 @@ const Be::ClassInfo* Tr2CurveScalarExpression::ExposeToBlue()
 			"Input variable",
 			Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE(
-			"input3",
+			"input4",
 			m_input4,
 			"Input variable",
 			Be::READWRITE | Be::PERSIST )
