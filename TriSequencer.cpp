@@ -4,6 +4,8 @@
 #include "include/TriMath.h"
 #include "include/ITriDuration.h"
 
+extern bool g_expressionCurveFakeRandom;
+
 static inline void FunctionLength( ITriFunctionPtr curve, float& maxDuration )
 {
 	float l = 0.0f;
@@ -1087,8 +1089,16 @@ float TriPerlinCurve::GetValueAt(
 		mStart = TimeAsDouble(now);
 
 	double pos = TimeAsDouble(now) - mStart;
-	pos += mStartOffset;
-	double ret = ((PerlinNoise1D(pos * mSpeed ,	 mAlpha, mBeta, mN) + 1.0) / 2.0 ) * mScale + mOffset;
+	if( g_expressionCurveFakeRandom )
+	{
+		pos = pos * mSpeed + 0.21f;
+	}
+	else
+	{
+		pos += mStartOffset;
+		pos *= mSpeed;
+	}
+	double ret = ((PerlinNoise1D(pos,	 mAlpha, mBeta, mN) + 1.0) / 2.0 ) * mScale + mOffset;
 	return (float)ret;
 }
 
@@ -1102,8 +1112,16 @@ float TriPerlinCurve::GetValueAt(
 // 
 // 	pos -= mStart;
 
-	pos += mStartOffset;
-	return (((float)PerlinNoise1D( pos  * mSpeed , mAlpha, mBeta, mN) + 1.0f ) / 2.0f) * mScale + mOffset;
+	if( g_expressionCurveFakeRandom )
+	{
+		pos = pos * mSpeed + 0.21f;
+	}
+	else
+	{
+		pos += mStartOffset;
+		pos *= mSpeed;
+	}
+	return (((float)PerlinNoise1D( pos, mAlpha, mBeta, mN) + 1.0f ) / 2.0f) * mScale + mOffset;
 }
 
 
@@ -1239,6 +1257,13 @@ void TriRandomConstantCurve::ScaleTime(
 
 void TriRandomConstantCurve::Randomize()
 {
-	    mValue = mMin + (mMax - mMin) * TriRand();
+	if( g_expressionCurveFakeRandom )
+	{
+		mValue = mMin + ( mMax - mMin ) * ( mHold ? 0.21f : 0.41f );
+	}
+	else
+	{
+		mValue = mMin + ( mMax - mMin ) * TriRand();
+	}
 }
 

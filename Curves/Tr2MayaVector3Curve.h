@@ -43,6 +43,8 @@ public:
 	void	setZIndex( int index );
 	int		getZIndex( void ) const { return m_zIndex; }	
 
+	Vector3 GetValueAt( double time ) const;
+
 private:
 	int		m_xIndex;
 	int		m_yIndex;

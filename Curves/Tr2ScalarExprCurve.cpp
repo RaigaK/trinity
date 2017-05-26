@@ -2,6 +2,8 @@
 #include "Tr2ScalarExprCurve.h"
 #include "include/TriMath.h"
 
+extern bool g_expressionCurveFakeRandom;
+
 static float perlin_wrap( float x, float a, float b, float n )
 {
 	return (float)((PerlinNoise1D( x, a, b, (int)n)+1.0)*0.5);
@@ -14,6 +16,10 @@ static float perlin_wrap_simple( float x )
 
 static float frandom( float a, float b )
 {
+	if( g_expressionCurveFakeRandom )
+	{
+		return ( ( b - a ) * 0.41f ) + a;
+	}
 	return ((b-a)*((float)rand()/RAND_MAX))+a;
 }
 
@@ -50,6 +56,10 @@ Tr2ScalarExprCurve::Tr2ScalarExprCurve( IRoot* lockobj ):
 void Tr2ScalarExprCurve::RegenRandomConstant()
 {
 	m_randomConstant = frandom( m_randomMin, m_randomMax );
+	if( g_expressionCurveFakeRandom )
+	{
+		m_randomConstant = m_randomMin + ( m_randomMax - m_randomMin ) * 0.21f;
+	}
 }
 
 bool Tr2ScalarExprCurve::Initialize()

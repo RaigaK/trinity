@@ -22,6 +22,8 @@ const Be::ClassInfo* Tr2MayaVector3Curve::ExposeToBlue()
 		MAP_ATTRIBUTE( "animationEngine", m_animationEngine, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "value", m_value, "", Be::READWRITE | Be::PERSIST )
+
+		MAP_METHOD_AND_WRAP( "GetValueAt", GetValueAt , "" )
     EXPOSURE_END()
 }
 

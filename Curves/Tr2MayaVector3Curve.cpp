@@ -106,6 +106,46 @@ void Tr2MayaVector3Curve::UpdateValue( double time )
 	}
 }
 
+Vector3 Tr2MayaVector3Curve::GetValueAt( double time ) const
+{
+	Vector3 value = m_value;
+	if( m_animationEngine )
+	{
+		if( m_xIndex > -1 )
+		{
+			value.x = m_animationEngine->evaluate( m_xIndex, (float)time );
+		}
+		if( m_yIndex > -1 )
+		{
+			if( m_yIndex == m_xIndex )
+			{
+				value.y = m_value.x;
+			}
+			else
+			{
+				value.y = m_animationEngine->evaluate( m_yIndex, (float)time );
+			}
+		}
+		if( m_zIndex > -1 )
+		{
+			if( m_zIndex == m_xIndex )
+			{
+				value.z = m_value.x;
+			}
+			else if( m_zIndex == m_yIndex )
+			{
+				value.z = m_value.y;
+			}
+			else
+			{
+				value.z = m_animationEngine->evaluate( m_zIndex, (float)time );
+			}
+
+		}
+	}
+	return value;
+}
+
 void Tr2MayaVector3Curve::ComputeLength()
 {
 	float duration = 0.0f;

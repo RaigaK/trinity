@@ -8,6 +8,7 @@ const Be::ClassInfo* Tr2ScalarExprCurve::ExposeToBlue()
     EXPOSURE_BEGIN( Tr2ScalarExprCurve, "" )
         MAP_INTERFACE( Tr2ScalarExprCurve )
 		MAP_INTERFACE( ITriCurveLength )
+		MAP_INTERFACE( ITriFunction )
 
 		MAP_PROPERTY( "expr", GetExpression, SetExpression, "The mathematical expression to be evaluated" )		
 		MAP_ATTRIBUTE( "expr", m_expression, "", Be::READWRITE| Be::PERSISTONLY )

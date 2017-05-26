@@ -24,7 +24,10 @@ const Be::ClassInfo* Tr2MayaEulerRotationCurve::ExposeToBlue()
 		MAP_ATTRIBUTE( "eulerValue", m_eulerValue, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "updateQuaternion", m_updateQuaternion, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "quatValue", m_quatValue, "", Be::READWRITE )
-    EXPOSURE_END()
+
+		MAP_METHOD_AND_WRAP( "GetEulerValueAt", GetEulerValueAt, "" )
+		MAP_METHOD_AND_WRAP( "GetValueAt", GetValueAt, "" )
+	EXPOSURE_END()
 }
 
 #endif
