@@ -8,7 +8,7 @@
 
 BLUE_DECLARE_IVECTOR( ITriScalarFunction );
 
-BLUE_CLASS( Tr2CurveVector3Expression ) : public ITriColorFunction, public IInitialize
+BLUE_CLASS( Tr2CurveVector3Expression ) : public ITriColorFunction, public ITriVectorFunction, public IInitialize
 {
 public:
 	Tr2CurveVector3Expression( IRoot* lockobj = nullptr );
@@ -41,6 +41,17 @@ public:
 	virtual Color* Update( Color* in, double time );
 	virtual Color* GetValueAt( Color* in, Be::Time time );
 	virtual Color* GetValueAt( Color* in, double time );
+
+	virtual Vector3* Update( Vector3* in, Be::Time time );
+	virtual Vector3* Update( Vector3* in, double time );
+	virtual Vector3* GetValueAt( Vector3* in, Be::Time time );
+	virtual Vector3* GetValueAt( Vector3* in, double time );
+	virtual Vector3* GetValueDotAt( Vector3* in, Be::Time time );
+	virtual Vector3* GetValueDotAt( Vector3* in, double time );
+	virtual Vector3* GetValueDoubleDotAt( Vector3* in, Be::Time time );
+	virtual Vector3* GetValueDoubleDotAt( Vector3* in, double time );
+	virtual Vector3d* InterpolatedPosition( Vector3d* out, Be::Time time );
+
 private:
 	std::string m_name;
 	std::string m_expressions[3];

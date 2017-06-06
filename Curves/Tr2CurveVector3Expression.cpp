@@ -289,3 +289,63 @@ Color* Tr2CurveVector3Expression::GetValueAt( Color* in, double time )
 	in->a = 0;
 	return in;
 }
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::Update( Vector3* in, Be::Time time )
+{
+	m_currentValue = GetValue( TimeAsDouble( time ) );
+	*in = m_currentValue;
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::Update( Vector3* in, double time )
+{
+	m_currentValue = GetValue( time );
+	*in = m_currentValue;
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueAt( Vector3* in, Be::Time time )
+{
+	*in = GetValue( TimeAsDouble( time ) );
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueAt( Vector3* in, double time )
+{
+	*in = GetValue( time );
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueDotAt( Vector3* in, Be::Time )
+{
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueDotAt( Vector3* in, double )
+{
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueDoubleDotAt( Vector3* in, Be::Time )
+{
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3* Tr2CurveVector3Expression::GetValueDoubleDotAt( Vector3* in, double )
+{
+	return in;
+}
+
+// --------------------------------------------------------------------------------
+Vector3d* Tr2CurveVector3Expression::InterpolatedPosition( Vector3d* out, Be::Time )
+{
+	return out;
+}
