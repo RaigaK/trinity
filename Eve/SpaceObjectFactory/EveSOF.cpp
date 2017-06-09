@@ -1740,6 +1740,10 @@ void EveSOF::SetupTurretMaterialFromFaction( EveTurretSet* turretSet, const char
 	const EveSOFDataMgr::GenericData* genericData = m_dataMgr.GetGenericData();
 	// get faction data
 	const EveSOFDataMgr::FactionData* factionData = m_dataMgr.GetFactionData( factionName );
+	if( factionData == nullptr )
+	{
+		return;
+	}
 	// get area data
 	const EveSOFDataMgr::AreaMaterialData* areaMaterialData = &factionData->areaMaterials;
 
