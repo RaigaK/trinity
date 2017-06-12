@@ -31,6 +31,7 @@ Be::VarChooser EveSOFDataAreaTypeChooser[] =
 	{ "Reactor", BeCast( EveSOFDataArea::TYPE_REACTOR ), "Area Type Reactor" },
 	{ "Darkhull", BeCast( EveSOFDataArea::TYPE_DARKHULL), "Area Type Dark Hull" },
 	{ "Wreck", BeCast( EveSOFDataArea::TYPE_WRECK ), "Area Type Generic Wreck" },
+	{ "Rock", BeCast( EveSOFDataArea::TYPE_ROCK ), "Area Type Rock" },
 	{ "NoOverwrite", BeCast( EveSOFDataArea::TYPE_NO_OVERWRITE ), "Area Type No Overwrite" },
 	{ 0 }
 };
@@ -47,6 +48,7 @@ const Be::ClassInfo* EveSOFDataArea::ExposeToBlue()
 		MAP_ATTRIBUTE( EveSOFDataAreaTypeChooser[TYPE_SAILS].mKey, m_materials[TYPE_SAILS], "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( EveSOFDataAreaTypeChooser[TYPE_REACTOR].mKey, m_materials[TYPE_REACTOR], "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( EveSOFDataAreaTypeChooser[TYPE_DARKHULL].mKey, m_materials[TYPE_DARKHULL], "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( EveSOFDataAreaTypeChooser[TYPE_ROCK].mKey, m_materials[TYPE_ROCK], "", Be::READWRITE | Be::PERSIST )
 		EXPOSURE_END()
 }
 
