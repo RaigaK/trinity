@@ -113,6 +113,8 @@ public:
 		Be::OptionalWithDefaultValue<Tr2CurveTangentType::Type, Tr2CurveTangentType::AUTO_CLAMP> tangentType );
 
 	void SetExtrapolation( Tr2CurveExtrapolation::Type extrapolation );
+
+	Tr2CurveScalarKeyStructureList& GetKeys();
 private:
 	float GetLocalTime( double time ) const;
 	float GetSegmentValue( float time, const Tr2CurveScalarKey& k0, const Tr2CurveScalarKey& k1 ) const;

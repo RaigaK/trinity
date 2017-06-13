@@ -125,7 +125,7 @@ private:
 
 	float m_projectionCenterOffset;
 
-	PTriScalarCurve m_zoomCurve;
+	ITriScalarFunctionPtr m_zoomCurve;
 	ITriScalarFunctionPtr m_noiseCurve;
 	ITriScalarFunctionPtr m_noiseScaleCurve;
 	ITriScalarFunctionPtr m_noiseDampCurve;

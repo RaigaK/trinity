@@ -5,6 +5,9 @@
 #include "TriView.h"
 #include "TriError.h"
 #include "Include/TriMath.h"
+#include "Curves/Tr2CurveScalar.h"
+
+BLUE_DECLARE( TriScalarCurve );
 
 static const float defFOV = TRI_PIBY2;
 
@@ -74,16 +77,18 @@ EveCamera::EveCamera(IRoot* lockobj) :
 	m_extraParentTranslation(0, 0, 0),
 	m_useExtraParentTranslation( false ),
 
-	PARENTLOCK( m_zoomCurve ),
 	m_update( true ),
 	m_failedLastFrame( false )
 {
+	Tr2CurveScalarPtr zoomCurve;
+	zoomCurve.CreateInstance();
 
-	m_zoomCurve.AddKey( 0.0f,   defFOV, 0.0f,-11.0f, TRIINT_HERMITE );
-	m_zoomCurve.AddKey( 0.225f,   0.8f, 0.0f, -9.0f, TRIINT_HERMITE );
-	m_zoomCurve.AddKey( 0.45f,    0.1f, 0.0f, 20.0f, TRIINT_HERMITE );
-	m_zoomCurve.AddKey( 0.675f, defFOV, 0.0f,  0.0f, TRIINT_HERMITE );
-	m_zoomCurve.Sort();
+	zoomCurve->AddKey( 0.0f,   defFOV, Tr2CurveInterpolation::HERMITE, 0.0f,-11.0f, Tr2CurveTangentType::FREE_SPLIT );
+	zoomCurve->AddKey( 0.225f,   0.8f, Tr2CurveInterpolation::HERMITE, 0.0f, -9.0f, Tr2CurveTangentType::FREE_SPLIT );
+	zoomCurve->AddKey( 0.45f,    0.1f, Tr2CurveInterpolation::HERMITE, 0.0f, 20.0f, Tr2CurveTangentType::FREE_SPLIT );
+	zoomCurve->AddKey( 0.675f, defFOV, Tr2CurveInterpolation::HERMITE, 0.0f,  0.0f, Tr2CurveTangentType::FREE_SPLIT );
+
+	m_zoomCurve = zoomCurve;
 
 	D3DXMatrixIdentity(&m_projectionTransform);
 	m_projectionMatrix.CreateInstance();
@@ -183,7 +188,16 @@ void EveCamera::Dolly(float factor)
 
 void EveCamera::Zoom( Be::OptionalWithDefaultValue<int, -1> key )
 {
-	if (m_zoomCurve.mKeys.GetSize() < 1)
+	ssize_t size = 0;
+	if( Tr2CurveScalarPtr curve = BlueCastPtr( m_zoomCurve ) )
+	{
+		size = ssize_t( curve->GetKeys().size() );
+	}
+	else if( TriScalarCurvePtr curve = BlueCastPtr( m_zoomCurve ) )
+	{
+		size = curve->mKeys.GetSize();
+	}
+	if (size < 1)
 	{
 		TriError::ReportError( BEDEF, Clsid(), 
 			"\r\nTried to zoom but the camera had no keys on zoomCurve"
@@ -195,10 +209,17 @@ void EveCamera::Zoom( Be::OptionalWithDefaultValue<int, -1> key )
 	else
 		m_zoomKey++;
 
-	if(m_zoomKey >= (m_zoomCurve.mKeys.GetSize() - 1) )
+	if(m_zoomKey >= ( size - 1) )
 		m_zoomKey = 0;	
 
-	m_zoomTime = m_zoomCurve.mKeys[m_zoomKey]->mTime;
+	if( Tr2CurveScalarPtr curve = BlueCastPtr( m_zoomCurve ) )
+	{
+		m_zoomTime = curve->GetKeys()[m_zoomKey].m_time;
+	}
+	else if( TriScalarCurvePtr curve = BlueCastPtr( m_zoomCurve ) )
+	{
+		m_zoomTime = curve->mKeys[m_zoomKey]->mTime;
+	}
 }
 
 const TriViewPtr EveCamera::GetViewMatrix()
@@ -249,14 +270,30 @@ void EveCamera::Update( Be::Time t )
 		failed = true;
 	}
 
-	if(m_zoomCurve.mLength > 0.0f)
+	if( Tr2CurveScalarPtr curve = BlueCastPtr( m_zoomCurve ) )
 	{
-		if((m_zoomCurve.mKeys.GetSize() > (m_zoomKey+1)) && (m_zoomTime < m_zoomCurve.mKeys[m_zoomKey+1]->mTime))
+		if( curve->Length() > 0.0f )
 		{
-			m_zoomTime += (float)dT;
-			if(m_zoomTime > m_zoomCurve.mKeys[m_zoomKey+1]->mTime)
-				m_zoomTime = m_zoomCurve.mKeys[m_zoomKey+1]->mTime;
-			m_fieldOfView = m_zoomCurve.Update(m_zoomTime);
+			if( ( ssize_t( curve->GetKeys().size() ) > ( m_zoomKey + 1 ) ) && ( m_zoomTime < curve->GetKeys()[m_zoomKey + 1].m_time ) )
+			{
+				m_zoomTime += (float)dT;
+				if( m_zoomTime > curve->GetKeys()[m_zoomKey + 1].m_time )
+					m_zoomTime = curve->GetKeys()[m_zoomKey + 1].m_time;
+				m_fieldOfView = curve->Update( m_zoomTime );
+			}
+		}
+	}
+	else if( TriScalarCurvePtr curve = BlueCastPtr( m_zoomCurve ) )
+	{
+		if( curve->mLength > 0.0f )
+		{
+			if( ( curve->mKeys.GetSize() > ( m_zoomKey + 1 ) ) && ( m_zoomTime < curve->mKeys[m_zoomKey + 1]->mTime ) )
+			{
+				m_zoomTime += (float)dT;
+				if( m_zoomTime > curve->mKeys[m_zoomKey + 1]->mTime )
+					m_zoomTime = curve->mKeys[m_zoomKey + 1]->mTime;
+				m_fieldOfView = curve->Update( m_zoomTime );
+			}
 		}
 	}
 
