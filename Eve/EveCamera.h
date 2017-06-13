@@ -79,6 +79,8 @@ public:
 	/////////////////////////////////////////////////////////////////////////////////////
 	bool OnModified( Be::Var* val );
 
+	void ResetStartTime();
+
 private:
 	ITriVectorFunctionPtr m_parentTranslationCurve;
 	ITriVectorFunctionPtr m_interestTranslationCurve;
@@ -153,6 +155,7 @@ private:
 	TriViewPtr m_viewMatrix;
 
 	Be::Time m_time;
+	Be::Time m_start;
 	void CapPitchAndYaw();
 
 	// Listener intended for providing error details if camera gets invalid values

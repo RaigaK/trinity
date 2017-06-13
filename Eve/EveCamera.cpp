@@ -61,6 +61,7 @@ EveCamera::EveCamera(IRoot* lockobj) :
 	m_yawSpeed    ( 0.0f ),
 	m_pitchSpeed	 ( 0.0f ),
 	m_time        ( 0    ),
+	m_start(0),
 
 	m_projectionCenterOffset(0.0f),
 	m_rotationAroundParent( 0.f, 0.f, 0.f, 1.f ),
@@ -239,6 +240,11 @@ void EveCamera::Update( Be::Time t )
 		return;
 	bool failed = false;
 
+	if( m_start == 0 )
+	{
+		m_start = t;
+	}
+
 	// 'dT' is the time span since this function was last called
 	float dT = float(TimeAsDouble(BeOS->GetInfo()->mRealTime - m_time));
 	m_time = BeOS->GetInfo()->mRealTime;
@@ -333,13 +339,17 @@ void EveCamera::Update( Be::Time t )
 
 	if(m_noiseCurve)
 	{
-		m_noise = m_noiseCurve->Update(t) > 0.0f;
+		m_noise = m_noiseCurve->Update(TimeAsDouble(t - m_start)) > 0.0f;
+	}
+	else
+	{
+		m_noise = false;
 	}
 	if(m_noise)
 	{
 		if(m_noiseScaleCurve)
 		{
-			float noiseScale = m_noiseScaleCurve->Update(t);
+			float noiseScale = m_noiseScaleCurve->Update( TimeAsDouble( t - m_start ) );
 			if( IsFinite( noiseScale ) )
 			{
 				m_noiseScale = noiseScale;
@@ -351,7 +361,7 @@ void EveCamera::Update( Be::Time t )
 		}
 		if(m_noiseDampCurve)
 		{
-			float noiseDamp = m_noiseDampCurve->Update(t);
+			float noiseDamp = m_noiseDampCurve->Update( TimeAsDouble( t - m_start ) );
 			if( IsFinite( noiseDamp ) )
 			{
 				m_noiseDamp = noiseDamp;
@@ -680,4 +690,9 @@ Matrix EveCamera::AddCenterOffset( const Matrix& original, float xOffset, float 
 	EveCamera::CalculateProjectionMatrix( &projection, aspectRatio, fov, centerOffsetX, centerOffsetY, nearClip, farClip, NULL );
 
 	return projection;
+}
+
+void EveCamera::ResetStartTime()
+{
+	m_start = 0;
 }

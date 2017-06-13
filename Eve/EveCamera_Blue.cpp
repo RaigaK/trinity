@@ -412,5 +412,10 @@ const Be::ClassInfo* EveCamera::ExposeToBlue()
 			1, 
 			":param key: \n" )
 
+		MAP_METHOD_AND_WRAP(
+			"ResetStartTime",
+			ResetStartTime,
+			"Resets start time for noise curves" )
+
 	EXPOSURE_END();
 }
