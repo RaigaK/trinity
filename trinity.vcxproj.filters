@@ -72,9 +72,6 @@
     <ClInclude Include="ITr2Renderable.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ITr2ShaderMaterial.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ITr2SkinnedObject.h">
       <Filter>Source Files</Filter>
     </ClInclude>

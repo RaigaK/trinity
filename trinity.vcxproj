@@ -2677,7 +2677,6 @@
     <ClInclude Include="ITr2PhysicsUpdater.h"/>
     <ClInclude Include="ITr2PickableScene.h"/>
     <ClInclude Include="ITr2Renderable.h"/>
-    <ClInclude Include="ITr2ShaderMaterial.h"/>
     <ClInclude Include="ITr2SkinnedObject.h"/>
     <ClInclude Include="ITr2TextureProvider.h"/>
     <ClInclude Include="ITr2VisibilityQueryable.h"/>
