@@ -229,11 +229,13 @@ void EveStretch2::UpdateEmitter( EveUpdateContext& updateContext )
 	{
 		up = Vector3( 0, 0, 1 );
 	}
+
+	XMVECTOR det;
 	
 	ITr2GenericEmitter::UpdateArguments args(
 		updateContext.GetTime(),
 		updateContext.GetGpuParticleSystem(),
-		Matrix( XMMatrixLookAtLH( m_source, m_destination, up ) ),
+		Matrix( XMMatrixInverse( &det, XMMatrixLookAtLH( m_source, m_destination, up ) ) ),
 		updateContext.GetOriginShift() );
 	m_sourceEmitter->Update( args );
 }
