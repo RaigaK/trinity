@@ -1799,6 +1799,12 @@ void EveSpaceScene::RenderMainPass( Tr2RenderContext& renderContext )
 		objectRenderables.clear();
 	}
 
+	if( !m_hasDepthPass )
+	{
+		renderContext.m_esm.ApplyStandardStates( Tr2EffectStateManager::RM_DEPTH_ONLY );
+		renderContext.RenderBatches( m_primaryBatches[TRIBATCHTYPE_DEPTH], BlueSharedString( "Depth" ) );
+	}
+
 	{
 		CCP_STATS_GPU_ZONE( "RenderMainPass/RenderOpaqueBatches" );
 		if( m_velocityMap )
