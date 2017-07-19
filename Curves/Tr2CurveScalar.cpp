@@ -81,6 +81,18 @@ Tr2CurveScalar::Tr2CurveScalar( IRoot* lockobj )
 }
 
 // --------------------------------------------------------------------------------
+std::string Tr2CurveScalar::GetName() const
+{
+	return m_name;
+}
+
+// --------------------------------------------------------------------------------
+void Tr2CurveScalar::SetName( const char* name )
+{
+	m_name = name;
+}
+
+// --------------------------------------------------------------------------------
 void Tr2CurveScalar::UpdateValue( double time )
 {
 	m_currentValue = GetValue( time );

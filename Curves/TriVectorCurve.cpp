@@ -624,48 +624,12 @@ double TriVectorCurve::GetCurrentPos( Be::Time time )
 
 PyObject* TriVectorCurve::PyCheckProximity(PyObject* args)
 {
-	PyObject* vC;
-	float range;
-	int stopAtFirst = 0;
-	if (!PyArg_ParseTuple(args, "Of|i", &vC, &range, &stopAtFirst))
-		return NULL;
-
-	ITriVectorCurvePtr veevee(vC);
-
-	size_t size;
-	Be::Time* values;
-	CheckProximityOfCurves(this, static_cast<TriVectorCurve*>( veevee.p ), range, &size, &values, (stopAtFirst != 0));
-
-	PyObject* list = PyList_New(size);
-	for (size_t i = 0; i < size; i++)
-	{
-		PyList_SET_ITEM((PyListObject*)(list), i, PyLong_FromLongLong(values[i]));
-	}
-	delete[] values;
-	return list;	
+	return nullptr;
 }
 
 PyObject* TriVectorCurve::PyCheckProximityToPoint(PyObject* args)
 {
-	PyObject* vP;
-	float range;
-	int stopAtFirst = 0;
-	if (!PyArg_ParseTuple(args, "Of|i", &vP, &range, &stopAtFirst))
-		return NULL;
-
-	CCP_ASSERT(ITriVectorPtr(vP));
-
-	size_t size;
-	Be::Time* values; 
-	CheckProximityOfCurveToPoint(this, ITriVectorPtr(vP)->GetVector(), range, &size, &values, (stopAtFirst != 0));
-
-	PyObject* list = PyList_New(size);
-	for (size_t i = 0; i < size; i++)
-	{
-		PyList_SET_ITEM((PyListObject*)(list), i, PyLong_FromLongLong(values[i]));
-	}
-	delete[] values;
-	return list;	
+	return nullptr;
 }
 
 #endif

@@ -92,6 +92,9 @@ public:
 
 	virtual float Length();
 
+	std::string GetName() const;
+	void SetName( const char* name );
+
 	float GetValue( double time ) const;
 	float GetCurrentValue() const;
 
