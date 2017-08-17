@@ -921,6 +921,20 @@ const Be::ClassInfo* EveSOFDataGenericShader::ExposeToBlue()
 }
 
 
+BLUE_DEFINE( EveSOFDataGenericDecalShader );
+const Be::ClassInfo* EveSOFDataGenericDecalShader::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataGenericDecalShader, "" )
+		MAP_INTERFACE( EveSOFDataGenericDecalShader )
+
+		MAP_ATTRIBUTE( "shader", m_shader, "The actual shader", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "parameters", m_parameters, "Complete list of all parameters for this shader", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "defaultTextures", m_defaultTextures, "Default (global) textures for this shader", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "parentTextures", m_parentTextures, "Parent textures from the hull", Be::READWRITE | Be::PERSIST )
+		EXPOSURE_END()
+}
+
+
 BLUE_DEFINE( EveSOFDataGenericVariant );
 const Be::ClassInfo* EveSOFDataGenericVariant::ExposeToBlue()
 {

@@ -446,6 +446,16 @@ public:
 		std::map<BlueSharedString, Vector4> defaultParameters;
 	};
 
+	struct GenericDecalShaderData
+	{
+		// complete list of parameters
+		std::vector<BlueSharedString> parameters;
+		// global textures for this shader
+		std::map<BlueSharedString, TextureData> defaultTextures;
+		// parent textures from the hull
+		std::map<BlueSharedString, TextureData> parentTextures;
+	};
+
 	struct VariantData
 	{
 		// what area does it go into?
@@ -469,7 +479,7 @@ public:
 		std::vector<std::string> patternMaterialPrefixes;
 		// shader-specific data
 		std::map<BlueSharedString, GenericShaderData> areaShaderData;
-		std::map<BlueSharedString, GenericShaderData> decalShaderData;
+		std::map<BlueSharedString, GenericDecalShaderData> decalShaderData;
 		// damage
 		GenericDamageData damage;
 		GenericHullDamageData hullDamage;

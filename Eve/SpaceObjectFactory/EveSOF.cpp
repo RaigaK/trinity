@@ -1631,17 +1631,13 @@ void EveSOF::SetupDecals( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 			}
 
 			// find data on this shader from generics, we need it!
-			const EveSOFDataMgr::GenericShaderData* shaderData = dna->GetGenericDecalShaderData( BlueSharedString( hdit->shader ) );
+			const EveSOFDataMgr::GenericDecalShaderData* shaderData = dna->GetGenericDecalShaderData( BlueSharedString( hdit->shader ) );
 			if( shaderData )
 			{
 				// default shader textures & parameters from the generic data
 				for( auto gtit = shaderData->defaultTextures.begin(); gtit != shaderData->defaultTextures.end(); ++gtit )
 				{
 					shader->AddResourceTexture2D( gtit->first, gtit->second.resFilePath.c_str() );
-				}
-				for( auto gpit = shaderData->defaultParameters.begin(); gpit != shaderData->defaultParameters.end(); ++gpit )
-				{
-					shader->AddParameterVector4( gpit->first, &gpit->second );
 				}
 			}
 

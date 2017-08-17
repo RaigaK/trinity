@@ -1322,30 +1322,28 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 	gd.decalShaderData.clear();
 	for( auto dsit = srcData->m_decalShaders.begin(); dsit != srcData->m_decalShaders.end(); ++dsit )
 	{
-		EveSOFDataGenericShaderPtr shaderData = (*dsit);
+		EveSOFDataGenericDecalShaderPtr shaderData = (*dsit);
 
-		GenericShaderData gsd;
+		GenericDecalShaderData gdsd;
 		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
 		{
 			EveSOFDataTexturePtr textureData = (*tdit);
-			gsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+			gdsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
 		}
 
-		for( auto pdit = shaderData->m_defaultParameters.begin(); pdit != shaderData->m_defaultParameters.end(); ++pdit )
+		for( auto tpit = shaderData->m_parentTextures.begin(); tpit != shaderData->m_parentTextures.end(); ++tpit )
 		{
-			EveSOFDataParameterPtr paramData = ( *pdit );
-			gsd.defaultParameters[ paramData->m_name ] = paramData->m_value;
+			EveSOFDataTexturePtr textureData = ( *tpit );
+			gdsd.parentTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
 		}
 
 		for( auto spit = shaderData->m_parameters.begin(); spit != shaderData->m_parameters.end(); ++spit )
 		{
 			EveSOFDataGenericStringPtr paramData = (*spit);
-			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
+			gdsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
-		gsd.doGenerateDepthArea = false;
-
-		gd.decalShaderData[ shaderData->m_shader ] = gsd;
+		gd.decalShaderData[ shaderData->m_shader ] = gdsd;
 	}
 
 	// generic wreck material

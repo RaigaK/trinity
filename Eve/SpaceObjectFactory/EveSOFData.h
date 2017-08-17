@@ -1086,6 +1086,28 @@ public:
 TYPEDEF_BLUECLASS( EveSOFDataGenericShader );
 BLUE_DECLARE_VECTOR( EveSOFDataGenericShader );
 
+BLUE_CLASS( EveSOFDataGenericDecalShader ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataGenericDecalShader( IRoot* lockobj = NULL );
+	~EveSOFDataGenericDecalShader() {}
+
+	BlueSharedString m_shader;
+
+	// complete list of parameters
+	PEveSOFDataGenericStringVector m_parameters;
+
+	// default textures
+	PEveSOFDataTextureVector m_defaultTextures;
+
+	// parent texture
+	PEveSOFDataTextureVector m_parentTextures;
+};
+TYPEDEF_BLUECLASS( EveSOFDataGenericDecalShader );
+BLUE_DECLARE_VECTOR( EveSOFDataGenericDecalShader );
+
 
 BLUE_CLASS( EveSOFDataGenericSwarm ) :
 	public IRoot
@@ -1147,7 +1169,7 @@ public:
 
 	// shader-specific data
 	PEveSOFDataGenericShaderVector m_areaShaders;
-	PEveSOFDataGenericShaderVector m_decalShaders;
+	PEveSOFDataGenericDecalShaderVector m_decalShaders;
 
 	// damage data
 	EveSOFDataGenericDamagePtr m_damage;

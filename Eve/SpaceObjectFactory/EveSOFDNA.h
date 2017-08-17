@@ -56,7 +56,7 @@ public:
 	const char* GetShaderPrefix( bool isAnimated ) const;
 	std::string GetCompleteShaderPath( const char* shaderPath ) const;
 	const EveSOFDataMgr::GenericShaderData* GetGenericAreaShaderData( const BlueSharedString& shaderName ) const;
-	const EveSOFDataMgr::GenericShaderData* GetGenericDecalShaderData( const BlueSharedString& shaderName ) const;
+	const EveSOFDataMgr::GenericDecalShaderData* GetGenericDecalShaderData( const BlueSharedString& shaderName ) const;
 	const EveSOFDataMgr::GenericDamageData* GetGenericDamageData() const;
 	const EveSOFDataMgr::GenericHullDamageData* GetGenericHullDamageData() const;
 	const EveSwarm::BehaviorProperties* GetGenericSwarmProperties() const;

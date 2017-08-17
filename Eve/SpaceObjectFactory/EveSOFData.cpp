@@ -90,6 +90,13 @@ EveSOFDataGenericShader::EveSOFDataGenericShader( IRoot* lockobj ) :
 {}
 
 
+EveSOFDataGenericDecalShader::EveSOFDataGenericDecalShader( IRoot* lockobj ) :
+	PARENTLOCK( m_parameters ),
+	PARENTLOCK( m_defaultTextures ),
+	PARENTLOCK( m_parentTextures )
+{}
+
+
 EveSOFDataGenericDamage::EveSOFDataGenericDamage( IRoot* lockobj ) :
 	m_flickerPerlinSpeed( 1.f ),
 	m_flickerPerlinAlpha( 1.1f ),

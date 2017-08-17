@@ -416,7 +416,7 @@ std::string EveSOFDNA::GetCompleteShaderPath( const char* path ) const
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Return the generic textures for a given area shader
+//   Return the generic textures etc. for a given area shader
 // --------------------------------------------------------------------------------
 const EveSOFDataMgr::GenericShaderData* EveSOFDNA::GetGenericAreaShaderData( const BlueSharedString& shaderName ) const
 {
@@ -430,9 +430,9 @@ const EveSOFDataMgr::GenericShaderData* EveSOFDNA::GetGenericAreaShaderData( con
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Return the generic textures for a given decal shader
+//   Return the generic textures etc. for a given decal shader
 // --------------------------------------------------------------------------------
-const EveSOFDataMgr::GenericShaderData* EveSOFDNA::GetGenericDecalShaderData( const BlueSharedString& shaderName ) const
+const EveSOFDataMgr::GenericDecalShaderData* EveSOFDNA::GetGenericDecalShaderData( const BlueSharedString& shaderName ) const
 {
 	auto finder = m_genericData->decalShaderData.find( shaderName );
 	if( finder == m_genericData->decalShaderData.end() )
