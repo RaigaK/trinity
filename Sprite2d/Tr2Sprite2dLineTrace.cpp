@@ -383,9 +383,9 @@ void Tr2Sprite2dLineTrace::AddSegment(
 		m_drawCalls.back().indexCount = uint16_t( m_renderIndices.size() - m_drawCalls.back().indexOffset );
 
 		DrawCall dc;
-		dc.vertexOffset = m_renderVertices.size();
+		dc.vertexOffset = uint32_t( m_renderVertices.size() );
 		dc.vertexCount = 0;
-		dc.indexOffset = m_renderIndices.size();
+		dc.indexOffset = uint32_t( m_renderIndices.size() );
 		dc.indexCount = 0;
 		m_drawCalls.push_back( dc );
 
