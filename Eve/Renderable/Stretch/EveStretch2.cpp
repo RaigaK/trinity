@@ -320,9 +320,14 @@ float EveStretch2::GetSortValue()
 
 void EveStretch2::SubmitGeometry( Tr2RenderContext& renderContext )
 {
+	auto ib = Tr2Renderer::GetQuadListIndexBuffer( m_quadCount );
+	if( !ib )
+	{
+		return;
+	}
 	renderContext.m_esm.ApplyVertexDeclaration( m_vertexDeclHandle );
 	renderContext.m_esm.ApplyStreamSource( 0, m_vb, 0, sizeof( Vertex ) );
-	renderContext.m_esm.ApplyIndexBuffer( *Tr2Renderer::GetQuadListIndexBuffer( m_quadCount ) );
+	renderContext.m_esm.ApplyIndexBuffer( *ib );
 	renderContext.SetTopology( Tr2RenderContextEnum::TOP_TRIANGLES );
 	renderContext.DrawIndexedPrimitive( 4 * m_quadCount, 0, 2 * m_quadCount );
 }
