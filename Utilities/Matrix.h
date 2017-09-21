@@ -578,4 +578,103 @@ inline bool IsMatch( Be::Var* value, const Matrix& t )
 	return (Be::Var*)&t == value;
 }
 
+// --------------------------------------------------------------------------------------
+inline Matrix IdentityMatrix()
+{
+	return Matrix(
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1 );
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix Transpose( const Matrix& m )
+{
+	Matrix out;
+	out._11 = m._11; out._12 = m._21; out._13 = m._31; out._14 = m._41;
+	out._21 = m._12; out._22 = m._22; out._23 = m._32; out._24 = m._42;
+	out._31 = m._13; out._32 = m._23; out._33 = m._33; out._34 = m._43;
+	out._41 = m._14; out._42 = m._24; out._43 = m._34; out._44 = m._44;
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline float Determinant( const Matrix& m )
+{
+	float a0 = m._11 * m._22 - m._12 * m._21;
+	float a1 = m._11 * m._23 - m._13 * m._21;
+	float a2 = m._11 * m._24 - m._14 * m._21;
+	float a3 = m._12 * m._23 - m._13 * m._22;
+	float a4 = m._12 * m._24 - m._14 * m._22;
+	float a5 = m._13 * m._24 - m._14 * m._23;
+	float b0 = m._31 * m._42 - m._32 * m._41;
+	float b1 = m._31 * m._43 - m._33 * m._41;
+	float b2 = m._31 * m._44 - m._34 * m._41;
+	float b3 = m._32 * m._43 - m._33 * m._42;
+	float b4 = m._32 * m._44 - m._34 * m._42;
+	float b5 = m._33 * m._44 - m._34 * m._43;
+	return a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix Inverse( const Matrix& m )
+{
+	Vector4 v, vec[3];
+	Matrix out;
+
+	float det = Determinant( m );
+	if( !det )
+	{
+		out = m;
+	}
+	else
+	{
+		for( int i = 0; i < 4; i++ )
+		{
+			float signedDet = ( i & 1 ) ? -1.f : 1.f;
+			signedDet /= det;
+			for( int j = 0; j < 4; j++ )
+			{
+				if( j != i )
+				{
+					int a = j;
+					if( j > i )
+					{
+						a = a - 1;
+					}
+					vec[a].x = m.m[j][0];
+					vec[a].y = m.m[j][1];
+					vec[a].z = m.m[j][2];
+					vec[a].w = m.m[j][3];
+				}
+			}
+			v = Cross( vec[0], vec[1], vec[2] );
+			out.m[0][i] = signedDet * v.x;
+			out.m[1][i] = signedDet * v.y;
+			out.m[2][i] = signedDet * v.z;
+			out.m[3][i] = signedDet * v.w;
+		}
+	}
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix OrthoNormalBasisZ( const Vector3& z )
+{
+	Matrix out = IdentityMatrix();
+	out.GetZ() = Normalize( z );
+	if( std::abs( out.GetZ().x ) > 0.99f )
+	{
+		out.GetX() = Vector3( 0, 1, 0 );
+	}
+	else
+	{
+		out.GetX() = Vector3( 1, 0, 0 );
+	}
+	out.GetY() = Normalize( Cross( out.GetX(), out.GetZ() ) );
+	out.GetX() = Cross( out.GetY(), out.GetZ() );
+	return out;
+}
+
 #endif // MATRIX_H

@@ -350,4 +350,36 @@ inline bool IsMatch( Be::Var* value, const Vector3& t )
 	return (Be::Var*)&t == value;
 }
 
+// --------------------------------------------------------------------------------------
+inline float Dot( const Vector3& v1, const Vector3& v2 )
+{
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+// --------------------------------------------------------------------------------------
+inline float LengthSq( const Vector3& v )
+{
+	return Dot( v, v );
+}
+
+// --------------------------------------------------------------------------------------
+inline float Length( const Vector3& v )
+{
+	return std::sqrt( LengthSq( v ) );
+}
+
+// --------------------------------------------------------------------------------------
+inline Vector3 Normalize( const Vector3& v )
+{
+	auto length = Length( v );
+	return v / length;
+}
+
+// --------------------------------------------------------------------------------------
+inline Vector3 Cross( const Vector3& v1, const Vector3& v2 )
+{
+	return Vector3( v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x );
+
+}
+
 #endif // VECTOR3_H
