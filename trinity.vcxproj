@@ -3066,6 +3066,7 @@
     <ClInclude Include="Shader\Parameter\Tr2FloatParameter.h"/>
     <ClInclude Include="Shader\Parameter\Tr2GeometryBufferParameter.h"/>
     <ClInclude Include="Shader\Parameter\Tr2Matrix4Parameter.h"/>
+    <ClInclude Include="Shader\Parameter\Tr2RuntimeTextureParameter.h"/>
     <ClInclude Include="Shader\Parameter\Tr2Texture2dLodParameter.h"/>
     <ClInclude Include="Shader\Parameter\Tr2Vector2Parameter.h"/>
     <ClInclude Include="Shader\Parameter\Tr2Vector3Parameter.h"/>
@@ -3724,6 +3725,8 @@
     <ClCompile Include="Shader\Parameter\Tr2GeometryBufferParameter_Blue.cpp"/>
     <ClCompile Include="Shader\Parameter\Tr2Matrix4Parameter.cpp"/>
     <ClCompile Include="Shader\Parameter\Tr2Matrix4Parameter_Blue.cpp"/>
+    <ClCompile Include="Shader\Parameter\Tr2RuntimeTextureParameter.cpp"/>
+    <ClCompile Include="Shader\Parameter\Tr2RuntimeTextureParameter_Blue.cpp"/>
     <ClCompile Include="Shader\Parameter\Tr2Texture2dLodParameter.cpp"/>
     <ClCompile Include="Shader\Parameter\Tr2Texture2dLodParameter_Blue.cpp"/>
     <ClCompile Include="Shader\Parameter\Tr2Vector2Parameter.cpp"/>

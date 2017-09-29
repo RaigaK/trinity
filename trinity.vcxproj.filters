@@ -1238,6 +1238,9 @@
     <ClInclude Include="Shader\Parameter\Tr2Matrix4Parameter.h">
       <Filter>Source Files\Shader\Parameter</Filter>
     </ClInclude>
+    <ClInclude Include="Shader\Parameter\Tr2RuntimeTextureParameter.h">
+      <Filter>Source Files\Shader\Parameter</Filter>
+    </ClInclude>
     <ClInclude Include="Shader\Parameter\Tr2Texture2dLodParameter.h">
       <Filter>Source Files\Shader\Parameter</Filter>
     </ClInclude>
@@ -3198,6 +3201,12 @@
       <Filter>Source Files\Shader\Parameter</Filter>
     </ClCompile>
     <ClCompile Include="Shader\Parameter\Tr2Matrix4Parameter_Blue.cpp">
+      <Filter>Source Files\Shader\Parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\Parameter\Tr2RuntimeTextureParameter.cpp">
+      <Filter>Source Files\Shader\Parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader\Parameter\Tr2RuntimeTextureParameter_Blue.cpp">
       <Filter>Source Files\Shader\Parameter</Filter>
     </ClCompile>
     <ClCompile Include="Shader\Parameter\Tr2Texture2dLodParameter.cpp">
