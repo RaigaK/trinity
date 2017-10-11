@@ -60,7 +60,39 @@ void TriDevice::HandleRenderTick(  Be::Time realTime, Be::Time simTime )
 		g_emulateDriverReset = false;
 		if( !mDeviceLost )
 		{
-			CCP_LOGERR( "DX11 device removed, reason: %x", hr );
+			static uint32_t s_deviceLostCount = 0;
+			++s_deviceLostCount;
+
+			Tr2RenderContextEnum::RenderContextStatus status = Tr2RenderContextEnum::CONTEXT_STATUS_INVALID;
+			std::string marker, markerMessage;
+			if( SUCCEEDED( Tr2RenderContext_GetMainThreadRenderContext().GetGpuStateMarker( status, marker ) ) )
+			{
+				markerMessage = ", GPU marker: " + marker;
+			}
+
+			if( m_onDeviceRemoved.IsValid() )
+			{
+				m_onDeviceRemoved.CallVoid( (uint64_t)(unsigned long)hr, BeGetErrorMessage( ALResult( hr ) ), s_deviceLostCount, marker );
+			}
+
+			CCP_LOGERR( "DX11 device removed, reason: 0x%x%s", hr, markerMessage.c_str() );
+
+			if( BeCrashes )
+			{
+				extern unsigned long g_currentFrameCounter;
+
+				wchar_t buffer[64];
+				swprintf( buffer, 64, L"%u", s_deviceLostCount );
+				BeCrashes->SetCrashKeyValueW( (wchar_t*)L"gpuRemovedCount", buffer );
+				swprintf( buffer, 64, L"%lu", g_currentFrameCounter );
+				BeCrashes->SetCrashKeyValueW( (wchar_t*)L"gpuRemovedFrame", buffer );
+				swprintf( buffer, 64, L"%u", unsigned( hr ) );
+				BeCrashes->SetCrashKeyValueW( (wchar_t*)L"gpuRemovedReason", buffer );
+				if( !marker.empty() )
+				{
+					BeCrashes->SetCrashKeyValueW( L"gpuRemovedMarker", (wchar_t*)CA2W( marker.c_str() ) );
+				}
+			}
 			Tr2Renderer::SetIsDeviceResetting( true );
 			DeviceLost();
 			ReleaseDeviceResources( TRISTORAGE_ALL );

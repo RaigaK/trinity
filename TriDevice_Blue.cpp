@@ -153,6 +153,18 @@ const Be::ClassInfo* TriDevice::ExposeToBlue()
 		MAP_ATTRIBUTE( "animationTime", m_animationTime, "Time (in seconds) used for animations", Be::READWRITE ) 
 		MAP_ATTRIBUTE ( "animationTimeScale", m_animationTimeScale, "Scale on animation time. Set to 0 to freeze all animations", Be::READWRITE )
 
+		MAP_ATTRIBUTE( 
+			"onDeviceRemoved", 
+			m_onDeviceRemoved,
+			"Callback function that is called when a GPU device is removed (driver crash, etc.).\n"
+			"The function is called with arguments (hr, hrMessage, removedCount, marker) where:\n"
+			"hr - HRESULT code for removal reason\n"
+			"hrMessage - HRESULT message string\n"
+			"lostCount - number of device removed events since the process started\n"
+			"maker - GPU marker name last seen before device removal (may not always be available)",
+			Be::READWRITE
+		)
+
 		MAP_METHOD_AND_WRAP
 		( 
 			"InvalidateAndUnregisterForTicks",

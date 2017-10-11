@@ -286,6 +286,8 @@ private:
 
 
 private:
+	BlueScriptCallback m_onDeviceRemoved;
+
 	DeviceType m_deviceType;
 	
 	int mAdapter;	
