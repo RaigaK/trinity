@@ -70,9 +70,25 @@ void TriDevice::HandleRenderTick(  Be::Time realTime, Be::Time simTime )
 				markerMessage = ", GPU marker: " + marker;
 			}
 
+			Tr2RenderContextEnum::PixelFormat format;
+			uint64_t size;
+			uint32_t width;
+			uint32_t height;
+			uint32_t depth;
+			uint32_t mips;
+			bool hasPageFault = false;
+			char resourceDesc[256] = { 0 };
+			if( SUCCEEDED( Tr2RenderContext_GetMainThreadRenderContext().GetGpuPageFaultResource( format, size, width, height, depth, mips ) ) )
+			{
+				sprintf_s( resourceDesc, "fmt %i, size: %u, %ux%ux%u, mips: %u", int( format ), unsigned( size ), width, height, depth, mips );
+				markerMessage += ", Page Fault: ";
+				markerMessage += resourceDesc;
+				hasPageFault = true;
+			}
+
 			if( m_onDeviceRemoved.IsValid() )
 			{
-				m_onDeviceRemoved.CallVoid( (uint64_t)(unsigned long)hr, BeGetErrorMessage( ALResult( hr ) ), s_deviceLostCount, marker );
+				m_onDeviceRemoved.CallVoid( (uint64_t)(unsigned long)hr, BeGetErrorMessage( ALResult( hr ) ), s_deviceLostCount, marker, resourceDesc );
 			}
 
 			CCP_LOGERR( "DX11 device removed, reason: 0x%x%s", hr, markerMessage.c_str() );
@@ -91,6 +107,10 @@ void TriDevice::HandleRenderTick(  Be::Time realTime, Be::Time simTime )
 				if( !marker.empty() )
 				{
 					BeCrashes->SetCrashKeyValueW( L"gpuRemovedMarker", (wchar_t*)CA2W( marker.c_str() ) );
+				}
+				if( hasPageFault )
+				{
+					BeCrashes->SetCrashKeyValueW( (wchar_t*)L"gpuPageFaultResource", (wchar_t*)CA2W( resourceDesc ) );
 				}
 			}
 			Tr2Renderer::SetIsDeviceResetting( true );
