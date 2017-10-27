@@ -161,7 +161,6 @@ bool Tr2TextureAtlas::DoPrepare( Tr2AtlasTexture* tex )
 	area->tex = tex;
 	tex->m_atlasArea = area;
 
-	tex->m_texture = m_texture;
 	tex->m_x = area->rect.left + m_margin;
 	tex->m_y = area->rect.top + m_margin;
 	tex->m_width = width;
@@ -958,7 +957,7 @@ void Tr2TextureAtlas::PaintEmptyArea( Tr2TextureAtlasArea* area )
 
 Tr2TextureAL* Tr2TextureAtlas::GetTexture()
 {
-	return m_texture.IsValid() ? &m_texture : nullptr; 
+	return &m_texture;
 }
 
 int Tr2TextureAtlas::GetTexturesInAtlasCount()
@@ -1018,7 +1017,7 @@ void Tr2TextureAtlas::PullInOutsiders( bool optimiseInsertion )
 			if( CopyTextureIntoAtlas( tex ) )
 			{
 				// Set up the texture window into the atlas
-				tex->m_texture = m_texture;
+				tex->m_texture.Destroy();
 				tex->m_renderTarget = nullptr;
 				tex->m_x = area->rect.left + m_margin;
 				tex->m_y = area->rect.top + m_margin;
@@ -1109,7 +1108,6 @@ ALResult Tr2TextureAtlas::CreateTexture( unsigned int width, unsigned int height
 		tex->m_atlasArea = area;
 
 		// Set up the texture window into the atlas
-		tex->m_texture = m_texture;
 		tex->m_renderTarget = nullptr;
 		tex->m_x = area->rect.left + m_margin;
 		tex->m_y = area->rect.top + m_margin;
@@ -1130,13 +1128,14 @@ ALResult Tr2TextureAtlas::CreateTexture( unsigned int width, unsigned int height
 		}
 
 		USE_MAIN_THREAD_RENDER_CONTEXT();
-		HRESULT hr = tex->m_texture.Create2D(	width, 
-											height, 
-											1, 
-											m_format, 
-											type == ATT_VIDEO ? USAGE_CPU_WRITE | USAGE_CPU_READ : USAGE_CPU_READ,
-											nullptr, 
-											renderContext ).GetResult();
+		HRESULT hr = tex->m_texture.Create2D(
+			width, 
+			height, 
+			1, 
+			m_format, 
+			type == ATT_VIDEO ? USAGE_CPU_WRITE | USAGE_CPU_READ : USAGE_CPU_READ,
+			nullptr, 
+			renderContext ).GetResult();
 		if( FAILED( hr ) )
 		{
 			*result = nullptr;
@@ -1313,9 +1312,7 @@ bool Tr2TextureAtlas::EjectTextureHelper( Tr2AtlasTexture *tex )
 		return false;
 	}
 
-	Tr2TextureAL ejected;
-
-	HRESULT hr = ejected.Create2D( width, height, 1, m_format, USAGE_CPU_READ, nullptr, renderContext );
+	HRESULT hr = tex->m_texture.Create2D( width, height, 1, m_format, USAGE_CPU_READ, nullptr, renderContext );
 
 	if( FAILED( hr ) )
 	{
@@ -1329,9 +1326,8 @@ bool Tr2TextureAtlas::EjectTextureHelper( Tr2AtlasTexture *tex )
 	subrect.m_right = copyRect.right;
 	subrect.m_top = copyRect.top;
 	subrect.m_bottom = copyRect.bottom;
-	if( SUCCEEDED( ejected.CopySubresourceRegion( Tr2TextureSubresource(), m_texture, subrect, renderContext ) ) )
+	if( SUCCEEDED( tex->m_texture.CopySubresourceRegion( Tr2TextureSubresource(), m_texture, subrect, renderContext ) ) )
 	{
-		tex->m_texture = ejected;
 		tex->m_x = 0;
 		tex->m_y = 0;
 		tex->m_width = width;
@@ -1346,6 +1342,10 @@ bool Tr2TextureAtlas::EjectTextureHelper( Tr2AtlasTexture *tex )
 
 		RegisterOutsider( tex );
 		return true;
+	}
+	else
+	{
+		tex->m_texture.Destroy();
 	}
 	
 	return false;	
