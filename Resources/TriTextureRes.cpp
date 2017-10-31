@@ -632,6 +632,7 @@ bool TriTextureRes::Create(	uint32_t width,
 	m_memoryUse *= std::max( 1u, GetArraySize() );
 
 	CCP_STATS_ADD( textureResBytes, m_memoryUse );
+	SetTexture( m_ownTexture );
 	SetPrepared( true );
 	SetGood( true );
 	return true;
