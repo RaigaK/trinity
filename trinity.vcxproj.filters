@@ -116,9 +116,6 @@
     <ClInclude Include="Tr2BoundingLineSet.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tr2CapturedBuffer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tr2ConstantBufferFormats.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -282,9 +279,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Tr2RenderTarget.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tr2RenderTargetGrabber.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Tr2RenderUtils.h">
@@ -812,9 +806,6 @@
     <ClInclude Include="Include\ITr2BoundingBox.h">
       <Filter>Source Files\Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\ITr2CapturedBuffer.h">
-      <Filter>Source Files\Include</Filter>
-    </ClInclude>
     <ClInclude Include="Include\ITr2DebugRenderer.h">
       <Filter>Source Files\Include</Filter>
     </ClInclude>
@@ -828,9 +819,6 @@
       <Filter>Source Files\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\ITr2MultiPassScene.h">
-      <Filter>Source Files\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\ITr2RenderTargetGrabber.h">
       <Filter>Source Files\Include</Filter>
     </ClInclude>
     <ClInclude Include="Include\ITr2Scene.h">
@@ -1436,12 +1424,6 @@
     <ClCompile Include="Tr2BoundingLineSet_Blue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tr2CapturedBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2CapturedBuffer_Blue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tr2ConstantBufferFormats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1707,12 +1689,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2RenderTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2RenderTargetGrabber.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2RenderTargetGrabber_Blue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2RenderTarget_Blue.cpp">

@@ -2692,7 +2692,6 @@
     <ClInclude Include="Tr2BindingVector3.h"/>
     <ClInclude Include="Tr2Blitter.h"/>
     <ClInclude Include="Tr2BoundingLineSet.h"/>
-    <ClInclude Include="Tr2CapturedBuffer.h"/>
     <ClInclude Include="Tr2ConstantBufferFormats.h"/>
     <ClInclude Include="Tr2ConstGeometry.h"/>
     <ClInclude Include="Tr2CpuSkinnedModel.h"/>
@@ -2748,7 +2747,6 @@
     <ClInclude Include="Tr2RenderContext.h"/>
     <ClInclude Include="Tr2Renderer.h"/>
     <ClInclude Include="Tr2RenderTarget.h"/>
-    <ClInclude Include="Tr2RenderTargetGrabber.h"/>
     <ClInclude Include="Tr2RenderUtils.h"/>
     <ClInclude Include="Tr2RotationTool.h"/>
     <ClInclude Include="Tr2RuntimeInstanceData.h"/>
@@ -2924,13 +2922,11 @@
     <ClInclude Include="Include\IPhysXSdk.h"/>
     <ClInclude Include="Include\ITr2AnimationUpdater.h"/>
     <ClInclude Include="Include\ITr2BoundingBox.h"/>
-    <ClInclude Include="Include\ITr2CapturedBuffer.h"/>
     <ClInclude Include="Include\ITr2DebugRenderer.h"/>
     <ClInclude Include="Include\ITr2GpuBuffer.h"/>
     <ClInclude Include="Include\ITr2InstanceData.h"/>
     <ClInclude Include="Include\ITr2Interior.h"/>
     <ClInclude Include="Include\ITr2MultiPassScene.h"/>
-    <ClInclude Include="Include\ITr2RenderTargetGrabber.h"/>
     <ClInclude Include="Include\ITr2Scene.h"/>
     <ClInclude Include="Include\ITr2Updateable.h"/>
     <ClInclude Include="Include\ITr2ValueBinding.h"/>
@@ -3136,8 +3132,6 @@
     <ClCompile Include="Tr2Blitter.cpp"/>
     <ClCompile Include="Tr2BoundingLineSet.cpp"/>
     <ClCompile Include="Tr2BoundingLineSet_Blue.cpp"/>
-    <ClCompile Include="Tr2CapturedBuffer.cpp"/>
-    <ClCompile Include="Tr2CapturedBuffer_Blue.cpp"/>
     <ClCompile Include="Tr2ConstantBufferFormats.cpp"/>
     <ClCompile Include="Tr2ConstGeometry.cpp"/>
     <ClCompile Include="Tr2CpuSkinnedModel.cpp"/>
@@ -3227,8 +3221,6 @@
     <ClCompile Include="Tr2Renderer.cpp"/>
     <ClCompile Include="Tr2Renderer_Blue.cpp"/>
     <ClCompile Include="Tr2RenderTarget.cpp"/>
-    <ClCompile Include="Tr2RenderTargetGrabber.cpp"/>
-    <ClCompile Include="Tr2RenderTargetGrabber_Blue.cpp"/>
     <ClCompile Include="Tr2RenderTarget_Blue.cpp"/>
     <ClCompile Include="Tr2RenderUtils.cpp"/>
     <ClCompile Include="Tr2RotationTool.cpp"/>
