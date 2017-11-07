@@ -21,6 +21,7 @@ EveChildContainer::EveChildContainer( IRoot* lockobj ) :
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_observers ),
 	PARENTLOCK( m_lights ),
+	PARENTLOCK( m_transformModifiers ),
 	m_display( true ),
 	m_hideOnLowQuality( false )
 {
@@ -143,6 +144,10 @@ void EveChildContainer::UpdateAsyncronous( EveUpdateContext& updateContext, IEve
 	}
 
 	UpdateTransform( localToWorldTransform );
+	for( auto it = m_transformModifiers.begin(); it != m_transformModifiers.end(); it++ )
+	{
+		m_worldTransform = (*it)->ApplyTransform( m_worldTransform );
+	}
 
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{

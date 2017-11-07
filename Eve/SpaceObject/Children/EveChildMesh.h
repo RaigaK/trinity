@@ -14,6 +14,7 @@
 #include "ITr2Renderable.h"
 #include "ITr2GeometryProvider.h"
 #include "Resources/Tr2LodResource.h"
+#include "TransformModifiers/IEveChildTransformModifier.h"
 
 BLUE_DECLARE( TriFrustum );
 BLUE_DECLARE( Tr2MeshBase );
@@ -85,6 +86,8 @@ protected:
 	Tr2PersistentPerObjectData<EveChildMesh> m_perObjectDataPs;
 	EveSpaceObjectPSData m_psData;
 	EveSpaceObjectVSData m_vsData;
+	
+	PIEveChildTransformModifierVector m_transformModifiers;
 };
 
 TYPEDEF_BLUECLASS( EveChildMesh );

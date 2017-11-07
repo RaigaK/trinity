@@ -15,6 +15,7 @@ extern float g_eveSpaceSceneLODFactor;
 
 
 EveChildMesh::EveChildMesh( IRoot* lockobj ):
+	PARENTLOCK( m_transformModifiers ),
 	m_display( true ),
 	m_isVisible( false ),
 	m_lowestLodVisible( TR2_LOD_LOW ),
@@ -198,6 +199,11 @@ void EveChildMesh::UpdateAsyncronous( EveUpdateContext& updateContext, IEveSpace
 	}
 
 	UpdateTransform( localToWorldTransform );
+	for( auto it = m_transformModifiers.begin(); it != m_transformModifiers.end(); it++ )
+	{
+		m_worldTransform = (*it)->ApplyTransform( m_worldTransform );
+	}
+
 	D3DXMatrixTranspose( &m_vsData.worldTransform, &m_worldTransform );
 }
 

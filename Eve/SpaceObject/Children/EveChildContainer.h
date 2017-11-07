@@ -9,6 +9,7 @@
 
 #include "IEveSpaceObjectChild.h"
 #include "EveChildTransform.h"
+#include "TransformModifiers/IEveChildTransformModifier.h"
 
 BLUE_DECLARE( TriCurveSet );
 BLUE_DECLARE_VECTOR( TriCurveSet );
@@ -58,6 +59,8 @@ protected:
 	PTriCurveSetVector m_curveSets;
 	PTriObserverLocalVector m_observers;
 	PTr2PointLightVector m_lights;
+
+	PIEveChildTransformModifierVector m_transformModifiers;
 };
 
 TYPEDEF_BLUECLASS( EveChildContainer );
