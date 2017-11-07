@@ -426,7 +426,8 @@ EveSOFDataHullSpriteSetItem::EveSOFDataHullSpriteSetItem( IRoot* lockobj ) :
 
 EveSOFDataHullSpriteLineSet::EveSOFDataHullSpriteLineSet( IRoot* lockobj ) :
 	PARENTLOCK( m_items ),
-	m_skinned( false )
+	m_skinned( false ),
+	m_visibilityGroup( "primary" )
 {}
 
 EveSOFDataHullSpriteLineSetItem::EveSOFDataHullSpriteLineSetItem( IRoot* lockobj ) :

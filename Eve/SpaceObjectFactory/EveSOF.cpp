@@ -855,52 +855,60 @@ void EveSOF::SetupSpriteLineSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna
 		{
 			const EveSOFDataMgr::HullSpriteLineSetData* spriteLineSetData = &( *slsit );
 
-			// create a spriteset for this ship
-			EveSpriteLineSetPtr spriteLineSet;
-			spriteLineSet.CreateInstance();
-			// set shader
-			spriteLineSet->Setup( m_spriteSetEffect, spriteLineSetData->skinned );
-			// add all the individual items
-			for( auto slsiit = spriteLineSetData->items.begin(); slsiit != spriteLineSetData->items.end(); ++slsiit )
+			// vivible?
+//			if( dna->IsInVisibilityData( spriteLineSetData->visibilityGroup ) )
 			{
-				const EveSOFDataMgr::HullSpriteLineSetItemData* itemData = &( *slsiit );
-
-				// faction data?
-				const EveSOFDataMgr::FactionSpriteSetColorData* factionSpriteData = dna->GetFactionSpriteSetData( itemData->groupIndex );
-				if( !factionSpriteData )
+				// create a spriteset for this ship
+				EveSpriteLineSetPtr spriteLineSet;
+				spriteLineSet.CreateInstance();
+				// set shader
+				spriteLineSet->Setup( m_spriteSetEffect, spriteLineSetData->skinned );
+				// add all the individual items
+				for( auto slsiit = spriteLineSetData->items.begin(); slsiit != spriteLineSetData->items.end(); ++slsiit )
 				{
-					// This spritelineset item is not used for this faction.
-					continue;
+					const EveSOFDataMgr::HullSpriteLineSetItemData* itemData = &( *slsiit );
+
+					// color data?
+					const Color* spriteSetColors = dna->GetColorSpriteSet();
+
+					// faction data?
+					const EveSOFDataMgr::FactionSpriteSetColorData* factionSpriteData = dna->GetFactionSpriteSetData( itemData->groupIndex );
+					if( !factionSpriteData )
+					{
+						// This spritelineset item is not used for this faction.
+						continue;
+					}
+
+					// create spritelineset items
+					EveSpriteLineSetItemPtr spriteLineSetItem;
+					spriteLineSetItem.CreateInstance();
+
+					// set it up the per-faction data
+					spriteLineSetItem->m_color = factionSpriteData->color;
+//					spriteLineSetItem->m_color = spriteSetColors[itemData->colorType];
+
+					// set it up the per-hull data
+					spriteLineSetItem->m_blinkPhaseShift = itemData->blinkPhaseShift;
+					spriteLineSetItem->m_blinkPhase = itemData->blinkPhase;
+					spriteLineSetItem->m_blinkRate = itemData->blinkRate;
+					spriteLineSetItem->m_boneIndex = itemData->boneIndex;
+					spriteLineSetItem->m_falloff = itemData->falloff;
+					spriteLineSetItem->m_maxScale = itemData->maxScale;
+					spriteLineSetItem->m_minScale = itemData->minScale;
+					spriteLineSetItem->m_position = itemData->position + hullOffset;
+					spriteLineSetItem->m_rotation = itemData->rotation;
+					spriteLineSetItem->m_scaling = itemData->scaling;
+					spriteLineSetItem->m_spacing = itemData->spacing;
+					spriteLineSetItem->m_isCircle = itemData->isCircle;
+
+					// put it into spriteset
+					spriteLineSet->Add( spriteLineSetItem );
 				}
-
-				// create spritelineset items
-				EveSpriteLineSetItemPtr spriteLineSetItem;
-				spriteLineSetItem.CreateInstance();
-
-				// set it up the per-faction data
-				spriteLineSetItem->m_color = factionSpriteData->color;
-
-				// set it up the per-hull data
-				spriteLineSetItem->m_blinkPhaseShift = itemData->blinkPhaseShift;
-				spriteLineSetItem->m_blinkPhase = itemData->blinkPhase;
-				spriteLineSetItem->m_blinkRate = itemData->blinkRate;
-				spriteLineSetItem->m_boneIndex = itemData->boneIndex;
-				spriteLineSetItem->m_falloff = itemData->falloff;
-				spriteLineSetItem->m_maxScale = itemData->maxScale;
-				spriteLineSetItem->m_minScale = itemData->minScale;
-				spriteLineSetItem->m_position = itemData->position + hullOffset;
-				spriteLineSetItem->m_rotation = itemData->rotation;
-				spriteLineSetItem->m_scaling = itemData->scaling;
-				spriteLineSetItem->m_spacing = itemData->spacing;
-				spriteLineSetItem->m_isCircle = itemData->isCircle;
-
-				// put it into spriteset
-				spriteLineSet->Add( spriteLineSetItem );
+				// spriteset needs internal rebuild
+				spriteLineSet->Rebuild();
+				// put set onto ship
+				obj->AddSpriteLineSet( spriteLineSet );
 			}
-			// spriteset needs internal rebuild
-			spriteLineSet->Rebuild();
-			// put set onto ship
-			obj->AddSpriteLineSet( spriteLineSet );
 		}
 
 		// next hull needs offset update from hull's locator

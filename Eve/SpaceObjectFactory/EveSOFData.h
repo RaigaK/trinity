@@ -459,6 +459,9 @@ public:
 
 	// animated?
 	std::string m_name;
+	// visibility group name
+	BlueSharedString m_visibilityGroup;
+	// animated?
 	bool m_skinned;
 	// items
 	PEveSOFDataHullSpriteLineSetItemVector m_items;

@@ -161,6 +161,7 @@ public:
 	struct HullSpriteLineSetData
 	{
 		bool skinned;
+		uint32_t visibilityGroup;
 		std::vector<HullSpriteLineSetItemData> items;
 	};
 

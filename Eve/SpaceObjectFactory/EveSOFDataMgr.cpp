@@ -590,6 +590,8 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 
 		HullSpriteLineSetData hslsd;
 		hslsd.skinned = spriteLineSetData->m_skinned;
+		std::string visGroupName( spriteLineSetData->m_visibilityGroup.c_str() );
+		hslsd.visibilityGroup = CcpHashFNV1( visGroupName.c_str(), visGroupName.size() );
 		for( auto slsiit = spriteLineSetData->m_items.begin(); slsiit != spriteLineSetData->m_items.end(); ++slsiit )
 		{
 			EveSOFDataHullSpriteLineSetItemPtr spriteLineSetItemData = ( *slsiit );

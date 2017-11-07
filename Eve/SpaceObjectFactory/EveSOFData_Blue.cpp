@@ -381,7 +381,7 @@ const Be::ClassInfo* EveSOFDataHullSpriteLineSet::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "skinned", m_skinned, "Is this spriteset bone-animated.", Be::READWRITE | Be::PERSIST )
-
+		MAP_ATTRIBUTE( "visibilityGroup", m_visibilityGroup, "Name for visibility group to toggle visibility for the whole set.", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "items", m_items, "The items in this spritelineset", Be::READWRITE | Be::PERSIST )
 		EXPOSURE_END()
 }
