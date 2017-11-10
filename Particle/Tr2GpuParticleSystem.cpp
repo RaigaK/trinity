@@ -122,8 +122,6 @@ Tr2GpuParticleSystem::Tr2GpuParticleSystem( IRoot* )
 	m_turbulenceOffset( 0.f, 0.f, 0.f ),
 	m_turbulenceAnimation( 0.f, 0.f, 0.f )
 {
-	USE_MAIN_THREAD_RENDER_CONTEXT();
-
 	m_variableStore.CreateInstance();
 
 	InitializeBuffers();
