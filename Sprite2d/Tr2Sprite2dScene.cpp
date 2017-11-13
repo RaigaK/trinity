@@ -277,6 +277,8 @@ void Tr2Sprite2dScene::Render( Tr2RenderContext& renderContext )
 	Tr2Renderer::PopDepthStencilBuffer( renderContext );
 
 	m_is2dRenderContext = m_is2dRender;
+
+	renderContext.AddGpuMarker( "Tr2Sprite2dScene::Render End" );
 }
 
 ITr2SpriteObject* Tr2Sprite2dScene::PickObject( int x, int y, const TriProjection* proj, const TriView* view, const TriViewport* vp, Be::Optional<int> )
@@ -1056,6 +1058,8 @@ void Tr2Sprite2dScene::IssueDrawCall()
 
 		if( effectOK )
 		{
+			renderContext.AddGpuMarker( "Tr2Sprite2dScene::IssueDrawCall Captured" );
+
 			Tr2Sprite2dDisplayList::Entry entry;
 
 			entry.job = nullptr;
@@ -1090,6 +1094,8 @@ void Tr2Sprite2dScene::IssueDrawCall()
 
 	if( effectOK && (m_drawCallsRendered < m_maxDrawCallsToRender) )
 	{
+		renderContext.AddGpuMarker( "Tr2Sprite2dScene::IssueDrawCall Direct" );
+
 		uint32_t vertexBufferOffset;
 		if( FAILED( m_vertexBuffer.PutData( 
 			m_vertexBufferData.get(), 
