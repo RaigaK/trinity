@@ -445,8 +445,6 @@ void TriDevice::ReleaseDeviceResources( TriStorage s )
 	m_ignoreInvalidate = true;  //to prevent recursion
 	ON_BLOCK_EXIT( [&]{ m_ignoreInvalidate = false; } );
 
-	Tr2TrackedALObjectBase::DestroyObjects( s );
-
 	// Call those objects that registered with us.  This is the preferred modus operandi in future.
 	//The new resource registry.  Objects put themselves here.
 	auto& rs = GetResourcesRegistered();
@@ -511,6 +509,8 @@ void TriDevice::ReleaseDeviceResources( TriStorage s )
 		}
 	}
 #endif
+
+	Tr2TrackedALObjectBase::DestroyObjects( s );
 
 	renderContext.ReleaseDeviceResources();
 }
