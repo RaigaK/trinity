@@ -419,7 +419,7 @@ Configurations:
     - GLES2
     Imports:
     - ../blue/Include/uses_blue_27.yaml
-    - ../../../../../../sdk/python/Python_2.7.yaml
+    - ../../../../../../sdk/python/ccpproj/Python_2.7.yaml
     - ../../../../../../sdk/tbb/tbb2017_20160916oss/tbb.yaml
     - ../../../../../../sdk/Granny/2.9.24.0/granny_2.9.24.0.yaml
     General:
