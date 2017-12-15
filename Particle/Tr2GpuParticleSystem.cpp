@@ -252,14 +252,6 @@ void Tr2GpuParticleSystem::SetMaxParticles( uint32_t maxParticles )
 void Tr2GpuParticleSystem::ReleaseResources( TriStorage s )
 {
 #if GPU_PARTICLES_METHOD == GPU_PARTICLES_TEXTURE_METHOD
-	if( s & m_vb.GetMemoryClass() )
-	{
-		m_vb.Destroy();
-	}
-	if( s & m_ib.GetMemoryClass() )
-	{
-		m_ib.Destroy();
-	}
 	m_decl = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 #endif
 	if( s & m_emitCB.GetMemoryClass() )
@@ -331,7 +323,7 @@ bool Tr2GpuParticleSystem::OnPrepareResources()
 				vb.push_back( Vector4( float( i % width ), float( i / width ), float( j ), seed ) );
 			}
 		}
-		m_vb.Create( m_maxParticles * 4 * sizeof( Vector4 ), Tr2RenderContextEnum::USAGE_IMMUTABLE, &vb.front(), renderContext );
+		m_vb.Create( sizeof( Vector4 ), m_maxParticles * 4, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &vb.front(), renderContext );
 	}
 
 	if( !m_ib.IsValid() )
@@ -346,7 +338,7 @@ bool Tr2GpuParticleSystem::OnPrepareResources()
 				ib.push_back( i * 4 + quad[j] );
 			}
 		}
-		m_ib.Create( m_maxParticles * 6, Tr2RenderContextEnum::USAGE_IMMUTABLE, Tr2RenderContextEnum::IB_32BIT, &ib.front(), renderContext );
+		m_ib.Create( 4, m_maxParticles * 6, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::NONE, &ib.front(), renderContext );
 	}
 	if( !m_positions[0]->IsValid() )
 	{
@@ -528,10 +520,10 @@ void Tr2GpuParticleSystem::UpdateLiveCount( Tr2RenderContext& renderContext )
 #if GPU_PARTICLES_METHOD == GPU_PARTICLES_BUFFER_METHOD
 	if( m_updateVisibleCount )
 	{
-		uint32_t* count = nullptr;
-		CR_RETURN( m_drawParameters->GetGpuBuffer( 0 )->Lock( 0, sizeof( uint32_t ), (void**)&count, Tr2RenderContextEnum::LOCK_READONLY, renderContext ) );
+		const uint32_t* count = nullptr;
+		CR_RETURN( m_drawParameters->GetGpuBuffer( 0 )->MapForReading( count, renderContext ) );
 		m_visibleCount = *count;
-		m_drawParameters->GetGpuBuffer( 0 )->Unlock( renderContext );
+		m_drawParameters->GetGpuBuffer( 0 )->UnmapForReading( renderContext );
 	}
 #endif
 }

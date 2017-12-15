@@ -334,7 +334,7 @@ private:
 	std::string m_geomResPath;
 	TriGeometryResPtr m_geometryResource;
 	// instance vertex stream
-	Tr2VertexBufferAL m_instanceBuffer;
+	Tr2BufferAL m_instanceBuffer;
 
 	// Assign the target object
 	void SetTargetObject( IRoot* target );

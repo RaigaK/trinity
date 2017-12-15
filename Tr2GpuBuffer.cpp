@@ -119,7 +119,7 @@ ALResult Tr2GpuBuffer::Create( uint32_t count,
 // Return Value:
 //   Pointer to AL buffer
 // --------------------------------------------------------------------------------------
-Tr2GpuBufferAL* Tr2GpuBuffer::GetGpuBuffer( unsigned index )
+Tr2BufferAL* Tr2GpuBuffer::GetGpuBuffer( unsigned index )
 {
 	return &m_buffer;
 }
@@ -145,37 +145,38 @@ bool Tr2GpuBuffer::IsValid() const
 // --------------------------------------------------------------------------------------
 ALResult Tr2GpuBuffer::CreateBuffer()
 {
-	m_buffer.Destroy();
+	m_buffer = Tr2BufferAL();
 	if( !m_count || m_format == PIXEL_FORMAT_UNKNOWN )
 	{
 		return E_INVALIDARG;
 	}
-	BufferUsage usage = 0;
+	auto gpuUsage = Tr2GpuUsage::SHADER_RESOURCE;
+	auto cpuUsage = Tr2CpuUsage::READ;
 	if( m_creationFlags & GPU_WRITABLE )
 	{
-		usage = USAGE_UNORDERED_ACCESS;
+		gpuUsage = gpuUsage | Tr2GpuUsage::UNORDERED_ACCESS;
 	}
 	else if( m_creationFlags & CPU_WRITABLE )
 	{
-		usage = USAGE_CPU_WRITE;
+		cpuUsage = cpuUsage | Tr2CpuUsage::WRITE;
+	}
+	if( m_creationFlags & DRAW_INDIRECT )
+	{
+		gpuUsage = gpuUsage | Tr2GpuUsage::DRAW_INDIRECT_ARGS;
 	}
 	
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 	return m_buffer.Create( 
-		m_count, 
 		static_cast<PixelFormat>( m_format ), 
-		usage,
-		( m_creationFlags & DRAW_INDIRECT ) ? EX_DRAW_INDIRECT : EX_NONE,
+		m_count, 
+		gpuUsage,
+		cpuUsage,
 		nullptr,
 		renderContext );
 }
 
-void Tr2GpuBuffer::ReleaseResources( TriStorage s )
+void Tr2GpuBuffer::ReleaseResources( TriStorage )
 {
-	if( m_buffer.IsValid() && ( ( s & m_buffer.GetMemoryClass() ) != 0 ) )
-	{
-		m_buffer.Destroy();
-	}
 }
 
 bool Tr2GpuBuffer::OnPrepareResources()
@@ -189,5 +190,5 @@ bool Tr2GpuBuffer::OnPrepareResources()
 
 uint32_t Tr2GpuBuffer::GetCount() const
 {
-	return m_buffer.GetNumElements();
+	return m_buffer.GetDesc().count;
 }

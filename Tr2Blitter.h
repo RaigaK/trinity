@@ -59,7 +59,7 @@ private:
         const Vector2& brVertexCoord = Vector2( 1.0f, 1.0f ) );
 
 	unsigned int m_screenVertexDecl;
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 
 	// blit effects
 	Tr2EffectPtr m_blitEffect;

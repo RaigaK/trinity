@@ -55,7 +55,7 @@ protected:
 	
 	// Picking geometry
 	unsigned int m_pickingVertexDeclHandle;
-	Tr2VertexBufferAL m_pickingVertexBuffer;
+	Tr2BufferAL m_pickingVertexBuffer;
 	std::vector<Triangle> m_triangles;
 	unsigned int m_maxCurrentTriangleCount;
 	unsigned int m_currentSubmittedTriangleCount;

@@ -7,7 +7,6 @@
 #include "Utilities/BoundingSphere.h"
 #include "Tr2AtlasTexture.h"
 #include "Tr2KelvinColor.h"
-#include "Tr2ConstGeometry.h"
 #include "Curves/TriCurveSet.h"
 #include "Include/TriMath.h"
 #include "Shader/Tr2Effect.h"

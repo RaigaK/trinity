@@ -64,18 +64,18 @@ namespace
 
 		USE_MAIN_THREAD_RENDER_CONTEXT();
 
-		void* data = nullptr;
-		auto hr = buffer->Lock( 0, 0, &data, Tr2RenderContextEnum::LOCK_READONLY, renderContext );
+		const void* data = nullptr;
+		auto hr = buffer->MapForReading( data, renderContext );
 		if( FAILED( hr ) )
 		{
 			return PyErr_SetString( BeGetException( hr ), BeGetErrorMessage( hr ) ), nullptr;
 		}
-		ON_BLOCK_EXIT( [&]() { buffer->Unlock( renderContext ); } );
+		ON_BLOCK_EXIT( [&]() { buffer->UnmapForReading( renderContext ); } );
 
 		auto format = pThis->GetFormat();
 		auto count = pThis->GetCount();
 
-		return PyString_FromStringAndSize( static_cast<const char*>( data ), buffer->GetTotalSizeInBytes() );
+		return PyString_FromStringAndSize( static_cast<const char*>( data ), buffer->GetSize() );
 	}
 }
 #endif

@@ -94,7 +94,7 @@ private:
 	Vector4 m_effectData;
 
 	uint32_t m_quadCount;
-	Tr2VertexBufferAL m_vb;
+	Tr2BufferAL m_vb;
 	unsigned int m_vertexDeclHandle;
 
 	bool m_visible;

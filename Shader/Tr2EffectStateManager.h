@@ -72,8 +72,8 @@ public:
 	void ApplyRenderStates( uint32_t ix );
 	void ApplyShaderProgram( uint32_t ix );
 
-	void ApplyStreamSource( uint32_t stream, const Tr2VertexBufferAL & buffer, uint32_t offset, uint32_t stride );
-	void ApplyIndexBuffer( const Tr2IndexBufferAL & indices );
+	void ApplyStreamSource( uint32_t stream, const Tr2BufferAL & buffer, uint32_t offset, uint32_t stride );
+	void ApplyIndexBuffer( const Tr2BufferAL & indices );
 
 	// --------------------------------------------------------------------------------------
 	// Description:
@@ -129,13 +129,13 @@ private:
 
 		struct HalStream
 		{
-			Tr2ObjectALOpaquePointer m_vertexBuffer;
+			Tr2BufferAL m_vertexBuffer;
 			uint32_t m_offset;
 			uint32_t m_stride;
 		};
 		HalStream m_streams[VERTEX_STREAM_MAX_COUNT];
 
-		Tr2ObjectALOpaquePointer m_indexBuffer;
+		Tr2BufferAL m_indexBuffer;
 		Tr2EffectStateManager::RenderingMode m_renderingMode;
 		uint32_t m_renderStateSetup;
 	};

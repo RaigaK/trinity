@@ -29,13 +29,13 @@ Tr2Sprite2dDisplayList::~Tr2Sprite2dDisplayList()
 
 	if( vertexBuffer.IsValid() )
 	{
-		CCP_STATS_ADD( displayListVertexBufferSize, -double( vertexBuffer.GetTotalSizeInBytes() ) );
-		vertexBuffer.Destroy();
+		CCP_STATS_ADD( displayListVertexBufferSize, -double( vertexBuffer.GetSize() ) );
+		vertexBuffer = Tr2BufferAL();
 	}
 	if( indexBuffer.IsValid() )
 	{
-		CCP_STATS_ADD( displayListIndexBufferSize, -double( indexBuffer.GetTotalSizeInBytes() ) );
-		indexBuffer.Destroy();
+		CCP_STATS_ADD( displayListIndexBufferSize, -double( indexBuffer.GetSize() ) );
+		indexBuffer = Tr2BufferAL();
 	}
 }
 
@@ -43,13 +43,13 @@ void Tr2Sprite2dDisplayList::ReleaseResources( TriStorage s )
 {
 	if( vertexBuffer.IsValid() )
 	{
-		CCP_STATS_ADD( displayListVertexBufferSize, -double( vertexBuffer.GetTotalSizeInBytes() ) );
-		vertexBuffer.Destroy();
+		CCP_STATS_ADD( displayListVertexBufferSize, -double( vertexBuffer.GetSize() ) );
+		vertexBuffer = Tr2BufferAL();
 	}
 	if( indexBuffer.IsValid() )
 	{
-		CCP_STATS_ADD( displayListIndexBufferSize, -double( indexBuffer.GetTotalSizeInBytes() ) );
-		indexBuffer.Destroy();
+		CCP_STATS_ADD( displayListIndexBufferSize, -double( indexBuffer.GetSize() ) );
+		indexBuffer = Tr2BufferAL();
 	}
 	entries.clear();
 

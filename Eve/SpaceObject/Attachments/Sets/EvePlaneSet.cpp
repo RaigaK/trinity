@@ -102,7 +102,7 @@ bool EvePlaneSet::OnModified( Be::Var* val )
 void EvePlaneSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 }
 
 // --------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ bool EvePlaneSet::OnPrepareResources()
 	}
 
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR_RETURN_VAL( m_vertexBuffer.Create( m_vertexCount * sizeof( PlaneVertex ), USAGE_IMMUTABLE, &verts[0], renderContext ), false );
+	CR_RETURN_VAL( m_vertexBuffer.Create( sizeof( PlaneVertex ), m_vertexCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &verts[0], renderContext ), false );
 
 	return true;
 }

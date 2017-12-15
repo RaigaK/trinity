@@ -61,8 +61,8 @@ private:
 	
 	// We use indices to draw the solids and the lines, 
 	// because we want to use the same vertex buffer
-	Tr2IndexBufferAL m_triangleIndexBuffer;	
-	Tr2IndexBufferAL m_lineIndexBuffer;
+	Tr2BufferAL m_triangleIndexBuffer;	
+	Tr2BufferAL m_lineIndexBuffer;
 
 	// How do we want to render this granny res
 	bool	m_renderSolid;

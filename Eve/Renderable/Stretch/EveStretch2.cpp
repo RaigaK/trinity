@@ -335,10 +335,6 @@ void EveStretch2::SubmitGeometry( Tr2RenderContext& renderContext )
 void EveStretch2::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	if( m_vb.GetMemoryClass() & s )
-	{
-		m_vb.Destroy();
-	}
 }
 
 bool EveStretch2::OnPrepareResources()
@@ -361,7 +357,7 @@ bool EveStretch2::OnPrepareResources()
 				data[i * 4 + j].cornerIndex = float( j );
 			}
 		}
-		m_vb.Create( m_quadCount * 4 * sizeof( Vertex ), Tr2RenderContextEnum::USAGE_IMMUTABLE, &data[0], renderContext );
+		m_vb.Create( 4 * sizeof( Vertex ), m_quadCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &data[0], renderContext );
 	}
 	return true;
 }

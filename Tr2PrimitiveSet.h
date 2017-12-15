@@ -80,7 +80,7 @@ public:
 
 	// Vertex buffer and effects
 	unsigned int m_vertexDeclHandle; 
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 	Tr2EffectPtr m_effect;
 	Tr2EffectPtr m_pickEffect;
 };

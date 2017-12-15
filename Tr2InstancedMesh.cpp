@@ -120,10 +120,6 @@ Tr2InstancedMesh::Tr2InstancedMesh( IRoot* lockobj )
 Tr2InstancedMesh::~Tr2InstancedMesh()
 {
 	SetInstanceGeometryRes( nullptr );
-	for( auto it = m_indirectParams.begin(); it != m_indirectParams.end(); ++it )
-	{
-		delete it->second;
-	}
 }
 
 // --------------------------------------------------------------------------------------
@@ -226,10 +222,6 @@ void Tr2InstancedMesh::RebuildIndirectBuffers()
 {
 	if( !m_instanceCount )
 	{
-		for( auto it = m_indirectParams.begin(); it != m_indirectParams.end(); ++it )
-		{
-			delete it->second;
-		}
 		m_indirectParams.clear();
 	}
 	else
@@ -262,20 +254,19 @@ void Tr2InstancedMesh::RebuildIndirectBuffers()
 // Return Value:
 //   Indirect parameters buffer or NULL on error
 // --------------------------------------------------------------------------------------
-Tr2GpuBufferAL* Tr2InstancedMesh::GetIndirectBuffer( const AreaKey& key )
+Tr2BufferAL Tr2InstancedMesh::GetIndirectBuffer( const AreaKey& key )
 {
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 
 	auto found = m_indirectParams.find( key );
 	if( found != m_indirectParams.end() )
 	{
-		if( found->second->IsValid() )
+		if( found->second.IsValid() )
 		{
 			return found->second;
 		}
 		else
 		{
-			delete found->second;
 			m_indirectParams.erase( found );
 		}
 	}
@@ -285,23 +276,23 @@ Tr2GpuBufferAL* Tr2InstancedMesh::GetIndirectBuffer( const AreaKey& key )
 
 	if( !m_geometryResource || !m_geometryResource->IsGood() )
 	{
-		return nullptr;
+		return Tr2BufferAL();
 	}
 
 	if( m_meshIndex >= int( m_geometryResource->GetMeshCount() ) )
 	{
-		return nullptr;
+		return Tr2BufferAL();
 	}
 
 	TriGeometryResMeshData* pMesh = m_geometryResource->GetMeshData( m_meshIndex );
 	if( !pMesh )
 	{
-		return nullptr;
+		return Tr2BufferAL();
 	}
 
 	if( areaIx >= pMesh->m_areas.size() )
 	{
-		return nullptr;
+		return Tr2BufferAL();
 	}
 
 	if( areaIx + areaCount > pMesh->m_areas.size() )
@@ -333,11 +324,10 @@ Tr2GpuBufferAL* Tr2InstancedMesh::GetIndirectBuffer( const AreaKey& key )
 		data[2] = area.m_firstIndex;
 	}
 
-	Tr2GpuBufferAL* buffer = new Tr2GpuBufferAL;
-	if( FAILED( buffer->Create( 5, Tr2RenderContextEnum::PIXEL_FORMAT_R32_UINT, 0, Tr2RenderContextEnum::EX_DRAW_INDIRECT, data, renderContext ) ) )
+	Tr2BufferAL buffer;
+	if( FAILED( buffer.Create( Tr2RenderContextEnum::PIXEL_FORMAT_R32_UINT, 5, Tr2GpuUsage::SHADER_RESOURCE | Tr2GpuUsage::DRAW_INDIRECT_ARGS, Tr2CpuUsage::NONE, data, renderContext ) ) )
 	{
-		delete buffer;
-		return nullptr;
+		return Tr2BufferAL();
 	}
 	m_indirectParams[key] = buffer;
 	return buffer;
@@ -608,7 +598,7 @@ void Tr2InstancedMesh::RenderAreas( unsigned int areaIx,
 			return;
 		}
 
-		Tr2GpuBufferAL* source = m_instanceCount->GetGpuBuffer( 0 );
+		auto source = m_instanceCount->GetGpuBuffer( 0 );
 		if( !source || !source->IsValid() )
 		{
 			return;
@@ -618,12 +608,12 @@ void Tr2InstancedMesh::RenderAreas( unsigned int areaIx,
 		key.index = areaIx;
 		key.count = areaCount;
 		key.reversed = reversed;
-		Tr2GpuBufferAL* params = GetIndirectBuffer( key );
-		if( !params || !params->IsValid() )
+		auto params = GetIndirectBuffer( key );
+		if( !params.IsValid() )
 		{
 			return;
 		}
-		CR( source->CopySubBuffer( 0, 4, *params, 4, renderContext ) );
+		renderContext.CopySubBuffer( params, 4, *source, 0, 4 );
 
 		renderContext.m_esm.ApplyVertexDeclaration( pMesh->m_vertexDeclaration );
 		renderContext.m_esm.ApplyStreamSource( 0, pMesh->m_vertexBuffer, 0, pMesh->m_bytesPerVertex );
@@ -638,7 +628,7 @@ void Tr2InstancedMesh::RenderAreas( unsigned int areaIx,
 		}
 
 		renderContext.SetTopology( Tr2RenderContextEnum::TOP_TRIANGLES );
-		renderContext.DrawIndexedInstancedIndirect( *params, 0 );
+		renderContext.DrawIndexedInstancedIndirect( params, 0 );
 	}
 	else
 	{
@@ -700,10 +690,10 @@ void Tr2InstancedMesh::RenderAreas( unsigned int areaIx,
 		{
 			renderContext.m_esm.ApplyVertexDeclaration( m_vertexDeclaration );
 			renderContext.m_esm.ApplyStreamSource( 0, pMesh->m_vertexBuffer, 0, pMesh->m_bytesPerVertex );
-			Tr2VertexBufferAL* vb;
+			Tr2BufferAL vb;
 			unsigned stride;
 			instanceGeometryResource->GetVertexBuffer( m_instanceMeshIndex, vb, stride );
-			renderContext.m_esm.ApplyStreamSource( 1, *vb, 0, stride );
+			renderContext.m_esm.ApplyStreamSource( 1, vb, 0, stride );
 			if( reversed )
 			{
 				m_geometryResource->ReverseIndexBuffer( m_meshIndex, renderContext );

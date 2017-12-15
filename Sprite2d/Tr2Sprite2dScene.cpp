@@ -1008,7 +1008,7 @@ void Tr2Sprite2dScene::RenderTriangleVerts( Tr2Sprite2dD3DVertex* verticesSrc, u
 	CopyIndicesWithOffset( indices, indexCount, vertexOffset );
 }
 
-void Tr2Sprite2dScene::RenderTriangleVerts( Tr2VertexBufferAL& verticesSrc, unsigned int vertexCount, Tr2IndexBufferAL& indices, unsigned short indexCount )
+void Tr2Sprite2dScene::RenderTriangleVerts( Tr2BufferAL& verticesSrc, unsigned int vertexCount, Tr2BufferAL& indices, unsigned short indexCount )
 {
 	CCP_ASSERT( !m_captureDisplayList );
 
@@ -1956,7 +1956,7 @@ Tr2Sprite2dDisplayList* Tr2Sprite2dScene::EndCapture( Tr2Sprite2dDisplayList* pr
 	{
 		bool reusedVb = false;
 		if( previousDisplayList && previousDisplayList->vertexBuffer.IsValid() && 
-			previousDisplayList->vertexBuffer.GetTotalSizeInBytes() >= vbSize && previousDisplayList->vertexBuffer.GetTotalSizeInBytes() / 2 <= vbSize )
+			previousDisplayList->vertexBuffer.GetSize() >= vbSize && previousDisplayList->vertexBuffer.GetSize() / 2 <= vbSize )
 		{
 			if( SUCCEEDED( previousDisplayList->vertexBuffer.UpdateBuffer( 0, vbSize, m_captureVertexData.get(), renderContext ) ) )
 				{
@@ -1968,7 +1968,7 @@ Tr2Sprite2dDisplayList* Tr2Sprite2dScene::EndCapture( Tr2Sprite2dDisplayList* pr
 		if( !reusedVb )
 		{
 			vbSize = std::min( m_captureVertexDataCapacity, m_captureVertexDataSize + m_captureVertexDataSize / 4 ) * sizeof( Tr2Sprite2dD3DVertex );
-			hr = m_captureDisplayList->vertexBuffer.Create( vbSize, bufferUsage, m_captureVertexData.get(), renderContext );
+			hr = m_captureDisplayList->vertexBuffer.Create( 1, vbSize, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::WRITE, m_captureVertexData.get(), renderContext );
 			if( FAILED( hr ) )
 			{
 				CCP_LOGERR( "%s failed (%d) to create vertex buffer for %d vertices (%d KiB)", __FUNCTION__, hr, m_captureVertexDataSize, vbSize / 1024 );
@@ -1986,7 +1986,7 @@ Tr2Sprite2dDisplayList* Tr2Sprite2dScene::EndCapture( Tr2Sprite2dDisplayList* pr
 	{
 		bool reusedIb = false;
 		if( previousDisplayList && previousDisplayList->indexBuffer.IsValid() && 
-			previousDisplayList->indexBuffer.GetTotalSizeInBytes() >= ibSize && previousDisplayList->indexBuffer.GetTotalSizeInBytes() / 2 <= ibSize )
+			previousDisplayList->indexBuffer.GetSize() >= ibSize && previousDisplayList->indexBuffer.GetSize() / 2 <= ibSize )
 		{
 			if( SUCCEEDED( previousDisplayList->indexBuffer.UpdateBuffer( 0, ibSize, m_captureIndexData.get(), renderContext ) ) )
 				{
@@ -1999,7 +1999,7 @@ Tr2Sprite2dDisplayList* Tr2Sprite2dScene::EndCapture( Tr2Sprite2dDisplayList* pr
 		{
 			m_captureIndexDataSize = std::min( m_captureIndexDataCapacity, m_captureIndexDataSize + m_captureIndexDataSize / 4 );
 			ibSize = m_captureIndexDataSize * sizeof( unsigned int );
-			hr = m_captureDisplayList->indexBuffer.Create( m_captureIndexDataSize, bufferUsage, IB_32BIT, m_captureIndexData.get(), renderContext );
+			hr = m_captureDisplayList->indexBuffer.Create( 4, m_captureIndexDataSize, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::WRITE, m_captureIndexData.get(), renderContext );
 
 			if( FAILED( hr ) )
 			{

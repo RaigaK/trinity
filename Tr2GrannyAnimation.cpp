@@ -1302,29 +1302,29 @@ namespace
 {
 
 template <typename T>
-bool CopyIndices( Tr2IndexBufferAL& from, CcpMallocBuffer& to, uint32_t offset )
+bool CopyIndices( Tr2BufferAL& from, CcpMallocBuffer& to, uint32_t offset )
 {
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 
 	auto ibOffset = to.size();
-	to.resize( "ib", to.size() + from.GetNumIndices() * 4 );
+	to.resize( "ib", to.size() + from.GetDesc().count * 4 );
 	if( !to.get() )
 	{
 		return false;
 	}
 
-	T* src;
-	if( FAILED( from.Lock( src, Tr2RenderContextEnum::LOCK_READONLY, renderContext ) ) )
+	const T* src;
+	if( FAILED( from.MapForReading( src, renderContext ) ) )
 	{
 		return false;
 	}
 
 	uint32_t* dest = reinterpret_cast<uint32_t*>( to.get() + ibOffset );
-	for( uint32_t j = 0; j < from.GetNumIndices(); ++j )
+	for( uint32_t j = 0; j < from.GetDesc().count; ++j )
 	{
 		*dest++ = offset + *src++;
 	}
-	from.Unlock( renderContext );
+	from.UnmapForReading( renderContext );
 	return true;
 }
 
@@ -1413,8 +1413,8 @@ std::pair<TriGeometryRes*, std::map<std::pair<TriGeometryRes*, uint32_t>, uint32
 			auto vbOffset = vbMirror.size();
 			vbMirror.resize( "vbMirror", vbMirror.size() + vertexSize * data->m_vertexCount );
 
-			void* locked;
-			if( FAILED( data->m_vertexBuffer.Lock( 0, 0, &locked, Tr2RenderContextEnum::LOCK_READONLY, renderContext ) ) )
+			const void* locked;
+			if( FAILED( data->m_vertexBuffer.MapForReading( locked, renderContext ) ) )
 			{
 				result.clear();
 				return std::make_pair( nullptr, result );
@@ -1426,11 +1426,11 @@ std::pair<TriGeometryRes*, std::map<std::pair<TriGeometryRes*, uint32_t>, uint32
 				data->m_vertexCount, 
 				locked, 
 				vbMirror.get() + vbOffset );
-			data->m_vertexBuffer.Unlock( renderContext );
+			data->m_vertexBuffer.UnmapForReading( renderContext );
 
 			auto ibOffset = ibMirror.size();
 
-			if( data->m_indexBuffer.GetIBBitcount() == Tr2RenderContextEnum::IB_16BIT )
+			if( data->m_indexBuffer.GetDesc().stride == 2 )
 			{
 				if( !CopyIndices<uint16_t>( data->m_indexBuffer, ibMirror, uint32_t( vbOffset ) / vertexSize ) )
 				{
@@ -1458,19 +1458,22 @@ std::pair<TriGeometryRes*, std::map<std::pair<TriGeometryRes*, uint32_t>, uint32
 		}
 	}
 
-	Tr2VertexBufferAL vb;
+	Tr2BufferAL vb;
 	vb.Create( 
+		1,
 		uint32_t( vbMirror.size() ), 
-		Tr2RenderContextEnum::USAGE_IMMUTABLE, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
 		vbMirror.get(), 
 		renderContext );
 
-	Tr2IndexBufferAL ib;
+	Tr2BufferAL ib;
 	ib.Create( 
+		4,
 		uint32_t( ibMirror.size() / 4 ), 
-		Tr2RenderContextEnum::USAGE_IMMUTABLE, 
-		Tr2RenderContextEnum::IB_32BIT, 
-		ibMirror.get(), 
+		Tr2GpuUsage::INDEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		ibMirror.get(),
 		renderContext ); 
 
 	auto declaration = Tr2EffectStateManager::GetVertexDeclarationHandle( 

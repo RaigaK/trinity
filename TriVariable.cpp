@@ -47,7 +47,7 @@ bool TriVariable::CopyToResourceSet(
 	}
 	case TRIVARIABLE_GPUBUFFER:
 	{
-		Tr2GpuBufferAL* buffer = nullptr;
+		Tr2BufferAL* buffer = nullptr;
 		if( m_gpuBuffer )
 		{
 			buffer = m_gpuBuffer->GetGpuBuffer( 0 );
@@ -58,7 +58,7 @@ bool TriVariable::CopyToResourceSet(
 		}
 		else
 		{
-			return resourceDesc.Set( stage, registerIndex, nullGB );
+			return resourceDesc.Set( stage, registerIndex, Tr2BufferAL() );
 		}
 	}
 	default:
@@ -93,7 +93,7 @@ void TriVariable::ApplyUav(
 	}
 	case TRIVARIABLE_GPUBUFFER:
 	{
-		Tr2GpuBufferAL* buffer = nullptr;
+		Tr2BufferAL* buffer = nullptr;
 		if( m_gpuBuffer )
 		{
 			buffer = m_gpuBuffer->GetGpuBuffer( 0 );

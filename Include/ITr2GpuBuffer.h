@@ -25,7 +25,7 @@ BLUE_INTERFACE( ITr2GpuBuffer ): public IRoot
 	// Return Value:
 	//   Pointer to AL buffer or NULL
 	// ----------------------------------------------------------------------------------
-	virtual Tr2GpuBufferAL* GetGpuBuffer( unsigned index ) = 0;
+	virtual Tr2BufferAL* GetGpuBuffer( unsigned index ) = 0;
 };
 
 #endif

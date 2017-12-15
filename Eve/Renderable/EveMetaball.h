@@ -148,10 +148,10 @@ private:
 
 	// vertex buffer
 	unsigned int m_vertexDeclHandle;
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 
 	// index buffer
-	Tr2IndexBufferAL m_indexBuffer;
+	Tr2BufferAL m_indexBuffer;
 
 	// the source data
 	PEveMetaballItemVector m_sourceItems;

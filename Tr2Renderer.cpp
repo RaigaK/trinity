@@ -172,8 +172,8 @@ namespace
 	TriLineSet* s_debugLineSet = NULL;
 
 	// shared vertex/index buffers
-	Tr2VertexBufferAL s_quadVertexBuffer;
-	Tr2IndexBufferAL  s_quadListIndexBuffer;
+	Tr2BufferAL s_quadVertexBuffer;
+	Tr2BufferAL  s_quadListIndexBuffer;
 	unsigned int s_quadListSize = 0;
 
 	Tr2TextureAL s_fallbackTextures[2][3];
@@ -1064,7 +1064,7 @@ bool Tr2Renderer::RunComputeShader(
 //   true On success
 //   false On failure
 // --------------------------------------------------------------------------------------
-bool Tr2Renderer::RunComputeShaderIndirect( Tr2Material* effect, Tr2GpuBufferAL& indirectParams, unsigned offset, Tr2RenderContext& renderContext )
+bool Tr2Renderer::RunComputeShaderIndirect( Tr2Material* effect, Tr2BufferAL& indirectParams, unsigned offset, Tr2RenderContext& renderContext )
 {
 	if( !effect )
 	{
@@ -1509,7 +1509,7 @@ unsigned int Tr2Renderer::GetPerObjectPSStartRegister()
 	return s_perObjectPSStartRegister;
 }
 
-Tr2IndexBufferAL* Tr2Renderer::GetQuadListIndexBuffer( unsigned int numOfQuads )
+Tr2BufferAL* Tr2Renderer::GetQuadListIndexBuffer( unsigned int numOfQuads )
 {
 	if( !Tr2Renderer::IsResourceCreationAllowed() )
 	{
@@ -1541,7 +1541,7 @@ Tr2IndexBufferAL* Tr2Renderer::GetQuadListIndexBuffer( unsigned int numOfQuads )
 		pInds += 6;
 	}
 		
-	HRESULT hr = s_quadListIndexBuffer.Create( numOfQuads * 6, USAGE_IMMUTABLE, IB_16BIT, &indices[0], renderContext );
+	HRESULT hr = s_quadListIndexBuffer.Create( 2, numOfQuads * 6, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::NONE, &indices[0], renderContext );
 	if( FAILED( hr ) )
 	{
 		CCP_LOGERR( "Tr2Renderer::GetQuadListIndexBuffer failed to create index buffer (%d)", hr );
@@ -1583,7 +1583,7 @@ void Tr2Renderer::PrepareDeviceResources()
 	// allocate and fill globals vertex/index buffers
 	// just a vertex buffer with an index-like vertex, counting from 0 to 3
 	float pVerts[4] = { 0, 1, 2, 3 };
-	HRESULT hr = s_quadVertexBuffer.Create( 4 * sizeof( float ), USAGE_IMMUTABLE, pVerts, renderContext );
+	HRESULT hr = s_quadVertexBuffer.Create( sizeof( float ), 4, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, pVerts, renderContext );
 	if( FAILED( hr ) )
 	{
 		CCP_LOGERR( "Tr2Renderer::PrepareDeviceResources failed to create quad vertex buffer (%d)", hr );
@@ -1600,8 +1600,8 @@ void Tr2Renderer::ReleaseDeviceResources( TriStorage s )
 {
 	if( ( s & s_quadVertexBuffer.GetMemoryClass() ) || ( s & s_quadListIndexBuffer.GetMemoryClass() ) )
 	{
-		s_quadVertexBuffer.Destroy();
-		s_quadListIndexBuffer.Destroy();
+		s_quadVertexBuffer = Tr2BufferAL();
+		s_quadListIndexBuffer = Tr2BufferAL();
 		s_quadListSize = 0;
 	}
 	DestroyFallbackTextures( s_fallbackTextures[0] );

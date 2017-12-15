@@ -129,10 +129,6 @@ Tr2RuntimeInstanceData::~Tr2RuntimeInstanceData()
 void Tr2RuntimeInstanceData::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclaration = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	if( m_vb.GetMemoryClass() & s )
-	{
-		m_vb.Destroy();
-	}
 }
 
 // --------------------------------------------------------------------------------------
@@ -150,7 +146,8 @@ bool Tr2RuntimeInstanceData::OnPrepareResources()
 		if( !m_vb.IsValid() )
 		{
 			USE_MAIN_THREAD_RENDER_CONTEXT();
-			if( FAILED( m_vb.Create( m_stride * m_count, USAGE_CPU_WRITE | USAGE_SHADER_RESOURCE, m_data.get(), renderContext ) ) )
+			auto hr = m_vb.Create( m_stride, m_count, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::WRITE, m_data.get(), renderContext );
+			if( FAILED( hr ) )
 			{
 				return false;
 			}
@@ -223,9 +220,9 @@ unsigned int Tr2RuntimeInstanceData::GetInstanceBufferVertexCount( unsigned int 
 //   buffer - (out) vertex buffer containing instance data (can be null)
 //   stride - (out) vertex stride for the vertex buffer
 // --------------------------------------------------------------------------------------
-void Tr2RuntimeInstanceData::GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBufferAL*& buffer, unsigned& stride )
+void Tr2RuntimeInstanceData::GetVertexBuffer( unsigned int bufferIndex, Tr2BufferAL& buffer, unsigned& stride )
 {
-	buffer = &m_vb;
+	buffer = m_vb;
 	stride = m_stride;
 }
 
@@ -237,18 +234,9 @@ void Tr2RuntimeInstanceData::GetVertexBuffer( unsigned int bufferIndex, Tr2Verte
 // Return Value:
 //   GPU buffer containing instance data
 // --------------------------------------------------------------------------------------
-Tr2GpuBufferAL* Tr2RuntimeInstanceData::GetGpuBuffer( unsigned bufferIndex )
+Tr2BufferAL* Tr2RuntimeInstanceData::GetGpuBuffer( unsigned bufferIndex )
 {
-	if( !m_uavBuffer.IsValid() && m_vb.IsValid() )
-	{
-		USE_MAIN_THREAD_RENDER_CONTEXT();
-		CR( m_uavBuffer.CreateVbView( m_vb, false, renderContext ) );
-		{
-			return nullptr;
-		}
-	}
-
-	return &m_uavBuffer;
+	return &m_vb;
 }
 
 // --------------------------------------------------------------------------------------
@@ -330,8 +318,7 @@ unsigned Tr2RuntimeInstanceData::GetCount() const
 void Tr2RuntimeInstanceData::SetLayout( const Tr2VertexDefinition& layout )
 {
 	m_data.reset();
-	m_vb.Destroy();
-	m_uavBuffer.Destroy();
+	m_vb = Tr2BufferAL();
 	m_stride = 0;
 	m_count = 0;
 	for( auto it = layout.m_items.begin(); it != layout.m_items.end(); ++it )
@@ -386,8 +373,7 @@ void* Tr2RuntimeInstanceData::GetData( unsigned count )
 		if( m_stride && m_count )
 		{
 			m_data.reset( new char[m_stride * m_count] );
-			m_vb.Destroy();
-			m_uavBuffer.Destroy();
+			m_vb = Tr2BufferAL();
 		}
 		else
 		{
@@ -422,24 +408,14 @@ void Tr2RuntimeInstanceData::UpdateData()
 	{
 		USE_MAIN_THREAD_RENDER_CONTEXT();
 		char* data;
-		if( SUCCEEDED( m_vb.Lock( data, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext ) ) )
+		if( SUCCEEDED( m_vb.MapForWriting( data, renderContext ) ) )
 		{
 			memcpy( data, m_data.get(), m_count * m_stride );
-			m_vb.Unlock( renderContext );
-		}
-	}
-	if( m_uavBuffer.IsValid() )
-	{
-		USE_MAIN_THREAD_RENDER_CONTEXT();
-		char* data;
-		if( SUCCEEDED( m_uavBuffer.Lock( 0, 0, (void**)&data, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext ) ) )
-		{
-			memcpy( data, m_data.get(), m_count * m_stride );
-			m_uavBuffer.Unlock( renderContext );
+			m_vb.UnmapForWriting( renderContext );
 		}
 	}
 
-	if( !m_vb.IsValid() && !m_uavBuffer.IsValid() )
+	if( !m_vb.IsValid() )
 	{
 		PrepareResources();
 	}
@@ -494,8 +470,7 @@ bool Tr2RuntimeInstanceData::GetBoundingBox( Vector3& minAabb, Vector3& maxAabb 
 // --------------------------------------------------------------------------------------
 void Tr2RuntimeInstanceData::DestroyData()
 {
-	m_vb.Destroy();
-	m_uavBuffer.Destroy();
+	m_vb = Tr2BufferAL();
 	m_data.reset();
 	m_count = 0;
 }

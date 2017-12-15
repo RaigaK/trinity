@@ -31,10 +31,13 @@ void Tr2DynamicMesh::RebuildCachedData( BlueAsyncRes* p )
 		m_dynamicBufferSizeInBytes = resMeshData->m_vertexCount * resMeshData->m_bytesPerVertex;
 		// create buffer
 		USE_MAIN_THREAD_RENDER_CONTEXT();
-		CR( m_dynamicVertexBuffer.Create(	m_dynamicBufferSizeInBytes, 
-											USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
-											nullptr, 
-											renderContext ) );
+		CR( m_dynamicVertexBuffer.Create(
+			resMeshData->m_bytesPerVertex,
+			resMeshData->m_vertexCount,
+			Tr2GpuUsage::VERTEX_BUFFER,
+			Tr2CpuUsage::WRITE_OFTEN,
+			nullptr, 
+			renderContext ) );
 	}
 
 	// up the chain
@@ -45,7 +48,7 @@ void Tr2DynamicMesh::RebuildCachedData( BlueAsyncRes* p )
 void Tr2DynamicMesh::ReleaseCachedData( BlueAsyncRes* p )
 {
 	// release the dynamic vertexbuffer cause the underlying geometry might has changed
-	m_dynamicVertexBuffer.Destroy();
+	m_dynamicVertexBuffer = Tr2BufferAL();
 	m_dynamicBufferSizeInBytes = 0;
 
 	// up the chain
@@ -61,10 +64,13 @@ bool Tr2DynamicMesh::OnPrepareResources()
 		return false;
 	}
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR( m_dynamicVertexBuffer.Create(	m_dynamicBufferSizeInBytes, 
-										USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
-										nullptr, 
-										renderContext ) );
+	CR( m_dynamicVertexBuffer.Create(	
+		1, 
+		m_dynamicBufferSizeInBytes, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::WRITE_OFTEN,
+		nullptr, 
+		renderContext ) );
 
 	return true;
 }
@@ -73,7 +79,7 @@ bool Tr2DynamicMesh::OnPrepareResources()
 void Tr2DynamicMesh::ReleaseResources( TriStorage s )
 {
 	// just release the dx buffer
-	m_dynamicVertexBuffer.Destroy();
+	m_dynamicVertexBuffer = Tr2BufferAL();
 }
 
 // ------------------------------------------------------------------------------------------------------

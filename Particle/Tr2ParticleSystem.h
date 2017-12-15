@@ -79,11 +79,11 @@ public:
 	unsigned int GetInstanceBufferCount() const;
 	unsigned int GetInstanceBufferVertexDeclaration( unsigned int bufferIndex ) const;
 	unsigned int GetInstanceBufferVertexCount( unsigned int bufferIndex ) const;
-	void GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBufferAL*& buffer, unsigned& stride );
+	void GetVertexBuffer( unsigned int bufferIndex, Tr2BufferAL& buffer, unsigned& stride );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2GpuBuffer
-	Tr2GpuBufferAL* GetGpuBuffer( unsigned index );
+	Tr2BufferAL* GetGpuBuffer( unsigned index );
 
 	void UpdateViewDependentData( const TriFrustum* frustum, const Matrix& worldTransform );
 	void UpdateTransform( const Matrix& worldTransform );
@@ -198,8 +198,7 @@ private:
 	// Vertex declaration handle
 	unsigned m_declaration;
 	// Vertex buffer
-	Tr2VertexBufferAL m_vertexBuffer;
-	Tr2GpuBufferAL m_uavBuffer;
+	Tr2BufferAL m_vertexBuffer;
 	// If vertex buffer needs to be updated
 	bool m_bufferDirty;
 

@@ -111,9 +111,9 @@ public:
 		unsigned short indexCount );
 
 	void RenderTriangleVerts( 
-		Tr2VertexBufferAL& verticesSrc, 
+		Tr2BufferAL& verticesSrc, 
 		unsigned int vertexCount,
-		Tr2IndexBufferAL& indices, 
+		Tr2BufferAL& indices, 
 		unsigned short indexCount );
 
 	bool EnsureBufferSpace( unsigned int vertexCount, unsigned short indexCount, int &vertexOffset );

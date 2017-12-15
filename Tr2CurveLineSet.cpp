@@ -68,7 +68,7 @@ bool Tr2CurveLineSet::OnModified( Be::Var* value )
 void Tr2CurveLineSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 }
 
 // -------------------------------------------------------------
@@ -380,8 +380,10 @@ bool Tr2CurveLineSet::FillVertexBuffer()
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL(
 				m_vertexBuffer.Create(
-					currentNumOfLines * 6 * sizeof( LineVertex ),
-					USAGE_CPU_WRITE,
+					sizeof( LineVertex ),
+					currentNumOfLines * 6,
+					Tr2GpuUsage::VERTEX_BUFFER,
+					Tr2CpuUsage::WRITE,
 					nullptr,
 					renderContext )
 				, false );
@@ -589,11 +591,11 @@ bool Tr2CurveLineSet::FillVertexBuffer()
 		}
 
 		// lock and fill it
-		CR_RETURN_VAL( m_vertexBuffer.Lock( vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 
 		memcpy( vertexBuffer, buffer.get(), byteSize );
 
-		m_vertexBuffer.Unlock( renderContext );
+		m_vertexBuffer.UnmapForWriting( renderContext );
 	}
 
 	return true;

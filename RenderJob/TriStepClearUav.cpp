@@ -32,7 +32,7 @@ TriStepResult TriStepClearUav::Execute( Be::Time realTime, Be::Time simTime, Tr2
 {
 	if( m_buffer )
 	{
-		Tr2GpuBufferAL* buffer = m_buffer->GetGpuBuffer( 0 );
+		auto buffer = m_buffer->GetGpuBuffer( 0 );
 		if( buffer )
 		{
 			if( m_clearWithFloat )

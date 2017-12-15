@@ -203,7 +203,7 @@ private:
 
 	// vertex buffer
 	unsigned int m_vertexDeclHandle;
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 	int m_vertexBufferSize;
 
 	// all the lines

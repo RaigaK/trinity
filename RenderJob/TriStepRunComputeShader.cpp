@@ -63,7 +63,7 @@ TriStepResult TriStepRunComputeShader::Execute( Be::Time realTime, Be::Time simT
 
 	if( m_indirectionBuffer )
 	{
-		Tr2GpuBufferAL* buffer = m_indirectionBuffer->GetGpuBuffer( 0 );
+		auto buffer = m_indirectionBuffer->GetGpuBuffer( 0 );
 		if( buffer )
 		{
 			Tr2Renderer::RunComputeShaderIndirect( m_effect, *buffer, m_offsetForArgs, renderContext );

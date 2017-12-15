@@ -49,13 +49,13 @@ void EveSprite2dBracketRenderer::GatherSprites( Tr2Sprite2dScene* renderer )
 		{
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			// Allocate new vertex/index buffers
-			if( FAILED( m_vertexBuffer.Create( vertexCount * sizeof( Tr2Sprite2dD3DVertex ), renderContext ) ) )
+			if( FAILED( m_vertexBuffer.Create( sizeof( Tr2Sprite2dD3DVertex ), vertexCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::READ | Tr2CpuUsage::WRITE, nullptr, renderContext ) ) )
 			{
 				CCP_LOGERR( "%s failed to create vertex buffer", __FUNCTION__ );
 				return;
 			}
 
-			if( FAILED( m_indexBuffer.Create( indexCount, USAGE_CPU_READ | USAGE_CPU_WRITE, IB_16BIT, nullptr, renderContext ) ) )
+			if( FAILED( m_indexBuffer.Create( 2, indexCount, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::READ | Tr2CpuUsage::WRITE, nullptr, renderContext ) ) )
 			{
 				CCP_LOGERR( "%s failed to create index buffer", __FUNCTION__ );
 				return;
@@ -65,7 +65,7 @@ void EveSprite2dBracketRenderer::GatherSprites( Tr2Sprite2dScene* renderer )
 		m_bracketCountInBuffers = (unsigned int)m_brackets.size();
 
 		// Fill in the parts of the vertex buffer that don't change
-		HRESULT hr = m_vertexBuffer.Lock( vertices, LOCK_WRITEONLY, renderContext );
+		HRESULT hr = m_vertexBuffer.MapForWriting( vertices, renderContext );
 		if( FAILED( hr ) )
 		{
 			CCP_LOGERR( "%s failed to lock vertex buffer (%d)", __FUNCTION__, hr );
@@ -74,13 +74,13 @@ void EveSprite2dBracketRenderer::GatherSprites( Tr2Sprite2dScene* renderer )
 
 		// Fill the index buffer now - it only changes when the count changes.
 		unsigned short* indices;
-		hr = m_indexBuffer.Lock( indices, LOCK_WRITEONLY, renderContext );
+		hr = m_indexBuffer.MapForWriting( indices, renderContext );
 		if( FAILED( hr ) )
 		{
 			CCP_LOGERR( "%s failed to lock index buffer (%d)", __FUNCTION__, hr );
 			return;
 		}
-		ON_BLOCK_EXIT( [&]{ m_indexBuffer.Unlock( renderContext ); } );
+		ON_BLOCK_EXIT( [&]{ m_indexBuffer.UnmapForWriting( renderContext ); } );
 
 		unsigned short* curIndex = indices;
 		unsigned int spriteIx = 0;
@@ -112,7 +112,7 @@ void EveSprite2dBracketRenderer::GatherSprites( Tr2Sprite2dScene* renderer )
 	}
 	else
 	{
-		auto hr = m_vertexBuffer.Lock( vertices, LOCK_WRITEONLY, renderContext );
+		auto hr = m_vertexBuffer.MapForWriting( vertices, renderContext );
 		if( FAILED( hr ) )
 		{
 			CCP_LOGERR( "%s failed to lock vertex buffer", __FUNCTION__ );
@@ -197,7 +197,7 @@ void EveSprite2dBracketRenderer::GatherSprites( Tr2Sprite2dScene* renderer )
 		curVertex += 4;
 	}
 
-	m_vertexBuffer.Unlock( renderContext );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 
 	renderer->SetTexture( 0, m_iconAtlas, S2D_TS_NONE );
 	renderer->RenderTriangleVerts( m_vertexBuffer, vertexCount, m_indexBuffer, indexCount );
@@ -210,8 +210,8 @@ ITr2SpriteObject* EveSprite2dBracketRenderer::PickPoint( float x, float y, Tr2Sp
 
 void EveSprite2dBracketRenderer::ReleaseResources( TriStorage s )
 {
-	m_vertexBuffer.Destroy();
-	m_indexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_indexBuffer = Tr2BufferAL();
 	m_bracketCountInBuffers = 0;
 }
 

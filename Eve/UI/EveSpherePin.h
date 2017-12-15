@@ -169,7 +169,7 @@ private:
 	PTriCurveSetVector m_curveSets;
 
 	int m_primitiveCount;
-	Tr2IndexBufferAL m_indexBuffer;
+	Tr2BufferAL m_indexBuffer;
 	void CreateIndexBuffer();
 
 	int m_rebuildIndices;

@@ -69,11 +69,12 @@ bool Tr2LineGraph::OnPrepareResources()
 		{
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL( m_vertexBuffer.Create( 
-									vbSize, 
-									USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
-									nullptr, 
-									renderContext )
-						, true );
+				1,
+				vbSize, 
+				Tr2GpuUsage::VERTEX_BUFFER,
+				Tr2CpuUsage::WRITE_OFTEN, 
+				nullptr, 
+				renderContext ), true );
 		}
 	}
 
@@ -103,7 +104,7 @@ bool Tr2LineGraph::OnPrepareResources()
 
 void Tr2LineGraph::ReleaseResources( TriStorage s )
 {
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 	m_vertexDeclaration = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 
 	m_isPrepared = false;
@@ -115,7 +116,7 @@ void Tr2LineGraph::SetSize( unsigned int size )
 	m_currentIx = 0;
 
 	// Vertex buffer must reflect new data set size
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 	m_isPrepared = false;
 }
 
@@ -188,7 +189,7 @@ void Tr2LineGraph::Render( float scale )
 	}
 
 	LineGraphVertex* pVerts;
-	CR_RETURN( m_vertexBuffer.Lock( pVerts, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext ) );
+	CR_RETURN( m_vertexBuffer.MapForWriting( pVerts, renderContext ) );
 
 	LineGraphVertex* pVertsStart = pVerts;
 	LineGraphVertex* pVertsEnd = pVerts + m_primitiveCount * 2;
@@ -262,7 +263,7 @@ void Tr2LineGraph::Render( float scale )
 	}
 
 	CCP_ASSERT( pVerts == pVertsEnd );
-	CR_RETURN( m_vertexBuffer.Unlock( renderContext ) );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 
 	if( !m_markers.empty() )
 	{

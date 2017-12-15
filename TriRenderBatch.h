@@ -225,8 +225,8 @@ public:
     TriGeometryRes* GetGeometryResource() const { return m_geometryResource; }
     void SetGeometryResource( TriGeometryRes* val );
 
-	Tr2VertexBufferAL& GetDynamicVertexBuffer() { return *m_dynamicVertexBuffer; }
-	void SetDynamicVertexBuffer( Tr2VertexBufferAL& val ) { m_dynamicVertexBuffer = &val; }
+	Tr2BufferAL& GetDynamicVertexBuffer() { return *m_dynamicVertexBuffer; }
+	void SetDynamicVertexBuffer( Tr2BufferAL& val ) { m_dynamicVertexBuffer = &val; }
 
 	void SetMeshParameters( unsigned int meshIx, 
 							unsigned int areaIx, 
@@ -256,7 +256,7 @@ public:
 
 private:
     TriGeometryResPtr m_geometryResource;
-	Tr2VertexBufferAL* m_dynamicVertexBuffer;
+	Tr2BufferAL* m_dynamicVertexBuffer;
     unsigned int m_meshIndex;
     unsigned int m_areaIndex;
     unsigned int m_areaCount;

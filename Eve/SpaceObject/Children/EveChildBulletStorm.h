@@ -120,8 +120,8 @@ private:
 
 	// has it's own vertex handle and buffer
 	uint32_t m_vertexDeclHandle;
-	Tr2VertexBufferAL m_vertexBuffer;
-	Tr2VertexBufferAL m_perInstanceBuffer;
+	Tr2BufferAL m_vertexBuffer;
+	Tr2BufferAL m_perInstanceBuffer;
 
 	// where is our parent
 	Matrix m_worldTransform;

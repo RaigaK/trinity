@@ -36,7 +36,7 @@ public:
 
 
 	// access to the dynamic vertex buffer
-	Tr2VertexBufferAL& GetDynamicVertexBuffer()			{ return m_dynamicVertexBuffer; }
+	Tr2BufferAL& GetDynamicVertexBuffer()			{ return m_dynamicVertexBuffer; }
 	unsigned int GetDynamicVertexBufferSizeInBytes() const { return m_dynamicBufferSizeInBytes; }
 
 	// access to the joint mapping, so the cpu skinner can have it
@@ -44,7 +44,7 @@ public:
 
 private:
 	// buffer for dynamic vertex data
-	Tr2VertexBufferAL m_dynamicVertexBuffer;
+	Tr2BufferAL m_dynamicVertexBuffer;
 	unsigned int m_dynamicBufferSizeInBytes;
 };
 TYPEDEF_BLUECLASS( Tr2DynamicMesh );

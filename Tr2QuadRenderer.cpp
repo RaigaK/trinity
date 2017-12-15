@@ -206,7 +206,7 @@ void Tr2QuadRenderer::RecreateQuadBuffers( uint32_t quadCount )
 {
 	if( quadCount )
 	{
-		if( !m_quad.IsValid() || m_quad.GetTotalSizeInBytes() / sizeof( float ) < quadCount * 4 )
+		if( !m_quad.IsValid() || m_quad.GetSize() / sizeof( float ) < quadCount * 4 )
 		{
 			std::unique_ptr<float[]> quad( new float[quadCount * 4] );
 			for( uint32_t i = 0; i < quadCount * 4; ++i )
@@ -214,9 +214,9 @@ void Tr2QuadRenderer::RecreateQuadBuffers( uint32_t quadCount )
 				quad[i] = float( i );
 			}
 			USE_MAIN_THREAD_RENDER_CONTEXT();
-			m_quad.Create( quadCount * 4 * sizeof( float ), USAGE_IMMUTABLE, quad.get(), renderContext );
+			m_quad.Create( sizeof( float ), 4 * quadCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, quad.get(), renderContext );
 		}
-		if( !m_quadIB.IsValid() || m_quadIB.GetNumIndices() < quadCount * 6 )
+		if( !m_quadIB.IsValid() || m_quadIB.GetDesc().count < quadCount * 6 )
 		{
 			uint16_t quad[] = { 0, 2, 1, 0, 3, 2 };
 			std::unique_ptr<uint16_t[]> quadIB( new uint16_t[quadCount * 6] );
@@ -228,7 +228,7 @@ void Tr2QuadRenderer::RecreateQuadBuffers( uint32_t quadCount )
 				}
 			}
 			USE_MAIN_THREAD_RENDER_CONTEXT();
-			m_quadIB.Create( quadCount * 6, USAGE_IMMUTABLE, IB_16BIT, quadIB.get(), renderContext );
+			m_quadIB.Create( 2, quadCount * 6, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::NONE, quadIB.get(), renderContext );
 		}
 	}
 }
@@ -258,14 +258,6 @@ void Tr2QuadRenderer::BeginRendering( Tr2RenderContext& renderContext )
 // --------------------------------------------------------------------------------------
 void Tr2QuadRenderer::ReleaseResources( TriStorage s )
 {
-	if( m_quad.GetMemoryClass() & s )
-	{
-		m_quad.Destroy();
-	}
-	if( m_quadIB.GetMemoryClass() & s )
-	{
-		m_quadIB.Destroy();
-	}
 	if( s & TRISTORAGE_MANAGEDMEMORY )
 	{
 		for( auto it = m_effects.begin(); it != m_effects.end(); ++it )

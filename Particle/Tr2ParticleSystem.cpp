@@ -256,8 +256,7 @@ void Tr2ParticleSystem::OnListModified(
 void Tr2ParticleSystem::ReleaseResources( TriStorage s )
 {
 	m_declaration = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
-	m_uavBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 	m_bufferDirty = true;
 }
 
@@ -284,13 +283,13 @@ bool Tr2ParticleSystem::CreateVertexBuffer()
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 	if( m_maxParticleCount > 0 && m_vertexSizes[Tr2ParticleElementData::GPU] > 0 )
 	{
-		CR_RETURN_VAL( 
-			m_vertexBuffer.Create( 
-				m_maxParticleCount * m_vertexSizes[Tr2ParticleElementData::GPU] * sizeof( float ), 
-				USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY | USAGE_SHADER_RESOURCE, 
-				nullptr,
-				renderContext ),
-			false );
+		CR_RETURN_VAL( m_vertexBuffer.Create(
+			m_vertexSizes[Tr2ParticleElementData::GPU] * sizeof( float ),
+			m_maxParticleCount,
+			Tr2GpuUsage::VERTEX_BUFFER,
+			Tr2CpuUsage::WRITE_OFTEN,
+			nullptr,
+			renderContext ), false );
 		m_bufferDirty = true;
 	}
 	return true;
@@ -353,9 +352,9 @@ unsigned int Tr2ParticleSystem::GetInstanceBufferVertexCount( unsigned int buffe
 //   buffer - (out) vertex buffer containing instance data (can be null)
 //   stride - (out) vertex stride for the vertex buffer
 // --------------------------------------------------------------------------------------
-void Tr2ParticleSystem::GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBufferAL*& buffer, unsigned& stride )
+void Tr2ParticleSystem::GetVertexBuffer( unsigned int bufferIndex, Tr2BufferAL& buffer, unsigned& stride )
 {
-	buffer = &m_vertexBuffer;
+	buffer = m_vertexBuffer;
 	stride = m_vertexSizes[Tr2ParticleElementData::GPU] * sizeof( float );
 }
 
@@ -367,14 +366,9 @@ void Tr2ParticleSystem::GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBuff
 // Return Value:
 //   GPU buffer containing instance data
 // --------------------------------------------------------------------------------------
-Tr2GpuBufferAL* Tr2ParticleSystem::GetGpuBuffer( unsigned bufferIndex )
+Tr2BufferAL* Tr2ParticleSystem::GetGpuBuffer( unsigned bufferIndex )
 {
-	if( !m_uavBuffer.IsValid() && m_vertexBuffer.IsValid() )
-	{
-		USE_MAIN_THREAD_RENDER_CONTEXT();
-		CR( m_uavBuffer.CreateVbView( m_vertexBuffer, false, renderContext ) );
-	}
-	return &m_uavBuffer;
+	return &m_vertexBuffer;
 }
 
 // --------------------------------------------------------------------------------------
@@ -403,8 +397,7 @@ void Tr2ParticleSystem::DestroyBuffers()
 		}
 	}
 	
-	m_vertexBuffer.Destroy();
-	m_uavBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 
 	m_aliveCount = 0;
 	s_updatedParticleCount = m_aliveCount;
@@ -1103,8 +1096,8 @@ void Tr2ParticleSystem::SortParticles()
 			if( m_vertexBuffer.IsValid() )
 			{
 				float* data;
-				CR_RETURN( m_vertexBuffer.Lock( data, LOCK_WRITEONLY, renderContext ) );
-				ON_BLOCK_EXIT( [&]{ m_vertexBuffer.Unlock( renderContext ); } );
+				CR_RETURN( m_vertexBuffer.MapForWriting( data, renderContext ) );
+				ON_BLOCK_EXIT( [&]{ m_vertexBuffer.UnmapForWriting( renderContext ); } );
 				for( unsigned i = 0; i < m_aliveCount; ++i )
 				{
 					std::copy( 
@@ -1117,8 +1110,8 @@ void Tr2ParticleSystem::SortParticles()
 		else if( m_vertexBuffer.IsValid() )
 		{
 			float* data;
-			CR_RETURN( m_vertexBuffer.Lock( data, LOCK_WRITEONLY, renderContext ) );
-			ON_BLOCK_EXIT( [&]{ m_vertexBuffer.Unlock( renderContext ); } );
+			CR_RETURN( m_vertexBuffer.MapForWriting( data, renderContext ) );
+			ON_BLOCK_EXIT( [&]{ m_vertexBuffer.UnmapForWriting( renderContext ); } );
 			std::copy( 
 				m_buffers[Tr2ParticleElementData::GPU], 
 				m_buffers[Tr2ParticleElementData::GPU] + m_aliveCount * m_vertexSizes[Tr2ParticleElementData::GPU], 

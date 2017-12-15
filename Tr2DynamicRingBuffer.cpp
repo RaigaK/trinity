@@ -65,15 +65,15 @@ ALResult Tr2DynamicRingBuffer::PutData(
 			m_bufferSize = size;
 		}
 		bufferOffset = 0;
-		return UpdateBuffer( data, 0, size, LOCK_WRITEONLY, renderContext );
+		return UpdateBuffer( data, 0, size, Tr2LockType::SYNCHRONIZED, renderContext );
 	}
 
-	LockType lockType;
+	Tr2LockType::Type lockType;
 	if( !GetUnusedRegion( size, bufferOffset ) )
 	{
 		CCP_STATS_ZONE( "Tr2DynamicRingBuffer full buffer lock" );
 		bufferOffset = 0;
-		lockType = LOCK_WRITEONLY;
+		lockType = Tr2LockType::SYNCHRONIZED;
 		RemoveRegions( m_regions.begin(), m_regions.end() );
 		if( m_bufferSize < size + m_sizeIncrement )
 		{
@@ -88,7 +88,7 @@ ALResult Tr2DynamicRingBuffer::PutData(
 	}
 	else
 	{
-		lockType = LOCK_NO_OVERWRITE;
+		lockType = Tr2LockType::NON_SYNCHRONIZED;
 	}
 
 	CR_RETURN_HR( UpdateBuffer( data, bufferOffset, size, lockType, renderContext ) );
@@ -361,7 +361,7 @@ bool Tr2RingVertexBuffer::IsValid() const
 // Return Value:
 //   Vertex buffer
 // --------------------------------------------------------------------------------------
-Tr2VertexBufferAL& Tr2RingVertexBuffer::GetBuffer()
+Tr2BufferAL& Tr2RingVertexBuffer::GetBuffer()
 {
 	return m_buffer;
 }
@@ -372,7 +372,7 @@ Tr2VertexBufferAL& Tr2RingVertexBuffer::GetBuffer()
 // --------------------------------------------------------------------------------------
 void Tr2RingVertexBuffer::ReleaseResources( TriStorage s )
 {
-	m_buffer.Destroy();
+	m_buffer = Tr2BufferAL();
 	Tr2DynamicRingBuffer::ReleaseResources( s );
 }
 
@@ -387,8 +387,13 @@ void Tr2RingVertexBuffer::ReleaseResources( TriStorage s )
 ALResult Tr2RingVertexBuffer::CreateBuffer( uint32_t size )
 {
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	m_buffer.Destroy();
-	return m_buffer.Create( size, USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, nullptr, renderContext );
+	return m_buffer.Create( 
+		1, 
+		size, 
+		Tr2GpuUsage::VERTEX_BUFFER, 
+		Tr2CpuUsage::WRITE_OFTEN, 
+		nullptr, 
+		renderContext );
 }
 
 // --------------------------------------------------------------------------------------
@@ -407,17 +412,18 @@ ALResult Tr2RingVertexBuffer::UpdateBuffer(
 	const void* data, 
 	uint32_t offset, 
 	uint32_t size, 
-	Tr2RenderContextEnum::LockType lockType, 
+	Tr2LockType::Type lockType,
 	Tr2RenderContext& renderContext )
 {
-	void* bufferData = nullptr;
-	CR_RETURN_HR( m_buffer.Lock( offset, lockType == LOCK_WRITEONLY ? 0 : size, &bufferData, lockType, renderContext ) );
+	uint8_t* bufferData = nullptr;
+	CR_RETURN_HR( m_buffer.MapForWriting( bufferData, lockType, renderContext ) );
 	if( !bufferData )
 	{
 		return E_FAIL;
 	}
-	memcpy( bufferData, data, size );
-	return m_buffer.Unlock( renderContext );
+	memcpy( bufferData + offset, data, size );
+	m_buffer.UnmapForWriting( renderContext );
+	return S_OK;
 }
 
 // --------------------------------------------------------------------------------------
@@ -480,7 +486,7 @@ bool Tr2RingIndexBuffer::IsValid() const
 // Return Value:
 //   Index buffer
 // --------------------------------------------------------------------------------------
-Tr2IndexBufferAL& Tr2RingIndexBuffer::GetBuffer()
+Tr2BufferAL& Tr2RingIndexBuffer::GetBuffer()
 {
 	return m_buffer;
 }
@@ -491,7 +497,7 @@ Tr2IndexBufferAL& Tr2RingIndexBuffer::GetBuffer()
 // --------------------------------------------------------------------------------------
 void Tr2RingIndexBuffer::ReleaseResources( TriStorage s )
 {
-	m_buffer.Destroy();
+	m_buffer = Tr2BufferAL();
 	Tr2DynamicRingBuffer::ReleaseResources( s );
 }
 
@@ -506,9 +512,14 @@ void Tr2RingIndexBuffer::ReleaseResources( TriStorage s )
 ALResult Tr2RingIndexBuffer::CreateBuffer( uint32_t size )
 {
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	m_buffer.Destroy();
 	uint32_t indexSize = m_bitCount == IB_32BIT ? 4 : 2;
-	return m_buffer.Create( size / indexSize, USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, m_bitCount, nullptr, renderContext );
+	return m_buffer.Create( 
+		indexSize, 
+		size / indexSize, 
+		Tr2GpuUsage::INDEX_BUFFER, 
+		Tr2CpuUsage::WRITE_OFTEN, 
+		nullptr, 
+		renderContext );
 }
 
 // --------------------------------------------------------------------------------------
@@ -527,17 +538,18 @@ ALResult Tr2RingIndexBuffer::UpdateBuffer(
 	const void* data, 
 	uint32_t offset, 
 	uint32_t size, 
-	Tr2RenderContextEnum::LockType lockType, 
+	Tr2LockType::Type lockType,
 	Tr2RenderContext& renderContext )
 {
-	void* bufferData = nullptr;
-	CR_RETURN_HR( m_buffer.Lock( offset, lockType == LOCK_WRITEONLY ? 0 : size, &bufferData, lockType, renderContext ) );
+	uint8_t* bufferData = nullptr;
+	CR_RETURN_HR( m_buffer.MapForWriting( bufferData, lockType, renderContext ) );
 	if( !bufferData )
 	{
 		return E_FAIL;
 	}
-	memcpy( bufferData, data, size );
-	return m_buffer.Unlock( renderContext );
+	memcpy( bufferData + offset, data, size );
+	m_buffer.UnmapForWriting( renderContext );
+	return S_OK;
 }
 
 // --------------------------------------------------------------------------------------

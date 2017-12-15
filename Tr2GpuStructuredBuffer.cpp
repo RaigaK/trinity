@@ -95,7 +95,7 @@ ALResult Tr2GpuStructuredBuffer::Create( uint32_t count, uint32_t stride, Creati
 // Return Value:
 //   Pointer to AL buffer
 // --------------------------------------------------------------------------------------
-Tr2GpuBufferAL* Tr2GpuStructuredBuffer::GetGpuBuffer( unsigned index )
+Tr2BufferAL* Tr2GpuStructuredBuffer::GetGpuBuffer( unsigned index )
 {
 	return m_buffer.IsValid() ? &m_buffer : nullptr;
 }
@@ -125,39 +125,39 @@ ALResult Tr2GpuStructuredBuffer::CreateBuffer()
 	{
 		return E_INVALIDARG;
 	}
-	BufferUsage usage = 0;
-	if( m_creationFlags & CPU_WRITABLE )
+
+	auto gpuUsage = Tr2GpuUsage::SHADER_RESOURCE;
+	auto cpuUsage = Tr2CpuUsage::READ;
+	if( m_creationFlags & GPU_WRITABLE )
 	{
-		usage = USAGE_CPU_WRITE;
+		gpuUsage = gpuUsage | Tr2GpuUsage::UNORDERED_ACCESS;
 	}
-	GpuBufferUsage gpuBufferUsage = 0;
+	else if( m_creationFlags & CPU_WRITABLE )
+	{
+		cpuUsage = cpuUsage | Tr2CpuUsage::WRITE;
+	}
 	if( m_creationFlags & APPEND_BUFFER )
 	{
-		gpuBufferUsage = GPU_BUFFER_APPEND;
+		gpuUsage = gpuUsage | Tr2GpuUsage::APPEND_CONSUME;
 	}
 	if( m_creationFlags & COUNTER )
 	{
-		gpuBufferUsage = GPU_BUFFER_COUNTER;
+		gpuUsage = gpuUsage | Tr2GpuUsage::BUFFER_COUNTER;
 	}
 
 	
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 	return m_buffer.Create( 
-		m_count, 
-		m_stride, 
-		usage,
-		gpuBufferUsage,
-		EX_NONE,
+		m_stride,
+		m_count,
+		gpuUsage,
+		cpuUsage,
 		nullptr, 
 		renderContext );
 }
 
-void Tr2GpuStructuredBuffer::ReleaseResources( TriStorage s )
+void Tr2GpuStructuredBuffer::ReleaseResources( TriStorage )
 {
-	if( m_buffer.IsValid() && ( ( s & m_buffer.GetMemoryClass() ) != 0 ) )
-	{
-		m_buffer.Destroy();
-	}
 }
 
 bool Tr2GpuStructuredBuffer::OnPrepareResources()
@@ -171,5 +171,5 @@ bool Tr2GpuStructuredBuffer::OnPrepareResources()
 
 uint32_t Tr2GpuStructuredBuffer::GetCount() const
 {
-	return m_buffer.GetNumElements();
+	return m_buffer.GetDesc().count;
 }

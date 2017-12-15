@@ -179,8 +179,8 @@ private:
 	Tr2RenderTargetPtr m_velocities[2];
 	// texture with persistent emitter data (see EmitterParams)
 	TriTextureResPtr m_emitterParamsTexture;
-	Tr2VertexBufferAL m_vb;
-	Tr2IndexBufferAL m_ib;
+	Tr2BufferAL m_vb;
+	Tr2BufferAL m_ib;
 	unsigned m_decl;
 #endif
 

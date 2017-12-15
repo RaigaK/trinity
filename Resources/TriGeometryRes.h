@@ -78,7 +78,7 @@ struct TriGeometryCollisionData
 	// Array of texture UV coordinates
 	Vector2* m_texCoords;
 	// Array of vertex indexes
-	unsigned int* m_indexes;
+	uint32_t* m_indexes;
 };
 
 struct TriGeometryResMeshData
@@ -94,11 +94,11 @@ struct TriGeometryResMeshData
 	unsigned int m_bytesPerVertex;
 	unsigned int m_vertexCount;
 	unsigned int m_primitiveCount;
-	Tr2VertexBufferAL	m_vertexBuffer;
-	Tr2GpuBufferAL      m_shaderResourceBuffer;
-	Tr2IndexBufferAL	m_indexBuffer;
+	Tr2BufferAL m_vertexBuffer;
+	Tr2BufferAL m_shaderResourceBuffer;
+	Tr2BufferAL m_indexBuffer;
 	// Index buffer with indexes in reversed order (used by hair/clothing)
-	Tr2IndexBufferAL	m_reversedIndexBuffer;
+	Tr2BufferAL	m_reversedIndexBuffer;
 	Vector3 m_minBounds;
 	Vector3 m_maxBounds;
 	Vector4 m_boundingSphere;
@@ -193,7 +193,7 @@ public:
     bool RenderAreas( unsigned int meshIx, unsigned int areaIx, unsigned int areaCount, Tr2RenderContext& renderContext, bool reversed = false );
 
 	// Render multiple consecutive areas, starting at 'areaIx' using the provided vertexbuffer
-    bool RenderAreasFromDynamicVertexBuffer( Tr2VertexBufferAL& vertexBuffer, unsigned int meshIx, unsigned int areaIx, unsigned int areaCount, bool reversed = false );
+    bool RenderAreasFromDynamicVertexBuffer( Tr2BufferAL& vertexBuffer, unsigned int meshIx, unsigned int areaIx, unsigned int areaCount, bool reversed = false );
 	
 	// Render all areas in one draw call
 	bool RenderAsOneArea( unsigned int meshIx );
@@ -239,7 +239,7 @@ public:
 	Be::Result<std::string> GetBoundingSphereFromScript( unsigned int meshIx, std::pair<Vector3, float>& bounds );
 
 	void PrepareFromGrannyRes( TriGrannyRes* g );
-	void PrepareFromBuffers( Tr2VertexBufferAL&& vb, Tr2IndexBufferAL&& ib, unsigned int vertexDeclaration, unsigned int bytesPerVertex, const TriGeometryResAreaData* areas, size_t areaCount );
+	void PrepareFromBuffers( Tr2BufferAL&& vb, Tr2BufferAL&& ib, unsigned int vertexDeclaration, unsigned int bytesPerVertex, const TriGeometryResAreaData* areas, size_t areaCount );
 
 	bool GetRayAreaIntersection( const Vector3& rayOrigin, 
 								 const Vector3& rayDirection, 
@@ -280,11 +280,11 @@ public:
 	unsigned int GetInstanceBufferCount() const;
 	unsigned int GetInstanceBufferVertexDeclaration( unsigned int bufferIndex ) const;
 	unsigned int GetInstanceBufferVertexCount( unsigned int bufferIndex ) const;
-	void GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBufferAL*& buffer, unsigned& stride );
+	void GetVertexBuffer( unsigned int bufferIndex, Tr2BufferAL& buffer, unsigned& stride );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2GpuBuffer
-	Tr2GpuBufferAL* GetGpuBuffer( unsigned index );
+	Tr2BufferAL* GetGpuBuffer( unsigned index );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ICacheable

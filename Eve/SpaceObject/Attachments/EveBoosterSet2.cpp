@@ -281,7 +281,7 @@ void EveBoosterSet2Renderable::SubmitGeometry( Tr2RenderContext& renderContext )
 	unsigned int boosterCount = (unsigned int)m_boosterSet->m_singleBoosters.size();
 
 	auto shape = Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? EveBoosterSet2::BOX :EveBoosterSet2:: STAR;
-	Tr2IndexBufferAL* indexBuffer = Tr2Renderer::GetQuadListIndexBuffer( EVE_BOOSTER_PLANES_COUNT[shape] );
+	auto indexBuffer = Tr2Renderer::GetQuadListIndexBuffer( EVE_BOOSTER_PLANES_COUNT[shape] );
 	if( !indexBuffer )
 	{
 		return;
@@ -970,8 +970,8 @@ void EveBoosterSet2::SetTrail( EveTrailsSetPtr trail )
 // --------------------------------------------------------------------------------
 void EveBoosterSet2::ReleaseResources( TriStorage s )
 {
-	m_vertexBuffer.Destroy();
-	m_instanceBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_instanceBuffer = Tr2BufferAL();
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 }
 
@@ -1009,11 +1009,13 @@ bool EveBoosterSet2::OnPrepareResources()
 
 	// create star-shape geometry as "indexed" geometry
 	auto shape = Tr2Renderer::GetShaderModel() >= TR2SM_3_0_HI ? BOX : STAR;
-	CR_RETURN_VAL(	
-		m_vertexBuffer.Create(	4 * EVE_BOOSTER_PLANES_COUNT[shape] * sizeof( BoosterVertex ), 
-								USAGE_IMMUTABLE, 
-								&s_shapeMesh[shape][0], 
-								renderContext )
+	CR_RETURN_VAL( m_vertexBuffer.Create(	
+		sizeof( BoosterVertex ),
+		4 * EVE_BOOSTER_PLANES_COUNT[shape],
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		&s_shapeMesh[shape][0], 
+		renderContext )
 		, false );
 	// now build the "instance" buffer, which depends on the actual number of booster, this set currently holds
 	RebuildInstanceData( renderContext );
@@ -1034,7 +1036,7 @@ bool EveBoosterSet2::OnPrepareResources()
 void EveBoosterSet2::RebuildInstanceData( Tr2RenderContext& /*renderContext*/ )
 {
 	// get rid of old one
-	m_instanceBuffer.Destroy();
+	m_instanceBuffer = Tr2BufferAL();
 
 	// something there?
 	if( m_singleBoosters.empty() )
@@ -1056,11 +1058,13 @@ void EveBoosterSet2::RebuildInstanceData( Tr2RenderContext& /*renderContext*/ )
 		vertices[i].atlasIndex1 = float( m_singleBoosters[i].atlasIndex1 );
 	}
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR_RETURN(	m_instanceBuffer.Create(	
-					boosterCount * sizeof( InstanceVertex ), 
-					USAGE_IMMUTABLE, 
-					&vertices[0], 
-					renderContext ) );
+	CR_RETURN( m_instanceBuffer.Create(	
+		sizeof( InstanceVertex ),
+		boosterCount, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		&vertices[0], 
+		renderContext ) );
 }
 
 

@@ -417,8 +417,8 @@ void EveMetaball::UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shader
 void EveMetaball::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
-	m_indexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_indexBuffer = Tr2BufferAL();
 }
 
 // -------------------------------------------------------------
@@ -452,12 +452,12 @@ bool EveMetaball::OnPrepareResources()
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 
 	// create index buffer
-	CR_RETURN_VAL( m_indexBuffer.Create( 36, USAGE_CPU_WRITE, IB_32BIT, nullptr, renderContext ), false );
+	CR_RETURN_VAL( m_indexBuffer.Create( 2, 36, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::WRITE, nullptr, renderContext ), false );
 	unsigned int* indexBuffer;
-	CR_RETURN_VAL( m_indexBuffer.Lock( indexBuffer, LOCK_WRITEONLY, renderContext ), false );
+	CR_RETURN_VAL( m_indexBuffer.MapForWriting( indexBuffer, renderContext ), false );
 	indexBuffer[ 0 ] = 0; indexBuffer[ 1 ] = 1; indexBuffer[ 2 ] = 2;
 	indexBuffer[ 3 ] = 2; indexBuffer[ 4 ] = 1; indexBuffer[ 5 ] = 3;
-	m_indexBuffer.Unlock( renderContext );
+	m_indexBuffer.UnmapForWriting( renderContext );
 	
 	return true;
 }
@@ -550,16 +550,10 @@ void EveMetaball::UpdateBuffers()
 	// fill the vertex buffer
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 
-	// could be an update!
-	if( m_vertexBuffer.IsValid() )
-	{
-		m_vertexBuffer.Destroy();
-	}
-
 	// create vertex buffer
-	CR_RETURN( m_vertexBuffer.Create( 3 * m_triangleCount * sizeof( EveMetaball::Vertex ), USAGE_CPU_WRITE, nullptr, renderContext ) );
+	CR_RETURN( m_vertexBuffer.Create( sizeof( EveMetaball::Vertex ), 3 * m_triangleCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::WRITE, nullptr, renderContext ) );
 	EveMetaball::Vertex* vertexBuffer;
-	CR_RETURN( m_vertexBuffer.Lock( vertexBuffer, LOCK_WRITEONLY, renderContext ) );
+	CR_RETURN( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ) );
 	for( unsigned int i = 0; i < m_triangles.size(); ++i )
 	{
 		vertexBuffer[ 3 * i + 0 ].position = m_triangles[ i ].position[0];
@@ -569,7 +563,7 @@ void EveMetaball::UpdateBuffers()
 		vertexBuffer[ 3 * i + 2 ].position = m_triangles[ i ].position[1];
 		vertexBuffer[ 3 * i + 2 ].normal = m_triangles[ i ].normal[1];
 	}
-	m_vertexBuffer.Unlock( renderContext );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 
 }
 

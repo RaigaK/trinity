@@ -226,7 +226,7 @@ void EveTrailsSet::Add( const Matrix* localMatrix, float size )
 // --------------------------------------------------------------------------------
 void EveTrailsSet::ReleaseResources( TriStorage s )
 {
-	m_instanceBuffer.Destroy();
+	m_instanceBuffer = Tr2BufferAL();
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 }
 
@@ -264,7 +264,7 @@ bool EveTrailsSet::OnPrepareResources()
 void EveTrailsSet::InitializeInstanceBuffer()
 {
 	// get rid of old one
-	m_instanceBuffer.Destroy();
+	m_instanceBuffer = Tr2BufferAL();
 
 	// something there?
 	if( m_trailData.empty() )
@@ -282,10 +282,13 @@ void EveTrailsSet::InitializeInstanceBuffer()
 		verts[i].transform = Vector4( m_trailData[i].transform._41, m_trailData[i].transform._42, m_trailData[i].transform._43, m_trailData[i].size );
 	}
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR_RETURN( m_instanceBuffer.Create(		trailCount * sizeof( InstanceVertex ), 
-											USAGE_IMMUTABLE, 
-											&verts[0], 
-											renderContext ) );
+	CR_RETURN( m_instanceBuffer.Create(		
+		sizeof( InstanceVertex ),
+		trailCount, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		&verts[0], 
+		renderContext ) );
 }
 
 // --------------------------------------------------------------------------------

@@ -68,7 +68,7 @@ private:
 	float m_maxValue;
 
 	unsigned int m_vertexDeclaration;
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 	unsigned int m_primitiveCount;
 };
 

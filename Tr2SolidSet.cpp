@@ -32,8 +32,7 @@ bool Tr2SolidSet::Initialize()
 void Tr2SolidSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	// CComPtr, this is safe!
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 }
 
 bool Tr2SolidSet::OnPrepareResources()
@@ -61,8 +60,10 @@ bool Tr2SolidSet::OnPrepareResources()
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL(
 				m_vertexBuffer.Create(
-					(unsigned int)m_triangles.size() * sizeof( TriangleVertex )*3,
-					USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
+					sizeof( TriangleVertex ),
+					(unsigned int)m_triangles.size() * 3,
+					Tr2GpuUsage::VERTEX_BUFFER,
+					Tr2CpuUsage::WRITE_OFTEN,
 					nullptr,
 					renderContext )
 				, false );
@@ -70,7 +71,7 @@ bool Tr2SolidSet::OnPrepareResources()
 		}
 
 		TriangleVertex* vertexBuffer;
-		CR_RETURN_VAL( m_vertexBuffer.Lock( vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 		
 		// Copy our user data to the buffer
 		unsigned int j = 0;
@@ -99,7 +100,7 @@ bool Tr2SolidSet::OnPrepareResources()
 		m_boundingSphere.z = center.z;
 		m_boundingSphere.w = radius;
 
-		m_vertexBuffer.Unlock( renderContext );
+		m_vertexBuffer.UnmapForWriting( renderContext );
 
 	}
 	return true;

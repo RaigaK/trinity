@@ -49,11 +49,11 @@ public:
 	unsigned int GetInstanceBufferCount() const;
 	unsigned int GetInstanceBufferVertexDeclaration( unsigned int bufferIndex ) const;
 	unsigned int GetInstanceBufferVertexCount( unsigned int bufferIndex ) const;
-	void GetVertexBuffer( unsigned int bufferIndex, Tr2VertexBufferAL*& buffer, unsigned& stride );
+	void GetVertexBuffer( unsigned int bufferIndex, Tr2BufferAL& buffer, unsigned& stride );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2GpuBuffer
-	Tr2GpuBufferAL* GetGpuBuffer( unsigned index );
+	Tr2BufferAL* GetGpuBuffer( unsigned index );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2GenericEmitter
@@ -100,9 +100,7 @@ private:
 	// Vertex layout
 	Tr2VertexDefinition m_layout;
 	// Instance data as vertex buffer
-	Tr2VertexBufferAL m_vb;
-	// Instance data as UAV buffer
-	Tr2GpuBufferAL m_uavBuffer;
+	Tr2BufferAL m_vb;
 
 	// Flag to update bounding box for instance data
 	bool m_updateBoundingBox;

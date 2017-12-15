@@ -131,7 +131,7 @@ bool Tr2GeometryBufferParameter::CopyToResourceSet(
 	{
 		return false;
 	}
-	Tr2GpuBufferAL* buffer = m_gpuBuffer->GetGpuBuffer( m_meshIndex );
+	auto buffer = m_gpuBuffer->GetGpuBuffer( m_meshIndex );
 	if( !buffer )
 	{
 		return false;
@@ -150,7 +150,7 @@ void Tr2GeometryBufferParameter::ApplyUav(
 	{
 		return;
 	}
-	Tr2GpuBufferAL* buffer = m_gpuBuffer->GetGpuBuffer( m_meshIndex );
+	auto buffer = m_gpuBuffer->GetGpuBuffer( m_meshIndex );
 	if( !buffer )
 	{
 		return;

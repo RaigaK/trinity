@@ -53,14 +53,14 @@ void Tr2CpuSkinnedModel::deform( const float* deformMatrices, unsigned int numOf
 				TriGeometryResMeshData* resMeshData = geomRes->GetMeshData( mesh->GetMeshIndex() );
 				if( resMeshData )
 				{
-					Tr2VertexBufferAL& vertexBuffer = mesh->GetDynamicVertexBuffer();
+					auto& vertexBuffer = mesh->GetDynamicVertexBuffer();
 					if( vertexBuffer.IsValid() )
 					{
 						TriGeometryResVertexData* pVtxData = resMeshData->m_pVertexData;
 						if( pVtxData )
 						{
 							uint8_t* pVideoMemBuffer;
-							if( vertexBuffer.Lock( pVideoMemBuffer, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext ) == S_OK && pVideoMemBuffer )
+							if( vertexBuffer.MapForWriting( pVideoMemBuffer, renderContext ) == S_OK && pVideoMemBuffer )
 							{
 								memcpy( pVideoMemBuffer, pVtxData->m_pBuffer, mesh->GetDynamicVertexBufferSizeInBytes() );
 
@@ -135,7 +135,7 @@ void Tr2CpuSkinnedModel::deform( const float* deformMatrices, unsigned int numOf
 									vtxDstBinormal += resMeshData->m_bytesPerVertex;
 								}
 
-								vertexBuffer.Unlock( renderContext );
+								vertexBuffer.UnmapForWriting( renderContext );
 							}
 						}
 					}

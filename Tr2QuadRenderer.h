@@ -94,9 +94,9 @@ private:
 	CcpAlignedMallocBuffer m_buffer;
 
 	// Vertex buffer with quad vertex numbers
-	Tr2VertexBufferAL m_quad;
+	Tr2BufferAL m_quad;
 	// Index buffer for the quad
-	Tr2IndexBufferAL m_quadIB;
+	Tr2BufferAL m_quadIB;
 	// Instance data buffer
 	Tr2RingVertexBuffer m_vertexBuffer;
 	// Offset into m_vertexBuffer where the last frame data is stored

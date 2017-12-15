@@ -39,8 +39,8 @@ void Tr2LineSet::ReleaseResources( TriStorage s )
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 	m_pickingVertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 	// CComPtr, this is safe!
-	m_vertexBuffer.Destroy();
-	m_pickingVertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_pickingVertexBuffer = Tr2BufferAL();
 }
 
 bool Tr2LineSet::OnPrepareResources()
@@ -82,8 +82,10 @@ bool Tr2LineSet::OnPrepareResources()
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL(
 				m_vertexBuffer.Create(
-					(unsigned int)m_lines.size() * sizeof( LineData ),
-					USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY,
+					sizeof( LineData ),
+					(unsigned int)m_lines.size(),
+					Tr2GpuUsage::VERTEX_BUFFER,
+					Tr2CpuUsage::WRITE_OFTEN,
 					nullptr,
 					renderContext )
 				, false );
@@ -91,7 +93,7 @@ bool Tr2LineSet::OnPrepareResources()
 		}
 
 		void* vertexBuffer;
-		CR_RETURN_VAL( m_vertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 
 		memcpy( vertexBuffer, &m_lines[0], sizeof( LineData ) * m_lines.size() );	
 		// Create a bounding sphere around the visible lines
@@ -104,7 +106,7 @@ bool Tr2LineSet::OnPrepareResources()
 		m_boundingSphere.z = center.z;
 		m_boundingSphere.w = radius;
 
-		m_vertexBuffer.Unlock( renderContext );
+		m_vertexBuffer.UnmapForWriting( renderContext );
 	}
 
 	
@@ -115,17 +117,19 @@ bool Tr2LineSet::OnPrepareResources()
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL(
 				m_pickingVertexBuffer.Create(
-					(unsigned int)m_triangles.size()*sizeof( Triangle ),
-					USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
+					sizeof( Triangle ),
+					(unsigned int)m_triangles.size(),
+					Tr2GpuUsage::VERTEX_BUFFER,
+					Tr2CpuUsage::WRITE_OFTEN,
 					nullptr,
 					renderContext )
 				, false );
 			m_currentSubmittedTriangleCount = (unsigned int)m_triangles.size();
 		}
 		void* vertexBuffer;
-		CR_RETURN_VAL( m_pickingVertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+		CR_RETURN_VAL( m_pickingVertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 		memcpy( vertexBuffer, &m_triangles[0], sizeof( Triangle )*m_triangles.size() );
-		m_pickingVertexBuffer.Unlock( renderContext );
+		m_pickingVertexBuffer.UnmapForWriting( renderContext );
 	}
 
 	return true;

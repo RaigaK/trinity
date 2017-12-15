@@ -108,7 +108,7 @@ private:
 
 	void CreateVertexDeclaration() const;
 	void RebuildIndirectBuffers();
-	Tr2GpuBufferAL* GetIndirectBuffer( const AreaKey& key );
+	Tr2BufferAL GetIndirectBuffer( const AreaKey& key );
 
 	// Path to instance geometry resource
 	std::string m_instanceGeometryResPath;
@@ -124,7 +124,7 @@ private:
 	mutable unsigned int m_instanceDeclaration;
 
 	// Map from area properties to indirect parameter buffers
-	std::map<AreaKey, Tr2GpuBufferAL*> m_indirectParams;
+	std::map<AreaKey, Tr2BufferAL> m_indirectParams;
 	// Exposed instance count buffer pointer
 	ITr2GpuBufferPtr m_instanceCount;
 

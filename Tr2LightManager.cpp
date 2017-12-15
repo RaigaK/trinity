@@ -176,21 +176,22 @@ ALResult Tr2LightManager::ClearLightIndices( Tr2RenderContext& renderContext )
 
 ALResult Tr2LightManager::UpdateLightBuffer( Tr2RenderContext& renderContext )
 {
-	if( m_lightBuffer->GetGpuBuffer( 0 )->GetNumElements() < m_lightData.GetCount() )
+	if( m_lightBuffer->GetGpuBuffer( 0 )->GetDesc().count < m_lightData.GetCount() )
 	{
 		CR_RETURN_HR( m_lightBuffer->Create( 
-			std::max( m_lightBuffer->GetGpuBuffer( 0 )->GetNumElements() + 1024, m_lightData.GetCount() ), 
+			std::max( m_lightBuffer->GetGpuBuffer( 0 )->GetDesc().count + 1024, m_lightData.GetCount() ),
 			sizeof( PerLightData ), 
 			Tr2GpuBuffer::CPU_WRITABLE ) );
 	}
 
-	auto lightCount = std::min( m_lightBuffer->GetGpuBuffer( 0 )->GetNumElements(), uint32_t( m_lightData.GetCount() ) );
+	auto lightCount = std::min( m_lightBuffer->GetGpuBuffer( 0 )->GetDesc().count, uint32_t( m_lightData.GetCount() ) );
 
 	Vector4* data;
-	CR_RETURN_HR( m_lightBuffer->GetGpuBuffer( 0 )->Lock( 0, 0, (void**)&data, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext ) );
+	CR_RETURN_HR( m_lightBuffer->GetGpuBuffer( 0 )->MapForWriting( data, renderContext ) );
 	memcpy( data, m_lightData.GetData(), lightCount * sizeof( PerLightData ) );
 	CCP_STATS_ADD( lightsGathered, m_lightData.GetCount() );
-	return m_lightBuffer->GetGpuBuffer( 0 )->Unlock( renderContext );
+	m_lightBuffer->GetGpuBuffer( 0 )->UnmapForWriting( renderContext );
+	return S_OK;
 }
 
 ALResult Tr2LightManager::DoUpdateLists( uint32_t msaaType, Tr2RenderContext& renderContext )
@@ -210,7 +211,7 @@ ALResult Tr2LightManager::DoUpdateLists( uint32_t msaaType, Tr2RenderContext& re
 	perFrameData.height = uint32_t( Tr2Renderer::GetDeviceViewport().m_height );
 	perFrameData.tilesX = ( perFrameData.width + ( TILE_WIDTH - 1 ) ) / TILE_WIDTH;
 	perFrameData.tilesY = ( perFrameData.height + ( TILE_HEIGHT - 1 ) ) / TILE_HEIGHT;
-	perFrameData.lightCount = std::min( m_lightBuffer->GetGpuBuffer( 0 )->GetNumElements(), uint32_t( m_lightData.GetCount() ) );
+	perFrameData.lightCount = std::min( m_lightBuffer->GetGpuBuffer( 0 )->GetDesc().count, uint32_t( m_lightData.GetCount() ) );
 	perFrameData.indexBufferSize = INDEX_BUFFER_SIZE;
 	perFrameData.msaaSamples = msaaType;
 	if( !FillAndSetConstants( m_perFrameData, perFrameData, Tr2RenderContextEnum::COMPUTE_SHADER, Tr2Renderer::GetPerFramePSStartRegister(), renderContext ) )

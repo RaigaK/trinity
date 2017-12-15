@@ -13,11 +13,11 @@
 
 // --------------------------------------------------------------------------------------
 // Description:
-//   A Blue-exposed wrapper around Tr2GpuBufferAL class for structured buffers, i.e. 
+//   A Blue-exposed wrapper around Tr2BufferAL class for structured buffers, i.e. 
 //   buffers containing structures as elements. The creation parameters for the class are 
 //   persisted, but the contents of the buffer is not.
 // See Also:
-//   Tr2GpuBufferAL
+//   Tr2BufferAL
 // --------------------------------------------------------------------------------------
 BLUE_CLASS( Tr2GpuStructuredBuffer ): 
 	public ITr2GpuBuffer,
@@ -54,14 +54,14 @@ public:
 
 	bool OnModified( Be::Var* value );
 
-	Tr2GpuBufferAL* GetGpuBuffer( unsigned index );
+	Tr2BufferAL* GetGpuBuffer( unsigned index );
 
 	ALResult Create( uint32_t count, uint32_t stride, CreationFlags creationFlags );
 	bool IsValid() const;
 	uint32_t GetCount() const;
 
-	operator Tr2GpuBufferAL&() { return m_buffer; }
-	operator const Tr2GpuBufferAL&() const { return m_buffer; }
+	operator Tr2BufferAL&() { return m_buffer; }
+	operator const Tr2BufferAL&() const { return m_buffer; }
 
 	virtual void ReleaseResources( TriStorage s );
 private:
@@ -69,7 +69,7 @@ private:
 	ALResult CreateBuffer();
 
 	// AL buffer
-	Tr2GpuBufferAL	m_buffer;
+	Tr2BufferAL	m_buffer;
 
 	// Number of elements in the buffer
 	uint32_t m_count;

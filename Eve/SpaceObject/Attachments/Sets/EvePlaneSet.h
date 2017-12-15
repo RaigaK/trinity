@@ -99,7 +99,7 @@ private:
 	// has it's own vertex handle and buffer
 	unsigned int m_vertexDeclHandle;
 	unsigned int m_vertexCount;
-	Tr2VertexBufferAL m_vertexBuffer;
+	Tr2BufferAL m_vertexBuffer;
 };
 
 TYPEDEF_BLUECLASS( EvePlaneSet );

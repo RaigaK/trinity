@@ -42,7 +42,7 @@ void EveLineSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 	// CComPtr, this is safe!
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 }
 
 bool EveLineSet::OnPrepareResources()
@@ -66,22 +66,24 @@ bool EveLineSet::OnPrepareResources()
 	{
 		CR_RETURN_VAL(
 			m_vertexBuffer.Create(
-				m_maxCurrentLineCount * sizeof( EveLineData ),
-				USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, 
+				sizeof( EveLineData ),
+				m_maxCurrentLineCount,
+				Tr2GpuUsage::VERTEX_BUFFER,
+				Tr2CpuUsage::WRITE_OFTEN,
 				nullptr,
 				renderContext )
 			, false );
 	}
 
 	void* vertexBuffer;
-	CR_RETURN_VAL( m_vertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+	CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 
 	if( !m_lines.empty() )
 	{
 		memcpy( vertexBuffer, &m_lines[0], sizeof( EveLineData ) * m_lines.size() );
 	}
 
-	m_vertexBuffer.Unlock( renderContext );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 	m_currentSubmittedLineCount = (unsigned int)m_lines.size();
 
 	return true;
@@ -272,11 +274,11 @@ bool EveLineSet::SubmitChanges()
 	}
 
 	void* vertexBuffer;
-	CR_RETURN_VAL( m_vertexBuffer.Lock( 0, 0, &vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+	CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 
 	memcpy( vertexBuffer, &m_lines[0], sizeof( EveLineData ) * m_lines.size() );
 
-	m_vertexBuffer.Unlock( renderContext );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 	
 	m_currentSubmittedLineCount = (unsigned int)m_lines.size();
 

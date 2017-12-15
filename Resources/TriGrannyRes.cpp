@@ -1568,14 +1568,14 @@ Be::Result<std::string> TriGrannyRes::BakeBlendshapeFromScript( unsigned int mes
 	}
 
 	void* pVertexData = NULL;
-	HRESULT hr = meshData->m_vertexBuffer.Lock( 0,0, &pVertexData, Tr2RenderContextEnum::LOCK_WRITEONLY, renderContext );
+	HRESULT hr = meshData->m_vertexBuffer.MapForWriting( pVertexData, renderContext );
 	if( FAILED( hr ) )
 	{
 		return Be::Result<std::string>( "Failed to lock vertex buffer" );
 	}
 
 	bool success = BakeBlendshape( meshIx, weights, pVertexData, meshData->m_vertexCount * meshData->m_bytesPerVertex );
-	meshData->m_vertexBuffer.Unlock( renderContext );
+	meshData->m_vertexBuffer.UnmapForWriting( renderContext );
 
 	return success ? Be::Result<std::string>() : Be::Result<std::string>( " TriGrannyRes::BakeBlendshape encountered problems. ");
 }

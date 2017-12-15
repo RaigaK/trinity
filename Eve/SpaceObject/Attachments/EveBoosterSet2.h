@@ -275,8 +275,8 @@ private:
 	// need special vertex declaration for multi-stream rendering
 	unsigned int m_vertexDeclHandle;
 	// vertex buffers for multi-stream rendering
-	Tr2VertexBufferAL m_vertexBuffer;
-	Tr2VertexBufferAL m_instanceBuffer;
+	Tr2BufferAL m_vertexBuffer;
+	Tr2BufferAL m_instanceBuffer;
 
 	// holds all the lensflares of this booster
 	EveSpriteSetPtr m_glows;

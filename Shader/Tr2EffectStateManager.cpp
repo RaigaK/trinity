@@ -264,10 +264,10 @@ void Tr2EffectStateManager::CurrentValues::Reset()
 	m_renderStateSetup = UNKNOWN;
 
 	m_vertexDeclaration = UNKNOWN;
-	m_indexBuffer = nullptr;
+	m_indexBuffer = Tr2BufferAL();
 	for( int i = 0; i < VERTEX_STREAM_MAX_COUNT; ++i )
 	{
-		m_streams[i].m_vertexBuffer = nullptr;
+		m_streams[i].m_vertexBuffer = Tr2BufferAL();
 		m_streams[i].m_offset = UNKNOWN;
 		m_streams[i].m_stride = UNKNOWN;
 	}
@@ -707,19 +707,19 @@ bool Tr2EffectStateManager::GetVertexDeclarationElements( uint32_t declaration, 
 	return false;
 }
 
-void Tr2EffectStateManager::ApplyStreamSource( uint32_t stream, const Tr2VertexBufferAL & buffer, uint32_t offset, uint32_t stride )
+void Tr2EffectStateManager::ApplyStreamSource( uint32_t stream, const Tr2BufferAL & buffer, uint32_t offset, uint32_t stride )
 {
 	
 	if( m_isManagedRendering )
 	{
-		if( &buffer == m_currentValues.m_streams[stream].m_vertexBuffer	&& 
+		if( buffer == m_currentValues.m_streams[stream].m_vertexBuffer	&& 
 			offset  == m_currentValues.m_streams[stream].m_offset		&& 
 			stride  == m_currentValues.m_streams[stream].m_stride )
 		{
 			return;
 		}
 
-		m_currentValues.m_streams[stream].m_vertexBuffer = &buffer;
+		m_currentValues.m_streams[stream].m_vertexBuffer = buffer;
 		m_currentValues.m_streams[stream].m_offset = offset;
 		m_currentValues.m_streams[stream].m_stride = stride;
 	}
@@ -727,19 +727,16 @@ void Tr2EffectStateManager::ApplyStreamSource( uint32_t stream, const Tr2VertexB
 	m_renderContext.SetStreamSource( stream, buffer, offset, stride );
 }
 
-void Tr2EffectStateManager::ApplyIndexBuffer( const Tr2IndexBufferAL & indices )
+void Tr2EffectStateManager::ApplyIndexBuffer( const Tr2BufferAL & indices )
 {
 	
 	if( m_isManagedRendering )
 	{
-		// we can't really track index buffers on OpenGL as they are reassigned occasionally in TrinityAL
-#if TRINITY_PLATFORM != TRINITY_OPENGLES2
-		if( &indices == m_currentValues.m_indexBuffer )
+		if( indices == m_currentValues.m_indexBuffer )
 		{
 			return;
 		}
-#endif
-		m_currentValues.m_indexBuffer = &indices;
+		m_currentValues.m_indexBuffer = indices;
 	}
 
 	m_renderContext.SetIndices( indices );

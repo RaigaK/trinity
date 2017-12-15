@@ -43,10 +43,9 @@ bool Tr2GrannyPrimitiveSet::Initialize()
 void Tr2GrannyPrimitiveSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	// CComPtr, this is safe!
-	m_vertexBuffer.Destroy();
-	m_lineIndexBuffer.Destroy();
-	m_triangleIndexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_lineIndexBuffer = Tr2BufferAL();
+	m_triangleIndexBuffer = Tr2BufferAL();
 }
 
 bool Tr2GrannyPrimitiveSet::OnPrepareResources()
@@ -73,15 +72,17 @@ bool Tr2GrannyPrimitiveSet::OnPrepareResources()
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			CR_RETURN_VAL(
 				m_vertexBuffer.Create(
-					(unsigned int)m_points.size() * sizeof( TriangleVertex ),
-					USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY,
+					uint32_t( sizeof( TriangleVertex ) ),
+					uint32_t( m_points.size() ),
+					Tr2GpuUsage::VERTEX_BUFFER,
+					Tr2CpuUsage::WRITE_OFTEN,
 					nullptr,
 					renderContext )
 				, false );
 		}
 
 		TriangleVertex* vertexBuffer;
-		CR_RETURN_VAL( m_vertexBuffer.Lock( vertexBuffer, LOCK_WRITEONLY, renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.MapForWriting( vertexBuffer, renderContext ), false );
 
 		memcpy( vertexBuffer, &m_points[0], sizeof( TriangleVertex ) * m_points.size() );	
 
@@ -94,7 +95,7 @@ bool Tr2GrannyPrimitiveSet::OnPrepareResources()
 		m_boundingSphere.z = center.z;
 		m_boundingSphere.w = radius;
 
-		m_vertexBuffer.Unlock( renderContext );
+		m_vertexBuffer.UnmapForWriting( renderContext );
 	}
 
 	if( m_triangleIndices.size() )
@@ -102,9 +103,10 @@ bool Tr2GrannyPrimitiveSet::OnPrepareResources()
 		USE_MAIN_THREAD_RENDER_CONTEXT();
 		CR_RETURN_VAL( 
 			m_triangleIndexBuffer.Create( 
+				4,
 				(unsigned int)m_triangleIndices.size(), 
-				USAGE_IMMUTABLE, 
-				IB_32BIT, 
+				Tr2GpuUsage::INDEX_BUFFER,
+				Tr2CpuUsage::NONE,
 				&m_triangleIndices[0],
 				renderContext )
 			, false );
@@ -115,9 +117,10 @@ bool Tr2GrannyPrimitiveSet::OnPrepareResources()
 		USE_MAIN_THREAD_RENDER_CONTEXT();
 		CR_RETURN_VAL( 
 			m_lineIndexBuffer.Create(
+				4,
 				(unsigned int)m_lineIndices.size(), 
-				USAGE_IMMUTABLE, 
-				IB_32BIT,
+				Tr2GpuUsage::INDEX_BUFFER,
+				Tr2CpuUsage::NONE,
 				&m_lineIndices[0],
 				renderContext )
 			, false );

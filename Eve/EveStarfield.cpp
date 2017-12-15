@@ -105,7 +105,7 @@ bool EveStarfield::Initialize()
 void EveStarfield::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
 }
 
 bool EveStarfield::OnPrepareResources()
@@ -168,12 +168,13 @@ bool EveStarfield::OnPrepareResources()
 	}
 
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR_RETURN_VAL( 
-			m_vertexBuffer.Create(	m_vertexCount * m_bytesPerVertex, 
-									USAGE_IMMUTABLE, 
-									&verts[0], 
-									renderContext )
-			, false );
+	CR_RETURN_VAL( m_vertexBuffer.Create(	
+		m_bytesPerVertex,
+		m_vertexCount, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		&verts[0], 
+		renderContext ), false );
 
 	return true;
 }

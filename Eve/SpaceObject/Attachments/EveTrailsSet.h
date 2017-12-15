@@ -112,7 +112,7 @@ private:
 	Tr2VertexDefinition m_trailVertexDecl;
 	unsigned int m_vertexDeclHandle;
 	// vertex buffers for multi-stream rendering
-	Tr2VertexBufferAL m_instanceBuffer;
+	Tr2BufferAL m_instanceBuffer;
 
 	// fade in/out co-efficient
 	float m_fadeSpeed;

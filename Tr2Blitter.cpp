@@ -146,7 +146,7 @@ bool Tr2Blitter::DrawHelper( Tr2Shader* shader, Tr2Material* material,
 	}
 
 	Tr2ScreenVertex* quad = NULL;
-	CR_RETURN_VAL( m_vertexBuffer.Lock( quad, LOCK_WRITEONLY, renderContext ), false );
+	CR_RETURN_VAL( m_vertexBuffer.MapForWriting( quad, renderContext ), false );
 
 	if( isCameraSpace )
 	{
@@ -160,7 +160,7 @@ bool Tr2Blitter::DrawHelper( Tr2Shader* shader, Tr2Material* material,
 		SetupScreenQuad( quad, tlTexCoord, brTexCoord, tlVertexCoord, brVertexCoord );
 	}
 
-	m_vertexBuffer.Unlock( renderContext );
+	m_vertexBuffer.UnmapForWriting( renderContext );
 
 	renderContext.m_esm.ApplyVertexDeclaration( m_screenVertexDecl );
 	renderContext.m_esm.ApplyStreamSource( 0, m_vertexBuffer, 0, sizeof( Tr2ScreenVertex ) );
@@ -203,9 +203,8 @@ bool Tr2Blitter::OnPrepareResources()
 
 	if( !m_vertexBuffer.IsValid() )
 	{
-		unsigned int vbSize = sizeof( Tr2ScreenVertex ) * 4;
 		USE_MAIN_THREAD_RENDER_CONTEXT();
-		m_vertexBuffer.Create( vbSize, USAGE_CPU_WRITE | USAGE_LOCK_FREQUENTLY, nullptr, renderContext );
+		m_vertexBuffer.Create( sizeof( Tr2ScreenVertex ), 4, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::WRITE_OFTEN, nullptr, renderContext );
 	}
 
 	return true;
@@ -214,5 +213,4 @@ bool Tr2Blitter::OnPrepareResources()
 void Tr2Blitter::ReleaseResources( TriStorage s )
 {
 	m_screenVertexDecl = -1;
-	m_vertexBuffer.Destroy();
 }

@@ -251,10 +251,13 @@ void EveTurretSet::InitializeInstanceBuffer()
 		pBufferData[i] = (float)i;
 	}
 	USE_MAIN_THREAD_RENDER_CONTEXT();
-	CR_RETURN( m_instanceBuffer.Create(		EVE_MAX_TURRETS_PER_SET * sizeof( float ), 
-											USAGE_IMMUTABLE, 
-											pBufferData, 
-											renderContext ) );
+	CR_RETURN( m_instanceBuffer.Create(		
+		sizeof( float ),
+		EVE_MAX_TURRETS_PER_SET, 
+		Tr2GpuUsage::VERTEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		pBufferData, 
+		renderContext ) );
 }
 
 // --------------------------------------------------------------------------------
@@ -716,7 +719,7 @@ void EveTurretSet::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
 	// CComPtr, this is safe!
-	m_instanceBuffer.Destroy();
+	m_instanceBuffer = Tr2BufferAL();
 }
 
 // --------------------------------------------------------------------------------

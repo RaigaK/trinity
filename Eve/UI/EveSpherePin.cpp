@@ -107,10 +107,6 @@ bool EveSpherePin::OnModified( Be::Var* value )
 // ------------------------------------------------------------------------------------------------------
 void EveSpherePin::ReleaseResources( TriStorage s )
 {
-	if( s & m_indexBuffer.GetMemoryClass() )
-	{
-		m_indexBuffer.Destroy();
-	}
 }
 
 // ------------------------------------------------------------------------------------------------------
@@ -134,7 +130,7 @@ void EveSpherePin::CreateIndexBuffer()
 		return;
 	}
 
-	m_indexBuffer.Destroy();
+	m_indexBuffer = Tr2BufferAL();
 
 	if( m_primitiveCount <= 0 )
 	{
@@ -143,11 +139,13 @@ void EveSpherePin::CreateIndexBuffer()
 
 	USE_MAIN_THREAD_RENDER_CONTEXT();
 
-	CR_RETURN( m_indexBuffer.Create(	m_primitiveCount * 3, 
-										USAGE_IMMUTABLE, 
-										IB_16BIT, 
-										&indices[0], 
-										renderContext ) );
+	CR_RETURN( m_indexBuffer.Create( 
+		2, 
+		m_primitiveCount * 3, 
+		Tr2GpuUsage::INDEX_BUFFER,
+		Tr2CpuUsage::NONE,
+		&indices[0], 
+		renderContext ) );
 
 	m_rebuildIndices = 0;
 }

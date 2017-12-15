@@ -181,10 +181,6 @@ EveChildCloud::EveChildCloud( IRoot* lockobj )
 
 EveChildCloud::~EveChildCloud()
 {
-	for( auto it = m_indexBuffers.begin(); it != m_indexBuffers.end(); ++it )
-	{
-		CCP_DELETE *it;
-	}
 }
 
 bool EveChildCloud::Initialize()
@@ -265,14 +261,6 @@ void EveChildCloud::GetBatches( ITriRenderBatchAccumulator* batches, TriBatchTyp
 void EveChildCloud::ReleaseResources( TriStorage s )
 {
 	m_declaration = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	if( m_vertexBuffer.IsValid() && m_vertexBuffer.GetMemoryClass() & s )
-	{
-		m_vertexBuffer.Destroy();
-	}
-	for( auto it = m_indexBuffers.begin(); it != m_indexBuffers.end(); ++it )
-	{
-		CCP_DELETE *it;
-	}
 	m_indexBuffers.clear();
 }
 
@@ -292,7 +280,7 @@ bool EveChildCloud::OnPrepareResources()
 				data[i + j * ( dimension + 1 )] = Vector2( ( float( i ) - 0.5f + 0.5f * ( j % 2 ) ) / ( dimension - 0.5f ) * 2 - 1, ( float( j ) / dimension * 2 - 1 ) );
 			}
 		}
-		CR_RETURN_VAL( m_vertexBuffer.Create( sizeof( Vector2 ) * uint32_t( data.size() ), USAGE_IMMUTABLE, &data.front(), renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.Create( sizeof( Vector2 ), uint32_t( data.size() ), Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &data.front(), renderContext ), false );
 	}
 
 	if( m_indexBuffers.empty() )
@@ -326,10 +314,9 @@ bool EveChildCloud::OnPrepareResources()
 					}
 				}
 			}
-			Tr2IndexBufferAL* ib = CCP_NEW( "EveChildCloud::m_indexBuffers" ) Tr2IndexBufferAL;
-			if( FAILED( ib->Create( index, USAGE_IMMUTABLE, IB_16BIT, &data.front(), renderContext ) ) )
+			Tr2BufferAL ib;
+			if( FAILED( ib.Create( 2, index, Tr2GpuUsage::INDEX_BUFFER, Tr2CpuUsage::NONE, &data.front(), renderContext ) ) )
 			{
-				CCP_DELETE ib;
 				return false;
 			}
 			factor *= 2;
@@ -410,13 +397,13 @@ Tr2PerObjectData* EveChildCloud::GetPerObjectData( ITriRenderBatchAccumulator* a
 void EveChildCloud::SubmitGeometry( Tr2RenderContext& renderContext )
 {
 	renderContext.m_esm.ApplyVertexDeclaration( m_declaration );
-	renderContext.m_esm.ApplyIndexBuffer( *m_indexBuffers[std::min( m_currentIB, m_indexBuffers.size() - 1 )] );
+	renderContext.m_esm.ApplyIndexBuffer( m_indexBuffers[std::min( m_currentIB, m_indexBuffers.size() - 1 )] );
 	renderContext.m_esm.ApplyStreamSource( 0, m_vertexBuffer, 0, sizeof( Vector2 ) );
 	renderContext.SetTopology( TOP_TRIANGLES );
 	renderContext.DrawIndexedPrimitive( 
-		m_vertexBuffer.GetTotalSizeInBytes() / sizeof( Vector2 ), 
+		m_vertexBuffer.GetSize() / sizeof( Vector2 ), 
 		0, 
-		m_indexBuffers[std::min( m_currentIB, m_indexBuffers.size() - 1 )]->GetNumIndices() / 3 );
+		m_indexBuffers[std::min( m_currentIB, m_indexBuffers.size() - 1 )].GetDesc().count / 3 );
 }
 
 IRoot* EveChildCloud::GetID( uint16_t areaId )

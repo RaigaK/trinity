@@ -98,8 +98,8 @@ void EveChildBulletStorm::GetRenderables( std::vector<ITr2Renderable*>& renderab
 void EveChildBulletStorm::ReleaseResources( TriStorage s )
 {
 	m_vertexDeclHandle = Tr2EffectStateManager::UNINITIALIZED_DECLARATION;
-	m_vertexBuffer.Destroy();
-	m_perInstanceBuffer.Destroy();
+	m_vertexBuffer = Tr2BufferAL();
+	m_perInstanceBuffer = Tr2BufferAL();
 }
 
 // --------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ bool EveChildBulletStorm::OnPrepareResources()
 
 		// crate vertexbuffer and init it
 		USE_MAIN_THREAD_RENDER_CONTEXT();
-		CR_RETURN_VAL( m_vertexBuffer.Create( 4 * sizeof( BulletStormVertex ), Tr2RenderContextEnum::USAGE_IMMUTABLE, &verts[0], renderContext ), false );
+		CR_RETURN_VAL( m_vertexBuffer.Create( sizeof( BulletStormVertex ), 4, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &verts[0], renderContext ), false );
 	}
 
 	// now build the pre-instance buffer
@@ -154,7 +154,7 @@ bool EveChildBulletStorm::OnPrepareResources()
 void EveChildBulletStorm::Rebuild()
 {
 	// invalidate buffer
-	m_perInstanceBuffer.Destroy();
+	m_perInstanceBuffer = Tr2BufferAL();
 
 	// if we don't have a shooter, that's it: exit
 	if( !m_sourceObject )
@@ -196,7 +196,7 @@ void EveChildBulletStorm::Rebuild()
 		}
 		// crate vertexbuffer and init it
 		USE_MAIN_THREAD_RENDER_CONTEXT();
-		CR_RETURN( m_perInstanceBuffer.Create( m_objectCount * sizeof( PerInstanceVertex ), Tr2RenderContextEnum::USAGE_IMMUTABLE, &verts[0], renderContext ) );
+		CR_RETURN( m_perInstanceBuffer.Create( sizeof( PerInstanceVertex ), m_objectCount, Tr2GpuUsage::VERTEX_BUFFER, Tr2CpuUsage::NONE, &verts[0], renderContext ) );
 	}
 }
 

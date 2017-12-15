@@ -22,8 +22,8 @@ BLUE_DECLARE( Tr2Effect );
 struct Tr2Sprite2dDisplayList:
 	public Tr2DeviceResource
 {
-	Tr2VertexBufferAL vertexBuffer;
-	Tr2IndexBufferAL indexBuffer;
+	Tr2BufferAL vertexBuffer;
+	Tr2BufferAL indexBuffer;
 
 	struct Entry : public IRenderCallback
 	{

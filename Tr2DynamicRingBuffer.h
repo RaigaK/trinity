@@ -47,8 +47,9 @@ public:
 	virtual void ReleaseResources( TriStorage s );
 protected:
 	virtual ALResult CreateBuffer( uint32_t size ) = 0;
-	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2RenderContextEnum::LockType lockType, Tr2RenderContext& renderContext ) = 0;
+	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2LockType::Type lockType, Tr2RenderContext& renderContext ) = 0;
 	virtual bool OnPrepareResources();
+	bool UseNoOverwriteRegions() const;
 
 	// Size of buffer in bytes
 	uint32_t m_bufferSize;
@@ -72,7 +73,6 @@ private:
 	Tr2FenceAL* AllocateFence();
 	void DeallocateFence( Tr2FenceAL* fence );
 	void RemoveRegions( RegionVector::iterator begin, RegionVector::iterator end );
-	bool UseNoOverwriteRegions() const;
 
 	// Buffer regions used by GPU
 	RegionVector m_regions;
@@ -96,16 +96,16 @@ class Tr2RingVertexBuffer: public Tr2DynamicRingBuffer
 public:
 	bool Create( uint32_t bufferSize );
 
-	Tr2VertexBufferAL& GetBuffer();
+	Tr2BufferAL& GetBuffer();
 
 	virtual bool IsValid() const;
 	virtual void ReleaseResources( TriStorage s );
 protected:
 	virtual ALResult CreateBuffer( uint32_t size );
-	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2RenderContextEnum::LockType lockType, Tr2RenderContext& renderContext );
+	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2LockType::Type lockType, Tr2RenderContext& renderContext );
 	virtual bool OnPrepareResources();
 private:
-	Tr2VertexBufferAL m_buffer;
+	Tr2BufferAL m_buffer;
 };
 
 // --------------------------------------------------------------------------------------
@@ -121,16 +121,16 @@ public:
 
 	bool Create( uint32_t numberOfIndices, Tr2RenderContextEnum::IndexBufferBitcount bitCount );
 
-	Tr2IndexBufferAL& GetBuffer();
+	Tr2BufferAL& GetBuffer();
 
 	virtual bool IsValid() const;
 	virtual void ReleaseResources( TriStorage s );
 protected:
 	virtual ALResult CreateBuffer( uint32_t size );
-	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2RenderContextEnum::LockType lockType, Tr2RenderContext& renderContext );
+	virtual ALResult UpdateBuffer( const void* data, uint32_t offset, uint32_t size, Tr2LockType::Type lockType, Tr2RenderContext& renderContext );
 	virtual bool OnPrepareResources();
 private:
-	Tr2IndexBufferAL m_buffer;
+	Tr2BufferAL m_buffer;
 	Tr2RenderContextEnum::IndexBufferBitcount m_bitCount;
 };
 

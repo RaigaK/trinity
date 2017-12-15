@@ -12,8 +12,8 @@ void DescribeVertexDecl( const Tr2VertexDefinition& vd );
 void GetVertexPositionOffsetAndType(granny_mesh* grannyMesh, unsigned int &positionOffset, Tr2VertexDefinition::DataType &positionType);
 void GetMeshVertexPosition(granny_mesh* grannyMesh, unsigned int index, Vector3 &p, unsigned int bytesPerVertex, unsigned int positionOffset, Tr2VertexDefinition::DataType positionType);
 
-void ConvertShort4ToVector3(void * src, Vector3  * dest);
-void ConvertUByte4ToVector3(void * src, Vector3  * dest);
+void ConvertShort4ToVector3( const void * src, Vector3* dest );
+void ConvertUByte4ToVector3( const void * src, Vector3* dest );
 
 void NormalizeGrannyFile( granny_file_info* gi );
 

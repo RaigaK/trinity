@@ -166,7 +166,7 @@ private:
 	TriGeometryResPtr m_baseGeometryResource;
 
 	// new index buffer
-	Tr2IndexBufferAL m_indexBuffer;
+	Tr2BufferAL m_indexBuffer;
 	bool m_rebuildIndexBuffer;
 	// num of primitives for this decal
 	unsigned int m_decalPrimitiveCount;

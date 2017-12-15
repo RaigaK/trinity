@@ -45,8 +45,8 @@ private:
 
 	// Vertex/index buffers. They are recreated whenever the count of
 	// brackets changes.
-	Tr2VertexBufferAL	m_vertexBuffer;
-	Tr2IndexBufferAL	m_indexBuffer;
+	Tr2BufferAL	m_vertexBuffer;
+	Tr2BufferAL	m_indexBuffer;
 };
 
 TYPEDEF_BLUECLASS( EveSprite2dBracketRenderer );

@@ -101,8 +101,8 @@ private:
 	uint32_t m_preTesselationLevel;
 
 	uint32_t m_declaration;
-	Tr2VertexBufferAL m_vertexBuffer;
-	TrackableStdVector<Tr2IndexBufferAL*> m_indexBuffers;
+	Tr2BufferAL m_vertexBuffer;
+	TrackableStdVector<Tr2BufferAL> m_indexBuffers;
 
 	std::string m_name;
 	bool m_display;

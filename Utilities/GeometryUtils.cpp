@@ -35,7 +35,7 @@ void GetVertexPositionOffsetAndType(granny_mesh* grannyMesh, unsigned int &posit
 	positionOffset = 0;
 }
 
-void ConvertShort4ToVector3( void *ptr,Vector3  *dest )
+void ConvertShort4ToVector3( const void *ptr, Vector3* dest )
 {
 	short *vdata = (short*)(ptr);
 	float rcp = 1.0f / (float)vdata[3];
@@ -44,7 +44,7 @@ void ConvertShort4ToVector3( void *ptr,Vector3  *dest )
 	dest->z = (float)vdata[2] * rcp;
 }
 
-void ConvertUByte4ToVector3( void *ptr,Vector3  *dest )
+void ConvertUByte4ToVector3( const void *ptr, Vector3* dest )
 {
 	unsigned char * vdata = (unsigned char *)(ptr);
 	
