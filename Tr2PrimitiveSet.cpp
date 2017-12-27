@@ -87,7 +87,7 @@ float Tr2PrimitiveSet::GetSortValue()
  */
 	Vector4 bound = GetBoundingSphere();
 	Vector3 d = Tr2Renderer::GetViewPosition() - Vector3(bound.x, bound.y, bound.z);
-	float distance = D3DXVec3Length( &d ) - bound.w;
+	float distance = Length( d ) - bound.w;
 	return distance;
 }
 

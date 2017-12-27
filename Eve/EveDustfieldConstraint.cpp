@@ -108,10 +108,9 @@ void EveDustfieldConstraint::Update( const EveUpdateContext& updateContext, IEve
 	m_originShift = updateContext.GetOriginShift();
 	if( m_applyMovement )
 	{
-		if( m_maxSpeed != 0.f && D3DXVec3Length( &m_originShift ) > m_maxSpeed * delta )
+		if( m_maxSpeed != 0.f && Length( m_originShift ) > m_maxSpeed * delta )
 		{
-			D3DXVec3Normalize( &m_originShift, &m_originShift );
-			D3DXVec3Scale( &m_originShift, &m_originShift, m_maxSpeed * delta );
+			m_originShift = Normalize( m_originShift ) * ( m_maxSpeed * delta );
 		}
 		m_originShift *= m_movementScale;
 	}
@@ -123,8 +122,8 @@ void EveDustfieldConstraint::Update( const EveUpdateContext& updateContext, IEve
 	Vector3 direction;
 	Vector3 velocity;
 	ballpark->DeltaVel( &velocity, time );
-	float speed = D3DXVec3Length( &velocity );
-	D3DXVec3Normalize( &m_velocity, &velocity );
+	float speed = Length( velocity );
+	m_velocity = Normalize( velocity );
 
 	m_velocityStretch = 0.f;
 	if( m_applyMovement )
@@ -138,7 +137,7 @@ void EveDustfieldConstraint::Update( const EveUpdateContext& updateContext, IEve
 
 	if( m_distanceFunction )
 	{
-		double distance = (double)D3DXVec3Length( &m_referencePosition );
+		double distance = (double)Length( m_referencePosition );
 		m_distanceFunction->UpdateValue( distance );
 	}
 }

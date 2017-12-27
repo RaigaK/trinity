@@ -55,7 +55,7 @@ static Vector3 BicylindricProjection( const Vector3& pos, const TriViewport& vie
 	//now, project both vectors  (view already done)
 	for( int i = 0; i < 2; ++i )
 	{
-		D3DXVec3TransformCoord( &v[i], &v[i], &Tr2Renderer::GetProjectionTransform() );
+		v[i] = TransformCoord( v[i], Tr2Renderer::GetProjectionTransform() );
 		Vec3TransformByViewport( v[i], viewport );
 	}
 
@@ -85,17 +85,17 @@ void EveProjectBracket::UpdateValue( double time )
 		pos = m_trackPosition;
 	}
 
-	D3DXVec3TransformCoord( &pos, &pos, &Tr2Renderer::GetViewTransform() );
+	pos = TransformCoord( pos, Tr2Renderer::GetViewTransform() );
 
 	bool isInFront = (pos.z <= 0.0f);
 	m_isInFront = isInFront;
 
-	m_cameraDistance = D3DXVec3Length( &pos );
+	m_cameraDistance = Length( pos );
 
 	Vector3 projectedPosition;
 	const TriViewport& vp = Tr2Renderer::GetViewport();
 
-	D3DXVec3TransformCoord( &projectedPosition, &pos, &Tr2Renderer::GetProjectionTransform() );
+	projectedPosition = TransformCoord( pos, Tr2Renderer::GetProjectionTransform() );
 	Vec3TransformByViewport( projectedPosition, vp );
 
 	float x = projectedPosition.x;

@@ -442,7 +442,7 @@ void BoundingBoxProject( Vector3& min, Vector3& max, const Matrix& view, const M
 	D3DXMatrixMultiply( &viewProj, &view, &proj );
 	for( int i = 0; i < 8; ++i )
 	{
-		D3DXVec3TransformCoord( &corners[i], &corners[i], &viewProj );
+		corners[i] = TransformCoord( corners[i], viewProj );
 		Vec3TransformByViewport( corners[i], vp );
 	}
 
@@ -815,9 +815,9 @@ bool IntersectTriangleOrientedBox( const Vector3* v0,
 {
 	// put triangle points in "inverse bounding box" space
 	Vector3 v[3];
-	D3DXVec3TransformCoord( v, v0, &invOrientedBox );
-	D3DXVec3TransformCoord( v + 1, v1, &invOrientedBox );
-	D3DXVec3TransformCoord( v + 2, v2, &invOrientedBox );
+	v[0] = TransformCoord( *v0, invOrientedBox );
+	v[1] = TransformCoord( *v1, invOrientedBox );
+	v[2] = TransformCoord( *v2, invOrientedBox );
 
 	// checks box sides as separating plane
 	if( ( v[0].x < -1.f ) && ( v[1].x < -1.f ) && ( v[2].x < -1.f ) )
@@ -838,8 +838,7 @@ bool IntersectTriangleOrientedBox( const Vector3* v0,
 	Vector3 e2 = v[0] - v[2];
 
 	// check triangle plane as a separating plane
-	Vector3 normal;
-	D3DXVec3Cross( &normal, &e0, &e1 );
+	Vector3 normal = Cross( e0, e1 );
 
 	Vector3 vmin, vmax;
 	for( int i = 0; i < 3; ++i )
@@ -855,11 +854,11 @@ bool IntersectTriangleOrientedBox( const Vector3* v0,
 			vmax[i] = -1 - v[0][i];
 		}
 	}
-	if( D3DXVec3Dot( &vmin, &normal ) > 0 )
+	if( Dot( vmin, normal ) > 0 )
 	{
 		return false;
 	}
-	if( D3DXVec3Dot( &vmax, &normal ) < 0 )
+	if( Dot( vmax, normal ) < 0 )
 	{
 		return false;
 	}

@@ -1528,8 +1528,7 @@ bool TriGeometryRes::GetIntersectionPoints( const Vector3* pos, const Vector3*di
 				if ( minDist > dist )
 				{
 					*hitpointNear = p1*v1 + p2*pu + p3*pv;
-					D3DXVec3Cross(hitpointNearNormal, &avec, &bvec );
-					D3DXVec3Normalize(hitpointNearNormal, hitpointNearNormal);
+					*hitpointNearNormal = Normalize( Cross( avec, bvec ) );
 					minDist = dist;
 					if( blendIndices && GetBoneIndex( blendIndices->m_dataType, pVertices + index1 * vertSize + blendIndices->m_offset, boneIndex ) )
 					{
@@ -1539,8 +1538,7 @@ bool TriGeometryRes::GetIntersectionPoints( const Vector3* pos, const Vector3*di
 				if ( maxDist < dist )
 				{
 					*hitpointFar = p1*v1 + p2*pu + p3*pv;
-					D3DXVec3Cross(hitpointFarNormal, &avec, &bvec );
-					D3DXVec3Normalize(hitpointFarNormal, hitpointFarNormal);
+					*hitpointNearNormal = Normalize( Cross( avec, bvec ) );
 					maxDist = dist;
 					if( blendIndices && GetBoneIndex( blendIndices->m_dataType, pVertices + index1 * vertSize + blendIndices->m_offset, boneIndex ) )
 					{
@@ -1610,7 +1608,7 @@ std::pair<float, Vector3> TriGeometryRes::GetClosestVertex( const Vector3& pos )
 			Vector3 vtx;
 			ConvertDataToVector3( position->m_dataType, pVertices + j * vertSize, &vtx );
 			Vector3 vec = vtx - pos;
-			float d = D3DXVec3LengthSq( &vec );
+			float d = LengthSq( vec );
 			if( d < currentDist )
 			{
 				currentDist = d;
@@ -1670,10 +1668,9 @@ void CalcTriangleSurfaceArea( void* context, const Vector3& p1, const Vector3& p
 	Vector3 v1 = p2 - p1;
 	Vector3 v2 = p3 - p1;
 
-	Vector3 t;
-	D3DXVec3Cross( &t, &v1, &v2 );
+	Vector3 t = Cross( v1, v2 );
 
-	*area += 0.5f * D3DXVec3Length( &t );
+	*area += 0.5f * Length( t );
 }
 
 float TriGeometryRes::GetMeshSurfaceArea( int meshIx )

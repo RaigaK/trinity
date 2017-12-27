@@ -238,8 +238,7 @@ bool Tr2ImpostorManager::Add( ITr2ImpostorSource* object, const ITr2ImpostorSour
 		return false;
 	}
 
-	Vector3 up( 0, 1, 0 );
-	D3DXVec3TransformNormal( &up, &up, &Tr2Renderer::GetInverseViewTransform() );
+	Vector3 up = TransformNormal( Vector3( 0, 1, 0 ), Tr2Renderer::GetInverseViewTransform() );
 
 	auto found = m_objects.find( object );
 	if( found != m_objects.end() )

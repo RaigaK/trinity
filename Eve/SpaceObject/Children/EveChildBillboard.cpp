@@ -120,7 +120,7 @@ void EveChildBillboard::GetShadowBatches( ITriRenderBatchAccumulator* batches, c
 float EveChildBillboard::GetSortValue()
 {
 	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance;
 }
 
@@ -156,9 +156,9 @@ void EveChildBillboard::UpdateAsyncronous( EveUpdateContext& updateContext, IEve
 	D3DXMatrixLookAtRH( &invView, &camPos, &pos, &up );
 	D3DXMatrixTranspose( &invView, &invView );
 
-	float parentScaleX = D3DXVec3Length( &parentTransform.GetX() );
-	float parentScaleY = D3DXVec3Length( &parentTransform.GetY() );
-	float parentScaleZ = D3DXVec3Length( &parentTransform.GetZ() );
+	float parentScaleX = Length( parentTransform.GetX() );
+	float parentScaleY = Length( parentTransform.GetY() );
+	float parentScaleZ = Length( parentTransform.GetZ() );
 	Vector3 finalScale = m_scaling;
 	finalScale.x *= parentScaleX;
 	finalScale.y *= parentScaleY;

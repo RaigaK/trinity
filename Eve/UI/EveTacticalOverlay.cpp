@@ -237,14 +237,14 @@ void EveTacticalOverlay::UpdateVisibility( const TriFrustum& frustum, const Matr
 		Vector3 position = (*it)->GetPosition();
 		float radius = (*it)->GetRadius();
 		Vector3 direction = position - m_rootPosition;
-		float distance = D3DXVec3Length( &direction );
+		float distance = Length( direction );
 		if( distance > distanceThreshold )
 		{
 			continue;
 		}
 
 		direction.y = 0;
-		D3DXVec3Normalize( &direction, &direction );
+		direction = Normalize( direction );
 		if( !(direction.x || direction.z) )
 		{
 			direction.x = 0.01;

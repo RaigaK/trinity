@@ -169,8 +169,8 @@ void EveMobile::PrepareShaderData( EveUpdateContext& updateContext )
 	// the m_clipSphereFactor goes from 0.0 to 1.0 and is the "amount" of visibility of this whole
 	// object: 0.0 = fully visible, 1.0 = invisible.
 	// the following formula calculates a special number to pass to the shader to help determine this
-	float nearDist = std::max( 0.f, D3DXVec3Length( &m_clipSphereCenter ) - GetBoundingSphereRadius() );
-	float insideSpherePercentage = std::min( 1.f, D3DXVec3Length( &m_clipSphereCenter ) / GetBoundingSphereRadius() );
+	float nearDist = std::max( 0.f, Length( m_clipSphereCenter ) - GetBoundingSphereRadius() );
+	float insideSpherePercentage = std::min( 1.f, Length( m_clipSphereCenter ) / GetBoundingSphereRadius() );
 	float disolveRadius = nearDist + m_clipSphereFactor * GetBoundingSphereRadius() * ( 1.f + insideSpherePercentage );
 	m_psData.clipData = m_vsData.clipData = Vector4( m_clipSphereCenter + GetBoundingSphereCenter(), TriFloatSign( disolveRadius ) * disolveRadius * disolveRadius );
 	m_psData.miscData.x = TriFloatSign( disolveRadius );

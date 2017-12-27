@@ -138,8 +138,7 @@ void EveSceneStaticParticles::RenderDebugInfo( Tr2DebugRenderer& renderer )
 	if( renderer.HasOption( this, "Bounding Sphere" ) )
 	{
 		// draw bounding sphere
-		Vector3 center;
-		D3DXVec3TransformCoord( &center, (Vector3*)&m_boundingSphere, &m_worldMatrix );
+		Vector3 center = TransformCoord( m_boundingSphere.GetXYZ(), m_worldMatrix );
 		renderer.DrawSphere( this, center, m_boundingSphere.w, 10, Tr2DebugRenderer::Wireframe, 0xffffff00 );
 	}
 }
@@ -287,8 +286,7 @@ void EveSceneStaticParticles::Rebuild()
 			// position
 			float deviation = std::min( clusterData->radius, 2000.f );
 			Vector3 pos( TriFloatRandomGauss( 0.f, 2.f * deviation ), TriFloatRandomGauss( 0.f, deviation ), TriFloatRandomGauss( 0.f, 2.f * deviation ) );
-			Vector3 nrm;
-			D3DXVec3Normalize( &nrm, &pos );
+			Vector3 nrm = Normalize( pos );
 			currentParticleBufferItem->position = clusterPosRelativeToCenter + pos + clusterData->radius * nrm;
 
 			// color (the alpha of the color is the seed)

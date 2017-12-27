@@ -152,11 +152,8 @@ EveMetaball::Cell* EveMetaball::CheckCell( int x, int y, int z, int* sharedVerts
 		}
 		else
 		{
-			Vector3 coordinate = Vector3( (float)x, (float)y, (float)z );
-			D3DXVec3Add( &coordinate, &coordinate, &s_vertexOffsetTable[p] );
-			Vector3 position;
-			D3DXVec3Scale( &position, &coordinate, m_boxSize );
-			D3DXVec3Add( &position, &position, &m_minBounds );
+			Vector3 coordinate = Vector3( (float)x, (float)y, (float)z ) + s_vertexOffsetTable[p];
+			Vector3 position = coordinate * m_boxSize + m_minBounds;
 			cell->position[p] = position;
 
 			float value = GetGridValue( position );
@@ -251,8 +248,7 @@ void EveMetaball::March()
 	}
 	EveMetaballItem* firstBall = static_cast<EveMetaballItem*>( m_sourceItems.GetAt( 0 ) );
 
-	Vector3 startPosition = firstBall->GetPosition() - m_minBounds;
-	D3DXVec3Scale( &startPosition, &startPosition, 1.0f / m_boxSize );
+	Vector3 startPosition = ( firstBall->GetPosition() - m_minBounds ) * ( 1.0f / m_boxSize );
 	int x = (int)( startPosition.x + 0.5f );
 	int y = (int)( startPosition.y + 0.5f );
 	int z = (int)( startPosition.z + 0.5f );
@@ -511,9 +507,7 @@ void EveMetaball::UpdateBuffers()
 	m_triangles.clear();
 	m_triangles.reserve( ( m_triangleCount != 0 ) ? m_triangleCount : 10000 );
 
-	Vector3 steps;
-	D3DXVec3Subtract( &steps, &m_maxBounds, &m_minBounds );
-	D3DXVec3Scale( &steps, &steps, 1.0f / m_boxSize );
+	Vector3 steps = ( m_maxBounds - m_minBounds ) * ( 1.0f / m_boxSize );
 	
 	m_gridSizeX = (int)(steps.x) + 1;
 	m_gridSizeY = (int)(steps.y) + 1;
@@ -578,7 +572,7 @@ float EveMetaball::GetGridValue( Vector3 position )
 	{
 		EveMetaballItemPtr item = (*it);
 		Vector3 v = position - item->GetPosition();
-		float length = D3DXVec3Length( &v );
+		float length = Length( v );
 
 		// iso value
 		value += pow( item->GetRadius() / length, m_gooValue );
@@ -644,12 +638,12 @@ Vector3 EveMetaball::CalculateNormals( Vector3 position )
 
 		float radiusSq = item->GetRadius();
 		radiusSq *= radiusSq;
-		float distSq = D3DXVec3LengthSq( &v );
-		D3DXVec3Scale( &v, &v, radiusSq / ( distSq * distSq ) );
+		float distSq = LengthSq( v );
+		v *= radiusSq / ( distSq * distSq );
 
 		normal += v;
 	}
-	D3DXVec3Normalize( &normal, &normal );
+	normal = Normalize( normal );
 	return normal;
 }
 

@@ -180,7 +180,7 @@ void Tr2Mesh::RebuildCachedData( BlueAsyncRes* p )
 		//	return;
 		//}
 		Vector3 d = m_maxBounds - m_minBounds;
-		m_boundingSphere = Vector4( ( m_minBounds + m_maxBounds ) * 0.5f, D3DXVec3Length( &d ) * 0.5f );
+		m_boundingSphere = Vector4( ( m_minBounds + m_maxBounds ) * 0.5f, Length( d ) * 0.5f );
 
 		m_areBoundsValid = true;
 	}

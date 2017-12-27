@@ -108,7 +108,7 @@ float EveBoosterSet2Renderable::CalculateIntensity( const Vector3& acceleration,
 	// TODO: ok... this is a bit weird
 	TriVectorRotatedBasisQuaternion( &backwd, TRITA_Z, &m_parentRotation );
 	float speedRatio = m_boosterSet->m_maxVel ? ( m_parentSpeed / m_boosterSet->m_maxVel ) : 0.f;
-	float accFactor = D3DXVec3Dot( &acceleration, &backwd );
+	float accFactor = Dot( acceleration, backwd );
 	accFactor *= max( 0.3f, speedRatio );
 	if( accFactor < 0.f )
 	{
@@ -146,7 +146,7 @@ void EveBoosterSet2Renderable::Update( float deltaT, Be::Time t, const Matrix& p
 		{
 			// rely on actual position data
 			Vector3 dir = parentMatrix.GetTranslation() - m_parentTransform.GetTranslation();
-			m_parentSpeed = D3DXVec3Length( &dir ) / deltaT;
+			m_parentSpeed = Length( dir ) / deltaT;
 		}
 	}
 
@@ -308,7 +308,7 @@ void EveBoosterSet2Renderable::GetBoundingSphere( Vector4& boundingSphere ) cons
 	// move bounding sphere back to catch all the glowy exhaust
 	boundingSphere = m_boosterSet->m_boosterBoundingSphere + Vector4( 0.f, 0.f, -0.5f * m_boosterSet->m_boosterBoundingSphere.w, 0.f );
 	// transform center into worldspace
-	D3DXVec3TransformCoord( (Vector3*)&boundingSphere, (Vector3*)&boundingSphere, &m_parentTransform );
+	boundingSphere.GetXYZ() = TransformCoord( boundingSphere.GetXYZ(), m_parentTransform );
 	// blow up radius so we contain all the glowy stuff coming out of a booster
 	boundingSphere.w = 2.f * m_boosterSet->m_boosterBoundingSphere.w;
 }
@@ -329,7 +329,7 @@ void EveBoosterSet2Renderable::UpdateVisibility( const TriFrustum& frustum )
 	for( unsigned int i = 0; i < EVE_MAX_CONTROL_POINT_COUNT; ++i )
 	{
 		Vector3 tmp( m_trailsControlPositions[ i ] - frustum.m_viewPos );
-		float d = D3DXVec3LengthSq( &tmp );
+		float d = LengthSq( tmp );
 		if( d < sqDist )
 		{
 			sqDist = d;
@@ -417,8 +417,7 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 	}
 
 	// where are we?
-	Vector3 parentPos( 0.f, 0.f, 0.f );
-	D3DXVec3TransformCoord( &parentPos, &parentPos, &m_parentTransform );
+	Vector3 parentPos = TransformCoord( Vector3( 0.f, 0.f, 0.f ), m_parentTransform );
 
 	// what dir are we moving?
 	Vector3 movementDir( 0.f, 0.f, 1.f );
@@ -446,7 +445,7 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 			if( iterCount < 20 )
 			{
 				// apply cumulative offset to all positions
-				if( D3DXVec3Dot( &m_trailsOffsetAccu, &m_trailsOffsetAccu ) > 0.00001f )
+				if( Dot( m_trailsOffsetAccu, m_trailsOffsetAccu ) > 0.00001f )
 				{
 					for( unsigned int i = 0; i < EVE_MAX_POSITION_OFFSET_COUNT; ++i )
 					{
@@ -534,7 +533,7 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 	for( unsigned int i = 1; i < EVE_MAX_CONTROL_POINT_COUNT; ++i )
 	{
 		Vector3 sequenceDir = m_trailsControlPositions[ i ] - m_trailsControlPositions[ i - 1 ];
-		m_trailsTotalLength += D3DXVec3Length( &sequenceDir );
+		m_trailsTotalLength += Length( sequenceDir );
 	}
 
 
@@ -555,7 +554,7 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 
 	// first tangent is always constant and points backwards from ship
 	Vector3 firstTangent( 0.f, 0.f, -1.f * m_boosterSet->m_trailsSmoothing );
-	D3DXVec3TransformNormal( &m_trailsControlNormals[ 0 ], &firstTangent, &m_parentTransform );
+	m_trailsControlNormals[0] = TransformNormal( firstTangent, m_parentTransform );
 
 	// last tangent is always from before-last to last point
 	Vector3 lastDir = m_trailsControlPositions[ EVE_MAX_CONTROL_POINT_COUNT - 1 ] - m_trailsControlPositions[ EVE_MAX_CONTROL_POINT_COUNT - 2 ];
@@ -566,12 +565,12 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 	{
 		// from -1 to +1
 		Vector3 dir = m_trailsControlPositions[ i + 1 ] - m_trailsControlPositions[ i - 1 ];
-		D3DXVec3Normalize( &m_trailsControlNormals[ i ], &dir );
+		m_trailsControlNormals[i] = Normalize( dir );
 		// adjust length!
 		Vector3 t0( m_trailsControlPositions[ i + 1 ] - m_trailsControlPositions[ i ] );
 		Vector3 t1( m_trailsControlPositions[ i ] - m_trailsControlPositions[ i - 1 ] );
-		float len0 = D3DXVec3Length( &t0 );
-		float len1 = D3DXVec3Length( &t1 );
+		float len0 = Length( t0 );
+		float len1 = Length( t1 );
 		// keep the normal add len0 and store a factor to calc a len1-normal
 		m_trailsControlNormals[ i ] *= len0;
 		m_trailsControlNormalsFactor[ i ] = len1 / len0;
@@ -581,7 +580,7 @@ void EveBoosterSet2Renderable::CalculateSplineData( float deltaT )
 	{
 		// "sequence length" value is the length of this segment normalized along the whole trail
 		Vector3 segment( m_trailsControlPositions[ i ] - m_trailsControlPositions[ i - 1 ] );
-		m_trailsSequenceLength[ i ] = D3DXVec3Length( &segment );
+		m_trailsSequenceLength[ i ] = Length( segment );
 		// normalize if non-zero length
 		if( m_trailsTotalLength > 0.f )
 		{
@@ -835,8 +834,8 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 	sbd.transform = *localMatrix;
 	sbd.functionality = *functionality;
 	Vector3 lightOffset( 0.f, 0.f, -m_lightOffset );
-	D3DXVec3TransformCoord( &sbd.lightPosition, &lightOffset, localMatrix );
-	sbd.lightRadius = std::max( D3DXVec3Length( &localMatrix->GetX() ), D3DXVec3Length( &localMatrix->GetY() ) );
+	sbd.lightPosition = TransformCoord( lightOffset, *localMatrix );
+	sbd.lightRadius = std::max( Length( localMatrix->GetX() ), Length( localMatrix->GetY() ) );
 	sbd.lightPhase = float( g_lightNoiseSize ) * float( rand() ) / float( RAND_MAX );
 	sbd.atlasIndex0 = atlasIndex0;
 	sbd.atlasIndex1 = atlasIndex1;
@@ -845,8 +844,8 @@ void EveBoosterSet2::Add( const Matrix* localMatrix, const Vector4* functionalit
 	// grab pos/dir/scale from the local transform matrix
 	Vector3 pos( localMatrix->_41, localMatrix->_42, localMatrix->_43 );
 	Vector3 dir( localMatrix->_31, localMatrix->_32, localMatrix->_33 );
-	float scale = std::max( D3DXVec3Length( &localMatrix->GetX() ),  D3DXVec3Length( &localMatrix->GetY() ) );
-	D3DXVec3Normalize( &dir, &dir );
+	float scale = std::max( Length( localMatrix->GetX() ), Length( localMatrix->GetY() ) );
+	dir = Normalize( dir );
 	if( scale < 3.f )
 	{
 		dir *= scale / 3.f;

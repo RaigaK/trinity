@@ -25,7 +25,7 @@ bool BoundingSphereIsSphereInside( const Vector4& parentSphere, const Vector4& t
 		return false;
 	}
 	Vector3 delta = ( const Vector3& )testSphere - ( const Vector3& )parentSphere;
-	return ( D3DXVec3LengthSq( &delta ) <= ( parentSphere.w - testSphere.w ) * ( parentSphere.w - testSphere.w ) );
+	return ( LengthSq( delta ) <= ( parentSphere.w - testSphere.w ) * ( parentSphere.w - testSphere.w ) );
 }
 
 void BoundingSphereUpdate( const Vector3& pos, Vector4& sphere )
@@ -38,7 +38,7 @@ void BoundingSphereUpdate( const Vector3& pos, Vector4& sphere )
 
 	// extend sphere
 	Vector3 delta = pos - ( Vector3& )sphere;
-	float deltaLen = D3DXVec3Length( &delta );
+	float deltaLen = Length( delta );
 
 	( Vector3& )sphere += 0.5f * ( 1.f - sphere.w / deltaLen ) * delta;
 	sphere.w = 0.5f * ( sphere.w + deltaLen );
@@ -59,7 +59,7 @@ void BoundingSphereUpdate( const Vector4& addSphere, Vector4& resultSphere )
 
 	// extend sphere
 	Vector3 delta = ( Vector3& )addSphere - ( Vector3& )resultSphere;
-	float deltaLen = D3DXVec3Length( &delta );
+	float deltaLen = Length( delta );
 
 	( Vector3& )resultSphere += 0.5f * ( 1.f + ( addSphere.w - resultSphere.w ) / deltaLen ) * delta;
 	resultSphere.w = 0.5f * ( resultSphere.w + addSphere.w + deltaLen );
@@ -69,11 +69,11 @@ void BoundingSphereTransform( const Matrix& tf, Vector4& sphere )
 {
 	Vector3 center;
 	// translate center
-	D3DXVec3TransformCoord( (Vector3*)&sphere, (Vector3*)&sphere, &tf );
+	sphere.GetXYZ() = TransformCoord( sphere.GetXYZ(), tf );
 	// scale with highest scale factor
-	float scaleX = D3DXVec3Length( &tf.GetX() );
-	float scaleY = D3DXVec3Length( &tf.GetY() );
-	float scaleZ = D3DXVec3Length( &tf.GetZ() );
+	float scaleX = Length( tf.GetX() );
+	float scaleY = Length( tf.GetY() );
+	float scaleZ = Length( tf.GetZ() );
 	float scale = std::max( scaleX, std::max( scaleY, scaleZ ) );
 	sphere.w *= scale;
 }
@@ -120,9 +120,9 @@ bool IntersectEllipsoidRay( Vector3& out, const Vector3& ellipsoidCenter, const 
 {
 	Vector3 v = Vector3( rayDir.x / ellipsoidRadii.x, rayDir.y / ellipsoidRadii.y, rayDir.z / ellipsoidRadii.z );
 	Vector3 s = Vector3( ( rayOrigin.x - ellipsoidCenter.x ) / ellipsoidRadii.x, ( rayOrigin.y - ellipsoidCenter.y ) / ellipsoidRadii.y, ( rayOrigin.z - ellipsoidCenter.z ) / ellipsoidRadii.z );
-	float v_v = D3DXVec3Dot( &v, &v );
-	float v_s = D3DXVec3Dot( &v, &s );
-	float s_s = D3DXVec3Dot( &s, &s );
+	float v_v = Dot( v, v );
+	float v_s = Dot( v, s );
+	float s_s = Dot( s, s );
 	float pq = max( ( v_s / v_v ) * ( v_s / v_v ) - ( s_s / v_v ) + 1.f / v_v, 0.f );
 	if( pq < 0.f )
 	{
@@ -140,13 +140,13 @@ void BoundingSphereFromBox( Vector4& sphere, const Vector3& minBounds, const Vec
 
 	if( tf )
 	{
-		D3DXVec3TransformCoord( &min, &minBounds, tf );
-		D3DXVec3TransformCoord( &max, &maxBounds, tf );
+		min = TransformCoord( minBounds, *tf );
+		max = TransformCoord( maxBounds, *tf );
 	}
 
-	D3DXVec3Add( (Vector3*)&sphere, &min, &max );
-	D3DXVec3Subtract( &min, &min, &max );
-	sphere.w = D3DXVec3Length( &min );
+	sphere.GetXYZ() = min + max;
+	min -= max;
+	sphere.w = Length( min );
 	sphere *= 0.5f;
 }
 
@@ -222,7 +222,7 @@ void BoundingSphereFromPoints( Vector4& sphere, const Vector3& point1, const Vec
 	const float radiusEpsilon = 1e-4f;
 
 	Vector3 a = 0.5f * ( point2 - point1 );
-	sphere = Vector4( a + point1, D3DXVec3Length( &a ) + radiusEpsilon );
+	sphere = Vector4( a + point1, Length( a ) + radiusEpsilon );
 }
 
 // --------------------------------------------------------------------------------

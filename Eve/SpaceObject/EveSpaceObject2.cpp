@@ -79,13 +79,13 @@ void GetSortedBatchesFromMeshAreaVector( const Tr2MeshAreaVector* areas,
 				centerBBox = 0.5f * ( maxBBox + minBBox );
 			}
 			// put center in world-space
-			D3DXVec3TransformCoord( &centerBBox, &centerBBox, worldTransform );
+			centerBBox = TransformCoord( centerBBox, *worldTransform );
 			// calc distance to camera
 			Vector3 d = Tr2Renderer::GetViewPosition() - centerBBox;
 			// put together a sortable item
 			Tr2MeshAreaItem item;
 			item.m_meshArea = meshArea;
-			item.m_distance = D3DXVec3LengthSq( &d );
+			item.m_distance = LengthSq( d );
 			meshAreasToSort.push_back( item );
 		}
 	}
@@ -259,7 +259,7 @@ void EveSpaceObject2::UpdateSyncronous( EveUpdateContext& updateContext )
 			float( referencePosition.x - m_previousPosition.x ),
 			float( referencePosition.y - m_previousPosition.y ),
 			float( referencePosition.z - m_previousPosition.z ) );
-		D3DXVec3TransformNormal( &m_positionDelta->m_value, &positionDelta, &m_invWorldTransform);
+		m_positionDelta->m_value = TransformNormal( positionDelta, m_invWorldTransform );
 	}
 	else
 	{
@@ -395,12 +395,12 @@ void EveSpaceObject2::UpdateWorldBounds()
 	if( m_dynamicBoundingSphereEnabled && m_animationUpdater && m_animationUpdater->IsInitialized() )
 	{
 		m_animationUpdater->GetDynamicBounds( m_dynamicBoundingSphere, m_localAabbMin, m_localAabbMax );
-		D3DXVec3TransformCoord( &m_boundingSphereWorldCenter, reinterpret_cast<Vector3*>( &m_dynamicBoundingSphere ), &m_worldTransform );
+		m_boundingSphereWorldCenter = TransformCoord( m_dynamicBoundingSphere.GetXYZ(), m_worldTransform );
 		m_boundingSphereWorldRadius = m_modelScale * m_dynamicBoundingSphere.w;
 	}
 	else if( m_boundingSphereRadius > 0.0f )
 	{
-		D3DXVec3TransformCoord( &m_boundingSphereWorldCenter, &m_boundingSphereCenter, &m_worldTransform );
+		m_boundingSphereWorldCenter = TransformCoord( m_boundingSphereCenter, m_worldTransform );
 		m_boundingSphereWorldRadius = m_modelScale * m_boundingSphereRadius;
 	}
 }
@@ -806,7 +806,7 @@ void EveSpaceObject2::GetShadowBatches( ITriRenderBatchAccumulator* batches, con
 float EveSpaceObject2::GetSortValue()
 {
 	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance;
 }
 
@@ -1259,11 +1259,9 @@ void EveSpaceObject2::GetRenderables( std::vector<ITr2Renderable*>& renderables,
 
 			auto& view = Tr2Renderer::GetViewTransform();
 			Vector3 fwd( 0.f, 0.f, 1.f );
-			D3DXVec3TransformNormal( &hash.viewDir, D3DXVec3TransformNormal( &hash.viewDir, &fwd, &m_worldTransform ), &view );
-			D3DXVec3Normalize( &hash.viewDir, &hash.viewDir );
+			hash.viewDir = Normalize( TransformNormal( TransformNormal( fwd, m_worldTransform ), view ) );
 			Vector3 up( 0.f, 1.f, 0.f );
-			D3DXVec3TransformNormal( &hash.upDir, D3DXVec3TransformNormal( &hash.upDir, &up, &m_worldTransform ), &view );
-			D3DXVec3Normalize( &hash.viewDir, &hash.viewDir );
+			hash.upDir = Normalize( TransformNormal( TransformNormal( up, m_worldTransform ), view ) );
 
 			m_impostorMode = impostors->Add( this, hash );
 		}
@@ -1668,7 +1666,7 @@ int EveSpaceObject2::GetClosestDamageLocatorIndex( const Vector3* position )
 
 static float GetDistanceFit( float minDist, float fitScale, Vector3& vec )
 {
-	float length = D3DXVec3Length( &vec );
+	float length = Length( vec );
 	float scale = 1 - ( length - minDist ) / fitScale;
 	float val = 2 * scale - 1.0f;
 	if( val < 0 )
@@ -1685,7 +1683,7 @@ static float GetDistanceFit( float minDist, float fitScale, Vector3& vec )
 
 static float GetDirectionFit( const Vector3& v0, const Vector3& v1 )
 {
-	float d = -D3DXVec3Dot( &v0, &v1 );
+	float d = -Dot( v0, v1 );
 	if( d < 0 )
 	{
 		return ( 1 - pow( std::abs( d ), 0.5f ) ) * 0.5f;
@@ -1716,10 +1714,10 @@ int EveSpaceObject2::GetGoodDamageLocatorIndex( const Vector3& position )
 			Vector3 damageLocatorDirection = GetObjectSpaceDamageLocatorDirection(i);
 
 			Vector3 v( XMVectorSubtract( damageLocatorPosition, posInObjectSpace ) );
-			float length = D3DXVec3Length( &v );
+			float length = Length( v );
 			minDistance = min( minDistance, length );
 			maxDistance = max( maxDistance, length );
-			D3DXVec3Normalize( &v, &v );
+			v = Normalize( v );
 			float directionFit = GetDirectionFit( (Vector3)damageLocatorDirection , v );
 			bestDirectionFit = max( bestDirectionFit, directionFit );
 		}
@@ -1738,7 +1736,7 @@ int EveSpaceObject2::GetGoodDamageLocatorIndex( const Vector3& position )
 
 			Vector3 v( XMVectorSubtract( damageLocatorPosition, posInObjectSpace ) );
 			float fitValue = GetDistanceFit( minDistance, maxDistance - minDistance, v );
-			D3DXVec3Normalize( &v, &v );
+			v = Normalize( v );
 			fitValue *= GetDirectionFit( damageLocatorDirection, v );
 			if( std::abs( fitValue - desiredFit ) < bestFit )
 			{
@@ -1840,13 +1838,13 @@ void EveSpaceObject2::GetImpactPosition( Vector3& out, int damageLocatorIndex, c
 
 	// convert position and direction into object space
 	Vector3 tgtPosOS, dirOS;
-	D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &m_invWorldTransform );
-	D3DXVec3TransformNormal( &dirOS, &direction, &m_invWorldTransform );
+	tgtPosOS = TransformCoord( tgtPosWS, m_invWorldTransform );
+	dirOS = TransformNormal( direction, m_invWorldTransform );
 	
 	Vector3 center, radii;
 	GetShapeEllipsoid( center, radii );
 	IntersectEllipsoidRay( out, center, radii, tgtPosOS, dirOS );
-	D3DXVec3TransformCoord( &out, &out, &m_worldTransform );
+	out = TransformCoord( out, m_worldTransform );
 }
 
 bool EveSpaceObject2::GetDamageLocatorDirection( Vector3* out, int index, bool inWorldSpace )
@@ -1871,11 +1869,11 @@ void EveSpaceObject2::UpdateModelCenterWorldPosition( Vector3 &position, Be::Tim
 	{
 		Vector4 boundingSphere;
 		m_animationUpdater->GetDynamicBounds( boundingSphere, m_localAabbMin, m_localAabbMax );
-		D3DXVec3TransformCoord( &position, (Vector3*)&boundingSphere, &m_worldTransform );
+		position = TransformCoord( boundingSphere.GetXYZ(), m_worldTransform );
 	}
 	else
 	{
-		D3DXVec3TransformCoord( &position, &m_boundingSphereCenter, &m_worldTransform );
+		position = TransformCoord( m_boundingSphereCenter, m_worldTransform );
 	}
 }
 
@@ -1898,12 +1896,11 @@ void EveSpaceObject2::GetMissPosition( const Vector3* hit, const Vector3* source
 		if( hit && source ) 
 		{
 			Vector3 local( *hit - *out );
-			Vector3 dir( *hit - *source );
+			Vector3 dir = Normalize( *hit - *source );
 			
-			D3DXVec3Normalize( &dir, &dir );
-			local -= dir * D3DXVec3Dot( &dir, &local );
+			local -= dir * Dot( dir, local );
 
-			D3DXVec3Normalize( &local, &local );
+			local = Normalize( local );
 			const Vector3 off = local * m_boundingSphereWorldRadius * 1.125f;
 			*out += off;
 		}
@@ -2010,7 +2007,7 @@ void EveSpaceObject2::UpdateWorldTransform( Be::Time time )
 		// of the ship model, but without the ball translation
 		Vector3 translation;
 		m_modelTranslation->Update( &translation, time );
-		D3DXVec3TransformCoord( &translation, &translation, &m_worldTransform);
+		translation = TransformCoord( translation, m_worldTransform );
 		m_worldTransform._41 = m_worldPosition.x + translation.x;
 		m_worldTransform._42 = m_worldPosition.y + translation.y;
 		m_worldTransform._43 = m_worldPosition.z + translation.z;
@@ -2033,7 +2030,7 @@ bool EveSpaceObject2::IsShadowReceiveEnabled()
 void EveSpaceObject2::GetModelCenterWorldPosition( Vector3 &position ) const
 {
 	// This version of the function does not perform an update on the object
-	D3DXVec3TransformCoord( &position, &m_boundingSphereCenter, &m_worldTransform );
+	position = TransformCoord( m_boundingSphereCenter, m_worldTransform );
 }
 
 bool EveSpaceObject2::GetLocalBoundingBox( Vector3 &min, Vector3 &max )
@@ -2896,8 +2893,8 @@ void EveSpaceObject2::GetImpostorBatches( const TriFrustum& frustum, std::map<Tr
 
 float EveSpaceObject2::GetRenderPriority( const ImpostorHash& oldHash, const ImpostorHash& newHash ) const
 {
-	float dotView = D3DXVec3Dot( &oldHash.viewDir, &newHash.viewDir );
-	float dotUp = D3DXVec3Dot( &oldHash.upDir, &newHash.upDir );
+	float dotView = Dot( oldHash.viewDir, newHash.viewDir );
+	float dotUp = Dot( oldHash.upDir, newHash.upDir );
 	return std::max( 1.f - dotView, 1.f - dotUp );
 }
 

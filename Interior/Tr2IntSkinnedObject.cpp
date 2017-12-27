@@ -204,10 +204,9 @@ void Tr2IntSkinnedObject::GetBatches( ITriRenderBatchAccumulator* batches,
 		// Compute the depth
 		Vector3 bbMin, bbMax;
 		GetLocalBoundingBox( bbMin, bbMax );
-		Vector3 center = 0.5f * ( bbMin + bbMax );
-		D3DXVec3TransformCoord( &center, &center, &instanceTransform );
+		Vector3 center = TransformCoord( 0.5f * ( bbMin + bbMax ), instanceTransform );
 		center -= Tr2Renderer::GetViewPosition();
-		float z = std::min( std::max( ( D3DXVec3Length( &center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
+		float z = std::min( std::max( ( Length( center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
 
 		depth = ( unsigned int )( ( float )0xFFFFFFF * ( 1.0f - z ) );
 	}

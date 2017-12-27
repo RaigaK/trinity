@@ -51,12 +51,9 @@ bool Tr2ManipulationTool::OnMoveCallback( Matrix& currentTransform, Matrix& next
 
 void Tr2ManipulationTool::GetBaseVectors( Vector3& x, Vector3& y, Vector3& z )
 {
-	x = Vector3( m_localTransform._11, m_localTransform._12, m_localTransform._13 );
-	y = Vector3( m_localTransform._21, m_localTransform._22, m_localTransform._23 );
-	z = Vector3( m_localTransform._31, m_localTransform._32, m_localTransform._33 );
-	D3DXVec3Normalize( &x, &x );
-	D3DXVec3Normalize( &y, &y );
-	D3DXVec3Normalize( &z, &z );
+	x = Normalize( Vector3( m_localTransform._11, m_localTransform._12, m_localTransform._13 ) );
+	y = Normalize( Vector3( m_localTransform._21, m_localTransform._22, m_localTransform._23 ) );
+	z = Normalize( Vector3( m_localTransform._31, m_localTransform._32, m_localTransform._33 ) );
 }
 
 Vector3 Tr2ManipulationTool::GetDesiredPlaneNormal( Vector3& ray, Matrix& viewMatrix)
@@ -70,8 +67,8 @@ Vector3 Tr2ManipulationTool::GetDesiredPlaneNormal( Vector3& ray, Matrix& viewMa
 	if( m_selectedAxis == "x")
 	{
         // We dont care on wich side we are.. just the distance
-        float ydot = fabs( (float)D3DXVec3Dot( &ray, &yAxis ) ); // XZ plane
-        float zdot = fabs( (float)D3DXVec3Dot( &ray, &zAxis ) ); // XY plane
+        float ydot = fabs( Dot( ray, yAxis ) ); // XZ plane
+        float zdot = fabs( Dot( ray, zAxis ) ); // XY plane
 
         if( zdot > ydot )
 		{
@@ -84,8 +81,8 @@ Vector3 Tr2ManipulationTool::GetDesiredPlaneNormal( Vector3& ray, Matrix& viewMa
 	}
 	else if( m_selectedAxis == "y")
 	{
-        float zdot = fabs( (float)D3DXVec3Dot( &ray, &zAxis ) ); // YX plane
-        float xdot = fabs( (float)D3DXVec3Dot( &ray, &xAxis ) ); // YZ plane
+        float zdot = fabs( Dot( ray, zAxis ) ); // YX plane
+        float xdot = fabs( Dot( ray, xAxis ) ); // YZ plane
 
         if( zdot > xdot )
 		{
@@ -98,8 +95,8 @@ Vector3 Tr2ManipulationTool::GetDesiredPlaneNormal( Vector3& ray, Matrix& viewMa
 	}
 	else if( m_selectedAxis == "z")
 	{
-        float xdot = fabs( (float)D3DXVec3Dot( &ray, &xAxis ) ); // ZY plane
-        float ydot = fabs( (float)D3DXVec3Dot( &ray, &yAxis ) ); // ZX plane
+        float xdot = fabs( Dot( ray, xAxis ) ); // ZY plane
+        float ydot = fabs( Dot( ray, yAxis ) ); // ZX plane
 
         if( xdot > ydot )
 		{
@@ -130,18 +127,16 @@ Vector3 Tr2ManipulationTool::MovePointOnPlane( int mx1, int my1, int mx2, int my
 	ScreenCoordinatesToRay( mx2, my2, ray, startpos, viewport, viewMatrix, projectionMatrix );
 	Vector3 endPlanePos = RayToPlaneIntersection( startpos, ray, pointOnPlane, planeNormal );
 
-	Vector3 result;
-	D3DXVec3Subtract(&result, &endPlanePos, &startPlanePos );
+	Vector3 result = endPlanePos - startPlanePos;
 	return result;
 }
 
 int Tr2ManipulationTool::RayToSphereIntersection( Vector3& spCenter, float radius, Vector3& startPoint, Vector3& ray, Vector3& outValues )
 {
-	Vector3 pMinusC;
-	D3DXVec3Subtract(&pMinusC, &startPoint, &spCenter);
-	float dotA = D3DXVec3Dot( &ray, &ray );
-	float dotB = 2.0f * D3DXVec3Dot( &ray, &pMinusC );
-	float dotC = D3DXVec3Dot( &pMinusC, &pMinusC ) - (radius*radius);
+	Vector3 pMinusC = startPoint - spCenter;
+	float dotA = Dot( ray, ray );
+	float dotB = 2.0f * Dot( ray, pMinusC );
+	float dotC = Dot( pMinusC, pMinusC ) - (radius*radius);
 	float discrim = dotB*dotB - 4.0f * dotA * dotC;
 	if( discrim > 0.0f )
 	{
@@ -163,17 +158,16 @@ int Tr2ManipulationTool::RayToSphereIntersection( Vector3& spCenter, float radiu
 
 Vector3 Tr2ManipulationTool::RayToPlaneIntersection(Vector3& P,  Vector3& d, Vector3& Q, Vector3& n)
 {
-	float denom = D3DXVec3Dot(&n, &d);
-	if( fabs((float)denom) < FLT_EPSILON )
+	float denom = Dot( n, d );
+	if( fabs( denom ) < FLT_EPSILON )
 	{
 		return P;
 	}
 	else
 	{
-		float distance = -(D3DXVec3Dot(&Q, &n));
-		float t = -(D3DXVec3Dot(&n, &P) + distance)/ denom;
-		Vector3 result;
-		D3DXVec3Add( &result, D3DXVec3Scale(&d, &d, t), &P );
+		float distance = -Dot( Q, n );
+		float t = -( Dot( n, P ) + distance ) / denom;
+		Vector3 result = d * t + P;
 		return result;
 	}
 }
@@ -252,11 +246,12 @@ Vector3* Tr2ManipulationTool::GetTrianglesAroundLine( const Vector3 &start, cons
 	Quaternion rotation;
 	D3DXQuaternionIdentity(&rotation);
 	Vector3 temp;
-	D3DXVec3Normalize(&dirOfLine, D3DXVec3Subtract( &temp, &start, &end ) );
-	float dot = D3DXVec3Dot( &zDir, &dirOfLine );
+	dirOfLine = Normalize( start - end );
+	float dot = Dot( zDir, dirOfLine );
 	if( fabs( dot ) != 1.0f )
 	{
-		D3DXQuaternionRotationAxis( &rotation, D3DXVec3Cross( &temp, &zDir, &dirOfLine ), acos( dot ) );
+		temp = Cross( zDir, dirOfLine );
+		D3DXQuaternionRotationAxis( &rotation, &temp, acos( dot ) );
 	}
 
 	Matrix rot, t1, t2, compA, compB;

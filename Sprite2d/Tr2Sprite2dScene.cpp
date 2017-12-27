@@ -306,11 +306,9 @@ ITr2SpriteObject* Tr2Sprite2dScene::PickObject( int x, int y, const TriProjectio
 		Matrix invWorldViewProjectionTransform;
 		D3DXMatrixInverse( &invWorldViewProjectionTransform, NULL, &worldViewProjectionTransform );
 
-		Vector3 rayStart( fx, fy, 0.0f );
-		D3DXVec3TransformCoord( &rayStart, &rayStart, &invWorldViewProjectionTransform );
+		Vector3 rayStart = TransformCoord( Vector3( fx, fy, 0.0f ), invWorldViewProjectionTransform );
 
-		Vector3 rayEnd( fx, fy, 0.5f );
-		D3DXVec3TransformCoord( &rayEnd, &rayEnd, &invWorldViewProjectionTransform );
+		Vector3 rayEnd = TransformCoord( Vector3( fx, fy, 0.5f ), invWorldViewProjectionTransform );
 
 		float slopeX = (rayEnd.z - rayStart.z) / (rayEnd.x - rayStart.x);
 		finalX = (slopeX * rayStart.x - rayStart.z) / slopeX;

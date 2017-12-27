@@ -281,14 +281,14 @@ void TriVector::SetCrossProduct(
 float TriVector::Length(
 	) const
 {
-	return D3DXVec3Length(this);
+	return ::Length( *this );
 }
 
 
 float TriVector::LengthSq(
 	) const
 {
-	return D3DXVec3LengthSq(this);
+	return ::LengthSq( *this );
 }
 
 

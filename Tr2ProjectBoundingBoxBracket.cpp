@@ -75,7 +75,7 @@ void Tr2ProjectBoundingBoxBracket::UpdateValue( double time )
 	}
 
 	Vector3 d = Tr2Renderer::GetViewPosition() - center;
-	m_cameraDistance = D3DXVec3Length( &d );
+	m_cameraDistance = Length( d );
 
 	BoundingBoxProject( 
 		bbMin, 

@@ -217,25 +217,25 @@ void NormalizeGrannyFile( granny_file_info* gi )
 	do 
 	{
 		Vector3 d = AS_VECTOR3( Origin ) - AS_VECTOR3( gi->ArtToolInfo->Origin );
-		if( D3DXVec3Length( &d ) > 1e-5f )
+		if( Length( d ) > 1e-5f )
 		{
 			needsConversion = true;
 			break;
 		}
 		d = AS_VECTOR3( RightVector ) - AS_VECTOR3( gi->ArtToolInfo->RightVector );
-		if( D3DXVec3Length( &d ) > 1e-5f )
+		if( Length( d ) > 1e-5f )
 		{
 			needsConversion = true;
 			break;
 		}
 		d = AS_VECTOR3( UpVector ) - AS_VECTOR3( gi->ArtToolInfo->UpVector );
-		if( D3DXVec3Length( &d ) > 1e-5f )
+		if( Length( d ) > 1e-5f )
 		{
 			needsConversion = true;
 			break;
 		}
 		d = AS_VECTOR3( BackVector ) - AS_VECTOR3( gi->ArtToolInfo->BackVector );
-		if( D3DXVec3Length( &d ) > 1e-5f )
+		if( Length( d ) > 1e-5f )
 		{
 			needsConversion = true;
 			break;

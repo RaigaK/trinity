@@ -46,7 +46,7 @@ void EveShip2::UpdateSyncronous( EveUpdateContext& updateContext )
 	// need the speed!
 	Vector3 v;
 	GetWorldVelocity( v );
-	m_speed->m_value = D3DXVec3Length( &v );
+	m_speed->m_value = Length( v );
 
 	UpdateShipSpeedForAudio();
 

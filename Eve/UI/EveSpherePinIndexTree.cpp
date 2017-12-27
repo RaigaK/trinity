@@ -112,7 +112,7 @@ EveSpherePinIndexTree::TreeNode* CreateTree( EveSpherePinIndexTree::TreeNode* no
 // ------------------------------------------------------------------------------------------------------
 inline void CarthesianToSpherical( Vector3& carth, Vector2& spherical )
 {	// spherical = Vector2( theta, phi )
-	float radius = sqrt( D3DXVec3Dot( &carth, &carth ) );
+	float radius = sqrt( Dot( carth, carth ) );
 	spherical.x = XM_PI / 2.0f - acos( carth.y / radius );
 	spherical.y = atan2( -carth.z, carth.x );
 }
@@ -236,9 +236,9 @@ EveSpherePinIndexTree::Face* ExtractFaceData( TriGeometryResMeshData* mesh, std:
 		Vector3 d1(verts[index1] - faces[i].center);
 		Vector3 d2(verts[index2] - faces[i].center);
 		Vector3 d3(verts[index3] - faces[i].center);
-		faces[i].radius = D3DXVec3Length( &d1 );
-		faces[i].radius = max( faces[i].radius, D3DXVec3Length( &d2 ) );
-		faces[i].radius = max( faces[i].radius, D3DXVec3Length( &d3 ) );
+		faces[i].radius = Length( d1 );
+		faces[i].radius = max( faces[i].radius, Length( d2 ) );
+		faces[i].radius = max( faces[i].radius, Length( d3 ) );
 	}
 
 	return faces;
@@ -462,7 +462,7 @@ int EveSpherePinIndexTree::GetIndices( Vector3& point, float radius, int& primit
 
 	if( p.x >= 0 ) // Upper hemisphere
 	{
-		if( acos( D3DXVec3Dot( &pole, &point ) ) < radius )
+		if( acos( Dot( pole, point ) ) < radius )
 		{
 			minPhi = PHI_MIN;
 			maxPhi = PHI_MAX;
@@ -476,7 +476,7 @@ int EveSpherePinIndexTree::GetIndices( Vector3& point, float radius, int& primit
 	}
 	else
 	{
-		if( acos( -D3DXVec3Dot( &pole, &point ) ) < radius )
+		if( acos( -Dot( pole, point ) ) < radius )
 		{
 			minPhi = PHI_MIN;
 			maxPhi = PHI_MAX;
@@ -510,7 +510,7 @@ int EveSpherePinIndexTree::GetIndices( Vector3& point, float radius, int& primit
 		Face* face = m_markedFaces[i]; 
 		face->flag = 0;
 		Vector3 d(face->center - point );
-		float len = D3DXVec3Length( &d );
+		float len = Length( d );
 
 		if( len <= radius + face->radius )
 		{

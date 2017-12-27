@@ -439,26 +439,24 @@ bool Tr2CurveLineSet::FillVertexBuffer()
 					// directional vectors
 					Vector3 startDir = m_lines[i].position1 - m_lines[i].intermediatePosition;
 					Vector3 endDir = m_lines[i].position2 - m_lines[i].intermediatePosition;
-					D3DXVec3Normalize( &startDirNrm, &startDir);
-					D3DXVec3Normalize( &endDirNrm, &endDir);
+					startDirNrm = Normalize( startDir );
+					endDirNrm = Normalize( endDir );
 					// matrix
 					Matrix rotationMatrix;
-					D3DXVec3Cross( &rotationAxis, &startDir, &endDir );
-					float fullAngle = acosf( D3DXVec3Dot( &startDirNrm, &endDirNrm ) );
+					rotationAxis = Cross( startDir, endDir );
+					float fullAngle = acosf( Dot( startDirNrm, endDirNrm ) );
 					float segmentAngle = fullAngle / (float)m_lines[i].numOfSegments;
 
 					// run through all segmens and create lines
 					D3DXMatrixRotationAxis( &rotationMatrix, &rotationAxis, -segmentAngle );
 
-					Vector3 dir0 = startDir;
-					D3DXVec3TransformNormal( &dir0, &startDir, &rotationMatrix );
+					Vector3 dir0 = TransformNormal( startDir, rotationMatrix );
 
 					D3DXMatrixRotationAxis( &rotationMatrix, &rotationAxis, segmentAngle );
 
 					Vector3 dir1 = startDir;
-					Vector3 dir2 = startDir;
+					Vector3 dir2 = TransformNormal( dir1, rotationMatrix );;
 					Vector3 dir3 = startDir;
-					D3DXVec3TransformNormal( &dir2, &dir1, &rotationMatrix );
 					// also interpolate color across all the segments
 					Color col1 = m_lines[i].color1;
 					Color col2 = m_lines[i].color2;
@@ -467,7 +465,7 @@ bool Tr2CurveLineSet::FillVertexBuffer()
 						float segmentFactor = (float)( s + 1 ) / (float)m_lines[i].numOfSegments;
 
 						// rotate end dir of this segment
-						D3DXVec3TransformNormal( &dir3, &dir2, &rotationMatrix );
+						dir3 = TransformNormal( dir2, rotationMatrix );
 
 						// interpolate color
 						D3DXColorLerp( &col2, &m_lines[i].color1, &m_lines[i].color2, segmentFactor );
@@ -656,12 +654,11 @@ void Tr2CurveLineSet::GetBatches( ITriRenderBatchAccumulator* accumulator,
 float Tr2CurveLineSet::GetSortValue()
 {
 	// center of bounding sphere is "check point"
-	Vector3 center = BoundingSphereGetCenter( m_boundingSphere );
-	D3DXVec3TransformCoord( &center, &center, &m_worldTransform );
+	Vector3 center = TransformCoord( BoundingSphereGetCenter( m_boundingSphere ), m_worldTransform );
 
 	// distance from viewer to sort z
 	Vector3 d = Tr2Renderer::GetViewPosition() - center;
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance + m_depthOffset;
 }
 
@@ -1150,7 +1147,7 @@ void Tr2CurveLineSet::GetBatchImpl( ITriRenderBatchAccumulator* accumulator, con
 
 		Vector3 center( m_boundingSphere.x, m_boundingSphere.y, m_boundingSphere.z );
 		center -= Tr2Renderer::GetViewPosition();
-		float z = std::min( std::max( ( D3DXVec3Length( &center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
+		float z = std::min( std::max( ( Length( center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
 
 		unsigned int depth = ( unsigned int )( ( float )0xFFFFFFF * ( 1.0f - z ) );
 		batch->SetDepth( depth );

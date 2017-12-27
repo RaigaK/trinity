@@ -445,7 +445,7 @@ EveMissileWarhead::StateChangeEvent EveMissileWarhead::CheckImpact( float deltaT
 	target->GetImpactPosition( targetPosition, m_targetLocator, -m_movement );
 			
 	Vector3 dir( targetPosition - posNow );
-	float lensq = D3DXVec3LengthSq( &dir );
+	float lensq = LengthSq( dir );
 	if( lensq <= m_explosionDistance || flight01 >= 1.0f )
 	{
 		m_explosionPosition = *GetWorldPosition();
@@ -454,7 +454,7 @@ EveMissileWarhead::StateChangeEvent EveMissileWarhead::CheckImpact( float deltaT
 		if( target )
 		{
 			// Check if we've gone past the impact position
-			if( D3DXVec3Dot( &dir, &m_movement ) < 0 )
+			if( Dot( dir, m_movement ) < 0 )
 			{
 				m_explosionPosition = targetPosition;
 			}
@@ -505,10 +505,9 @@ void EveMissileWarhead::UpdateWarhead( float deltaT, float estimatedTotalAliveTi
 	Vector3 ejectVelocityDir( 0.f, 0.f, m_currentEjectVelocity );
 	Matrix rotMatrix;
 	D3DXMatrixRotationQuaternion( &rotMatrix, &m_startOrientation );
-	D3DXVec3TransformNormal( &ejectVelocityDir, &ejectVelocityDir, &rotMatrix );
+	ejectVelocityDir = TransformNormal( ejectVelocityDir, rotMatrix );
 	// calculate missile-ball velocity in global space
-	Vector3 globalBallVelocity;
-	D3DXVec3TransformNormal( &globalBallVelocity, currentBallVelocity, invBallRotation );
+	Vector3 globalBallVelocity = TransformNormal( *currentBallVelocity, *invBallRotation );
 
 	// flying time only in "flying" states
 	if( m_state >= STATE_START_TRACKING )
@@ -563,9 +562,8 @@ void EveMissileWarhead::UpdateWarhead( float deltaT, float estimatedTotalAliveTi
 		m_currentOffset *= bombTrackBall;
 	}
 
-	Vector3 relativePosition( 0.f, 0.f, 0.f );
 	Matrix worldTransform = missileTransform;
-	D3DXVec3TransformCoord( &relativePosition, &m_currentOffset, &worldTransform );
+	Vector3 relativePosition = TransformCoord( m_currentOffset, worldTransform );
 	Vector3 translation = m_lastRelativePosition - relativePosition + egoTranslation;
 	m_lastRelativePosition = relativePosition;
 	if( m_lastPositionValid )
@@ -573,11 +571,11 @@ void EveMissileWarhead::UpdateWarhead( float deltaT, float estimatedTotalAliveTi
 		if( m_startDataValid )
 		{
 			Quaternion orientationNow;
-			const float distanceSq = D3DXVec3LengthSq( &translation );
+			const float distanceSq = LengthSq( translation );
 			if( distanceSq > 0.f )
 			{
 				// move/facing direction is in global world-space, we need it in "ball"-space
-				D3DXVec3TransformNormal( &translation, &translation, invBallRotation );
+				translation = TransformNormal( translation, *invBallRotation );
 				// turn facing vector into a rotation
 				TriQuaternionArcFromForward( &orientationNow, &translation );
 				if( distanceSq < 1.f )

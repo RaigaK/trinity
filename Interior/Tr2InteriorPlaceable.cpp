@@ -344,9 +344,9 @@ void Tr2InteriorPlaceable::GetBatches( ITriRenderBatchAccumulator* batches,
 									mesh->GetAreaBoundingBox( area->GetIndex(), bbMin, bbMax );
 									center = 0.5f * ( bbMin + bbMax );
 								}
-								D3DXVec3TransformCoord( &center, &center, &instanceToWorld );
+								center = TransformCoord( center, instanceToWorld );
 								center -= Tr2Renderer::GetViewPosition();
-								float z = std::min( std::max( ( D3DXVec3Length( &center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
+								float z = std::min( std::max( ( Length( center ) + m_depthOffset ) / maxDepth, 0.f ), 1.f );
 
 								depth = ( unsigned int )( ( float )0xFFFFFFF * ( 1.0f - z ) );
 							}
@@ -468,7 +468,7 @@ float Tr2InteriorPlaceable::CalculateCameraDistance( void )
 	cameraPos.y -= m_transform._42;
 	cameraPos.z -= m_transform._43;
 
-	return D3DXVec3LengthSq( &cameraPos );
+	return LengthSq( cameraPos );
 }
 
 // --------------------------------------------------------------------------------

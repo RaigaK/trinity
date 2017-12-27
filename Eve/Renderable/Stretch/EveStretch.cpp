@@ -72,7 +72,7 @@ void EveStretch::UpdateAsyncronous( EveUpdateContext& updateContext )
 	UpdateCurves( updateContext );
 
 	Vector3 directionVec( m_sourcePosition - m_destinationPosition );
-	m_length->m_value = D3DXVec3Length( &directionVec );
+	m_length->m_value = Length( directionVec );
 
 
 	if( m_sourceObject && m_displaySourceObject )
@@ -148,9 +148,8 @@ void EveStretch::UpdateVisibility( const TriFrustum& frustum, const Matrix& pare
 		return;
 	}
 
-	Vector3 directionVec( m_sourcePosition - m_destinationPosition );
+	Vector3 directionVec = Normalize( m_sourcePosition - m_destinationPosition );
 	float scalingLength = m_length->m_value;
-	D3DXVec3Normalize( &directionVec, &directionVec );
 
 	Matrix m;
 	if( m_sourceObject && m_displaySourceObject )
@@ -479,8 +478,7 @@ void EveStretch::GetLights( Tr2LightManager& lightManager ) const
 		return;
 	}
 
-	Vector3 directionVec( m_sourcePosition - m_destinationPosition );
-	D3DXVec3Normalize( &directionVec, &directionVec );
+	Vector3 directionVec = Normalize( m_sourcePosition - m_destinationPosition );
 
 	if( !m_sourceLights.empty() && m_displaySourceObject )
 	{

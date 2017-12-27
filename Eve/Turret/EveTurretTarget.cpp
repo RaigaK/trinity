@@ -152,12 +152,12 @@ void EveTurretTarget::Update( float deltaT, const Vector3* source )
 
 		if( m_laserMissBehaviour )
 		{
-			D3DXVec3Normalize( &direction, &direction );
+			direction = Normalize( direction );
 			m_positionMiss += direction * 250000.f;
 		}
 		else
 		{
-			float dist = D3DXVec3Length( &direction );
+			float dist = Length( direction );
 			direction /= dist;
 			m_positionMiss += direction * ( dist + 5000.f) * ( 1.f + 0.5f * m_randomMissDistanceOffset );
 		}

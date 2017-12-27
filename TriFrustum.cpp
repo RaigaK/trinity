@@ -271,7 +271,7 @@ float TriFrustum::GetPixelSizeAccrossEst( const Vector3& center, float radius ) 
 {
 	Vector3 d( center - m_viewPos );
 	const float epsilon = 1e-5f;
-	float distance = std::max( epsilon, D3DXVec3Length( &d ) );
+	float distance = std::max( epsilon, Length( d ) );
 	float ratio = radius / distance;
 
 	return ( ratio * m_halfWidthProjection ) * 2.f;

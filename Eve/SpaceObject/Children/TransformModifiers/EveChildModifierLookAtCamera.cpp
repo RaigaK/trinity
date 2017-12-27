@@ -25,9 +25,9 @@ Matrix EveChildModifierLookAtCamera::ApplyTransform( const Matrix& transform ) c
 		D3DXMatrixLookAtRH( &invView, &camPos, &pos, &up );
 		D3DXMatrixTranspose( &invView, &invView );
 
-		float parentScaleX = D3DXVec3Length( &transform.GetX() );
-		float parentScaleY = D3DXVec3Length( &transform.GetY() );
-		float parentScaleZ = D3DXVec3Length( &transform.GetZ() );
+		float parentScaleX = Length( transform.GetX() );
+		float parentScaleY = Length( transform.GetY() );
+		float parentScaleZ = Length( transform.GetZ() );
 		Vector3 finalScale( parentScaleX, parentScaleY, parentScaleZ );
 
 		result._11 = invView._11 * finalScale.x;

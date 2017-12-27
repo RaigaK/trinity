@@ -79,8 +79,7 @@ Vector3* EveLocalPositionCurve::CalculateNearestBoundingPoint( Vector3* in, Be::
 		m_alignPositionCurve->GetValueAt( &at, t );
 		m_parentRotationCurve->GetValueAt( &parentRotation, t );
 
-		Vector3 dir = at - pt;
-		D3DXVec3Normalize(&dir, &dir);
+		Vector3 dir = Normalize( at - pt );
 
 		/*	--------------------------------------------------------------------------------------------------
 		*	What we actually want to calculate is the point of intersection with the line
@@ -95,8 +94,7 @@ Vector3* EveLocalPositionCurve::CalculateNearestBoundingPoint( Vector3* in, Be::
 		D3DXQuaternionInverse( &parentRotation, &parentRotation );
 		D3DXMatrixRotationQuaternion( &matInv, &parentRotation );
 		
-		Vector3 transformedDir;
-		D3DXVec3TransformCoord(&transformedDir, &dir, &matInv);
+		Vector3 transformedDir = TransformCoord( dir, matInv );
 
 		// Dir is now transformed into the direction in relation to the rotation of the ship
 		// We can now compute the scaling that's required on the vector using a standard ellipsiod equation

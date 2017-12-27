@@ -182,7 +182,7 @@ void EveEffectRoot2::UpdateWorldTransform( Be::Time time )
 	{
 		Vector3 modelTranslation;
 		m_modelTranslation->Update( &modelTranslation, time );
-		D3DXVec3TransformCoord( &modelTranslation, &modelTranslation, &m_worldTransform );
+		modelTranslation = TransformCoord( modelTranslation, m_worldTransform );
 		m_worldTransform.GetTranslation() = modelTranslation;
 	}
 }
@@ -196,13 +196,13 @@ void EveEffectRoot2::UpdateModelCenterWorldPosition( Vector3 &position, Be::Time
 	D3DXMatrixTransformation( &currentTransform, 0, 0, &m_scaling, 0, &m_rotation, &m_translation );
 	D3DXMatrixMultiply( &currentTransform, &currentTransform, &m_worldTransform );
 
-	D3DXVec3TransformCoord( &position, (Vector3*)&m_boundingSphere, &currentTransform );
+	position = TransformCoord( m_boundingSphere.GetXYZ(), currentTransform );
 }
 
 void EveEffectRoot2::GetModelCenterWorldPosition( Vector3 &position ) const
 {
 	// This version of the function does not perform an update on the object
-	D3DXVec3TransformCoord( &position, (Vector3*)&m_boundingSphere, &m_lastUpdateMatrix );
+	position = TransformCoord( m_boundingSphere.GetXYZ(), m_lastUpdateMatrix );
 }
 
 
@@ -411,12 +411,11 @@ void EveEffectRoot2::GetMissPosition( const Vector3* hit, const Vector3* source,
 	if( hit && source ) 
 	{
 		Vector3 local( *hit - *out );
-		Vector3 dir( *hit - *source );
+		Vector3 dir = Normalize( *hit - *source );
 		
-		D3DXVec3Normalize( &dir, &dir );
-		local -= dir * D3DXVec3Dot( &dir, &local );
+		local -= dir * Dot( dir, local );
 
-		D3DXVec3Normalize( &local, &local );
+		local = Normalize( local );
 		const Vector3 off = local * m_boundingSphere.w * 1.125f;
 		*out += off;
 	}

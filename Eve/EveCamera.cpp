@@ -365,12 +365,12 @@ void EveCamera::Update( Be::Time t )
 	Vector3 side = Vector3(1.0f,0.0f,0.0f);
 	Vector3 up = Vector3(0.0f,1.0f,0.0f);
 	
-	D3DXVec3Normalize(&toInterest, &toInterest);
+	toInterest = Normalize( toInterest );
 	//draw a line through the interest, 100 meters long
 	Vector3 extendedInterest = toInterest * 100.0f;
 
-	D3DXVec3Cross(&side, &toInterest, &up);
-	D3DXVec3Cross(&up, &side, &toInterest);
+	side = Cross( toInterest, up );
+	up = Cross( side, toInterest );
 
 	//all noise should be added to the interest point at 200 meters
 	//so that the size of the interest won't affect the perceived noise (though it should)
@@ -399,10 +399,10 @@ void EveCamera::Update( Be::Time t )
 		aPos = aPos - vecCamPos;
 		Vector3 tPos;
 
-		tPos.x = D3DXVec3Dot(&aPos, &side);
-		tPos.y = D3DXVec3Dot(&aPos, &up);
-		tPos.z = D3DXVec3Dot(&aPos, &toInterest);
-		r = D3DXVec3Length(&tPos);
+		tPos.x = Dot( aPos, side );
+		tPos.y = Dot( aPos, up );
+		tPos.z = Dot( aPos, toInterest );
+		r = Length( tPos );
 		if(r>0.0f)
 			aPitch = asinf(tPos.y/r);
 		else
@@ -442,9 +442,9 @@ void EveCamera::Update( Be::Time t )
 	// and the alignemnt being parallel
 	Vector3 realUpDir;
 	TriVectorRotateQuaternion( &realUpDir, &m_alignment, &m_rotationAroundParent );
-	D3DXVec3Normalize( &realUpDir, &realUpDir );
+	realUpDir = Normalize( realUpDir );
 
-	if( !IsFinite( realUpDir ) || !D3DXVec3LengthSq( &realUpDir ) )
+	if( !IsFinite( realUpDir ) || !LengthSq( realUpDir ) )
 	{
 		if( !m_failedLastFrame )
 		{
@@ -456,8 +456,8 @@ void EveCamera::Update( Be::Time t )
 		failed = true;
 	}
 
-	Vector3 lookAtLength;
-	if( !D3DXVec3Length( D3DXVec3Subtract( &lookAtLength, &vecCamPos, &vecCamIntr ) ) )
+	Vector3 lookAtLength = vecCamPos - vecCamIntr;
+	if( !Length( lookAtLength ) )
 	{
 		if( !m_failedLastFrame )
 		{
@@ -497,7 +497,7 @@ void EveCamera::Update( Be::Time t )
 	m_upVec = Vector3( viewTransformInt._12, viewTransformInt._22, viewTransformInt._32 );
 	m_rightVec = Vector3( viewTransformInt._11, viewTransformInt._21, viewTransformInt._31 );
 	
-	if( D3DXVec3Length( &m_viewVec ) && D3DXVec3Length( &m_upVec ) &&  D3DXVec3Length( &m_rightVec  ) )
+	if( Length( m_viewVec ) && Length( m_upVec ) && Length( m_rightVec ) )
 	{
 		m_viewMatrix->SetTransform(viewTransformInt);
 	}

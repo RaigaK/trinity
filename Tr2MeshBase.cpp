@@ -189,7 +189,7 @@ float Tr2MeshBase::CalcMeshSortValue( const Matrix& worldTransform )
     D3DXVec3TransformCoord( &center, (Vector3*)&m_boundingSphere, &worldTransform );
 
 	Vector3	d = center - Tr2Renderer::GetViewPosition();
-    float distSq = D3DXVec3LengthSq( &d );
+    float distSq = LengthSq( d );
 
     return distSq;
 }

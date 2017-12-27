@@ -1304,10 +1304,9 @@ float TriGrannyRes::GetMeshSurfaceArea( int meshIx ) const
 		Vector3 v1 = p2 - p1;
 		Vector3 v2 = p3 - p1;
 
-		Vector3 t;
-		D3DXVec3Cross( &t, &v1, &v2 );
+		Vector3 t = Cross( v1, v2 );
 
-		result += 0.5f * D3DXVec3Length( &t );
+		result += 0.5f * Length( t );
 	}
 	
 	return result;

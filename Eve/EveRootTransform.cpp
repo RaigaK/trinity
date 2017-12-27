@@ -47,7 +47,7 @@ void EveRootTransform::UpdateSyncronous( EveUpdateContext& updateContext )
 	{
 		Vector3 modelTranslation;
 		m_modelTranslation->Update( &modelTranslation, time );
-		D3DXVec3TransformCoord( &modelTranslation, &modelTranslation, &m_lastUpdateMatrix );
+		modelTranslation = TransformCoord( modelTranslation, m_lastUpdateMatrix );
 		m_lastUpdateMatrix.GetTranslation() = modelTranslation;
 	}
 	EveTransform::UpdateSyncronous( updateContext );
@@ -143,12 +143,11 @@ void EveRootTransform::GetMissPosition( const Vector3* hit, const Vector3* sourc
 	if( hit && source ) 
 	{
 		Vector3 local( *hit - *out );
-		Vector3 dir( *hit - *source );
+		Vector3 dir = Normalize( *hit - *source );
 		
-		D3DXVec3Normalize( &dir, &dir );
-		local -= dir * D3DXVec3Dot( &dir, &local );
+		local -= dir * Dot( dir, local );
 
-		D3DXVec3Normalize( &local, &local );
+		local = Normalize( local );
 		const Vector3 off = local * m_boundingSphereRadius * 1.125f;
 		*out += off;
 	}

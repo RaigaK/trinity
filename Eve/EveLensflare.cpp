@@ -80,7 +80,7 @@ void EveLensflare::Update( Be::Time realTime, Be::Time simTime )
 	m_sunSize = 1.f;
 	if( m_translationCurve )
 	{
-		float distanceToCenter = D3DXVec3Length( &m_position ) / 0.1495978707e12f;
+		float distanceToCenter = Length( m_position ) / 0.1495978707e12f;
 		m_sunSize = 1.5f / logf( distanceToCenter + 2.71f );
 	}
 
@@ -115,20 +115,19 @@ void EveLensflare::PrepareRender( const TriFrustum& frustum )
 	}
 
 	// calc direction to the sun (usually normalized m_position)
-	if( D3DXVec3LengthSq( &m_position ) == 0.f )
+	if( LengthSq( m_position ) == 0.f )
 	{
 		Vector3 curPos( 0.f, 0.f, 0.f );
 		curPos -= frustum.m_viewPos;
-		D3DXVec3Normalize( &m_direction, &curPos );
+		m_direction = Normalize( curPos );
 	}
 	else
 	{
 		Vector3 invPos = -m_position;
-		D3DXVec3Normalize( &m_direction, &invPos );
+		m_direction = Normalize( invPos );
 	}
 
-	Vector3 cameraSpacePos;
-	D3DXVec3Scale( &cameraSpacePos, &frustum.m_viewDir, -1.f * m_cameraFactor );
+	Vector3 cameraSpacePos = frustum.m_viewDir * ( -1.f * m_cameraFactor );
 	cameraSpacePos += frustum.m_viewPos;
 
 	// build the matrix that will rotate the flares into position
@@ -207,7 +206,7 @@ void EveLensflare::GetRenderables( const TriFrustum& frustum, std::vector<ITr2Re
 	}
 
 	// visibility?
-	float viewDotDir = D3DXVec3Dot( &frustum.m_viewDir, &m_direction );	
+	float viewDotDir = Dot( frustum.m_viewDir, m_direction );	
 	if( viewDotDir < 0.f )
 	{
 		return;

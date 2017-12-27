@@ -453,7 +453,7 @@ bool Tr2GrannyAnimation::GetDynamicBounds( Vector4& boundingSphere, Vector3 &aab
 
 		for( unsigned point = 0; point < 8; point++ )
 		{
-			D3DXVec3TransformCoord( &transformed[point], &m_boneBounds[i].m_corners[point], mat );
+			transformed[point] = TransformCoord( m_boneBounds[i].m_corners[point], *mat );
 			BoundingBoxUpdate( aabbMin, aabbMax, transformed[point] );
 			BoundingSphereUpdate( transformed[point], boundingSphere );
 		}
@@ -523,7 +523,7 @@ void Tr2GrannyAnimation::RenderDynamicBounds( const Matrix& modelTransform )
 
 		for( unsigned point = 0; point < 8; point++ )
 		{
-			D3DXVec3TransformCoord( &transformed[point], &m_boneBounds[i].m_corners[point], &mat );
+			transformed[point] = TransformCoord( m_boneBounds[i].m_corners[point], mat );
 			BoundingBoxUpdate( aabbMin, aabbMax, transformed[point] );
 			if( !initialized )
 			{

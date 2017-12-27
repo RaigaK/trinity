@@ -120,7 +120,7 @@ void EveChildMesh::GetShadowBatches( ITriRenderBatchAccumulator* batches, const 
 float EveChildMesh::GetSortValue()
 {
 	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance;
 }
 

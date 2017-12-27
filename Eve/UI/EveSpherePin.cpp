@@ -321,12 +321,11 @@ void EveSpherePin::GetBatches( ITriRenderBatchAccumulator* accumulator,
 float EveSpherePin::GetSortValue()
 {
 	// center of bounding sphere is "check point"
-	Vector3 center = BoundingSphereGetCenter( m_boundingSphere );
-	D3DXVec3TransformCoord( &center, &center, &m_worldTransform );
+	Vector3 center = TransformCoord( BoundingSphereGetCenter( m_boundingSphere ), m_worldTransform );
 
 	// distance from viewer to sort z
 	Vector3 d = Tr2Renderer::GetViewPosition() - center;
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance * m_sortValueMultiplier;
 }
 

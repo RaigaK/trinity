@@ -46,7 +46,7 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 
 		const Vector3& camPos = Tr2Renderer::GetViewPosition();
 		Vector3 d = myPos - camPos;
-		const float dist = D3DXVec3Length( &d );
+		const float dist = Length( d );
 		const float fov = Tr2Renderer::GetFieldOfView();
 
 		//fovHeight is the thing to multiply with to let the object
@@ -72,9 +72,9 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 		case TR2TM_BILLBOARD:
 		case TR2TM_SIMPLE_HALO:
 			{
-				float parentScaleX = D3DXVec3Length( &parentTransform.GetX() );
-				float parentScaleY = D3DXVec3Length( &parentTransform.GetY() );
-				float parentScaleZ = D3DXVec3Length( &parentTransform.GetZ() );
+				float parentScaleX = Length( parentTransform.GetX() );
+				float parentScaleY = Length( parentTransform.GetY() );
+				float parentScaleZ = Length( parentTransform.GetZ() );
 				finalScale.x *= parentScaleX;
 				finalScale.y *= parentScaleY;
 				finalScale.z *= parentScaleZ;
@@ -146,14 +146,14 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 				TriVectorRotateMatrix(&camFwd, &camFwd, &parentT);
 
 
-				float lengthSq = D3DXVec3LengthSq( &parentTransform.GetX() );
+				float lengthSq = LengthSq( parentTransform.GetX() );
 				camFwd.x /= lengthSq;
-				lengthSq = D3DXVec3LengthSq( &parentTransform.GetY() );
+				lengthSq = LengthSq( parentTransform.GetY() );
 				camFwd.y /= lengthSq;
-				lengthSq = D3DXVec3LengthSq( &parentTransform.GetZ() );
+				lengthSq = LengthSq( parentTransform.GetZ() );
 				camFwd.z /= lengthSq;
 
-				float distCenter = D3DXVec3Length( &camFwd );
+				float distCenter = Length( camFwd );
 				D3DXVec3Normalize( &camFwd, &camFwd );
 
 				const Matrix& viewMatrix = Tr2Renderer::GetViewTransform();
@@ -229,9 +229,9 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 				D3DXMatrixLookAtRH( &invView, &camPos, &pos, &up );
 				D3DXMatrixTranspose( &invView, &invView );
 
-				float parentScaleX = D3DXVec3Length( &parentTransform.GetX() );
-				float parentScaleY = D3DXVec3Length( &parentTransform.GetY() );
-				float parentScaleZ = D3DXVec3Length( &parentTransform.GetZ() );
+				float parentScaleX = Length( parentTransform.GetX() );
+				float parentScaleY = Length( parentTransform.GetY() );
+				float parentScaleZ = Length( parentTransform.GetZ() );
 				finalScale.x *= parentScaleX;
 				finalScale.y *= parentScaleY;
 				finalScale.z *= parentScaleZ;
@@ -291,7 +291,7 @@ void Tr2Transform::GetShadowBatches( ITriRenderBatchAccumulator* batches, const 
 float Tr2Transform::GetSortValue()
 {
 	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance * m_sortValueMultiplier;
 }
 

@@ -712,7 +712,7 @@ MAP_FUNCTION(
 static float CameraDistanceFalloff( const Vector3& posView )
 {
 	// This is some fucked up legacy math
-	float distSq = D3DXVec3Dot( &posView, &posView );
+	float distSq = Dot( posView, posView );
 
 	const Matrix& projMat = Tr2Renderer::GetProjectionTransform();
 	float fov = atan( 1.0f / projMat.m[1][1] );
@@ -809,11 +809,10 @@ static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 	Vector3 rayEnd( fx, fy, 0.5f );
 
 	// Note that this method does _unprojection_ i.e. divides by w
-	D3DXVec3TransformCoord( &rayStart, &rayStart, &projection2view );
-	D3DXVec3TransformCoord( &rayEnd, &rayEnd, &projection2view );
+	rayStart = TransformCoord( rayStart, projection2view );
+	rayEnd = TransformCoord( rayEnd, projection2view );
 
-	Vector3 rayDirection = rayEnd - rayStart;
-	D3DXVec3Normalize( &rayDirection, &rayDirection );
+	Vector3 rayDirection = Normalize( rayEnd - rayStart );
 
 	// We cannot assume that the particles are sorted by distance
 	// since we'd frequently want to turn this off for the map (which is additive)
@@ -828,8 +827,7 @@ static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 	{
 		const Vector3* position = reinterpret_cast<const Vector3*>( positionStream );
 		
-		Vector3 particlePositionInViewSpace;
-		D3DXVec3TransformCoord( &particlePositionInViewSpace, position, &worldView );
+		Vector3 particlePositionInViewSpace = TransformCoord( *position, worldView );
 
 		if( particlePositionInViewSpace.z < 0.0f )
 		{
@@ -839,7 +837,7 @@ static PyObject* PyPickParticle( PyObject* self, PyObject* args )
 				&rayStart, 
 				&rayDirection ) )
 			{
-				float distanceSq = D3DXVec3LengthSq( &particlePositionInViewSpace );
+				float distanceSq = LengthSq( particlePositionInViewSpace );
 				if( distanceSq < closestParticleDistanceSq )
 				{
 					// p is closer

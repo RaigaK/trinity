@@ -126,7 +126,7 @@ bool EveSpriteLineSet::OnPrepareResources()
 			{
 				// position on an ellipsoid in x,z-plane
 				Vector3 pos( spriteLine->m_scaling.x * sinf( alpha ), 0.f, spriteLine->m_scaling.y * cosf( alpha ) );
-				D3DXVec3TransformCoord( &pos, &pos, &m );
+				pos = TransformCoord( pos, m );
 				pos += spriteLine->m_position;
 				// fill static pool data
 				vtx->position = pos;
@@ -162,8 +162,7 @@ bool EveSpriteLineSet::OnPrepareResources()
 
 			// start populating the sprites from this line
 			Vector3 pos( spriteLine->m_position );
-			Vector3 dir( 1.f, 0.f, 0.f );
-			D3DXVec3TransformNormal( &dir, &dir, &m );
+			Vector3 dir = TransformNormal( Vector3( 1.f, 0.f, 0.f ), m );
 			EveSpriteSet::PoolVertex* vtx = &m_buffer[totalBufferidx];
 			EveSpriteSet::SpriteData* spr = &m_spriteData[totalBufferidx];
 			for( size_t i = 0; i < numOfSprites; ++i )

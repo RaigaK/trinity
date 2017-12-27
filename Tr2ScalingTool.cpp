@@ -58,7 +58,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 	{
         Vector3 vecResult;
         Vector3 vecCenterOfMass = TransformPoint( Vector3( 1, 0, 0 ), m_xBox, viewMatrix );
-        float tmpInitialLength = D3DXVec3Length( D3DXVec3Subtract( &vecResult, &pos, &vecCenterOfMass ));
+        float tmpInitialLength = Length( pos - vecCenterOfMass );
 		// the initiallength could not have been set up...
 		m_initialLength = tmpInitialLength;
 	}
@@ -126,8 +126,8 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 			vecB = TransformPoint( Vector3( 1, 0, 0 ), m_xBox, viewMatrix );
 
 			D3DXVec3Subtract( &vecC, &vecA, &vecB );
-			float delta = D3DXVec3Length( &m_movement );
-			float length = D3DXVec3Length( &vecC );
+			float delta = Length( m_movement );
+			float length = Length( vecC );
 			float scale = length / m_initialLength;
 
 			if( mouseXDelta < 0 )
@@ -208,7 +208,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 
 			D3DXVec3Subtract( &vecC, &vecA, &vecB );
 
-			float l1 = D3DXVec3Length( &vecC );
+			float l1 = Length( vecC );
 			float scale = l1 / m_initialLength;
 
 			Matrix scaleA, scaleB;

@@ -191,7 +191,7 @@ void EveLineSet::GetBatches( ITriRenderBatchAccumulator* accumulator,
 float EveLineSet::GetSortValue()
 {
 	Vector3 d = Tr2Renderer::GetViewPosition() - m_worldTransform.GetTranslation();
-	float distance = D3DXVec3Length( &d );
+	float distance = Length( d );
 	return distance;
 }
 

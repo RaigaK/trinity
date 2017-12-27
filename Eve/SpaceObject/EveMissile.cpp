@@ -151,21 +151,21 @@ void EveMissile::UpdateSyncronous( EveUpdateContext& updateContext )
 		m_target->GetDamageLocatorPosition( &targetPositionWS, -1, true );
 
 		// calc speed
-		float speed = D3DXVec3Length( &myVelocity );
+		float speed = Length( myVelocity );
 
 		// is speed of zero is dangerous
 		if( speed > 0.f )
 		{
 			// update the total alive time based on time already passed and distance / speed of missile ball to target
 			Vector3 dir(myPosition - targetPositionWS);
-			m_estimatedTotalAliveTime = m_time + ( D3DXVec3Length( &dir ) - m_targetRadius ) / speed;
+			m_estimatedTotalAliveTime = m_time + ( Length( dir ) - m_targetRadius ) / speed;
 			m_lastValidSpeed = speed;
 		}
 		else if( m_lastValidSpeed > 0.f )
 		{
 			// This means the ball has hit the target, but the warhead may still on the way to the target
 			Vector3 dir(myPosition - targetPositionWS);
-			D3DXVec3Normalize( &myVelocity, &dir );
+			myVelocity = Normalize( dir );
 			myVelocity *= m_lastValidSpeed;
 		}
 	}
@@ -189,7 +189,7 @@ void EveMissile::UpdateSyncronous( EveUpdateContext& updateContext )
 				m_target->GetDamageLocatorPosition( &locatorPositionWS, wh->GetTargetLocator(), true );
 			}
 			const Vector3 locatorOffset = locatorPositionWS - *worldPos;
-			D3DXVec3TransformCoord( &locatorPositionWS, &locatorOffset, &invBallRotationMatrix );
+			locatorPositionWS = TransformCoord( locatorOffset, invBallRotationMatrix );
 			D3DXMatrixTranslation( &locatorMatrix, locatorPositionWS.x, locatorPositionWS.y, locatorPositionWS.z );
 
 			wh->UpdateEndTransform( locatorMatrix, evt == EveMissileWarhead::EVT_SWITCH_TARGET );

@@ -377,7 +377,7 @@ void EveSpaceScene::Update( Be::Time realTime, Be::Time simTime )
 		Vector3 sunDirection;
 
 		m_sunBall->Update( &sunDirection, simTime );
-		D3DXVec3Normalize( &sunDirection, &sunDirection );
+		sunDirection = Normalize( sunDirection );
 		m_sunData.DirWorld = -sunDirection;
 	}
 
@@ -1440,8 +1440,7 @@ void EveSpaceScene::UpdateImpostors()
 	UpdateVariableStore();
 
 	Vector3 eye = Tr2Renderer::GetInverseViewTransform().GetTranslation();
-	Vector3 up( 0, 1, 0 );
-	D3DXVec3TransformNormal( &up, &up, &Tr2Renderer::GetInverseViewTransform() );
+	Vector3 up = TransformNormal( Vector3( 0, 1, 0 ), Tr2Renderer::GetInverseViewTransform() );
 
 	for( size_t i = 0; i < m_impostorManager->GetRenderQueueLength(); ++i )
 	{
@@ -1454,8 +1453,7 @@ void EveSpaceScene::UpdateImpostors()
 
 		Vector3 position( sphere.x, sphere.y, sphere.z );
 
-		Vector3 viewDir = eye - position;
-		D3DXVec3Normalize( &viewDir, &viewDir );
+		Vector3 viewDir = Normalize( eye - position );
 
 		const float distance = sphere.w * 10;
 		Matrix view( XMMatrixLookAtRH( position + viewDir * distance, position, up ) );
@@ -2187,8 +2185,7 @@ void EveSpaceScene::PopulatePerFrameVSData( PerFrameVSData &data )
 	data.Sun.DiffuseColor = m_useSunColorWithDynamicLights && g_eveSpaceSceneDynamicLighting ? m_sunColorWithDynamicLights : m_sunColor;
 
 	// make sure whatever direction we get in here, it is normalized! And inverted: Shaders work with direction to light...
-	D3DXVec3Normalize( &data.Sun.DirWorld, &data.Sun.DirWorld );
-	data.Sun.DirWorld = -data.Sun.DirWorld;
+	data.Sun.DirWorld = -Normalize( data.Sun.DirWorld );
 
 	// resolution of rendertarget
 	data.TargetResolution.x = (float)Tr2Renderer::GetRenderTargetWidth();
@@ -2232,8 +2229,7 @@ void EveSpaceScene::PopulatePerFramePSData( PerFramePSData &data )
 	data.Sun = m_sunData;
 	data.Sun.DiffuseColor = m_useSunColorWithDynamicLights && g_eveSpaceSceneDynamicLighting ? m_sunColorWithDynamicLights : m_sunColor;
 	// make sure whatever direction we get in here, it is normalized! And inverted: Shaders work with direction to light...
-	D3DXVec3Normalize( &data.Sun.DirWorld, &data.Sun.DirWorld );
-	data.Sun.DirWorld = -data.Sun.DirWorld;
+	data.Sun.DirWorld = -Normalize( data.Sun.DirWorld );
 	data.AmbientColor = Vector3( m_ambientColor.r, m_ambientColor.g, m_ambientColor.b );
 	data.NebulaIntensity = m_nebulaBrightnessOverride > 0.0f ? m_nebulaBrightnessOverride : m_nebulaIntensity;
 	data.FogColor = Vector4( m_fogColor.r, m_fogColor.g, m_fogColor.b, m_fogMax );

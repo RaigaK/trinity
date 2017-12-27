@@ -63,9 +63,9 @@ void EveChildLink::UpdateSyncronous( EveUpdateContext& updateContext, IEveSpaceO
 
 		// and that gives the direcion and current distance
 		m_currentDirection = tgtPos - srcPos;
-		m_currentDistance = D3DXVec3Length( &m_currentDirection );
+		m_currentDistance = Length( m_currentDirection );
 
-		D3DXVec3Normalize( &m_currentDirection, &m_currentDirection );
+		m_currentDirection = Normalize( m_currentDirection );
 	}
 }
 

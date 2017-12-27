@@ -258,7 +258,7 @@ float EvePlanet::EstimatePixelDiameterPos( const Vector3* scaledPlanetCenter, fl
 {
 	// calc distance
 	Vector3 d( *scaledPlanetCenter - Tr2Renderer::GetViewPosition() );
-	float depth = D3DXVec3Length( &d );
+	float depth = Length( d );
 
 	return EstimatePixelDiameterDist( depth, tanFOV, scale );
 }

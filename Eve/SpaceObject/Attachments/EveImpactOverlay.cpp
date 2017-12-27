@@ -286,21 +286,21 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 			{
 				// convert position and direction into object space
 				Vector3 tgtPosOS, dirOS;
-				D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
-				D3DXVec3TransformNormal( &dirOS, &shieldData->direction, &parentInverseWorldTransform );
+				tgtPosOS = TransformCoord( tgtPosWS, parentInverseWorldTransform );
+				dirOS = TransformNormal( shieldData->direction, parentInverseWorldTransform );
 				// intersections
 				IntersectEllipsoidRay( p, shieldEllipsoidCenter, shieldEllipsoidRadii, tgtPosOS, dirOS );
 			}
 			else
 			{
 				// just use locator pos, no ellipsoid
-				D3DXVec3TransformCoord( &p, &tgtPosWS, &parentInverseWorldTransform );
+				p = TransformCoord( tgtPosWS, parentInverseWorldTransform );
 			}
 			// "encode" it in texels
 			texelData->v[0] = Vector4( p, shieldData->timeLeft );
 			texelData->v[1] = Vector4( shieldData->size, shieldData->intensity, 0.f, shieldData->lifeTime );
 			// also need this intercept position in WS
-			D3DXVec3TransformCoord( &shieldData->interceptPosition, &p, &parentWorldTransform );
+			shieldData->interceptPosition = TransformCoord( p, parentWorldTransform );
 	
 			++i;
 		}
@@ -321,8 +321,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 			Vector3 tgtPosWS( 0.f, 0.f, 0.f );
 			parent->GetDamageLocatorPosition( &tgtPosWS, armorData->damageLocatorIndex, true );
 			// convert position and direction into object space
-			Vector3 tgtPosOS;
-			D3DXVec3TransformCoord( &tgtPosOS, &tgtPosWS, &parentInverseWorldTransform );
+			Vector3 tgtPosOS = TransformCoord( tgtPosWS, parentInverseWorldTransform );
 			texelData->v[2] = Vector4( tgtPosOS, 0.f );
 			texelData->v[3] = Vector4( size, 0.f, 0.f, 0.f );
 
@@ -616,7 +615,7 @@ bool EveImpactOverlay::UpdateImpact( Vector3& out, const Vector3& direction, int
 	if( shieldData != m_shieldImpactData.end() )
 	{
 		// put new direction in there
-		D3DXVec3Normalize( &shieldData->second.direction, &direction );
+		shieldData->second.direction = direction;
 		// and return the old "intercept" position
 		out = shieldData->second.interceptPosition;
 		return true;
@@ -640,15 +639,14 @@ bool EveImpactOverlay::UpdateImpact( Vector3& out, const Vector3& direction, int
 int EveImpactOverlay::CreateShieldImpact( int damageLocatorIndex, const Vector3& direction, float lifeTime, float size, float intensity )
 {
 	// only need normal
-	Vector3 nrmDir;
-	D3DXVec3Normalize( &nrmDir, &direction );
-	
+	Vector3 nrmDir = Normalize( direction );
+
 	// be carefull: try to find an already existing impact, which is close enough! Preferably at the same damage locator...
 	int closestImpactAtSameDmgLocIdx = -1, closestImpactAtAnyDmgLocIdx = -1;
 	float closestImpactAtSameDmgLocAngle = -FLT_MAX, closestImpactAtAnyDmgLocAngle = -FLT_MAX;
 	for( auto it = m_shieldImpactData.begin(); it != m_shieldImpactData.end(); ++it )
 	{
-		float a = D3DXVec3Dot( &nrmDir, &it->second.direction );
+		float a = Dot( nrmDir, it->second.direction );
 		if( a > closestImpactAtAnyDmgLocAngle )
 		{
 			closestImpactAtAnyDmgLocAngle = a;
@@ -689,8 +687,7 @@ int EveImpactOverlay::CreateShieldImpact( int damageLocatorIndex, const Vector3&
 
 	// fill our struct, but keep it in world space
 	ShieldImpactData sid;
-	sid.direction = direction;
-	D3DXVec3Normalize( &sid.direction, &sid.direction );
+	sid.direction = Normalize( direction );
 	sid.damageLocatorIndex = damageLocatorIndex;
 	sid.interceptPosition = Vector3( 0.f, 0.f, 0.f );
 	sid.lifeTime = sid.timeLeft = IMPACT_SHIELD_FADEOUT * lifeTime;

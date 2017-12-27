@@ -450,7 +450,7 @@ bool EveTurretSet::GetDynamicBounds( const SingleTurretData& turret, Vector4* bo
 
 		for( size_t point = 0; point < 8; point++ )
 		{
-			D3DXVec3TransformCoord( &transformed[point], &m_boneBounds[i].m_corners[point], mat );
+			transformed[point] = TransformCoord( m_boneBounds[i].m_corners[point], *mat );
 			if( aabbMin && aabbMax )
 			{
 				BoundingBoxUpdate( *aabbMin, *aabbMax, transformed[point] );
@@ -523,7 +523,7 @@ void EveTurretSet::RenderDynamicBounds()
 
 			for( unsigned point = 0; point < 8; point++ )
 			{
-				D3DXVec3TransformCoord( &transformed[point], &m_boneBounds[i].m_corners[point], &mat );
+				transformed[point] = TransformCoord( m_boneBounds[i].m_corners[point], mat );
 				BoundingBoxUpdate( aabbMin, aabbMax, transformed[point] );
 				if( !initialized )
 				{
@@ -943,8 +943,7 @@ void EveTurretSet::UpdateAsyncronous( EveUpdateContext& updateContext, const Par
 				if( m_trackingInfluence != 0.f )
 				{
 					// transform traget pos (which is in world space) into objectspace
-					Vector3 targetPosOS;
-					D3DXVec3TransformCoord( &targetPosOS, m_target->GetTrackingPosition(), &it->invWorldMatrix );
+					Vector3 targetPosOS = TransformCoord( *m_target->GetTrackingPosition(), it->invWorldMatrix );
 
 					// "do" all the system bones, we have found
 					for( unsigned int bone = 0; bone < SYSBONE_MAX; ++bone )
@@ -1195,8 +1194,7 @@ void EveTurretSet::ModifySystemBoneTransform( SystemBones bone, const Vector3* t
 		if( transform )
 		{
 			// pitch of barrel 90 degrees
-			Vector3 dirNrm;
-			D3DXVec3Normalize( &dirNrm, target );
+			Vector3 dirNrm = Normalize( *target );
 			float height = Clamp( dirNrm.y, 0.f, 1.f );
 			// never forget do apply influence!
 			height *= m_trackingInfluence;
@@ -1347,8 +1345,7 @@ void EveTurretSet::RenderDebugInfo( Tr2DebugRenderer& renderer )
 	{
 		if( it->valid )
 		{
-			Vector3 center;
-			D3DXVec3TransformCoord( &center, (Vector3*)&m_boundingSphere, &it->worldMatrix );
+			Vector3 center = TransformCoord( m_boundingSphere.GetXYZ(), it->worldMatrix );
 			renderer.DrawSphere( this, center, m_boundingSphere.w, 10, Tr2DebugRenderer::Wireframe, 0xffffff00 );
 		}
 	}
@@ -2379,12 +2376,10 @@ bool EveTurretSet::GetClosestTurretAndLocator( unsigned int& closestTurretIx, in
 			int locatorIx = m_target->FindClosestLocator( &source, &position );
 
 			// find normal from turret to target
-			Vector3 nrmToTarget = position - source;
-			D3DXVec3Normalize( &nrmToTarget, &nrmToTarget );
+			Vector3 nrmToTarget = Normalize( position - source );
 			// find "up" normal of turret
-			Vector3 nrmUp = Vector3( 0.f, 1.f, 0.f );
-			D3DXVec3TransformNormal( &nrmUp, &nrmUp, &m_singleTurrets[i].worldMatrix );
-			float angle = D3DXVec3Dot( &nrmToTarget, &nrmUp );
+			Vector3 nrmUp = TransformNormal( Vector3( 0.f, 1.f, 0.f ), m_singleTurrets[i].worldMatrix );
+			float angle = Dot( nrmToTarget, nrmUp );
 			if( angle > closestAngle )
 			{
 				closestTurret = i;
@@ -2411,12 +2406,10 @@ bool EveTurretSet::GetClosestTurretAndLocator( unsigned int& closestTurretIx, in
 					Vector3 source = m_singleTurrets[i].worldMatrix.GetTranslation();
 
 					// find normal from turret to target
-					Vector3 nrmToTarget = locatorPosition - source;
-					D3DXVec3Normalize( &nrmToTarget, &nrmToTarget );
+					Vector3 nrmToTarget = Normalize( locatorPosition - source );
 					// find "up" normal of turret
-					Vector3 nrmUp = Vector3( 0.f, 1.f, 0.f );
-					D3DXVec3TransformNormal( &nrmUp, &nrmUp, &m_singleTurrets[i].worldMatrix );
-					float angle = D3DXVec3Dot( &nrmToTarget, &nrmUp );
+					Vector3 nrmUp = TransformNormal( Vector3( 0.f, 1.f, 0.f ), m_singleTurrets[i].worldMatrix );
+					float angle = Dot( nrmToTarget, nrmUp );
 					if( angle > closestAngle )
 					{
 						closestTurret = unsigned( i );
@@ -2547,10 +2540,9 @@ void EveTurretSet::CalcTransformForPitchBone( const Vector3* target, granny_tran
 
 	if( localTransform )
 	{
-		Vector3 bone_direction = bone_position;
-		D3DXVec3Normalize( &bone_direction, &bone_direction );
-		float d = D3DXVec3Dot( &bone_direction, target );
-		if( d < D3DXVec3Length( &bone_position ) )
+		Vector3 bone_direction = Normalize( bone_position );
+		float d = Dot( bone_direction, *target );
+		if( d < Length( bone_position ) )
 		{
 			// Assuming up is enough for now to avoid cross products
 			radians = TriFloatSign( relTarget.y ) * XM_PI - radians;

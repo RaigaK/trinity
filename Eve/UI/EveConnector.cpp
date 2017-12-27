@@ -54,36 +54,37 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 	{
 	case StraightAnchor:
 		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
-		m_lineLength = D3DXVec3Length( D3DXVec3Subtract( &v2, &v, &m_destPosition ) );
+		m_lineLength = Length( v - m_destPosition );
 		AddStraightLine( lineSet, m_destPosition, v );
 		break;
 	case CurvedAnchor:
 		TriVectorRotateToPlane( &v, &m_destPosition, &m_sourcePosition, &n );
-		D3DXVec3Subtract( &v2, &m_destPosition, &m_sourcePosition );
-		D3DXVec3Subtract( &v3, &v, &m_sourcePosition );
-		length = D3DXVec3Length( &v2 );
-		angle = acos( D3DXVec3Dot( D3DXVec3Normalize( &v2, &v2 ), D3DXVec3Normalize( &v3, &v3 ) ) );
+		v2 = m_destPosition - m_sourcePosition;
+		v3 = v - m_sourcePosition;
+		length = Length( v2 );
+		angle = acos( Dot( Normalize( v2 ), Normalize( v3 ) ) );
 		m_lineLength = length * angle;
 		AddSpheredSegment( lineSet, m_destPosition, v, m_sourcePosition );
 		break;
 	case XZ_Circle:
 		v = m_destPosition - m_sourcePosition;
-		length = D3DXVec3Length( &v );
+		length = Length( v );
 		m_lineLength = TRI_PI * length * 0.5f;
 		AddCircle( lineSet, m_sourcePosition, length );
 		break;
 	case XZ_CircleStraight:
 		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
 		v = v - m_sourcePosition;
-		length = D3DXVec3Length( &v );
+		length = Length( v );
 		m_lineLength = TRI_PI * length * 0.5f;
 		AddCircle( lineSet, m_sourcePosition, length );
 		break;
 	case PointToPoint:
-		m_lineLength = D3DXVec3Length( D3DXVec3Subtract( &v, &m_destPosition, &m_sourcePosition ) );
+		v = m_destPosition - m_sourcePosition;
+		m_lineLength = Length( v );
 		if( m_length && m_lineLength > m_length )
 		{
-			D3DXVec3Scale( &v, D3DXVec3Normalize( &v, &v ), m_length );
+			v = Normalize( v ) * m_length;
 			v += m_sourcePosition;
 			fade = true;
 		}
@@ -134,13 +135,11 @@ inline void EveConnector::AddOrbit( EveCurveLineSet* lineSet, const Vector3& cen
 	Vector3 side( 1, 0, 0 ), front( 0, 0, -1 ), up( 0, 1, 0 ), upDir;
 
 	// Draw the orbit circle
-	D3DXVec3Normalize( &upDir, &planeNormal );
-	if( std::abs( D3DXVec3Dot( &upDir, &up ) ) < 0.999 )
+	upDir = Normalize( planeNormal );
+	if( std::abs( Dot( upDir, up ) ) < 0.999 )
 	{
-		D3DXVec3Cross( &side, &up, &upDir );
-		D3DXVec3Normalize( &side, &side );
-		D3DXVec3Cross( &front, &side, &upDir );
-		D3DXVec3Normalize( &front, &front );
+		side = Normalize( Cross( up, upDir ) );
+		front = Normalize( Cross( side, upDir ) );
 	}
 	side *= radius;
 	front *= radius;
@@ -152,10 +151,9 @@ inline void EveConnector::AddOrbit( EveCurveLineSet* lineSet, const Vector3& cen
 
 	// And a line to the orbit
 	Vector3 planeDir = center - m_sourcePosition;
-	float d = D3DXVec3Dot( &upDir, &planeDir );
+	float d = Dot( upDir, planeDir );
 	planeDir = m_sourcePosition + upDir * d;
-	planeDir = planeDir - center;
-	D3DXVec3Normalize( &planeDir, &planeDir );
+	planeDir = Normalize( planeDir - center );
 	planeDir = planeDir * radius + center;
 
 	AddStraightLine( lineSet, m_sourcePosition, planeDir );

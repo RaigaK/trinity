@@ -192,14 +192,13 @@ Vector3 Obb::GetPoint( unsigned N ) const
 void Obb::ComputeAABB( Vector3& min, Vector3& max, const Matrix& transform ) const
 {
 	Vector3 in = GetPoint( 0 );
-	Vector3 out;
-	D3DXVec3TransformCoord( &out, &in, &transform );
+	Vector3 out = TransformCoord( in, transform );
 
 	min = max = out;
 	for( unsigned i = 1; i != 8; ++i )
 	{
 		in = GetPoint( i );
-		D3DXVec3TransformCoord( &out, &in, &transform );
+		out = TransformCoord( in, transform );
 
 		min.x = std::min( min.x, out.x );
 		min.y = std::min( min.y, out.y );

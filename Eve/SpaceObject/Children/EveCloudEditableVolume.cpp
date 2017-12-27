@@ -352,8 +352,7 @@ void EveCloudEditableVolume::RenderDebugInfo( const Matrix& world, Tr2RenderCont
 
 	for( auto it = m_balls.begin(); it != m_balls.end(); ++it )
 	{
-		Vector3 position;
-		D3DXVec3TransformCoord( &position, &( *it )->m_ballData.m_position, &world );
+		Vector3 position = TransformCoord( ( *it )->m_ballData.m_position, world );
 		Tr2Renderer::DrawSphere( position, 
 			( *it )->m_ballData.m_radius * world._11, 
 			10, 

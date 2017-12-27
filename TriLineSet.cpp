@@ -144,7 +144,7 @@ void TriLineSet::AddSphere( const Vector3& center, float radius, int segments, u
 void TriLineSet::AddCylinder( const Vector3& start, const Vector3& end, float radius, int segments, uint32_t color )
 {
 	Vector3 z = start - end;
-	float length = D3DXVec3Length( &z );
+	float length = Length( z );
 	z /= length;
 
 	Vector3 up( 0.0f, 1.0f, 0.0f );
@@ -229,7 +229,7 @@ void TriLineSet::AddCylinder( const Vector3& start, const Vector3& end, float ra
 void TriLineSet::AddCone( const Vector3& start, const Vector3& end, float radius, int segments, uint32_t color )
 {
 	Vector3 z = start - end;
-	float length = D3DXVec3Length( &z );
+	float length = Length( z );
 	z /= length;
 
 	Vector3 up( 0.0f, 1.0f, 0.0f );

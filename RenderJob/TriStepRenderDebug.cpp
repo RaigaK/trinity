@@ -201,15 +201,10 @@ void TriStepRenderDebug::DrawPlane( const Vector4& planeEquation, int segments, 
 
 void TriStepRenderDebug::DrawAxes( const Matrix& m, float scale )
 {
-	Vector3 origin( 0.0f, 0.0f, 0.0f );
-	Vector3 xAxis( scale, 0.0f, 0.0f );
-	Vector3 yAxis( 0.0f, scale, 0.0f );
-	Vector3 zAxis( 0.0f, 0.0f, scale );
-
-	D3DXVec3TransformCoord( &origin, &origin, &m );
-	D3DXVec3TransformCoord( &xAxis, &xAxis, &m );
-	D3DXVec3TransformCoord( &yAxis, &yAxis, &m );
-	D3DXVec3TransformCoord( &zAxis, &zAxis, &m );
+	Vector3 origin = TransformCoord( Vector3( 0.0f, 0.0f, 0.0f ), m );
+	Vector3 xAxis = TransformCoord( Vector3( scale, 0.0f, 0.0f ), m );
+	Vector3 yAxis = TransformCoord( Vector3( 0.0f, scale, 0.0f ), m );
+	Vector3 zAxis = TransformCoord( Vector3( 0.0f, 0.0f, scale ), m );
 
 	m_lineSet->Add( origin, 0xffff0000, xAxis, 0xffff0000 );
 	m_lineSet->Add( origin, 0xff00ff00, yAxis, 0xff00ff00 );

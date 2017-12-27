@@ -111,10 +111,10 @@ void Tr2CpuSkinnedModel::deform( const float* deformMatrices, unsigned int numOf
 									skinMatrix._14 = skinMatrix._24 = skinMatrix._34 = 0.f;
 
 									// matrix is ready, now transform
-									D3DXVec3TransformCoord( reinterpret_cast<Vector3*>( vtxDstPosition ), reinterpret_cast<Vector3*>( vtxSrcPosition ), &skinMatrix );
-									D3DXVec3TransformNormal( reinterpret_cast<Vector3*>( vtxDstNormal ), reinterpret_cast<Vector3*>( vtxSrcNormal ), &skinMatrix );
-									D3DXVec3TransformNormal( reinterpret_cast<Vector3*>( vtxDstTangent ), reinterpret_cast<Vector3*>( vtxSrcTangent ), &skinMatrix );
-									D3DXVec3TransformNormal( reinterpret_cast<Vector3*>( vtxDstBinormal ), reinterpret_cast<Vector3*>( vtxSrcBinormal ), &skinMatrix );
+									*reinterpret_cast<Vector3*>( vtxDstPosition ) = TransformCoord( *reinterpret_cast<Vector3*>( vtxSrcPosition ), skinMatrix );
+									*reinterpret_cast<Vector3*>( vtxDstNormal ) = TransformNormal( *reinterpret_cast<Vector3*>( vtxSrcNormal ), skinMatrix );
+									*reinterpret_cast<Vector3*>( vtxDstTangent ) = TransformNormal( *reinterpret_cast<Vector3*>( vtxSrcTangent ), skinMatrix );
+									*reinterpret_cast<Vector3*>( vtxDstBinormal ) = TransformNormal( *reinterpret_cast<Vector3*>( vtxSrcBinormal ), skinMatrix );
 
 									// next vertex
 									boneIndex0 += resMeshData->m_bytesPerVertex;
