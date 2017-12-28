@@ -41,8 +41,7 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 	Vector3 finalScale;
 	if( m_useDistanceBasedScale )
 	{
-		Vector3 myPos;
-		D3DXVec3TransformCoord( &myPos, &m_translation, &parentTransform );
+		Vector3 myPos = TransformCoord( m_translation, parentTransform );
 
 		const Vector3& camPos = Tr2Renderer::GetViewPosition();
 		Vector3 d = myPos - camPos;
@@ -85,11 +84,11 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 					const Vector3& camPos = Tr2Renderer::GetViewPosition();
 					Vector3 d = camPos - myPos;
 
-					Vector3 backward, dirToCamNorm;
+					Vector3 backward;
 
-					float scale = D3DXVec3Dot(
-						D3DXVec3Normalize(&dirToCamNorm, &d), 
-						D3DXVec3Normalize(&backward, TriVectorRotatedBasisMatrix(&backward, TRITA_Z, &m_worldTransform))
+					float scale = Dot(
+						Normalize( d ), 
+						Normalize( *TriVectorRotatedBasisMatrix( &backward, TRITA_Z, &m_worldTransform ) )
 						);
 
 					if( scale < 0.0f )
@@ -116,8 +115,7 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 		case TR2TM_EVE_CAMERA_ROTATION:
 			{
 				// apply the parent transform ONLY to the translation!
-				Vector3 newTranslation;
-				D3DXVec3TransformCoord( &newTranslation, &m_translation, &parentTransform );
+				Vector3 newTranslation = TransformCoord( m_translation, parentTransform );
 				D3DXMatrixTransformation( &m_localTransform, 0, 0, &finalScale, 0, &m_rotation, &newTranslation );
 				Vector3 temp( m_localTransform._41, m_localTransform._42, m_localTransform._43 );
 				D3DXMatrixMultiply( &m_worldTransform , &m_localTransform, &Tr2Renderer::GetInverseViewTransform() );
@@ -154,15 +152,13 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 				camFwd.z /= lengthSq;
 
 				float distCenter = Length( camFwd );
-				D3DXVec3Normalize( &camFwd, &camFwd );
+				camFwd = Normalize( camFwd );
 
 				const Matrix& viewMatrix = Tr2Renderer::GetViewTransform();
 				Vector3 right( viewMatrix._11, viewMatrix._21, viewMatrix._31 );
 				TriVectorRotateMatrix(&right, &right, &parentT);
 				
-				Vector3 up;
-				D3DXVec3Cross( &up, &camFwd, &right );
-				D3DXVec3Normalize( &up, &up );
+				Vector3 up = Normalize( Cross( camFwd, right ) );
 
 				Matrix alignMat;
 				TriMatrixChangeBase( &alignMat, &camFwd, &up );
@@ -171,12 +167,12 @@ void Tr2Transform::UpdateViewDependentData( const TriFrustum& frustum, const Mat
 
 				if( m_modifier == TR2TM_EVE_SIMPLE_HALO )
 				{
-					Vector3 forward, dirToCamNorm;
+					Vector3 forward;
 
-					D3DXVec3Normalize( &forward, TriVectorRotatedBasisMatrix( &forward, TRITA_Z, &m_worldTransform ) );
+					forward = Normalize( *TriVectorRotatedBasisMatrix( &forward, TRITA_Z, &m_worldTransform ) );
 					Vector3 backward = -forward;
 
-					float scale = D3DXVec3Dot( D3DXVec3Normalize( &dirToCamNorm, &d ), &backward );
+					float scale = Dot( Normalize( d ), backward );
 
 					if( scale < 0.0f )
 					{

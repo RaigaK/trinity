@@ -554,16 +554,14 @@ void Tr2SkinnedObject::RenderDebugInfo( Tr2RenderContext& renderContext )
 		Vector3 vDirectionPlus(0.5f,1.4f,0.0f);
 		Vector3 vDirectionNeg(-0.5f,1.4f,0.0f);
 
-		Vector3 vPlus;
-		D3DXVec3TransformCoord( &vPlus, &vDirectionPlus, &m_transform );
-		Vector3 vNeg;
-		D3DXVec3TransformCoord( &vNeg, &vDirectionNeg, &m_transform );
+		Vector3 vPlus = TransformCoord( vDirectionPlus, m_transform );
+		Vector3 vNeg = TransformCoord( vDirectionNeg, m_transform );
 
 		m_lineSet->Add( vNeg , colorWhite, vPlus, colorWhite );
 		m_lineSet->Add( position + Vector3(0.0f,1.0f,0.0f)  , colorWhite, position + Vector3(0.0f,1.8f,0.0f) , colorWhite );
 
 		Vector3 vTravel(0.0f,0.0f,-1.0f);
-		D3DXVec3TransformCoord( &vTravel, &vTravel, &m_transform );
+		vTravel = TransformCoord( vTravel, m_transform );
 		m_lineSet->Add( position , colorWhite, vTravel, colorWhite );
 	}
 

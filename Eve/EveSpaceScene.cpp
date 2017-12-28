@@ -2764,7 +2764,7 @@ Matrix EveSpaceScene::SetupPlanetViewMatrix()
 	Matrix planetViewMatrix = orgViewMatrix;
 	const float planetScale = 1.0f / m_planetCameraScale;
 	Vector3& viewPos = planetViewMatrix.GetTranslation();
-	D3DXVec3Scale( &viewPos, &viewPos, planetScale );
+	viewPos *= planetScale;
 	Tr2Renderer::SetViewTransform( planetViewMatrix );
 
 	return orgViewMatrix;

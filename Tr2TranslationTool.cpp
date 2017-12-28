@@ -61,18 +61,18 @@ void Tr2TranslationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mous
 	}
 	else if( m_selectedAxis == "x" )
 	{
-		float scale = D3DXVec3Dot(&delta, &xAxis);
-		D3DXVec3Scale( &translate, &xAxis, scale );
+		float scale = Dot( delta, xAxis );
+		translate = xAxis * scale;
 	}
 	else if( m_selectedAxis == "y" )
 	{		
-		float scale = D3DXVec3Dot(&delta, &yAxis);		
-		D3DXVec3Scale( &translate, &yAxis, scale );
+		float scale = Dot( delta, yAxis );
+		translate = yAxis * scale;
 	}
 	else if( m_selectedAxis == "z" )
 	{		
-		float scale = D3DXVec3Dot(&delta, &zAxis);		
-		D3DXVec3Scale( &translate, &zAxis, scale );
+		float scale = Dot( delta, zAxis );
+		translate = zAxis * scale;
 	}
 
 	m_movement.x += translate.x;

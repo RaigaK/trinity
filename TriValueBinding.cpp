@@ -107,7 +107,7 @@ static void CopyVector2( void* srcVar, void* dstVar, float scale, const Vector4&
 
 static void CopyVector3( void* srcVar, void* dstVar, float scale, const Vector4& offset )
 {
-	D3DXVec3Scale( static_cast<Vector3*>( dstVar ), static_cast<Vector3*>( srcVar ), scale );
+	*static_cast<Vector3*>( dstVar ) = *static_cast<Vector3*>( srcVar ) * scale;
 	Vector3 &d = *static_cast<Vector3*>( dstVar );
 	d.x += offset.x;
 	d.y += offset.y;
@@ -175,7 +175,7 @@ static void CopyTriVectorToVector3( void* srcVar, void* dstVar, float scale, con
 	if( static_cast<IRoot*>( srcVar )->QueryInterface( BlueInterfaceIID<ITriVector>(), (void**)&vp, BEQI_SILENT ) )
 	{
 		vp->CopyVector( static_cast<Vector3*>( dstVar ) );
-		D3DXVec3Scale( static_cast<Vector3*>( dstVar ), static_cast<Vector3*>( dstVar ), scale );
+		*static_cast<Vector3*>( dstVar ) = *static_cast<Vector3*>( dstVar ) * scale;
 		static_cast<Vector3*>( dstVar )->x += offset.x;
 		static_cast<Vector3*>( dstVar )->y += offset.y;
 		static_cast<Vector3*>( dstVar )->z += offset.z;

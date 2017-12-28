@@ -515,14 +515,14 @@ void EveSwarm::UpdateSwarm( Be::Time t )
 			Vector3 force = CalculateForces( i, m_vehicles, followPosition, center, alignment, formationDirection, formationSide, timeSeconds );
 			Vector3 acc = force * 1.f / m_behavior.m_mass;
 			m_vehicles[i].acceleration = acc;
-			TriVectorClampLength( &m_vehicles[i].acceleration, maxAcceleration );
+			m_vehicles[i].acceleration = ClampLength( m_vehicles[i].acceleration, maxAcceleration );
 		}
 
 		// Update velocities and positions
 		for( unsigned i = 0; i < m_vehicles.size(); i++ )
 		{
 			m_vehicles[i].velocity = m_vehicles[i].velocity + m_vehicles[i].acceleration * timeSeconds;
-			TriVectorClampLength( &m_vehicles[i].velocity, maxSpeed );
+			m_vehicles[i].velocity = ClampLength( m_vehicles[i].velocity, maxSpeed );
 			m_vehicles[i].position += m_vehicles[i].velocity * timeSeconds;
 			UpdateOrientation( &m_vehicles[i], timeSeconds );
 			BoundingBoxUpdate( m_squadBoundsMin, m_squadBoundsMax, m_vehicles[i].position );
@@ -1021,7 +1021,7 @@ Vector3 EveSwarm::CalculateForces( int i0, std::vector<SwarmVehicle>& swarmers, 
 	anchor = anchorDistance * m_behavior.m_weightAnchor * anchor;
 	align = m_behavior.m_weightAlign * alignment;
 	decelerate = swarmers[i0].velocity * -m_behavior.m_weightDecelerate;
-	TriVectorClampLength( &decelerate, m_behavior.m_maxDeceleration );
+	decelerate = ClampLength( decelerate, m_behavior.m_maxDeceleration );
 
 	for( unsigned i = 0; i < swarmers.size(); i++ )
 	{

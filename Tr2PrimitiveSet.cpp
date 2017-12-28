@@ -96,8 +96,7 @@ Vector4 Tr2PrimitiveSet::GetBoundingSphere( void )
 	The primitives bounding sphere needs to be scaled along with the model
  */
 	Vector4 boundingCenter;
-	Vector3 bs( m_boundingSphere.x, m_boundingSphere.y, m_boundingSphere.z );
-	D3DXVec3TransformCoord((Vector3*)&boundingCenter, &bs, &m_worldTransform );
+	boundingCenter.GetXYZ() = TransformCoord( m_boundingSphere.GetXYZ(), m_worldTransform );
 	boundingCenter.w = (m_boundingSphere.w*m_scale);
 	return boundingCenter;
 }
@@ -137,7 +136,7 @@ void Tr2PrimitiveSet::UpdateTransform( void )
 		Vector3 lineSetPos = Vector3( m_localTransform._41, m_localTransform._42, m_localTransform._43 );
 		Vector3 normal = Vector3( view._13, view._23, view._33 );
 		Vector3 dir(viewPos - lineSetPos);
-		m_scale = fabs(D3DXVec3Dot( &dir, &normal )*g_primitiveDistanceScaleMultiplier*Tr2Renderer::GetFieldOfView());
+		m_scale = fabs( Dot( dir, normal ) * g_primitiveDistanceScaleMultiplier * Tr2Renderer::GetFieldOfView() );
 		D3DXMatrixScaling( &scale_mat, m_scale, m_scale, m_scale );
 		D3DXMatrixMultiply( &finalTransform, &scale_mat, &m_localTransform );
 	}

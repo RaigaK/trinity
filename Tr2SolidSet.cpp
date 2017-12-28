@@ -125,7 +125,7 @@ Vector3 Tr2SolidSet::GetCenterOfMass( void )
 	result.x /= (m_triangles.size()*3);
 	result.y /= (m_triangles.size()*3);
 	result.z /= (m_triangles.size()*3);
-	D3DXVec3TransformCoord( &result, &result, &m_worldTransform );
+	result = TransformCoord( result, m_worldTransform );
 	return result;
 }
 
@@ -167,14 +167,14 @@ void Tr2SolidSet::AddTriangle( const Vector3& position1, const Vector4& color1, 
 
 	if(Tr2Renderer::IsRightHanded())
 	{
-		D3DXVec3Cross( &newTriangle.m_normal, &dir13, &dir21 );
+		newTriangle.m_normal = Cross( dir13, dir21 );
 	}
 	else
 	{
-		D3DXVec3Cross( &newTriangle.m_normal, &dir21, &dir13 );
+		newTriangle.m_normal = Cross( dir21, dir13 );
 	}
 
-	D3DXVec3Normalize(&newTriangle.m_normal,&newTriangle.m_normal);
+	newTriangle.m_normal = Normalize( newTriangle.m_normal );
 	m_triangles.push_back( newTriangle );
 }
 

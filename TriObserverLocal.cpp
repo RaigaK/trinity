@@ -14,10 +14,9 @@ void TriObserverLocal::Update( const Matrix& worldTransform )
 	if( m_observer )
 	{
 		Vector3 front, up, position;
-		D3DXVec3TransformCoord( &position, &m_position, &worldTransform );
-		D3DXVec3TransformNormal( &front, &m_front, &worldTransform );
-		Vector3 localUp( 0.0f, 1.0f, 0.0f );
-		D3DXVec3TransformNormal( &up, &localUp, &worldTransform );
+		position = TransformCoord( m_position, worldTransform );
+		front = TransformNormal( m_front, worldTransform );
+		up = TransformNormal( Vector3( 0.0f, 1.0f, 0.0f ), worldTransform );
 		m_observer.p->UpdatePlacement( front, up, position );
 	}
 }

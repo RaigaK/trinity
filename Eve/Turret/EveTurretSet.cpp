@@ -2534,8 +2534,7 @@ void EveTurretSet::CalcTransformForPitchBone( const Vector3* target, granny_tran
 	}
 
 	Vector3 relTarget = *target - bone_position;
-	Vector3 dirNrm;
-	D3DXVec3Normalize( &dirNrm, &relTarget );
+	Vector3 dirNrm = Normalize( relTarget );
 	float radians = asinf( dirNrm.y );
 
 	if( localTransform )

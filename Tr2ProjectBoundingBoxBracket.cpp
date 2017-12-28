@@ -65,8 +65,8 @@ void Tr2ProjectBoundingBoxBracket::UpdateValue( double time )
 	Vector3 center = (bbMax + bbMin) * 0.5f;
 	Vector3 projectedCenter;
 	Matrix viewProj;
-	D3DXVec3TransformCoord( &projectedCenter, &center, &Tr2Renderer::GetViewTransform() );
-	D3DXVec3TransformCoord( &projectedCenter, &projectedCenter, &Tr2Renderer::GetProjectionTransform() );
+	projectedCenter = TransformCoord( center, Tr2Renderer::GetViewTransform() );
+	projectedCenter = TransformCoord( projectedCenter, Tr2Renderer::GetProjectionTransform() );
 	Vec3TransformByViewport( projectedCenter, Tr2Renderer::GetViewport() );
 	if( projectedCenter.z <= 0.0f || projectedCenter.z >= 1.0f )
 	{

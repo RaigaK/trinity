@@ -66,8 +66,8 @@ void TriLineSet::Add(const Vector3 &from, uint32_t colorFrom, const Vector3 &to,
 void TriLineSet::AddTransformed( const Matrix& transform, const Vector3& from, uint32_t colorFrom, const Vector3& to, uint32_t colorTo )
 {
 	Vector3 newFrom, newTo;
-	D3DXVec3TransformCoord( &newFrom, &from, &transform );
-	D3DXVec3TransformCoord( &newTo, &to, &transform );
+	newFrom = TransformCoord( from, transform );
+	newTo = TransformCoord( to, transform );
 
 	Add( newFrom, colorFrom, newTo, colorTo );
 }
@@ -153,12 +153,9 @@ void TriLineSet::AddCylinder( const Vector3& start, const Vector3& end, float ra
 		up = Vector3( 1.0f, 0.0f, 0.0f );
 	}
 
-	Vector3 x;
-	D3DXVec3Cross( &x, &up, &z );
-	D3DXVec3Normalize( &x, &x );
+	Vector3 x = Normalize( Cross( up, z ) );
 
-	Vector3 y;
-	D3DXVec3Cross( &y, &z, &x );
+	Vector3 y = Cross( z, x );
 
 	Matrix m;
 	m._11 = x.x;
@@ -205,8 +202,8 @@ void TriLineSet::AddCylinder( const Vector3& start, const Vector3& end, float ra
 		Vector3 from( x, y, 0.0f );
 		Vector3 to( x, y, 1.0f );
 
-		D3DXVec3TransformCoord( &from, &from, &m );
-		D3DXVec3TransformCoord( &to, &to, &m );
+		from = TransformCoord( from, m );
+		to = TransformCoord( to, m );
 
 		Add( from, color, to, color );
 		Add( from, color, end, color );
@@ -218,8 +215,8 @@ void TriLineSet::AddCylinder( const Vector3& start, const Vector3& end, float ra
 		Vector3 from2( x2, y2, 0.0f );
 		Vector3 to2( x2, y2, 1.0f );
 
-		D3DXVec3TransformCoord( &from2, &from2, &m );
-		D3DXVec3TransformCoord( &to2, &to2, &m );
+		from2 = TransformCoord( from2, m );
+		to2 = TransformCoord( to2, m );
 
 		Add( from, color, from2, color );
 		Add( to, color, to2, color );
@@ -238,12 +235,9 @@ void TriLineSet::AddCone( const Vector3& start, const Vector3& end, float radius
 		up = Vector3( 1.0f, 0.0f, 0.0f );
 	}
 
-	Vector3 x;
-	D3DXVec3Cross( &x, &up, &z );
-	D3DXVec3Normalize( &x, &x );
+	Vector3 x = Normalize( Cross( up, z ) );
 
-	Vector3 y;
-	D3DXVec3Cross( &y, &z, &x );
+	Vector3 y = Cross( z, x );
 
 	Matrix m;
 	m._11 = x.x;
@@ -290,8 +284,8 @@ void TriLineSet::AddCone( const Vector3& start, const Vector3& end, float radius
 		Vector3 from( x, y, 0.0f );
 		Vector3 to( 0.0f, 0.0f, 1.0f );
 
-		D3DXVec3TransformCoord( &from, &from, &m );
-		D3DXVec3TransformCoord( &to, &to, &m );
+		from = TransformCoord( from, m );
+		to = TransformCoord( to, m );
 
 		Add( from, color, to, color );
 		Add( from, color, end, color );
@@ -303,8 +297,8 @@ void TriLineSet::AddCone( const Vector3& start, const Vector3& end, float radius
 		Vector3 from2( x2, y2, 0.0f );
 		Vector3 to2( 0.0f, 0.0f, 1.0f );
 
-		D3DXVec3TransformCoord( &from2, &from2, &m );
-		D3DXVec3TransformCoord( &to2, &to2, &m );
+		from2 = TransformCoord( from2, m );
+		to2 = TransformCoord( to2, m );
 
 		Add( from, color, from2, color );
 		Add( to, color, to2, color );
@@ -372,14 +366,14 @@ void TriLineSet::AddOrientedBox( const Matrix& boxMatrix, uint32_t color )
 	Vector3	maxC( -1.f, -1.f,  1.f );
 	Vector3 max (  1.f,  1.f,  1.f );
 
-	D3DXVec3TransformCoord( &min,  &min,  &boxMatrix );
-	D3DXVec3TransformCoord( &minA, &minA, &boxMatrix );
-	D3DXVec3TransformCoord( &minB, &minB, &boxMatrix );
-	D3DXVec3TransformCoord( &minC, &minC, &boxMatrix );
-	D3DXVec3TransformCoord( &max,  &max,  &boxMatrix );
-	D3DXVec3TransformCoord( &maxA, &maxA, &boxMatrix );
-	D3DXVec3TransformCoord( &maxB, &maxB, &boxMatrix );
-	D3DXVec3TransformCoord( &maxC, &maxC, &boxMatrix );
+	min = TransformCoord( min,  boxMatrix );
+	minA = TransformCoord( minA, boxMatrix );
+	minB = TransformCoord( minB, boxMatrix );
+	minC = TransformCoord( minC, boxMatrix );
+	max = TransformCoord( max,  boxMatrix );
+	maxA = TransformCoord( maxA, boxMatrix );
+	maxB = TransformCoord( maxB, boxMatrix );
+	maxC = TransformCoord( maxC, boxMatrix );
 
 	Add( min, color, minA, color );
 	Add( min, color, minB, color );

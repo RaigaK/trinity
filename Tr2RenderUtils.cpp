@@ -72,8 +72,8 @@ void SetupScreenQuadInCameraSpace( Tr2ScreenVertex quad[4], int width, int heigh
 	const Matrix& projectionRaw = Tr2Renderer::GetProjectionRawTransform();
 	Matrix proj2view;
 	D3DXMatrixInverse( &proj2view, NULL, &projectionRaw );
-	D3DXVec3TransformCoord( &tl, &tl, &proj2view );
-	D3DXVec3TransformCoord( &br, &br, &proj2view );
+	tl = TransformCoord( tl, proj2view );
+	br = TransformCoord( br, proj2view );
 	
 	int edge1 = 1;
 	int edge2 = 2;

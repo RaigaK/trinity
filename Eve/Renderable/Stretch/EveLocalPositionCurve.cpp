@@ -41,7 +41,8 @@ Vector3* EveLocalPositionCurve::CalculateOffsetPlaneRotation( Vector3* in, Be::T
 		offsetPosition = m_positionOffset;
 	}
 
-	return TriVectorRotateToPlane( in, &offsetPosition, &parentPosition, &normal );
+	*in = TriVectorRotateToPlane( offsetPosition, parentPosition, normal );
+	return in;
 }
 
 Vector3* EveLocalPositionCurve::CalculateOffsetPosition( Vector3* in, Be::Time t )

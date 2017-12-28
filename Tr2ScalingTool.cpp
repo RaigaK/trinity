@@ -19,7 +19,7 @@ Vector3 TransformPoint( const Vector3& localCenter, Tr2SolidSet* solid, Matrix& 
 	Vector3 lineSetPos = Vector3( solid->m_localTransform._41, solid->m_localTransform._42, solid->m_localTransform._43 );
 	Vector3 normal = Vector3( viewMatrix._13, viewMatrix._23, viewMatrix._33 );
 	Vector3 dir( viewPos - lineSetPos );
-	float scale = fabs( D3DXVec3Dot( &dir, &normal )*g_primitiveDistanceScaleMultiplier*Tr2Renderer::GetFieldOfView() );
+	float scale = fabs( Dot( dir, normal ) * g_primitiveDistanceScaleMultiplier * Tr2Renderer::GetFieldOfView() );
 
 	Matrix scaleMat, finalTransform;
 	D3DXMatrixScaling( &scaleMat, scale, scale, scale );
@@ -88,18 +88,18 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 	}
 	else if( m_selectedAxis == "x" )
 	{
-		float scale = D3DXVec3Dot(&delta, &xAxis);
-		D3DXVec3Scale( &translate, &xAxis, scale );
+		float scale = Dot( delta, xAxis );
+		translate = xAxis * scale;
 	}
 	else if( m_selectedAxis == "y" )
 	{
-		float scale = D3DXVec3Dot(&delta, &yAxis);		
-		D3DXVec3Scale( &translate, &yAxis, scale );
+		float scale = Dot( delta, yAxis );
+		translate = yAxis * scale;
 	}
 	else if( m_selectedAxis == "z" )
 	{
-		float scale = D3DXVec3Dot(&delta, &zAxis);		
-		D3DXVec3Scale( &translate, &zAxis, scale );
+		float scale = Dot( delta, zAxis );
+		translate = zAxis * scale;
 	}
 
 	m_movement.x += translate.x;
@@ -125,7 +125,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 
 			vecB = TransformPoint( Vector3( 1, 0, 0 ), m_xBox, viewMatrix );
 
-			D3DXVec3Subtract( &vecC, &vecA, &vecB );
+			vecC = vecA - vecB;
 			float delta = Length( m_movement );
 			float length = Length( vecC );
 			float scale = length / m_initialLength;
@@ -135,7 +135,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 				delta = -delta;
 			}
 
-			if( D3DXVec3Dot( &vecC, &xAxis ) >= 0.0f )
+			if( Dot( vecC, xAxis ) >= 0.0f )
 			{
 				scale = -scale;
 			}
@@ -143,17 +143,17 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 			// x
 			Vector3 translate;
 			Matrix translation;
-			D3DXVec3Scale( &translate, &xAxis, delta );
+			translate = xAxis * delta;
 			D3DXMatrixTranslation( &translation, translate.x, translate.y, translate.z );
 			D3DXMatrixMultiply( &m_xBox->m_localTransform, &m_xBox->m_localTransform, &translation );
 
 			// y
-			D3DXVec3Scale( &translate, &yAxis, delta );
+			translate = yAxis * delta;
 			D3DXMatrixTranslation( &translation, translate.x, translate.y, translate.z );
 			D3DXMatrixMultiply( &m_yBox->m_localTransform, &m_yBox->m_localTransform, &translation );
 
 			// z
-			D3DXVec3Scale( &translate, &zAxis, delta );
+			translate = zAxis * delta;
 			D3DXMatrixTranslation( &translation, translate.x, translate.y, translate.z );
 			D3DXMatrixMultiply( &m_zBox->m_localTransform, &m_zBox->m_localTransform, &translation );
 
@@ -206,7 +206,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 
 			vecB = TransformPoint( center, selectedPrimitive, viewMatrix );
 
-			D3DXVec3Subtract( &vecC, &vecA, &vecB );
+			vecC = vecA - vecB;
 
 			float l1 = Length( vecC );
 			float scale = l1 / m_initialLength;
@@ -214,7 +214,7 @@ void Tr2ScalingTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYDe
 			Matrix scaleA, scaleB;
 			D3DXMatrixScaling( &scaleA, m_scale.x, m_scale.y, m_scale.z );
 
-			if( D3DXVec3Dot( &vecC, &axis ) >= 0.0f )
+			if( Dot( vecC, axis ) >= 0.0f )
 			{
 				scale = -scale;
 			}

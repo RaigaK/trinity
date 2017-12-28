@@ -53,12 +53,12 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 	switch( m_type )
 	{
 	case StraightAnchor:
-		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
+		v = TriVectorProjectOnPlane( m_destPosition, m_sourcePosition, n );
 		m_lineLength = Length( v - m_destPosition );
 		AddStraightLine( lineSet, m_destPosition, v );
 		break;
 	case CurvedAnchor:
-		TriVectorRotateToPlane( &v, &m_destPosition, &m_sourcePosition, &n );
+		v = TriVectorRotateToPlane( m_destPosition, m_sourcePosition, n );
 		v2 = m_destPosition - m_sourcePosition;
 		v3 = v - m_sourcePosition;
 		length = Length( v2 );
@@ -73,7 +73,7 @@ void EveConnector::AddLine( EveCurveLineSet* lineSet )
 		AddCircle( lineSet, m_sourcePosition, length );
 		break;
 	case XZ_CircleStraight:
-		TriVectorProjectOnPlane( &v, &m_destPosition, &m_sourcePosition, &n );
+		v = TriVectorProjectOnPlane( m_destPosition, m_sourcePosition, n );
 		v = v - m_sourcePosition;
 		length = Length( v );
 		m_lineLength = TRI_PI * length * 0.5f;

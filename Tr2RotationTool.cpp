@@ -45,12 +45,10 @@ void Tr2RotationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYD
 	Vector3 endPlanePos = RayToPlaneIntersection( startPos, ray, pos, normal );
 
 	Vector3 start, end;
-	D3DXVec3Subtract( &start, &startPlanePos, &pos );
-	D3DXVec3Normalize( &start, &start );
-	D3DXVec3Subtract( &end, &endPlanePos, &pos );
-	D3DXVec3Normalize( &end, &end );
+	start = Normalize( startPlanePos - pos );
+	end = Normalize( endPlanePos - pos );
 
-	float dot = D3DXVec3Dot( &start, &end );
+	float dot = Dot( start, end );
 	
 	if(( 1.0f - dot ) < FLT_EPSILON)
 	{
@@ -58,8 +56,7 @@ void Tr2RotationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYD
 	}
 
 	float angleSign = 1.0f;
-	Vector3 dnormal;	
-	D3DXVec3Cross( &dnormal, &start, &end );
+	Vector3 dnormal = Cross( start, end );
 	
 	Vector3 xAxis;
 	Vector3 yAxis;
@@ -76,9 +73,9 @@ void Tr2RotationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYD
 		viewVec.z = viewMatrix._33;
 
 		D3DXMatrixInverse( &worldInv, &det, &m_localTransform );
-		D3DXVec3TransformNormal( &m_movement, &viewVec, &worldInv );
-		float rdot = D3DXVec3Dot( &m_movement, &viewVec );
-		float ddot = D3DXVec3Dot( &dnormal, &m_movement );
+		m_movement = TransformNormal( viewVec, worldInv );
+		float rdot = Dot( m_movement, viewVec );
+		float ddot = Dot( dnormal, m_movement );
 		if( ( ddot < 0.0f && rdot > 0.0f ) || ( ddot > 0.0f && rdot < 0.0f ) )
 		{
 			//If the angle between the view vector in model space and view vector in world space is more then +-PI/2.0 we reverse the rotation angle,
@@ -90,20 +87,19 @@ void Tr2RotationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYD
 	{
 		Vector3 curP = Hemisphere( mouseX, mouseY, viewport, viewMatrix, projectionMatrix );
 		Vector3 preP = Hemisphere( mouseX-mouseXDelta, mouseY-mouseYDelta, viewport, viewMatrix, projectionMatrix );
-		Vector3 norm;
 		// Get the target rotation axis
-		D3DXVec3Cross( &norm, &preP, &curP );
+		Vector3 norm = Cross( preP, curP );
 		// Since the hemisphere vectors are in view space we have to make sure 
 		// the translation of camera is undone     
 		Matrix invView;
 		D3DXMatrixInverse(&invView, NULL, &viewMatrix);
-		D3DXVec3TransformNormal( &norm, &norm, &invView);
+		norm = TransformNormal( norm, invView);
 		Matrix worldInv;
 		float det = 0.0f;		
 		D3DXMatrixInverse( &worldInv, &det, &m_localTransform );
-		D3DXVec3TransformNormal( &m_movement, &norm, &worldInv );
+		m_movement = TransformNormal( norm, worldInv );
 
-		dot = D3DXVec3Dot( &curP, &preP );
+		dot = Dot( curP, preP );
 	}
 	else
 	{
@@ -131,7 +127,7 @@ void Tr2RotationTool::Move( int mouseX, int mouseY, int mouseXDelta, int mouseYD
 		
 		// Reverse the axis if the cross product of the start and end vectors is pointing away from the target rotation axis
 		// dnormal is in world, so axis must be too
-		if(D3DXVec3Dot( &dnormal, &tmp ) < 0.0f )
+		if( Dot( dnormal, tmp ) < 0.0f )
 		{
 			angleSign *= -1.0f;
 		}
@@ -174,12 +170,12 @@ Vector3 Tr2RotationTool::GetDesiredPlaneNormal( Vector3& ray, Matrix& viewMatrix
 			axis = zAxis;
 		}
 		norm = axis;
-		if( D3DXVec3Dot( &view, &norm )  > 0.0f )
+		if( Dot( view, norm )  > 0.0f )
 		{
-			D3DXVec3Scale(&norm, &norm, -1.0f );
+			norm = -norm;
 		}
 	} 
-	D3DXVec3Normalize( &norm, &norm );
+	norm = Normalize( norm );
 	return norm;
 }
 

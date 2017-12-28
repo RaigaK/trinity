@@ -273,8 +273,7 @@ void TriVector::SetCrossProduct(
 	const Vector3* v2
 	)
 {
-	
-	D3DXVec3Cross(this, v1, v2);
+	*static_cast<Vector3*>( this ) = Cross( *v1, *v2 );
 }
 
 
@@ -296,14 +295,14 @@ void TriVector::Scale(
 	float s
 	)
 {
-	D3DXVec3Scale(this, this, s);
+	*static_cast<Vector3*>( this ) *= s;
 }
 
 
 void TriVector::Normalize(
 	)
 {
-	D3DXVec3Normalize(this, this);
+	*static_cast<Vector3*>( this ) = ::Normalize( *this );
 }
 
 
@@ -319,22 +318,22 @@ float TriVector::DotProduct(
 	const Vector3* v2
 	)
 {
-	return D3DXVec3Dot(this, v2);
+	return Dot( *this, *v2 );
 }
 
 void TriVector::PyAdd( ITriVector* other )
 {
-	D3DXVec3Add( this, this, other->GetVector() );	
+	*static_cast<Vector3*>( this ) = *this + *other->GetVector();
 }
 
 void TriVector::PyCross( ITriVector* other )
 {
-	D3DXVec3Cross( this, this, other->GetVector() );	
+	*static_cast<Vector3*>( this ) = Cross( *this, *other->GetVector() );
 }
 
 float TriVector::PyDot( ITriVector* other )
 {
-	return D3DXVec3Dot( this, other->GetVector() );
+	return Dot( *this, *other->GetVector() );
 }
 
 void TriVector::PyLerp( ITriVector* other, float t )
@@ -358,25 +357,25 @@ void TriVector::PyProject(
 	ITriMatrix* view,
 	ITriMatrix* world )
 {
-	D3DXVec3TransformCoord( this, this, world->GetMatrix() );
-	D3DXVec3TransformCoord( this, this, view->GetMatrix() );
-	D3DXVec3TransformCoord( this, this, project->GetMatrix() );
+	*static_cast<Vector3*>( this ) = TransformCoord( *this, *world->GetMatrix() );
+	*static_cast<Vector3*>( this ) = TransformCoord( *this, *view->GetMatrix() );
+	*static_cast<Vector3*>( this ) = TransformCoord( *this, *project->GetMatrix() );
 	Vec3TransformByViewport( *this, *vp );
 }
 
 void TriVector::PySubtract( ITriVector* other )
 {
-	D3DXVec3Subtract( this, this, other->GetVector() );	
+	*static_cast<Vector3*>( this ) = *this - *other->GetVector();
 }
 
 void TriVector::PyTransformCoord( ITriMatrix* transform )
 {
-	D3DXVec3TransformCoord( this, this, transform->GetMatrix() );	
+	*static_cast<Vector3*>( this ) = TransformCoord( *this, *transform->GetMatrix() );	
 }
 
 void TriVector::PyTransformNormal( ITriMatrix* transform )
 {
-	D3DXVec3TransformNormal( this, this, transform->GetMatrix() );	
+	*static_cast<Vector3*>( this ) = TransformNormal( *this, *transform->GetMatrix() );	
 }
 
 void TriVector::PyUnproject(
@@ -395,7 +394,7 @@ void TriVector::PyUnproject(
     D3DXMatrixMultiply( &worldViewProjInv, &worldViewProjInv, project->GetMatrix() );
     D3DXMatrixInverse( &worldViewProjInv, nullptr, &worldViewProjInv );
     
-    D3DXVec3TransformCoord( this, this, &worldViewProjInv );
+    *static_cast<Vector3*>( this ) = TransformCoord( *this, worldViewProjInv );
 }
 
 void TriVector::PyTransformQuaternion( ITriQuaternion* rotation )

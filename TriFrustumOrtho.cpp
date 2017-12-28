@@ -23,8 +23,7 @@ bool TriFrustumOrtho::IsSphereVisibleAndInsideNearPlane( const Vector4* sphere )
 // -----------------------------------------
 bool TriFrustumOrtho::IsSphereVisibleAndInsideNearPlane( const Vector3& center, float radius ) const
 {
-	Vector3 centerInView;
-	D3DXVec3TransformCoord( &centerInView, &center, &m_view );
+	Vector3 centerInView = TransformCoord( center, m_view );
 
 	if( centerInView.z - radius > m_boundsMax.z )
 	{
