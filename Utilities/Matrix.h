@@ -1089,6 +1089,84 @@ inline Matrix TransformationMatrix(
 }
 
 // --------------------------------------------------------------------------------------
+inline Matrix Transformation2DMatrix(
+	const Vector2* scalingCenter,
+	float scalingRotation,
+	const Vector2* scaling,
+	const Vector2* rotationCenter,
+	float rotation,
+	const Vector2* translation )
+{
+	Matrix m1, m2, m3, m4, m5, m6, m7;
+	Quaternion prc;
+	Vector3 psc, pt;
+
+	if( !scalingCenter )
+	{
+		psc.x = 0.0f;
+		psc.y = 0.0f;
+	}
+	else
+	{
+		psc.x = scalingCenter->x;
+		psc.y = scalingCenter->y;
+	}
+	psc.z = 0.0f;
+	if( !rotationCenter )
+	{
+		prc.x = 0.0f;
+		prc.y = 0.0f;
+	}
+	else
+	{
+		prc.x = rotationCenter->x;
+		prc.y = rotationCenter->y;
+	}
+	prc.z = 0.0f;
+	if( !translation )
+	{
+		pt.x = 0.0f;
+		pt.y = 0.0f;
+	}
+	else
+	{
+		pt.x = translation->x;
+		pt.y = translation->y;
+	}
+	pt.z = 0.0f;
+	m1 = TranslationMatrix( -psc.x, -psc.y, -psc.z );
+	if( !scalingRotation )
+	{
+		m2 = IdentityMatrix();
+		m4 = IdentityMatrix();
+	}
+	else
+	{
+		m4 = RotationZMatrix( scalingRotation );
+		m2 = Inverse( m4 );
+	}
+	if( !scaling )
+	{
+		m3 = IdentityMatrix();
+	}
+	else
+	{
+		m3 = ScalingMatrix( scaling->x, scaling->y, 1.0f );
+	}
+	if( !rotation )
+	{
+		m6 = IdentityMatrix();
+	}
+	else
+	{
+		m6 = RotationZMatrix( rotation );
+	}
+	m5 = TranslationMatrix( psc.x - prc.x, psc.y - prc.y, psc.z - prc.z );
+	m7 = TranslationMatrix( prc.x + pt.x, prc.y + pt.y, prc.z + pt.z );
+	return m1 * m2 * m3 * m4 * m5 * m6 * m7;
+}
+
+// --------------------------------------------------------------------------------------
 inline Matrix LookAtMatrix(
 	const Vector3& peye,
 	const Vector3& pat,
@@ -1119,6 +1197,118 @@ inline Matrix LookAtMatrix(
 	out.m[2][3] = 0.0f;
 	out.m[3][3] = 1.0f;
 	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix PerspectiveFovMatrix( float fovy, float aspect, float zn, float zf )
+{
+	Matrix out = IdentityMatrix();
+	out.m[0][0] = 1.0f / ( aspect * tan( fovy / 2.0f ) );
+	out.m[1][1] = 1.0f / tan( fovy / 2.0f );
+	out.m[2][2] = zf / ( zn - zf );
+	out.m[2][3] = -1.0f;
+	out.m[3][2] = ( zf * zn ) / ( zn - zf );
+	out.m[3][3] = 0.0f;
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix PerspectiveOffCenterMatrix(
+	float l,
+	float r,
+	float b,
+	float t,
+	float zn,
+	float zf )
+{
+	Matrix out = IdentityMatrix();
+	out.m[0][0] = 2.0f * zn / ( r - l );
+	out.m[1][1] = -2.0f * zn / ( b - t );
+	out.m[2][0] = 1.0f + 2.0f * l / ( r - l );
+	out.m[2][1] = -1.0f - 2.0f * t / ( b - t );
+	out.m[2][2] = zf / ( zn - zf );
+	out.m[3][2] = ( zn * zf ) / ( zn - zf );
+	out.m[2][3] = -1.0f;
+	out.m[3][3] = 0.0f;
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix OrthoMatrix( float w, float h, float zn, float zf )
+{
+	Matrix out = IdentityMatrix();
+	out.m[0][0] = 2.0f / w;
+	out.m[1][1] = 2.0f / h;
+	out.m[2][2] = 1.0f / ( zn - zf );
+	out.m[3][2] = zn / ( zn - zf );
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline Matrix OrthoOffCenterMatrix(
+	float l,
+	float r,
+	float b,
+	float t,
+	float zn,
+	float zf )
+{
+	Matrix out = IdentityMatrix();
+	out.m[0][0] = 2.0f / ( r - l );
+	out.m[1][1] = 2.0f / ( t - b );
+	out.m[2][2] = 1.0f / ( zn - zf );
+	out.m[3][0] = -1.0f - 2.0f *l / ( r - l );
+	out.m[3][1] = 1.0f + 2.0f * t / ( b - t );
+	out.m[3][2] = zn / ( zn - zf );
+	return out;
+}
+
+// --------------------------------------------------------------------------------------
+inline void Decompose( Vector3& scale, Quaternion& rotation, Vector3& translation, const Matrix& m )
+{
+	Matrix normalized;
+	Vector3 vec;
+
+	/*Compute the scaling part.*/
+	vec.x = m.m[0][0];
+	vec.y = m.m[0][1];
+	vec.z = m.m[0][2];
+	scale.x = Length( vec );
+
+	vec.x = m.m[1][0];
+	vec.y = m.m[1][1];
+	vec.z = m.m[1][2];
+	scale.y = Length( vec );
+
+	vec.x = m.m[2][0];
+	vec.y = m.m[2][1];
+	vec.z = m.m[2][2];
+	scale.z = Length( vec );
+
+	/*Compute the translation part.*/
+	translation.x = m.m[3][0];
+	translation.y = m.m[3][1];
+	translation.z = m.m[3][2];
+
+	/*Let's calculate the rotation now*/
+	if( ( scale.x == 0.0f ) || ( scale.y == 0.0f ) || ( scale.z == 0.0f ) )
+	{
+		rotation = Quaternion( 0.0f, 0.0f, 0.0f, 1.0f );
+	}
+	else
+	{
+		normalized.m[0][0] = m.m[0][0] / scale.x;
+		normalized.m[0][1] = m.m[0][1] / scale.x;
+		normalized.m[0][2] = m.m[0][2] / scale.x;
+		normalized.m[1][0] = m.m[1][0] / scale.y;
+		normalized.m[1][1] = m.m[1][1] / scale.y;
+		normalized.m[1][2] = m.m[1][2] / scale.y;
+		normalized.m[2][0] = m.m[2][0] / scale.z;
+		normalized.m[2][1] = m.m[2][1] / scale.z;
+		normalized.m[2][2] = m.m[2][2] / scale.z;
+
+		rotation = RotationQuaternion( normalized );
+	}
 }
 
 #endif // MATRIX_H

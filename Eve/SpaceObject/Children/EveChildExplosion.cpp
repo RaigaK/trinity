@@ -393,7 +393,7 @@ void EveChildExplosion::SpawnLocalExplosion( const Matrix& transform )
 
 	Transform t;
 	Vector3 scale;
-	D3DXMatrixDecompose( &scale, &t.rotation, &t.position, &transform );
+	Decompose( scale, t.rotation, t.position, transform );
 
 	auto localExplosion = m_localExplosion;
 	if( !m_localExplosions.empty() )

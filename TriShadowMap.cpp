@@ -316,9 +316,7 @@ bool TriShadowMap::BeginShadowRendering( Vector3& lightViewPosition, Matrix& lig
 	// bounds min is now the near plane - pull it in towards the camera
 	m_boundsMax.z = m_boundsMin.z / 1000000.0f;
 
-	Matrix proj;
-
-	D3DXMatrixOrthoRH( &proj, m_boundsMax.x - m_boundsMin.x, m_boundsMax.y - m_boundsMin.y, -m_boundsMax.z, -m_boundsMin.z );
+	Matrix proj = OrthoMatrix( m_boundsMax.x - m_boundsMin.x, m_boundsMax.y - m_boundsMin.y, -m_boundsMax.z, -m_boundsMin.z );
 
 	lightViewProj = lightView * proj;
 

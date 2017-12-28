@@ -17,24 +17,12 @@ TriStepRenderCubeMap::TriStepRenderCubeMap( IRoot* lockobj )
 	m_sidePos[3].x = 0; m_sidePos[3].y = 2;
 
 	// and some names, which are depending on the handedness( pos x <-> neg x )
-	if( Tr2Renderer::IsRightHanded() )
-	{
-		m_sideDesc[0] = "NEG X";
-		m_sideDesc[1] = "POS X";
-		m_sideDesc[2] = "POS Y";
-		m_sideDesc[3] = "NEG Y";
-		m_sideDesc[4] = "POS Z";
-		m_sideDesc[5] = "NEG Z";
-	}
-	else
-	{
-		m_sideDesc[0] = "POS X";
-		m_sideDesc[1] = "NEG X";
-		m_sideDesc[2] = "POS Y";
-		m_sideDesc[3] = "NEG Y";
-		m_sideDesc[4] = "POS Z";
-		m_sideDesc[5] = "NEG Z";
-	}
+	m_sideDesc[0] = "NEG X";
+	m_sideDesc[1] = "POS X";
+	m_sideDesc[2] = "POS Y";
+	m_sideDesc[3] = "NEG Y";
+	m_sideDesc[4] = "POS Z";
+	m_sideDesc[5] = "NEG Z";
 }
 
 TriStepRenderCubeMap::~TriStepRenderCubeMap(void)

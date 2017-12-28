@@ -480,7 +480,7 @@ void Tr2ScalingTool::Init( Matrix& initialTransform )
 	Vector3 pos;	
 	Quaternion rotation;
 	Matrix rotationMatrix;
-	D3DXMatrixDecompose(&scaling, &rotation, &pos, &initialTransform);
+	Decompose( scaling, rotation, pos, initialTransform );
 	rotationMatrix = RotationMatrix( rotation );
 
 	m_localTransform = TranslationMatrix( pos );

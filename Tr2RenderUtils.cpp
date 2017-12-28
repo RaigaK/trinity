@@ -33,7 +33,7 @@ void SetupScreenQuad(	Tr2ScreenVertex quad[4],
 	int edge2 = 2;
 
 	USE_MAIN_THREAD_RENDER_CONTEXT();	//TODO! pass it in so we look at actual current cull mode
-	if( Tr2Renderer::IsRightHanded() != renderContext.m_esm.IsCullModeInverted() )
+	if( !renderContext.m_esm.IsCullModeInverted() )
 	{
 		// Flip the interior edge direction in the quad which produces a correctly 
 		// oriented strip of two triangles
@@ -78,7 +78,7 @@ void SetupScreenQuadInCameraSpace( Tr2ScreenVertex quad[4], int width, int heigh
 	int edge2 = 2;
 
 	USE_MAIN_THREAD_RENDER_CONTEXT();	//TODO! pass it in for cull mode
-	if( Tr2Renderer::IsRightHanded() != renderContext.m_esm.IsCullModeInverted() )
+	if( !renderContext.m_esm.IsCullModeInverted() )
 	{
 		// Flip the interior edge direction in the quad which produces a correctly 
 		// oriented strip of two triangles

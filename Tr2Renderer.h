@@ -87,9 +87,6 @@ public:
 		return GetPerObjectVSStartRegister();
 	}
 
-
-	static bool IsRightHanded();
-
 	static void DisableResourceLoad( bool flag )	{ m_disableGeometryLoad = m_disableTextureLoad = m_disableEffectLoad = flag; }
 	static bool IsGeometryLoadDisabled()			{ return m_disableGeometryLoad; }
 	static bool IsTextureLoadDisabled()				{ return m_disableTextureLoad; }

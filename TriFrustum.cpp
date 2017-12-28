@@ -16,22 +16,11 @@ static void DeconstructProjectionMatrix( const Matrix& proj, float& asp, float& 
 	// => back = z_f = -m_43/(1+m_43/z_n)
 	// m_22 = cotan(fov/2) = 1 / tan(fov/2)
 	// => fov = 2*tan(1/m_22) 
-	if( Tr2Renderer::IsRightHanded() )
-	{
-		asp = (proj._11	 ?  proj._22/proj._11 : 0.0f);
-		fov = (proj._22	 ?  2.0f*atan(1.0f/proj._22) : 0.0f);
+	asp = (proj._11	 ?  proj._22/proj._11 : 0.0f);
+	fov = (proj._22	 ?  2.0f*atan(1.0f/proj._22) : 0.0f);
 
-		frontClip =	(proj._33	 ?  proj._43/proj._33 : 0.0f);
-		backClip =	frontClip*proj._33/(proj._33+1);
-	}
-	else
-	{
-		asp = (proj._11	 ?  proj._22/proj._11 : 0.0f);
-		fov = (proj._22	 ?  2.0f*atan(1.0f/proj._22) : 0.0f);
-
-		frontClip =	(proj._33	 ? -proj._43/proj._33 : 0.0f);
-		backClip =	frontClip*proj._33/(proj._33-1);
-	}
+	frontClip =	(proj._33	 ?  proj._43/proj._33 : 0.0f);
+	backClip =	frontClip*proj._33/(proj._33+1);
 }
 
 TriFrustum::TriFrustum()
@@ -244,9 +233,7 @@ float TriFrustum::GetPixelSizeAccross( const Vector3& center, float radius ) con
 {
 	Vector3 d( center - m_viewPos );
 
-	// cfr. the difference between D3DXMatrixLookAtLH and RH -- line of sight is basically reversed
-	if (Tr2Renderer::IsRightHanded())
-		d = -d;
+	d = -d;
 
 	float depth = m_viewDir.x*d.x + m_viewDir.y*d.y + m_viewDir.z*d.z;
 	// clamp values close to zero and below

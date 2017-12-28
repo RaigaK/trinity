@@ -67,7 +67,7 @@ void EveChildTransform::UpdateTransform( const Matrix& parentTransform )
 			Quaternion rotation;
 			Matrix parentTransformWithoutRotation;
 			
-			D3DXMatrixDecompose( &scale, &rotation, &translation, &parentTransform );
+			Decompose( scale, rotation, translation, parentTransform );
 			parentTransformWithoutRotation = ScalingMatrix( scale ) * TranslationMatrix( translation );
 			m_worldTransform = m_localTransform * parentTransformWithoutRotation;
 		}

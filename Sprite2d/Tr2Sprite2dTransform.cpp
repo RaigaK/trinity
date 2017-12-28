@@ -99,7 +99,7 @@ Matrix Tr2Sprite2dTransform::GetTransformationMatrix()
 	// Rounding the results here helps with ensuring pixel perfect sprites with 90 degree rotations
 	Vector2 absScalingCenter( floor( m_scalingCenter.x * m_displayWidth + 0.5f ), floor( m_scalingCenter.y * m_displayHeight + 0.5f ) );
 	Vector2 absRotationCenter( floor( m_rotationCenter.x * m_displayWidth + 0.5f ), floor( m_rotationCenter.y * m_displayHeight + 0.5f ) );
-	D3DXMatrixTransformation2D( &m, &absScalingCenter, m_scalingRotation, &m_scale, &absRotationCenter, m_rotation, &m_translation );
+	m = Transformation2DMatrix( &absScalingCenter, m_scalingRotation, &m_scale, &absRotationCenter, m_rotation, &m_translation );
 	return m;
 }
 
@@ -113,7 +113,7 @@ Vector2 Tr2Sprite2dTransform::TransformPoint(float x, float y)
 	// Rounding the results here helps with ensuring pixel perfect sprites with 90 degree rotations
 	Vector2 absScalingCenter( floor( m_scalingCenter.x * m_displayWidth + 0.5f ), floor( m_scalingCenter.y * m_displayHeight + 0.5f ) );
 	Vector2 absRotationCenter( floor( m_rotationCenter.x * m_displayWidth + 0.5f ), floor( m_rotationCenter.y * m_displayHeight + 0.5f ) );
-	D3DXMatrixTransformation2D( &m, &absScalingCenter, m_scalingRotation, &m_scale, &absRotationCenter, m_rotation, NULL );
+	m = Transformation2DMatrix( &absScalingCenter, m_scalingRotation, &m_scale, &absRotationCenter, m_rotation, NULL );
 
 	Vector4 ret = Vector4();
 	Vector2 vec = Vector2(x, y);

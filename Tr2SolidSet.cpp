@@ -165,14 +165,7 @@ void Tr2SolidSet::AddTriangle( const Vector3& position1, const Vector4& color1, 
 	Vector3 dir13(position1 - position3);
 	Vector3 dir21(position2 - position1);
 
-	if(Tr2Renderer::IsRightHanded())
-	{
-		newTriangle.m_normal = Cross( dir13, dir21 );
-	}
-	else
-	{
-		newTriangle.m_normal = Cross( dir21, dir13 );
-	}
+	newTriangle.m_normal = Cross( dir13, dir21 );
 
 	newTriangle.m_normal = Normalize( newTriangle.m_normal );
 	m_triangles.push_back( newTriangle );

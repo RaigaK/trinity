@@ -208,11 +208,6 @@ void NormalizeGrannyFile( granny_file_info* gi )
 	granny_real32 BackVector[] =	{0, 0, 1};
 	granny_real32 UnitsPerMeter =	1.0f;
 
-	if( !Tr2Renderer::IsRightHanded() )
-	{
-		BackVector[2] = -1;
-	}
-
 	bool needsConversion = false;
 	do 
 	{

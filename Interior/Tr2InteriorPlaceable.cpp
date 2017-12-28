@@ -412,7 +412,7 @@ const Quaternion Tr2InteriorPlaceable::GetRotation( void ) const
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 
 	return tmpRotation;
 }
@@ -428,7 +428,7 @@ void Tr2InteriorPlaceable::SetRotation( const Quaternion& rotQuat )
 		Quaternion	tmpRotation;	
 		Vector3		tmpTranslation;	
 
-		D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+		Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 		static_cast<Matrix&>( m_transform ) = TransformationMatrix( tmpScale, rotQuat, tmpTranslation );
 	}
 }
@@ -439,7 +439,7 @@ const Vector3 Tr2InteriorPlaceable::GetScaling( void ) const
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 	
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 
 	return tmpScale;
 }
@@ -455,7 +455,7 @@ void Tr2InteriorPlaceable::SetScaling( const Vector3& scaleVec )
 		Quaternion	tmpRotation;	
 		Vector3		tmpTranslation;	
 
-		D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+		Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 		static_cast<Matrix&>( m_transform ) = TransformationMatrix( scaleVec, tmpRotation, tmpTranslation );
 	}
 }

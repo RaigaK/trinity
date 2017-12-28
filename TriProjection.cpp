@@ -94,34 +94,13 @@ void TriProjection::GetMatrixWithoutViewAdjustment( Matrix& proj ) const
 	switch (m_projectionType)
 	{
 		case TRIPROJECTION_FOV:
-			if( Tr2Renderer::IsRightHanded() )
-			{
-				D3DXMatrixPerspectiveFovRH( &proj, m_fov, m_aspect, m_zn, m_zf );
-			}
-			else
-			{
-				D3DXMatrixPerspectiveFovLH( &proj, m_fov, m_aspect, m_zn, m_zf );
-			}
+			proj = PerspectiveFovMatrix( m_fov, m_aspect, m_zn, m_zf );
 			break;
 		case TRIPROJECTION_OFF_CENTER:
-			if( Tr2Renderer::IsRightHanded() )
-			{
-				D3DXMatrixPerspectiveOffCenterRH( &proj, m_left, m_right, m_bottom, m_top, m_zn, m_zf );
-			}
-			else
-			{
-				D3DXMatrixPerspectiveOffCenterLH( &proj, m_left, m_right, m_bottom, m_top, m_zn, m_zf );
-			}
+			proj = PerspectiveOffCenterMatrix( m_left, m_right, m_bottom, m_top, m_zn, m_zf );
 			break;
 		case TRIPROJECTION_ORTHO:
-			if( Tr2Renderer::IsRightHanded() )
-			{
-				D3DXMatrixOrthoRH( &proj, m_left, m_top, m_zn, m_zf );
-			}
-			else
-			{
-				D3DXMatrixOrthoLH( &proj, m_left, m_top, m_zn, m_zf );
-			}
+			proj = OrthoMatrix( m_left, m_top, m_zn, m_zf );
 			break;
 		case TRIPROJECTION_CUSTOM:
 			proj = m_customTransform;

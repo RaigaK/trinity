@@ -37,8 +37,6 @@ Tr2Variable s_renderTimeVar;
 
 namespace
 {
-	bool s_isRightHanded = true;
-
 	TR2SHADERMODEL s_shaderModel = TR2SM_3_0_HI;
 	TR2SHADERMODEL s_prevShaderModel = TR2SM_3_0_HI;
 
@@ -128,16 +126,8 @@ namespace
 		// => fov = 2*tan(1/m_22) 
 		s_aspectRatio =	(proj._11	 ?  proj._22/proj._11 : 0.0f);
 		s_fieldOfView = (proj._22	 ?  2.0f*atan(1.0f/proj._22) : 0.0f);
-		if( s_isRightHanded )
-		{
-			s_frontClip =	(proj._33	 ? proj._43/proj._33 : 0.0f);
-			s_backClip =	proj._43/(1.0f+proj._33);
-		}
-		else
-		{
-			s_frontClip =	(proj._33	 ? -proj._43/proj._33 : 0.0f);
-			s_backClip =	proj._43/(1.0f-proj._33);
-		}
+		s_frontClip =	(proj._33	 ? proj._43/proj._33 : 0.0f);
+		s_backClip =	proj._43/(1.0f+proj._33);
 	}
 
 	float s_pickingOffsetX = 0.0f;
@@ -418,14 +408,7 @@ MAP_FUNCTION_AND_WRAP( "ReloadShaders", ReloadShaders, "Forces Trinity to reload
 
 static bool IsRightHanded()
 {
-	if( s_isRightHanded )
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return true;
 }
 
 MAP_FUNCTION_AND_WRAP( "IsRightHanded", IsRightHanded, "Returns true if Trinity rendering uses a right-handed coordinate system.");
@@ -451,14 +434,7 @@ void Tr2Renderer::SetPerspectiveProjection( float fov, float front, float back, 
     s_backClip    = back;
     s_aspectRatio = asp;
 
-	if( s_isRightHanded )
-	{
-		D3DXMatrixPerspectiveFovRH( &s_projectionTransform, s_fieldOfView, s_aspectRatio, s_frontClip, s_backClip );
-	}
-	else
-	{
-		D3DXMatrixPerspectiveFovLH( &s_projectionTransform, s_fieldOfView, s_aspectRatio, s_frontClip, s_backClip );
-	}
+	s_projectionTransform = PerspectiveFovMatrix( s_fieldOfView, s_aspectRatio, s_frontClip, s_backClip );
 
 	SetProjectionDerivedValues();
 }
@@ -466,14 +442,7 @@ void Tr2Renderer::SetPerspectiveProjection( float fov, float front, float back, 
 void Tr2Renderer::SetPerspectiveProjection( float left, float right, float bottom, float top, float front, float back )
 {
 	s_currentProjectionType = PT_PERSPECTIVE;
-	if( s_isRightHanded )
-	{
-		D3DXMatrixPerspectiveOffCenterRH( &s_projectionTransform, left, right, bottom, top, front, back );
-	}
-	else
-	{
-		D3DXMatrixPerspectiveOffCenterLH( &s_projectionTransform, left, right, bottom, top, front, back );
-	}
+	s_projectionTransform = PerspectiveOffCenterMatrix( left, right, bottom, top, front, back );
 
 	UpdateProjectionParameters( s_projectionTransform );
 
@@ -484,14 +453,8 @@ void Tr2Renderer::SetOrthoProjection( float width, float height, float front, fl
 {
 	s_currentProjectionType = PT_ORTHOGONAL;
 
-	if( s_isRightHanded )
-	{
-		D3DXMatrixOrthoRH( &s_projectionTransform, width, height, front, back );
-	}
-	else
-	{
-		D3DXMatrixOrthoLH( &s_projectionTransform, width, height, front, back );
-	}
+	s_projectionTransform = OrthoMatrix( width, height, front, back );
+
 	s_orthoWidth = width;
 	s_orthoHeight = height;
 	s_aspectRatio =	(height ? width/height : 1.0f );
@@ -506,14 +469,8 @@ void Tr2Renderer::SetOrthoProjection( float left, float right, float bottom, flo
 {
 	s_currentProjectionType = PT_ORTHOGONAL;
 
-	if( s_isRightHanded )
-	{
-		D3DXMatrixOrthoOffCenterRH( &s_projectionTransform, left, right, bottom, top, front, back );
-	}
-	else
-	{
-		D3DXMatrixOrthoOffCenterLH( &s_projectionTransform, left, right, bottom, top, front, back );
-	}
+	s_projectionTransform = OrthoOffCenterMatrix( left, right, bottom, top, front, back );
+
 	s_orthoWidth = right-left;
 	s_orthoHeight = top-bottom;
 	s_aspectRatio =	(s_orthoHeight ? s_orthoWidth/s_orthoHeight : 1.0f );
@@ -1783,11 +1740,6 @@ TriSettings& Tr2Renderer::GetSettings()
 {
 	static CTriSettings s; // C-object & singleton, no reference counting magic!
 	return s;
-}
-
-bool Tr2Renderer::IsRightHanded()
-{
-	return s_isRightHanded;
 }
 
 bool Tr2Renderer::IsResourceCreationAllowed()

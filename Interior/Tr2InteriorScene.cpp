@@ -915,8 +915,7 @@ const std::vector<ITr2Renderable*>& Tr2InteriorScene::GetPickingObjectsToRender(
 	Matrix newView( XMMatrixLookAtLH( eye, ( eye - dirWorld ), Vector3( 0.0f, 1.0f, 0.0f ) ) );
 
 	// Set camera parameters
-	Matrix proj;
-	D3DXMatrixPerspectiveFovRH( &proj, fov, aspect, frustum.m_zNear, frustum.m_zFar );
+	Matrix proj = PerspectiveFovMatrix( fov, aspect, frustum.m_zNear, frustum.m_zFar );
 
 	// Issue the query
 	m_visibleObjects.clear();

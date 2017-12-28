@@ -44,12 +44,5 @@ const Matrix& TriView::GetTransform() const
 // --------------------------------------------------------------------------------------
 void TriView::SetLookAtPosition( const Vector3& eye, const Vector3& at, const Vector3& up )
 {
-	if( Tr2Renderer::IsRightHanded() )
-	{
-		m_transform = XMMatrixLookAtRH( eye, at, up );
-	}
-	else
-	{
-		m_transform = XMMatrixLookAtLH( eye, at, up );
-	}
+	m_transform = XMMatrixLookAtRH( eye, at, up );
 }

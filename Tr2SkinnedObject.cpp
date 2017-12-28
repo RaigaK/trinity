@@ -485,7 +485,7 @@ const Quaternion Tr2SkinnedObject::GetRotation() const
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 
 	return tmpRotation;
 }
@@ -496,7 +496,7 @@ void Tr2SkinnedObject::SetRotation( const Quaternion& rotQuat )
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 	
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 	static_cast<Matrix&>( m_transform ) = TransformationMatrix( tmpScale, rotQuat, tmpTranslation );
 
 	return;
@@ -508,7 +508,7 @@ const Vector3 Tr2SkinnedObject::GetScaling() const
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 	
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 
 	return tmpScale;
 }
@@ -519,7 +519,7 @@ void Tr2SkinnedObject::SetScaling( const Vector3& scaleVec )
 	Quaternion	tmpRotation;	
 	Vector3		tmpTranslation;	
 
-	D3DXMatrixDecompose( &tmpScale, &tmpRotation, &tmpTranslation, &m_transform );
+	Decompose( tmpScale, tmpRotation, tmpTranslation, m_transform );
 	static_cast<Matrix&>( m_transform ) = TransformationMatrix( scaleVec, tmpRotation, tmpTranslation );
 }
 

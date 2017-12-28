@@ -1275,7 +1275,7 @@ void EveTurretSet::SetLocalTransform( unsigned int turretIndex, const Matrix* lo
 	TriMatrixRemoveScaling( &noScaleLocalMatrix , localMatrix );
 
 	Vector3 translation, scale;
-	D3DXMatrixDecompose( &scale, &m_singleTurrets[turretIndex].localQuaternion, &translation, &noScaleLocalMatrix );
+	Decompose( scale, m_singleTurrets[turretIndex].localQuaternion, translation, noScaleLocalMatrix );
 	m_singleTurrets[turretIndex].localPosition = Vector4(translation, 1.0f);
 
 	// new one is not yet valid, cause it needs to get all calculated
@@ -1615,7 +1615,7 @@ Tr2PerObjectData* EveTurretSet::GetPerObjectData( ITriRenderBatchAccumulator* ac
 					{
 						Matrix m = compositeMatrixArray[toBoneIndices[j]];
 						Quaternion poseRotation;
-						D3DXMatrixDecompose( &scale, &poseRotation, &translation, &m );
+						Decompose( scale, poseRotation, translation, m );
 
 						SetTurretBonePose( perObjectData, boneIndex, translation, poseRotation );
 					}

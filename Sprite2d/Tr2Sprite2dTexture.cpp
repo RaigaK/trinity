@@ -123,7 +123,7 @@ Matrix* Tr2Sprite2dTexture::GetTransform()
 {
 	if( m_useTransform )
 	{
-		D3DXMatrixTransformation2D( &m_transform, &m_scalingCenter, m_scalingRotation, &m_scale, &m_rotationCenter, m_rotation, &m_translation );
+		m_transform = Transformation2DMatrix( &m_scalingCenter, m_scalingRotation, &m_scale, &m_rotationCenter, m_rotation, &m_translation );
 
 		return &m_transform;
 	}
