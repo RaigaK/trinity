@@ -2666,7 +2666,6 @@
   <ItemGroup>
     <ClInclude Include="ALResultBlue.h"/>
     <ClInclude Include="autoversion.h"/>
-    <ClInclude Include="D3DFundamentalTypes.h"/>
     <ClInclude Include="EveSprite2dBracket.h"/>
     <ClInclude Include="EveSprite2dBracketRenderer.h"/>
     <ClInclude Include="GrannyBoneOffset.h"/>
@@ -3101,20 +3100,12 @@
     <ClInclude Include="UI\WindowIcon.h"/>
     <ClInclude Include="Utilities\BoundingBox.h"/>
     <ClInclude Include="Utilities\BoundingSphere.h"/>
-    <ClInclude Include="Utilities\Color.h"/>
-    <ClInclude Include="Utilities\Float16.h"/>
     <ClInclude Include="Utilities\GeometryUtils.h"/>
     <ClInclude Include="Utilities\GrannyCurveHelpers.h"/>
-    <ClInclude Include="Utilities\Matrix.h"/>
     <ClInclude Include="Utilities\MatrixUtils.h"/>
     <ClInclude Include="Utilities\Obb.h"/>
-    <ClInclude Include="Utilities\Plane.h"/>
-    <ClInclude Include="Utilities\Quaternion.h"/>
     <ClInclude Include="Utilities\StringUtils.h"/>
-    <ClInclude Include="Utilities\Vector2.h"/>
-    <ClInclude Include="Utilities\Vector3.h"/>
     <ClInclude Include="Utilities\Vector3d.h"/>
-    <ClInclude Include="Utilities\Vector4.h"/>
     <ClInclude Include="Utilities\Vector4d.h"/>
     <ClInclude Include="Wod\WodBakingScene.h"/>
     <ClInclude Include="Wod\WodPlaceableRes.h"/>

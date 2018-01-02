@@ -39,9 +39,6 @@
     <ClInclude Include="autoversion.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="D3DFundamentalTypes.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="EveSprite2dBracket.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -1344,19 +1341,10 @@
     <ClInclude Include="Utilities\BoundingSphere.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\Color.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities\Float16.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\GeometryUtils.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\GrannyCurveHelpers.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities\Matrix.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\MatrixUtils.h">
@@ -1365,25 +1353,10 @@
     <ClInclude Include="Utilities\Obb.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\Plane.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities\Quaternion.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\StringUtils.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\Vector2.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities\Vector3.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\Vector3d.h">
-      <Filter>Source Files\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="Utilities\Vector4.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\Vector4d.h">
