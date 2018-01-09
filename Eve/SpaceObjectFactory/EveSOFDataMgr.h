@@ -169,6 +169,7 @@ public:
 	{
 		Vector3 position, scaling;
 		Quaternion rotation;
+		bool useColorType;
 		EveSOFDataFactionColorSet::ColorType colorType;
 		float hazeBrightness, hazeFalloff, sourceSize, sourceBrightness;
 	};

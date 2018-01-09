@@ -482,6 +482,7 @@ public:
 	// per-hull data of a haze set
 	Vector3 m_position, m_scaling;
 	Quaternion m_rotation;
+	bool m_useColorType;
 	EveSOFDataFactionColorSet::ColorType m_colorType;
 	float m_hazeBrightness, m_hazeFalloff, m_sourceSize, m_sourceBrightness;
 };

@@ -939,15 +939,31 @@ void EveSOF::SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) con
 				{
 					const EveSOFDataMgr::HullHazeSetItemData* itemData = &( *hhsiit );
 
-					// color data?
-					const Color* spriteSetColors = dna->GetColorSpriteSet();
+					// color data? from color set or general primary glow color!
+					Color color( 0.f, 0.f, 0.f, 0.f );
+					if( itemData->useColorType )
+					{
+						const Color* spriteSetColors = dna->GetColorSpriteSet();
+						if( spriteSetColors )
+						{
+							color = spriteSetColors[itemData->colorType];
+						}
+					}
+					else
+					{
+						const Vector4* paramValue = dna->GetMeshAreaParameter( EveSOFDataArea::TYPE_PRIMARY, BlueSharedString( "GeneralGlowColor" ) );
+						if( paramValue )
+						{
+							color = Color( *paramValue );
+						}
+					}
 
 					// create spritelineset items
 					EveHazeSetItemPtr hazeSetItem;
 					hazeSetItem.CreateInstance();
 
 					// set it up the colorset data
-					hazeSetItem->m_color = itemData->hazeBrightness * spriteSetColors[itemData->colorType];
+					hazeSetItem->m_color = itemData->hazeBrightness * color;
 
 					// set it up the per-hull data
 					hazeSetItem->m_position = itemData->position + hullOffset;

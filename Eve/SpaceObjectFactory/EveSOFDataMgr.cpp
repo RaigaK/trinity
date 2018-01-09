@@ -631,6 +631,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hhsid.position = hazeSetItemData->m_position;
 			hhsid.scaling = hazeSetItemData->m_scaling;
 			hhsid.rotation = hazeSetItemData->m_rotation;
+			hhsid.useColorType = hazeSetItemData->m_useColorType;
 			hhsid.colorType = hazeSetItemData->m_colorType;
 			hhsid.hazeBrightness = hazeSetItemData->m_hazeBrightness;
 			hhsid.hazeFalloff = hazeSetItemData->m_hazeFalloff;

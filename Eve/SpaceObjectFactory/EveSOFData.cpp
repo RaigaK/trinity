@@ -447,6 +447,7 @@ EveSOFDataHullHazeSet::EveSOFDataHullHazeSet( IRoot* lockobj ) :
 EveSOFDataHullHazeSetItem::EveSOFDataHullHazeSetItem( IRoot* lockobj ) :
 	m_position( 0.f, 0.f, 0.f ), m_scaling( 1.f, 1.f, 1.f ),
 	m_rotation( 0.f, 0.f, 0.f, 1.f ),
+	m_useColorType( true ),
 	m_colorType( EveSOFDataFactionColorSet::TYPE_PRIMARY ),
 	m_hazeBrightness( 1.f ), m_hazeFalloff( 6.f ), m_sourceSize( 0.2f ), m_sourceBrightness( 2.f )
 {}
