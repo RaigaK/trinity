@@ -180,47 +180,37 @@ void TriGeometryRes::ClearGrannyData()
 	}
 }
 
-granny_file_info* TriGeometryRes::GetGrannyInfo()
+granny_file_info* TriGeometryRes::GetGrannyInfo() const
 {
 	if( m_pGrannyFile )
 	{
 		return GrannyGetFileInfo( m_pGrannyFile );
 	}
-	else
-	if( m_inMemoryInfo )
+	else if( m_inMemoryInfo )
 	{
 		return m_inMemoryInfo;
 	}
 	else
 	{
-		return 0;
+		return nullptr;
 	}
 }
 
-unsigned int TriGeometryRes::GetAnimationCount()
+unsigned int TriGeometryRes::GetAnimationCount() const
 {
-	if( m_pGrannyFile )
+	if( auto info = GetGrannyInfo() )
 	{
-		granny_file_info* info = GrannyGetFileInfo( m_pGrannyFile );
 		return info->AnimationCount;
 	}
-	else
-	if( m_inMemoryInfo )
-	{
-		return m_inMemoryInfo->AnimationCount;
-	}
-	else
-	{
-		return 0;
-	}
+	return 0;
 }
 
-unsigned int TriGeometryRes::GetModelCount()
+unsigned int TriGeometryRes::GetModelCount() const
 {
-	return (unsigned int)m_models.size();
+	return unsigned( m_models.size() );
 }
 
-TriGeometryResModelData* TriGeometryRes::GetModelData( unsigned int modelIx )
+TriGeometryResModelData* TriGeometryRes::GetModelData( unsigned int modelIx ) const
 {
 	if( modelIx < m_models.size() )
 	{
@@ -228,16 +218,16 @@ TriGeometryResModelData* TriGeometryRes::GetModelData( unsigned int modelIx )
 	}
 	else
 	{
-		return 0;
+		return nullptr;
 	}
 }
 
-unsigned int TriGeometryRes::GetMeshCount()
+unsigned int TriGeometryRes::GetMeshCount() const
 {
-	return (unsigned int)m_meshes.size();
+	return unsigned( m_meshes.size() );
 }
 
-TriGeometryResMeshData* TriGeometryRes::GetMeshData( unsigned int meshIx )
+TriGeometryResMeshData* TriGeometryRes::GetMeshData( unsigned int meshIx ) const
 {
 	if( meshIx < m_meshes.size() )
 	{
@@ -272,11 +262,7 @@ int TriGeometryRes::GetVertexComponentOffset( const granny_mesh* myMesh, const c
 
 bool TriGeometryRes::GetBoundingBox( unsigned int meshIx, Vector3& min, Vector3& max ) const
 {
-	if( meshIx >= m_meshes.size() )
-	{
-		return false;
-	}
-	TriGeometryResMeshData* pMesh = m_meshes[meshIx];
+	TriGeometryResMeshData* pMesh = GetMeshData( meshIx );
 	if( !pMesh )
 	{
 		return false;
@@ -307,16 +293,7 @@ Be::Result<std::string> TriGeometryRes::GetBoundingBoxFromScript( unsigned int m
 
 bool TriGeometryRes::GetAreaBoundingBox( unsigned int meshIx, unsigned int areaIx, Vector3& min, Vector3& max ) const
 {
-	// Bail out if the mesh index is out of range
-	if( meshIx >= m_meshes.size() )
-	{
-		return false;
-	}
-
-	// Get a handle to the mesh data
-	TriGeometryResMeshData* pMesh = m_meshes[meshIx];
-
-	// Bail out if the mesh data is NULL
+	TriGeometryResMeshData* pMesh = GetMeshData( meshIx );
 	if( !pMesh )
 	{
 		return false;
@@ -336,13 +313,9 @@ bool TriGeometryRes::GetAreaBoundingBox( unsigned int meshIx, unsigned int areaI
 }
 
 
-bool TriGeometryRes::GetBoundingSphere( unsigned int meshIx, Vector4& sphere )
+bool TriGeometryRes::GetBoundingSphere( unsigned int meshIx, Vector4& sphere ) const
 {
-	if( meshIx >= m_meshes.size() )
-	{
-		return false;
-	}
-	TriGeometryResMeshData* pMesh = m_meshes[meshIx];
+	TriGeometryResMeshData* pMesh = GetMeshData( meshIx );
 	if( !pMesh )
 	{
 		return false;
@@ -353,7 +326,7 @@ bool TriGeometryRes::GetBoundingSphere( unsigned int meshIx, Vector4& sphere )
 	return true;
 }
 
-unsigned int TriGeometryRes::GetAreaCount( unsigned int meshIx )
+unsigned int TriGeometryRes::GetAreaCount( unsigned int meshIx ) const
 {
 	if( meshIx >= m_meshes.size() || m_meshes[meshIx] == NULL )
 	{
@@ -362,7 +335,7 @@ unsigned int TriGeometryRes::GetAreaCount( unsigned int meshIx )
 	return (unsigned int)m_meshes[meshIx]->m_areas.size();
 }
 
-TriGeometryResAreaData* TriGeometryRes::GetAreaData( unsigned int meshIx, unsigned int areaIx )
+TriGeometryResAreaData* TriGeometryRes::GetAreaData( unsigned int meshIx, unsigned int areaIx ) const
 {
 	TriGeometryResMeshData* meshData = GetMeshData( meshIx );
 	if( !meshData )
@@ -501,7 +474,7 @@ void TriGeometryRes::DetermineAreaBoundsAndVertCount( TriGeometryResAreaData& ar
 
 	BoundingBoxInitialize( area.m_minBounds, area.m_maxBounds );
 
-	std::set<int> vertexIndicesSeen;
+	std::set<int32_t> vertexIndicesSeen;
 
 	for( int vIx = 0; vIx < area.m_primitiveCount * 3; ++vIx )
 	{
@@ -937,9 +910,8 @@ void TriGeometryRes::RecalculateBoundingSphere()
 
 				// all is done in this recursive function
 				BoundingSphereFromPoints( mesh->m_boundingSphere, &points[0], points.size() );
-
-				mesh->m_vertexBuffer.UnmapForReading( renderContext );
 			}
+			mesh->m_vertexBuffer.UnmapForReading( renderContext );
 		}
 	}
 }
@@ -1023,23 +995,13 @@ void TriGeometryRes::ProcessMeshTriangles( int meshIx, PerTriangleCallback cb, v
 		return;
 	}
 
-	bool foundPosition = false;
-	unsigned int positionByteOffset = 0;
-	Tr2VertexDefinition::DataType declType;
-	for ( size_t j = 0; j < decl.m_items.size(); j++ )
-	{
-		if (( decl.m_items[j].m_usage == Tr2VertexDefinition::POSITION ) && ( decl.m_items[j].m_usageIndex == 0 ) )
-		{
-			declType = decl.m_items[j].m_dataType;
-			positionByteOffset = decl.m_items[j].m_offset;
-			foundPosition = true;
-			break;
-		}
-	}
+	auto foundPosition = decl.Find( Tr2VertexDefinition::POSITION, 0 );
 	if( !foundPosition )
 	{
 		return;
 	}
+	unsigned int positionByteOffset = foundPosition->m_offset;
+	Tr2VertexDefinition::DataType declType = foundPosition->m_dataType;
 
 	int numPrim = m_meshes[i]->m_primitiveCount;
 	for ( int j = 0; j < numPrim; j++ )
@@ -1296,7 +1258,7 @@ unsigned int TriGeometryRes::GetSkeletonCount() const
 	return (unsigned int)m_skeletons.size();
 }
 
-TriGeometryResSkeletonData* TriGeometryRes::GetSkeletonData( unsigned int skelIx )
+TriGeometryResSkeletonData* TriGeometryRes::GetSkeletonData( unsigned int skelIx ) const
 {
 	CCP_ASSERT( skelIx < m_skeletons.size() );
 
@@ -1331,7 +1293,7 @@ void TriGeometryRes::ReleaseResourcesHelper()
 	m_memoryUse = 0;
 }
 
-unsigned int TriGeometryResSkeletonData::FindJoint( const char* name )
+unsigned int TriGeometryResSkeletonData::FindJoint( const char* name ) const
 {
 	unsigned int jointCount = (unsigned int)m_joints.size();
 	for( unsigned int ix = 0; ix < jointCount; ++ix )
@@ -1377,19 +1339,6 @@ TriGeometryResMeshData::TriGeometryResMeshData() :
 	m_pVertexData( NULL ),
 	m_vertexDeclaration( Tr2EffectStateManager::UNINITIALIZED_DECLARATION )
 {
-	m_collisionData.m_indexes = NULL;
-	m_collisionData.m_texCoords = NULL;
-	m_collisionData.m_positions = NULL;
-}
-
-TriGeometryResMeshData::~TriGeometryResMeshData()
-{
-	delete[] m_collisionData.m_indexes;
-	delete[] m_collisionData.m_texCoords;
-	if( m_collisionData.m_positions )
-	{
-		CCP_ALIGNED_FREE( m_collisionData.m_positions );
-	}
 }
 
 // -------------------------------------------------------------
@@ -1460,59 +1409,6 @@ void TriGeometryRes::ReverseIndexBuffer( unsigned int meshIx, Tr2RenderContext& 
 
 	meshData.m_reversedIndexBuffer = std::move( reverseIB );
 }
-
-bool TriGeometryRes::RenderArea( unsigned int meshIx, unsigned int areaIx, Tr2RenderContext& renderContext, bool reversed )
-{
-	if( !m_isGood )
-	{
-		return false;
-	}
-
-	if( meshIx >= m_meshes.size() )
-	{
-		return false;
-	}
-
-	TriGeometryResMeshData* pMesh = m_meshes[meshIx];
-	if( !pMesh )
-	{
-		return false;
-	}
-
-	if( areaIx >= pMesh->m_areas.size() )
-	{
-		return false;
-	}
-
-	renderContext.m_esm.ApplyVertexDeclaration( pMesh->m_vertexDeclaration );
-	renderContext.m_esm.ApplyStreamSource( 0, pMesh->m_vertexBuffer, 0, pMesh->m_bytesPerVertex );
-	if( reversed )
-	{
-		ReverseIndexBuffer( meshIx, renderContext );
-		renderContext.m_esm.ApplyIndexBuffer( pMesh->m_reversedIndexBuffer );
-	}
-	else
-	{
-		renderContext.m_esm.ApplyIndexBuffer( pMesh->m_indexBuffer );
-	}
-
-	const TriGeometryResAreaData& area = pMesh->m_areas[areaIx];
-
-	renderContext.SetTopology( TOP_TRIANGLES );
-	if( reversed )
-	{
-		renderContext.DrawIndexedPrimitive( pMesh->m_vertexCount, pMesh->m_primitiveCount * 3 - area.m_firstIndex - area.m_primitiveCount * 3, area.m_primitiveCount );
-	}
-	else
-	{
-		renderContext.DrawIndexedPrimitive( pMesh->m_vertexCount, area.m_firstIndex, area.m_primitiveCount );
-	}
-
-
-	return true;
-}
-
-
 
 bool TriGeometryRes::RenderAreas( unsigned int meshIx, unsigned int areaIx, unsigned int areaCount, Tr2RenderContext & renderContext, bool reversed )
 {
@@ -1740,7 +1636,7 @@ bool TriGeometryRes::CreateMeshFromGrannyMesh( granny_mesh* myMesh, TriGeometryR
 	int ibSize = indexCount * bytesPerIndex;
 
 	{
-		std::vector<char> tempBuffer( indexCount * bytesPerIndex );
+		std::vector<uint8_t> tempBuffer( indexCount * bytesPerIndex );
 		GrannyCopyMeshIndices( myMesh, bytesPerIndex, &tempBuffer[0] );
 
 		USE_MAIN_THREAD_RENDER_CONTEXT();
@@ -2077,7 +1973,7 @@ Tr2BufferAL* TriGeometryRes::GetGpuBuffer( unsigned bufferIndex )
 	return nullptr;
 }
 
-Be::Result<std::string> TriGeometryRes::GetModelName( unsigned int ix, std::string& name )
+Be::Result<std::string> TriGeometryRes::GetModelName( unsigned int ix, std::string& name ) const
 {
 	if( ix >= GetModelCount() )
 	{
@@ -2095,7 +1991,7 @@ Be::Result<std::string> TriGeometryRes::GetModelName( unsigned int ix, std::stri
 	return Be::Result<std::string>();
 }
 
-Be::Result<std::string> TriGeometryRes::GetMeshName( unsigned int ix, std::string& name )
+Be::Result<std::string> TriGeometryRes::GetMeshName( unsigned int ix, std::string& name ) const
 {
 	if( ix >= GetMeshCount() )
 	{
@@ -2113,7 +2009,7 @@ Be::Result<std::string> TriGeometryRes::GetMeshName( unsigned int ix, std::strin
 	return Be::Result<std::string>();
 }
 
-Be::Result<std::string> TriGeometryRes::GetMeshAreaCount( unsigned int ix, int& count )
+Be::Result<std::string> TriGeometryRes::GetMeshAreaCount( unsigned int ix, int& count ) const
 {
 	if( ix >= GetMeshCount() )
 	{
@@ -2131,7 +2027,7 @@ Be::Result<std::string> TriGeometryRes::GetMeshAreaCount( unsigned int ix, int& 
 	return Be::Result<std::string>();
 }
 
-Be::Result<std::string> TriGeometryRes::GetMeshAreaName( unsigned int meshIx, unsigned int areaIx, std::string& name )
+Be::Result<std::string> TriGeometryRes::GetMeshAreaName( unsigned int meshIx, unsigned int areaIx, std::string& name ) const
 {
 	if( meshIx >= GetMeshCount() )
 	{
@@ -2177,7 +2073,7 @@ Be::Result<std::string> TriGeometryRes::GetAreaBoundingBoxFromScript( unsigned i
 	return Be::Result<std::string>();
 }
 
-Be::Result<std::string> TriGeometryRes::GetBoundingSphereFromScript( unsigned int meshIx, std::pair<Vector3, float>& bounds )
+Be::Result<std::string> TriGeometryRes::GetBoundingSphereFromScript( unsigned int meshIx, std::pair<Vector3, float>& bounds ) const
 {
 	if( meshIx >= m_meshes.size() )
 	{

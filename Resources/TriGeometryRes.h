@@ -67,24 +67,9 @@ struct TriGeometryResVertexData
 	unsigned int m_dstBinormalOffset;
 };
 
-// -------------------------------------------------------------
-// Description:
-//   Per-mesh data for intersection tests.
-// -------------------------------------------------------------
-struct TriGeometryCollisionData
-{
-	// Aligned array of vertex positions
-	XMVECTOR* m_positions;
-	// Array of texture UV coordinates
-	Vector2* m_texCoords;
-	// Array of vertex indexes
-	uint32_t* m_indexes;
-};
-
 struct TriGeometryResMeshData
 {
 	TriGeometryResMeshData();
-	~TriGeometryResMeshData();
 
 	std::string m_name;
 	TrackableStdVector<TriGeometryResAreaData> m_areas;
@@ -103,7 +88,6 @@ struct TriGeometryResMeshData
 	bool m_hasPerMeshAreaBoneBindings;
 	TrackableStdVector<std::string> m_jointBindings;
 	TriGeometryResVertexData* m_pVertexData;
-	TriGeometryCollisionData m_collisionData;
 };
 
 struct TriGeometryResJointData
@@ -117,7 +101,7 @@ struct TriGeometryResSkeletonData
 {
 	TriGeometryResSkeletonData();
 
-	unsigned int FindJoint( const char* name );
+	unsigned int FindJoint( const char* name ) const;
 
 	std::string m_name;
 	TrackableStdVector<TriGeometryResJointData> m_joints;
@@ -147,30 +131,27 @@ public:
 	void RecalculateBoundingSphere();
 	Be::Result<std::string> CalculateBoundingBoxFromTransform( unsigned int meshIx, const Matrix& transform, std::pair<Vector3, Vector3>& bounds );
 
-	unsigned int GetMeshCount();
-	Be::Result<std::string> GetMeshName( unsigned int ix, std::string& name );
-	Be::Result<std::string> GetMeshAreaCount( unsigned int ix, int& count );
-	Be::Result<std::string> GetMeshAreaName( unsigned int meshIx, unsigned int areaIx, std::string& name );
-	TriGeometryResMeshData* GetMeshData( unsigned int meshIx );
+	unsigned int GetMeshCount() const;
+	Be::Result<std::string> GetMeshName( unsigned int ix, std::string& name ) const;
+	Be::Result<std::string> GetMeshAreaCount( unsigned int ix, int& count ) const;
+	Be::Result<std::string> GetMeshAreaName( unsigned int meshIx, unsigned int areaIx, std::string& name ) const;
+	TriGeometryResMeshData* GetMeshData( unsigned int meshIx ) const;
 
 	unsigned int GetSkeletonCount() const;
-	TriGeometryResSkeletonData* GetSkeletonData( unsigned int skelIx );
+	TriGeometryResSkeletonData* GetSkeletonData( unsigned int skelIx ) const;
 
-	unsigned int GetModelCount();
-	Be::Result<std::string> GetModelName( unsigned int ix, std::string& name );
-	TriGeometryResModelData* GetModelData( unsigned int modelIx );
+	unsigned int GetModelCount() const;
+	Be::Result<std::string> GetModelName( unsigned int ix, std::string& name ) const;
+	TriGeometryResModelData* GetModelData( unsigned int modelIx ) const;
 
-	unsigned int GetAreaCount( unsigned int meshIx );
+	unsigned int GetAreaCount( unsigned int meshIx ) const;
 	Be::Result<std::string> GetAreaBoundingBoxFromScript( unsigned int meshIx, unsigned int areaIx, std::pair<Vector3, Vector3>& bounds );
-	TriGeometryResAreaData* GetAreaData( unsigned int meshIx, unsigned int areaIx );
+	TriGeometryResAreaData* GetAreaData( unsigned int meshIx, unsigned int areaIx ) const;
 
-	unsigned int GetAnimationCount();
+	unsigned int GetAnimationCount() const;
 
 	// query vertex component
 	int GetVertexComponentOffset( const granny_mesh* myMesh, const char* componentName ) const;
-
-	// Render a single area
-	bool RenderArea( unsigned int meshIx, unsigned int areaIx, Tr2RenderContext& renderContext, bool reversed = false );
 
 	// Render multiple consecutive areas, starting at 'areaIx'
     bool RenderAreas( unsigned int meshIx, unsigned int areaIx, unsigned int areaCount, Tr2RenderContext& renderContext, bool reversed = false );
@@ -205,8 +186,8 @@ public:
 	bool GetBoundingBox( unsigned int meshIx, Vector3& min, Vector3& max ) const;
 	Be::Result<std::string> GetBoundingBoxFromScript( unsigned int meshIx, std::pair<Vector3, Vector3>& bounds ) const;
 	bool GetAreaBoundingBox( unsigned int meshIx, unsigned int areaIx, Vector3& min, Vector3& max ) const;
-	bool GetBoundingSphere( unsigned int meshIx, Vector4& sphere );
-	Be::Result<std::string> GetBoundingSphereFromScript( unsigned int meshIx, std::pair<Vector3, float>& bounds );
+	bool GetBoundingSphere( unsigned int meshIx, Vector4& sphere ) const;
+	Be::Result<std::string> GetBoundingSphereFromScript( unsigned int meshIx, std::pair<Vector3, float>& bounds ) const;
 
 	void PrepareFromGrannyRes( TriGrannyRes* g );
 
@@ -256,7 +237,7 @@ public:
 	virtual void GetDescription( std::string& desc );
 #endif
 
-	granny_file_info* GetGrannyInfo();
+	granny_file_info* GetGrannyInfo() const;
 	
 	static bool SaveMeshToGrannyFile( TriGeometryResMeshData* pMesh, const char* filename );
 
