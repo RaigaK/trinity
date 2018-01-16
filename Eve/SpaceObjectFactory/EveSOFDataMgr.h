@@ -44,6 +44,7 @@ public:
 	{
 		std::map<std::pair<uint32_t, uint32_t>, BlueSharedString> materialNames;
 		std::map<std::pair<uint32_t, std::string>, Vector4> generalParameters;
+		std::map<std::pair<uint32_t, std::string>, EveSOFDataFactionColorSet::ColorType> glowColor;
 	};
 
 	// pattern data structs
@@ -136,7 +137,7 @@ public:
 	struct HullSpriteSetItemData
 	{
 		Vector3 position;
-		float blinkRate, blinkPhase, minScale, maxScale, falloff;
+		float blinkRate, blinkPhase, minScale, maxScale, falloff, intensity;
 		int boneIndex;
 		EveSOFDataFactionColorSet::ColorType colorType;
 	};
@@ -152,7 +153,7 @@ public:
 	{
 		Vector3 position, scaling;
 		Quaternion rotation;
-		float spacing, blinkRate, blinkPhase, blinkPhaseShift, minScale, maxScale, falloff;
+		float spacing, blinkRate, blinkPhase, blinkPhaseShift, minScale, maxScale, falloff, intensity;
 		int boneIndex;
 		bool isCircle;
 		EveSOFDataFactionColorSet::ColorType colorType;
@@ -169,13 +170,13 @@ public:
 	{
 		Vector3 position, scaling;
 		Quaternion rotation;
-		bool useColorType;
 		EveSOFDataFactionColorSet::ColorType colorType;
 		float hazeBrightness, hazeFalloff, sourceSize, sourceBrightness;
 	};
 
 	struct HullHazeSetData
 	{
+		EveSOFDataHullHazeSet::HazeType hazeType;
 		uint32_t visibilityGroup;
 		std::vector<HullHazeSetItemData> items;
 	};
@@ -292,8 +293,8 @@ public:
 	// color data structs
 	struct ColorData
 	{
-		// spriteset color data
-		Color spriteSetColors[EveSOFDataFactionColorSet::TYPE_MAX];
+		// color data
+		Color colors[EveSOFDataFactionColorSet::TYPE_MAX];
 	};
 
 	// faction data structs

@@ -106,7 +106,7 @@ public:
 	const EveSOFDataMgr::FactionChildData* GetFactionChildData( int groupIndex ) const;
 
 	// get color data
-	const Color* GetColorSpriteSet() const;
+	const Color* GetColorSet() const;
 
 	// get visibility data
 	bool IsInVisibilityData( uint32_t h ) const;

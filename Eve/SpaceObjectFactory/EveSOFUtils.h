@@ -53,7 +53,7 @@ public:
 	static void GeneratePatternLayerData( EveSOFDataMgr::PatternLayerData* pld, const EveSOFDataPatternLayer* patternLayer );
 	static Tr2RenderContextEnum::TextureAddressMode GetTextureAddressMode( EveSOFDataPatternLayer::ProjectionType projectionType );
 	static const Vector4* SearchForParameterData( const EveSOFDataMgr* dataMgr, const char* materialName, const EveSOFUtilsParameterName* parameterName );
-	static const Vector4* SearchForParameterData( const EveSOFDataMgr* dataMgr, const EveSOFDataMgr::AreaMaterialData* areaMaterialData, EveSOFDataArea::AreaType areaType, const EveSOFUtilsParameterName* parameterName );
+	static const Vector4* SearchForParameterData( const EveSOFDataMgr* dataMgr, const Color* colorSet, const EveSOFDataMgr::AreaMaterialData* areaMaterialData, EveSOFDataArea::AreaType areaType, const EveSOFUtilsParameterName* parameterName );
 };
 
 

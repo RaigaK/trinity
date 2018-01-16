@@ -1017,7 +1017,7 @@ const Vector4* EveSOFDNA::GetMeshAreaParameter( EveSOFDataArea::AreaType areaTyp
 	if( areaType == EveSOFDataArea::TYPE_WRECK )
 	{
 		EveSOFUtilsParameterName param( m_genericData->materialPrefixes, parameterName.c_str() );
-		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, &m_genericData->genericWreckMaterialData, areaType, &param );
+		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, GetColorSet(), &m_genericData->genericWreckMaterialData, areaType, &param );
 		if( res )
 		{
 			return res;
@@ -1028,7 +1028,7 @@ const Vector4* EveSOFDNA::GetMeshAreaParameter( EveSOFDataArea::AreaType areaTyp
 	if( areaType == EveSOFDataArea::TYPE_PRIMARY || areaType == EveSOFDataArea::TYPE_REACTOR )
 	{
 		EveSOFUtilsParameterName param( m_genericData->materialPrefixes, parameterName.c_str() );
-		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, &m_raceData->areaMaterials, areaType, &param );
+		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, GetColorSet(), &m_raceData->areaMaterials, areaType, &param );
 		if( res )
 		{
 			return res;
@@ -1038,7 +1038,7 @@ const Vector4* EveSOFDNA::GetMeshAreaParameter( EveSOFDataArea::AreaType areaTyp
 	// do we have it in the faction data?
 	{
 		EveSOFUtilsParameterName param( m_genericData->materialPrefixes, parameterName.c_str() );
-		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, &m_factionData->areaMaterials, areaType, &param );
+		const Vector4* res = EveSOFUtils::SearchForParameterData( m_dataMgr, GetColorSet(), &m_factionData->areaMaterials, areaType, &param );
 		if( res )
 		{
 			return res;
@@ -1148,9 +1148,9 @@ size_t EveSOFDNA::GetHullBoosterCount() const
 }
 
 // --------------------------------------------------------------------------------
-const Color* EveSOFDNA::GetColorSpriteSet() const
+const Color* EveSOFDNA::GetColorSet() const
 {
-	return m_factionData->colorData.spriteSetColors;
+	return m_factionData->colorData.colors;
 }
 
 // --------------------------------------------------------------------------------

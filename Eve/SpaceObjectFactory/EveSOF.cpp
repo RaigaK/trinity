@@ -567,14 +567,14 @@ void EveSOF::SetupSpriteSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) c
 					const EveSOFDataMgr::HullSpriteSetItemData* itemData = &( *ssiit );
 
 					// color data?
-					const Color* spriteSetColors = dna->GetColorSpriteSet();
+					const Color* colorSet = dna->GetColorSet();
 
 					// create spriteset items
 					EveSpriteSetItemPtr spriteSetItem;
 					spriteSetItem.CreateInstance();
 
 					// set it up the colorset data
-					spriteSetItem->m_color = spriteSetColors[itemData->colorType];
+					spriteSetItem->m_color = itemData->intensity * colorSet[itemData->colorType];
 
 					// set it up the per-hull data
 					spriteSetItem->m_blinkPhase = itemData->blinkPhase;
@@ -866,14 +866,14 @@ void EveSOF::SetupSpriteLineSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna
 					const EveSOFDataMgr::HullSpriteLineSetItemData* itemData = &( *slsiit );
 
 					// color data?
-					const Color* spriteSetColors = dna->GetColorSpriteSet();
+					const Color* colorSet = dna->GetColorSet();
 
 					// create spritelineset items
 					EveSpriteLineSetItemPtr spriteLineSetItem;
 					spriteLineSetItem.CreateInstance();
 
 					// set it up the colorset data
-					spriteLineSetItem->m_color = spriteSetColors[itemData->colorType];
+					spriteLineSetItem->m_color = itemData->intensity * colorSet[itemData->colorType];
 
 					// set it up the per-hull data
 					spriteLineSetItem->m_blinkPhaseShift = itemData->blinkPhaseShift;
@@ -939,24 +939,9 @@ void EveSOF::SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) con
 				{
 					const EveSOFDataMgr::HullHazeSetItemData* itemData = &( *hhsiit );
 
-					// color data? from color set or general primary glow color!
-					Color color( 0.f, 0.f, 0.f, 0.f );
-					if( itemData->useColorType )
-					{
-						const Color* spriteSetColors = dna->GetColorSpriteSet();
-						if( spriteSetColors )
-						{
-							color = spriteSetColors[itemData->colorType];
-						}
-					}
-					else
-					{
-						const Vector4* paramValue = dna->GetMeshAreaParameter( EveSOFDataArea::TYPE_PRIMARY, BlueSharedString( "GeneralGlowColor" ) );
-						if( paramValue )
-						{
-							color = Color( *paramValue );
-						}
-					}
+					// color data from colorset
+					const Color* colorSet = dna->GetColorSet();
+					Color color = colorSet[itemData->colorType];
 
 					// create spritelineset items
 					EveHazeSetItemPtr hazeSetItem;
@@ -1869,7 +1854,7 @@ void EveSOF::SetupTurretMaterialFromFaction( EveTurretSet* turretSet, const char
 					param.ChangeMaterialIdx( genericData, factionData->materialUsageList[param.GetMaterialIdx()] );
 				}
 				// find data
-				const Vector4* res = EveSOFUtils::SearchForParameterData( &m_dataMgr, areaMaterialData, EveSOFDataArea::TYPE_PRIMARY, &param );
+				const Vector4* res = EveSOFUtils::SearchForParameterData( &m_dataMgr, factionData->colorData.colors, areaMaterialData, EveSOFDataArea::TYPE_PRIMARY, &param );
 				if( res )
 				{
 					it->value = *res;
@@ -1889,7 +1874,7 @@ void EveSOF::SetupTurretMaterialFromFaction( EveTurretSet* turretSet, const char
 					param.ChangeMaterialIdx( genericData, factionData->materialUsageList[param.GetMaterialIdx()] );
 				}
 				// find data
-				const Vector4* res = EveSOFUtils::SearchForParameterData( &m_dataMgr, areaMaterialData, EveSOFDataArea::TYPE_PRIMARY, &param );
+				const Vector4* res = EveSOFUtils::SearchForParameterData( &m_dataMgr, factionData->colorData.colors, areaMaterialData, EveSOFDataArea::TYPE_PRIMARY, &param );
 				if( res )
 				{
 					Tr2Vector4ParameterPtr p;

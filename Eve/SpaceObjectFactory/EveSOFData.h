@@ -409,7 +409,7 @@ public:
 
 	// per-hull data of a spriteset
 	Vector3 m_position;
-	float m_blinkRate, m_blinkPhase, m_minScale, m_maxScale, m_falloff;
+	float m_blinkRate, m_blinkPhase, m_minScale, m_maxScale, m_falloff, m_intensity;
 	int m_boneIndex;
 	EveSOFDataFactionColorSet::ColorType m_colorType;
 };
@@ -448,7 +448,7 @@ public:
 	// per-hull data of a sprite line set
 	Vector3 m_position, m_scaling;
 	Quaternion m_rotation;
-	float m_spacing, m_blinkRate, m_blinkPhase, m_blinkPhaseShift, m_minScale, m_maxScale, m_falloff;
+	float m_spacing, m_blinkRate, m_blinkPhase, m_blinkPhaseShift, m_minScale, m_maxScale, m_falloff, m_intensity;
 	int m_boneIndex;
 	bool m_isCircle;
 	EveSOFDataFactionColorSet::ColorType m_colorType;
@@ -489,7 +489,6 @@ public:
 	// per-hull data of a haze set
 	Vector3 m_position, m_scaling;
 	Quaternion m_rotation;
-	bool m_useColorType;
 	EveSOFDataFactionColorSet::ColorType m_colorType;
 	float m_hazeBrightness, m_hazeFalloff, m_sourceSize, m_sourceBrightness;
 };
@@ -505,8 +504,16 @@ public:
 	EveSOFDataHullHazeSet( IRoot* lockobj = NULL );
 	~EveSOFDataHullHazeSet() {}
 
+	// haze type
+	enum HazeType
+	{
+		TYPE_SPHERICAL = 0,
+	};
+
 	// general
 	std::string m_name;
+	// type
+	HazeType m_hazeType;
 	// visibility group name
 	BlueSharedString m_visibilityGroup;
 	// items

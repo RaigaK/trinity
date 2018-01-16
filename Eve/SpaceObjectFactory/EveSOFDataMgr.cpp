@@ -511,6 +511,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hssid.maxScale = spriteSetItemData->m_maxScale;
 			hssid.minScale = spriteSetItemData->m_minScale;
 			hssid.position = spriteSetItemData->m_position;
+			hssid.intensity = spriteSetItemData->m_intensity;
 			hssid.colorType = spriteSetItemData->m_colorType;
 			hssd.items.push_back( hssid );
 		}
@@ -608,6 +609,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hslsid.rotation = spriteLineSetItemData->m_rotation;
 			hslsid.spacing = spriteLineSetItemData->m_spacing;
 			hslsid.isCircle = spriteLineSetItemData->m_isCircle;
+			hslsid.intensity = spriteLineSetItemData->m_intensity;
 			hslsid.colorType = spriteLineSetItemData->m_colorType;
 			hslsd.items.push_back( hslsid );
 		}
@@ -623,6 +625,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		HullHazeSetData hhsd;
 		std::string visGroupName( hazeSetData->m_visibilityGroup.c_str() );
 		hhsd.visibilityGroup = CcpHashFNV1( visGroupName.c_str(), visGroupName.size() );
+		hhsd.hazeType = hazeSetData->m_hazeType;
 		for( auto hsiit = hazeSetData->m_items.begin(); hsiit != hazeSetData->m_items.end(); ++hsiit )
 		{
 			EveSOFDataHullHazeSetItemPtr hazeSetItemData = ( *hsiit );
@@ -631,7 +634,6 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hhsid.position = hazeSetItemData->m_position;
 			hhsid.scaling = hazeSetItemData->m_scaling;
 			hhsid.rotation = hazeSetItemData->m_rotation;
-			hhsid.useColorType = hazeSetItemData->m_useColorType;
 			hhsid.colorType = hazeSetItemData->m_colorType;
 			hhsid.hazeBrightness = hazeSetItemData->m_hazeBrightness;
 			hhsid.hazeFalloff = hazeSetItemData->m_hazeFalloff;
@@ -879,7 +881,7 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 		for( size_t i = 0; i < EveSOFDataFactionColorSet::TYPE_MAX; ++i )
 		{
 			// spriteset colors
-			fd.colorData.spriteSetColors[i] = srcData->m_colorSet->m_colors[i];
+			fd.colorData.colors[i] = srcData->m_colorSet->m_colors[i];
 		}
 	}
 
@@ -978,6 +980,7 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 
 				// general parameters
 				fd.areaMaterials.generalParameters[std::make_pair( i, "GeneralGlowColor" )] = Vector4( areaMaterial->m_generalGlowColor );
+				fd.areaMaterials.glowColor[std::make_pair( i, "GeneralGlowColor" )] = areaMaterial->m_glowColorType;
 			}
 		}
 	}
