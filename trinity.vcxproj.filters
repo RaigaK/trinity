@@ -666,9 +666,6 @@
     <ClInclude Include="Eve\SpaceObject\Attachments\Sets\EveSpriteSetItem.h">
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
     </ClInclude>
-    <ClInclude Include="Eve\SpaceObject\Children\EveChildBillboard.h">
-      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
-    </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Children\EveChildBulletStorm.h">
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClInclude>
@@ -2399,12 +2396,6 @@
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Attachments\Sets\EveSpriteSet_Blue.cpp">
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\SpaceObject\Children\EveChildBillboard.cpp">
-      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
-    </ClCompile>
-    <ClCompile Include="Eve\SpaceObject\Children\EveChildBillboard_Blue.cpp">
-      <Filter>Source Files\Eve\SpaceObject\Children</Filter>
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Children\EveChildBulletStorm.cpp">
       <Filter>Source Files\Eve\SpaceObject\Children</Filter>
