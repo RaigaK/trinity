@@ -508,6 +508,7 @@ public:
 	enum HazeType
 	{
 		TYPE_SPHERICAL = 0,
+		TYPE_HALFSPHERICAL,
 	};
 
 	// general

@@ -69,10 +69,15 @@ EveSOF::EveSOF( IRoot* lockobj ) :
 	m_spriteSetEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/blinkinglightspool.fx" );
 	m_spriteSetEffect->EndUpdate();
 
-	m_hazeSetEffect.CreateInstance();
-	m_hazeSetEffect->StartUpdate();
-	m_hazeSetEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx" );
-	m_hazeSetEffect->EndUpdate();
+	m_hazeSetEffectSpherical.CreateInstance();
+	m_hazeSetEffectSpherical->StartUpdate();
+	m_hazeSetEffectSpherical->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx" );
+	m_hazeSetEffectSpherical->EndUpdate();
+
+	m_hazeSetEffectHalfSpherical.CreateInstance();
+	m_hazeSetEffectHalfSpherical->StartUpdate();
+	m_hazeSetEffectHalfSpherical->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/hazehalfspherical.fx" );
+	m_hazeSetEffectHalfSpherical->EndUpdate();
 
 	m_shadowEffect.CreateInstance();
 	m_shadowEffect->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/shadow/shadow.fx" );
@@ -932,8 +937,16 @@ void EveSOF::SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) con
 				// create a hazeset for this ship
 				EveHazeSetPtr hazeSet;
 				hazeSet.CreateInstance();
-				// set shader
-				hazeSet->Setup( m_hazeSetEffect );
+				// set shader, depends on type
+				switch( hazeSetData->hazeType )
+				{
+				case EveSOFDataHullHazeSet::TYPE_SPHERICAL:
+					hazeSet->Setup( m_hazeSetEffectSpherical );
+					break;
+				case EveSOFDataHullHazeSet::TYPE_HALFSPHERICAL:
+					hazeSet->Setup( m_hazeSetEffectHalfSpherical );
+					break;
+				}
 				// add all the individual items
 				for( auto hhsiit = hazeSetData->items.begin(); hhsiit != hazeSetData->items.end(); ++hhsiit )
 				{

@@ -50,6 +50,7 @@ const Be::ClassInfo* EveSOFDataAreaMaterial::ExposeToBlue()
 Be::VarChooser EveSOFDataHazeTypeChooser[] =
 {
 	{ "Spherical", BeCast( EveSOFDataHullHazeSet::TYPE_SPHERICAL ), "Spherical Haze" },
+	{ "HalfSpherical_DONOTUSE", BeCast( EveSOFDataHullHazeSet::TYPE_HALFSPHERICAL ), "HalfSpherical Haze" },
 	{ 0 }
 };
 BLUE_REGISTER_ENUM_EX( "HazeType", EveSOFDataHullHazeSet::HazeType, EveSOFDataHazeTypeChooser, ENUM_REG_ENUM_OBJECT_ON_MODULE );
