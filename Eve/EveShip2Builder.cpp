@@ -119,180 +119,166 @@ void EveShip2Builder::InitializeGrannyFile()
 	m_vertexSize = 0;
 }
 
-bool EveShip2Builder::CombineHullGeometry()
+bool EveShip2Builder::CombineGrannyGeometry(int grnResIdx, const Matrix& offsetTransform)
 {
-	CCP_LOGERR( "Start building..." );
+	TriGrannyResPtr grnRes = m_grannyResources[grnResIdx];
 
-	if( m_hulls.size() != m_grannyResources.size() )
+	if (!grnRes->IsGood())
 	{
-		CCP_LOGERR( "EveShip2Builder: Hull vector length must match gr2 resource vector length!" );
+		CCP_LOGERR("EveShip2Builder: GrannyRes failed to load!");
 		return false;
 	}
+	granny_file* grannyFile = grnRes->GetGrannyFile();
+	granny_file_info* fileInfo = GrannyGetFileInfo(grannyFile);
+	granny_mesh* grannyMesh = fileInfo->Meshes[0];
 
-	InitializeGrannyFile();
-
-	Vector3 offset( 0.f, 0.f, 0.f );
-	for( size_t grnResIdx = 0; grnResIdx != m_grannyResources.size(); ++grnResIdx )
+	if (!m_grannyVertexData.VertexType)
 	{
-		TriGrannyResPtr grnRes = m_grannyResources[ grnResIdx ];
-		EveSOFDataHullPtr sofHull = m_hulls[grnResIdx];
-
-		// grannies must be already loaded
-		if( !grnRes->IsGood() )
+		m_grannyVertexData.VertexType = grannyMesh->PrimaryVertexData->VertexType;
+		m_vertexSize = GrannyGetTotalObjectSize(m_grannyVertexData.VertexType);
+	}
+	else
+	{
+		int vertexSize = GrannyGetTotalObjectSize(grannyMesh->PrimaryVertexData->VertexType);
+		if (vertexSize != m_vertexSize)
 		{
-			CCP_LOGERR( "EveShip2Builder: GrannyRes failed to load!" );
+			CCP_LOGERR("EveShip2Builder: Meshes being merged have differing vertex formats");
 			return false;
 		}
-
-		granny_file* grannyFile = grnRes->GetGrannyFile();
-		granny_file_info* fi = GrannyGetFileInfo( grannyFile );
-		granny_mesh* grannyMesh = fi->Meshes[0];
-
-		// report!
-		CCP_LOGERR( "EveShip2Builder: processing with offset (%f,%f,%f)", offset.x, offset.y, offset.z );
-
-		if( !m_grannyVertexData.VertexType )
-		{
-			m_grannyVertexData.VertexType = grannyMesh->PrimaryVertexData->VertexType;
-			m_vertexSize = GrannyGetTotalObjectSize( m_grannyVertexData.VertexType );
-		}
-		else
-		{
-			int vertexSize = GrannyGetTotalObjectSize( grannyMesh->PrimaryVertexData->VertexType );
-			if( vertexSize != m_vertexSize )
-			{
-				CCP_LOGERR( "EveShip2Builder: Meshes being merged have differing vertex formats" );
-				return false;
-			}
-		}
-
-		// add each geom at a time
-		int prevCount = m_grannyVertexData.VertexCount;
-		int currentCount = grannyMesh->PrimaryVertexData->VertexCount;
-		int newCount = prevCount + currentCount;
-		int vbSize = m_vertexSize * newCount;
-
-		granny_uint8* newVertices = (granny_uint8*)CCP_MALLOC( "EveShip2Builder/vertices", vbSize );
-		granny_uint8* dstVb = newVertices;
-
-		if( m_grannyVertexData.Vertices )
-		{
-			memcpy( newVertices, m_grannyVertexData.Vertices, prevCount * m_vertexSize );
-			dstVb += prevCount * m_vertexSize;
-		}
-
-		memcpy( dstVb, grannyMesh->PrimaryVertexData->Vertices, currentCount * m_vertexSize );
-
-		// offset the geom
-		granny_real32* affine = (granny_real32*)&offset;
-		granny_real32 id[3][3] = { { 1.f, 0.f, 0.f }, { 0.f, 1.f, 0.f }, { 0.f, 0.f, 1.f } };
-		GrannyTransformVertices( currentCount, m_grannyVertexData.VertexType, dstVb, affine, (granny_real32*)id, (granny_real32*)id, false, false );
-
-		if( m_grannyVertexData.Vertices )
-		{
-			CCP_FREE( m_grannyVertexData.Vertices );
-		}
-
-		if( prevCount )
-		{
-			Weld( newVertices, prevCount, dstVb, currentCount );
-		}
-		else
-		{
-			Weld( dstVb, currentCount, dstVb, currentCount );
-		}
-
-		m_grannyVertexData.Vertices = newVertices;
-		m_grannyVertexData.VertexCount = newCount;
-
-		int prevIxCount = m_grannyTopology.IndexCount;
-		bool is16Bit = false;
-		int currentIxCount = grannyMesh->PrimaryTopology->IndexCount;
-		if( !currentIxCount )
-		{
-			currentIxCount = grannyMesh->PrimaryTopology->Index16Count;
-			is16Bit = true;
-		}
-		int newIxCount = prevIxCount + currentIxCount;
-
-		int ibSize = newIxCount * sizeof( granny_int32 );
-		granny_int32* newIndices = (granny_int32*)CCP_MALLOC( "EveShip2Builder/indices", ibSize );
-		granny_int32* dstIb = newIndices;
-		if( m_grannyTopology.Indices )
-		{
-			memcpy( newIndices, m_grannyTopology.Indices, prevIxCount * sizeof( granny_int32 ) );
-			dstIb += prevIxCount;
-		}
-
-		for( int ixIx = 0; ixIx < currentIxCount; ++ixIx )
-		{
-			int currentIx;
-			if( is16Bit )
-			{
-				currentIx = grannyMesh->PrimaryTopology->Indices16[ixIx];
-			}
-			else
-			{
-				currentIx = grannyMesh->PrimaryTopology->Indices[ixIx];
-			}
-			currentIx += prevCount;
-			dstIb[ixIx] = currentIx;
-		}
-
-		if( m_grannyTopology.Indices )
-		{
-			CCP_FREE( m_grannyTopology.Indices );
-		}
-
-		m_grannyTopology.Indices = newIndices;
-		m_grannyTopology.IndexCount = newIxCount;
-
-		for( int groupIx = 0; groupIx < grannyMesh->PrimaryTopology->GroupCount; ++groupIx )
-		{
-			granny_tri_material_group grp = grannyMesh->PrimaryTopology->Groups[groupIx];
-			grp.TriFirst += prevIxCount / 3;
-			m_grannyGroups.push_back( grp );
-		}
-
-		m_areaOffset += grannyMesh->MaterialBindingCount;
-
-		// offset is in a locator set on the hull
-		for( auto it = sofHull->m_locatorSets.begin(); it != sofHull->m_locatorSets.end(); ++it )
-		{
-			if( ( *it )->m_name == BlueSharedString( "next_subsystem" ) )
-			{
-				if( !( *it )->m_locators.empty() )
-				{
-					offset += ( *it )->m_locators[0]->m_position;
-				}
-			}
-		}
-
-
 	}
 
-	// save it
-	FinalizeGrannyFile( m_outputFilename );
+	// add each geom at a time
+	int prevCount = m_grannyVertexData.VertexCount;
+	int currentCount = grannyMesh->PrimaryVertexData->VertexCount;
+	int newCount = prevCount + currentCount;
+	int vbSize = m_vertexSize * newCount;
 
+	granny_uint8* newVertices = (granny_uint8*)CCP_MALLOC("EveShip2Builder/vertices", vbSize);
+	granny_uint8* dstVb = newVertices;
+
+	if (m_grannyVertexData.Vertices)
+	{
+		memcpy(newVertices, m_grannyVertexData.Vertices, prevCount * m_vertexSize);
+		dstVb += prevCount * m_vertexSize;
+	}
+
+	memcpy(dstVb, grannyMesh->PrimaryVertexData->Vertices, currentCount * m_vertexSize);
+
+	// offset the geom
+	Vector3 translation = offsetTransform.GetTranslation();
+	Matrix inverseTransform = Inverse(offsetTransform);
+
+	granny_real32 affine[3] = { translation.x, translation.y, translation.z };
+
+	granny_real32 matrix[3][3] = { { offsetTransform._11, offsetTransform._21, offsetTransform._31 },
+								   { offsetTransform._12, offsetTransform._22, offsetTransform._32 },
+								   { offsetTransform._13, offsetTransform._23, offsetTransform._33 } };
+
+	granny_real32 invMatrix[3][3] = { { inverseTransform._11, inverseTransform._21, inverseTransform._31 },
+									  { inverseTransform._12, inverseTransform._22, inverseTransform._32 },
+									  { inverseTransform._13, inverseTransform._23, inverseTransform._33 } };
+
+	GrannyTransformVertices(currentCount, m_grannyVertexData.VertexType, dstVb, affine, (granny_real32*)matrix, (granny_real32*)invMatrix, false, false);
+
+	if (m_grannyVertexData.Vertices)
+	{
+		CCP_FREE(m_grannyVertexData.Vertices);
+	}
+
+	if (prevCount)
+	{
+		Weld(newVertices, prevCount, dstVb, currentCount);
+	}
+	else
+	{
+		Weld(dstVb, currentCount, dstVb, currentCount);
+	}
+
+	m_grannyVertexData.Vertices = newVertices;
+	m_grannyVertexData.VertexCount = newCount;
+
+	int prevIxCount = m_grannyTopology.IndexCount;
+	bool is16Bit = false;
+	int currentIxCount = grannyMesh->PrimaryTopology->IndexCount;
+	if (!currentIxCount)
+	{
+		currentIxCount = grannyMesh->PrimaryTopology->Index16Count;
+		is16Bit = true;
+	}
+	int newIxCount = prevIxCount + currentIxCount;
+
+	int ibSize = newIxCount * sizeof(granny_int32);
+	granny_int32* newIndices = (granny_int32*)CCP_MALLOC("EveShip2Builder/indices", ibSize);
+	granny_int32* dstIb = newIndices;
+	if (m_grannyTopology.Indices)
+	{
+		memcpy(newIndices, m_grannyTopology.Indices, prevIxCount * sizeof(granny_int32));
+		dstIb += prevIxCount;
+	}
+
+	for (int ixIx = 0; ixIx < currentIxCount; ++ixIx)
+	{
+		int currentIx;
+		if (is16Bit)
+		{
+			currentIx = grannyMesh->PrimaryTopology->Indices16[ixIx];
+		}
+		else
+		{
+			currentIx = grannyMesh->PrimaryTopology->Indices[ixIx];
+		}
+		currentIx += prevCount;
+		dstIb[ixIx] = currentIx;
+	}
+
+	if (m_grannyTopology.Indices)
+	{
+		CCP_FREE(m_grannyTopology.Indices);
+	}
+
+	m_grannyTopology.Indices = newIndices;
+	m_grannyTopology.IndexCount = newIxCount;
+
+	for (int groupIx = 0; groupIx < grannyMesh->PrimaryTopology->GroupCount; ++groupIx)
+	{
+		granny_tri_material_group grp = grannyMesh->PrimaryTopology->Groups[groupIx];
+		grp.TriFirst += prevIxCount / 3;
+		m_grannyGroups.push_back(grp);
+	}
+
+	m_areaOffset += grannyMesh->MaterialBindingCount;
 	return true;
 }
 
 void EveShip2Builder::FinalizeGrannyFile( const std::string& outputName )
 {
-	CCP_STATS_ZONE( __FUNCTION__ );
+	CCP_STATS_ZONE(__FUNCTION__);
 
-	CcpAutoMutex guardGrannyWriteAccess( s_writeGrannyFileMutex );
-
-	std::wstring outputNameW = (const wchar_t*)CA2W( outputName.c_str() );
-	std::wstring fullName = BePaths->ResolvePathForWritingW( outputNameW );
-	if( fullName.empty() )
+	if ( m_grannyGroups.size() == 0 )
 	{
-		CCP_LOGERR( "%s: '%s' is not a valid filename", __FUNCTION__, outputName.c_str() );
+		CCP_LOGERR("%s: No granny groups found", __FUNCTION__);
 		return;
 	}
 
-	m_grannyTopology.GroupCount = (unsigned int)m_grannyGroups.size();
-	m_grannyTopology.Groups = &m_grannyGroups[0];
+	CcpAutoMutex guardGrannyWriteAccess(s_writeGrannyFileMutex);
+
+	std::wstring outputNameW = (const wchar_t*)CA2W(outputName.c_str());
+	std::wstring fullName = BePaths->ResolvePathForWritingW(outputNameW);
+	if (fullName.empty())
+	{
+		CCP_LOGERR("%s: '%s' is not a valid filename", __FUNCTION__, outputName.c_str());
+		return;
+	}
+
+	// Combine all groups into one
+	granny_tri_material_group grannyGroup = granny_tri_material_group(m_grannyGroups[0]);
+	for (size_t grpIdx = 1; grpIdx < m_grannyGroups.size(); grpIdx++)
+	{
+		grannyGroup.TriCount += m_grannyGroups[grpIdx].TriCount;
+	}
+
+	m_grannyTopology.GroupCount = 1;
+	m_grannyTopology.Groups = &grannyGroup;
 
 	m_finalGrannyMesh.PrimaryTopology = &m_grannyTopology;
 	m_finalGrannyMesh.PrimaryVertexData = &m_grannyVertexData;
@@ -309,7 +295,6 @@ void EveShip2Builder::FinalizeGrannyFile( const std::string& outputName )
 	m_grannyFileInfo.VertexDatas = vertexDatas;
 	m_grannyFileInfo.TriTopologyCount = 1;
 	m_grannyFileInfo.TriTopologies = topologies;
-
 	m_grannyFileInfo.MaterialCount = (unsigned int)m_grannyMaterials.size();
 	m_grannyFileInfo.Materials = &m_grannyMaterials[0];
 
@@ -321,16 +306,9 @@ void EveShip2Builder::FinalizeGrannyFile( const std::string& outputName )
 		m_finalGrannyMesh.MaterialBindings[i].Material = m_grannyFileInfo.Materials[i];
 	}
 
-
 	CCP_LOG( "%s: GrannyBeginFileInMemory", __FUNCTION__ );
 
-	granny_file_builder *Builder = GrannyBeginFileInMemory(
-		1, 
-		GrannyCurrentGRNStandardTag,
-		GrannyGRNFileMV_32Bit_LittleEndian,
-		8192
-		);
-
+	granny_file_builder *Builder = GrannyBeginFileInMemory(1, GrannyCurrentGRNStandardTag, GrannyGRNFileMV_32Bit_LittleEndian, 8192);
 	if( !Builder )
 	{
 		CCP_LOGERR( "%s: Could not create granny_file_builder", __FUNCTION__ );
@@ -339,8 +317,7 @@ void EveShip2Builder::FinalizeGrannyFile( const std::string& outputName )
 
 	CCP_LOG( "%s: GrannyBeginFileDataTreeWriting", __FUNCTION__ );
 
-	granny_file_data_tree_writer *Writer =
-		GrannyBeginFileDataTreeWriting(GrannyFileInfoType, &m_grannyFileInfo, 0, 0);
+	granny_file_data_tree_writer *Writer = GrannyBeginFileDataTreeWriting(GrannyFileInfoType, &m_grannyFileInfo, 0, 0);
 	if( !Writer )
 	{
 		CCP_LOGERR( "%s: Could not get granny_file_data_tree_writer", __FUNCTION__ );
@@ -358,7 +335,6 @@ void EveShip2Builder::FinalizeGrannyFile( const std::string& outputName )
 	CCP_LOG( "%s: GrannyEndFileDataTreeWriting", __FUNCTION__ );
 
 	GrannyEndFileDataTreeWriting(Writer);
-
 
 	CCP_LOG( "%s: GrannyEndFileToWriter", __FUNCTION__ );
 

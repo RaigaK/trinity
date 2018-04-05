@@ -23,7 +23,7 @@ public:
 protected:
 	void Weld( granny_uint8* referenceVB, int referenceCount, granny_uint8* vb, int count ) const;
 	void InitializeGrannyFile();
-	bool CombineHullGeometry();
+	bool CombineGrannyGeometry(int grnResIdx, const Matrix& offsetTransform);
 	void FinalizeGrannyFile( const std::string& outputName );
 
 	granny_file_info m_grannyFileInfo;

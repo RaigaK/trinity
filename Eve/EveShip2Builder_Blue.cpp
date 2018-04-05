@@ -13,7 +13,8 @@ const Be::ClassInfo* EveShip2Builder::ExposeToBlue()
 		MAP_ATTRIBUTE( "grannyResources", m_grannyResources, "All the granny resources we want to combine", Be::READWRITE )
 		MAP_ATTRIBUTE( "hulls", m_hulls, "All the SOF hulls we want to combine", Be::READWRITE )
 		MAP_ATTRIBUTE( "outputFilename", m_outputFilename, "The path to the resulting geometry file", Be::READWRITE )
-		MAP_METHOD_AND_WRAP( "CombineHullGeometry", CombineHullGeometry, "Start the combination process." )
-
+		MAP_METHOD_AND_WRAP("InitializeGrannyFile", InitializeGrannyFile, "Initializes Granny Geometry Combination")
+		MAP_METHOD_AND_WRAP("CombineGrannyGeometry", CombineGrannyGeometry, "Combines Granny Geometry.")
+		MAP_METHOD_AND_WRAP("FinalizeGrannyFile", FinalizeGrannyFile, "Finalizes Granny Geometry Combination")
     EXPOSURE_END()
 }
