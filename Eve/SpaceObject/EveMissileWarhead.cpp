@@ -19,8 +19,8 @@
 // keep track of missiles
 CCP_STATS_DECLARE( eveVisibleWarheadObjects, "Trinity/Missiles/visibleWarheadObjects", true, CST_COUNTER_LOW, "Number of individual warheads visible in this frame.");
 
-extern float g_eveSpaceSceneLowDetailThreshold;
 extern float g_eveSpaceSceneMediumDetailThreshold;
+extern float g_eveSpaceSceneVisibilityThreshold;
 
 
 // --------------------------------------------------------------------------------
@@ -30,6 +30,8 @@ extern float g_eveSpaceSceneMediumDetailThreshold;
 // --------------------------------------------------------------------------------
 EveMissileWarhead::EveMissileWarhead( IRoot* lockobj ) :
 	EveTransform( lockobj ),
+	m_warheadLength( 1 ),
+	m_warheadRadius( 1 ),
 	m_state( STATE_DELAYED ),
 	m_flyingTime( 0.f ),
 	m_impactDuration( 0.6f ),
@@ -60,7 +62,9 @@ EveMissileWarhead::EveMissileWarhead( IRoot* lockobj ) :
 	m_bombFlightpath( false ),
 	m_doSpread( true ),
 	m_lastPositionValid( false ),
-	m_currentOffsetTransform( IdentityMatrix() )
+	m_currentOffsetTransform( IdentityMatrix() ),
+	m_pathOffsetNoiseScale( 0 ),
+	m_pathOffsetNoiseSpeed( 1 )
 {
 	m_speedModifier = 1.04f - TriRand() * 0.08f;
 	m_finalTargetTime = 0.75f - TriRand() * 0.1f;
@@ -108,6 +112,7 @@ void EveMissileWarhead::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2Qu
 	}
 }
 
+// --------------------------------------------------------------------------------
 void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform )
 {
 	m_isVisible = false;
@@ -135,14 +140,16 @@ void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matri
 		if( GetBoundingSphere( boundingSphere ) )
 		{
 			// check visibility with camera or, if threshold set to negative, no culling
-			if( frustum.IsSphereVisible( &boundingSphere ) || ( m_visibilityThreshold < 0.f ) )
-			{
+			if( frustum.IsSphereVisible( &boundingSphere ) )
+	 		{
 				float estimatedSize = frustum.GetPixelSizeAccross( &boundingSphere );
 				if( estimatedSize >= g_eveSpaceSceneMediumDetailThreshold )
 				{
 					m_lodLevel = TR2_LOD_HIGH;
 				}
-				else if( estimatedSize >= g_eveSpaceSceneLowDetailThreshold )
+				// we use g_eveSpaceSceneVisibilityThreshold insdead of g_eveSpaceSceneLowDetailThreshold because we
+				// completely hide warhead mesh on low LOD
+				else if( estimatedSize >= g_eveSpaceSceneVisibilityThreshold )
 				{
 					m_lodLevel = TR2_LOD_MEDIUM;
 				}
@@ -158,6 +165,15 @@ void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matri
 }
 
 // --------------------------------------------------------------------------------
+bool EveMissileWarhead::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery ) const
+{
+	sphere = Vector4( 0, 0, 0.5f * m_warheadLength, 0.5f * m_warheadLength );
+	BoundingSphereTransform( m_worldTransform, sphere );
+	return true;
+}
+
+
+// --------------------------------------------------------------------------------
 // Description:
 //   Trinity wanst renderables, we give them out here: collect the renderables
 //   from this warhead. Don't render anything if start data is not set from
@@ -170,7 +186,7 @@ void EveMissileWarhead::UpdateVisibility( const TriFrustum& frustum, const Matri
 void EveMissileWarhead::GetRenderables( std::vector<ITr2Renderable*>& renderables, Tr2ImpostorManager* impostors )
 {
 	// don't give out renderables until this warhead has valid data
-	if( !m_isVisible )
+	if( !m_isVisible || m_lodLevel <= TR2_LOD_LOW )
 	{
 		return;
 	}
@@ -208,18 +224,11 @@ const Matrix& EveMissileWarhead::GetCurrentOffsetTransform() const
 // --------------------------------------------------------------------------------
 bool EveMissileWarhead::GetLocalBoundingSphere( Vector4& sphere ) const
 {
-	// must have mesh, is source of sphere in object-space
-	if( m_mesh )
-	{
-		if( m_mesh->GetBoundingSphere( sphere ) )
-		{
-			// transform it with our surrent per-warhead matrix to get
-			// the sphere into EveMissile space
-			BoundingSphereTransform( m_currentOffsetTransform, sphere );
-			return true;
-		}
-	}
-	return false;
+	sphere = Vector4( 0, 0, 0.5f * m_warheadLength, 0.5f * m_warheadLength );
+	// transform it with our surrent per-warhead matrix to get
+	// the sphere into EveMissile space
+	BoundingSphereTransform( m_currentOffsetTransform, sphere );
+	return true;
 }
 
 // --------------------------------------------------------------------------------
@@ -472,6 +481,11 @@ EveMissileWarhead::StateChangeEvent EveMissileWarhead::CheckImpact( float deltaT
 // --------------------------------------------------------------------------------
 void EveMissileWarhead::Update( EveUpdateContext& updateContext )
 {
+	double pos = m_flyingTime * m_pathOffsetNoiseSpeed + double( uintptr_t( this ) & 0xfff );
+	m_pathOffset.x = float( PerlinNoise1D( pos, 1.1, 2.0, 3 ) ) * m_pathOffsetNoiseScale;
+	m_pathOffset.y = float( PerlinNoise1D( pos + 10.1, 1.1, 2.0, 3 ) ) * m_pathOffsetNoiseScale;
+	m_pathOffset.z = float( PerlinNoise1D( pos + 18.3, 1.1, 2.0, 3 ) ) * m_pathOffsetNoiseScale;
+
 	m_posLastFrame -= updateContext.GetOriginShift();
 	EveTransform::Update( updateContext );
 	m_movement = *GetWorldPosition() - m_posLastFrame;
@@ -616,34 +630,25 @@ uint32_t EveMissileWarhead::GetPerObjectDataSize( Tr2RenderContextEnum::ShaderTy
 {
 	if( shaderType == Tr2RenderContextEnum::PIXEL_SHADER )
 	{
-		uint32_t sz = 16 + 16 + 16; // m_spaceObjectMiscData + m_spaceObjectClipData + m_spaceObjectClipDataEx
-		return sz;
+		return 0;
 	}
 	else
 	{
 		return
 			64 +				// m_vsWorldMatrix
-			64 +				// m_vsWorldMatrixLast
-			16 +				// m_vsSpaceObjectData
-			16; 				// m_spaceObjectClipData
+			16; 				// m_missileSize
 	}
 }
 
 void EveMissileWarhead::UpdatePerObjectBuffer( Tr2RenderContextEnum::ShaderType shaderType, uint32_t size, void* data )
 {
-	if( shaderType == Tr2RenderContextEnum::PIXEL_SHADER )
-	{
-		uint8_t* perObjectPS = static_cast<uint8_t*>( data );
-		memset( perObjectPS, 0, sizeof( Vector4 ) * 3 );
-	}
-	else
+	if( shaderType != Tr2RenderContextEnum::PIXEL_SHADER )
 	{
 		uint8_t* perObjectVS = static_cast<uint8_t*>( data );
 		*reinterpret_cast<Matrix*>( perObjectVS ) = Transpose( m_worldTransform );
 		perObjectVS += sizeof(Matrix);
-		*reinterpret_cast<Matrix*>( perObjectVS ) = Transpose( m_worldTransform );
-		perObjectVS += sizeof(Matrix);
-		memset( perObjectVS, 0, sizeof( Vector4 ) * 2 );
+
+		*reinterpret_cast<Vector4*>( perObjectVS ) = Vector4( m_warheadRadius, m_warheadLength, 0, 0 );
 	}
 }
 

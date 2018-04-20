@@ -56,36 +56,39 @@ public:
 	//     Tr2EffectStateManager); not used in DX11 as we have our own buffer in this case
 	//   renderContext - Current render context
 	// ----------------------------------------------------------------------------------
-	void SetPerObjectDataToDevice( 
-		Owner& owner, 
+	void SetPerObjectDataToDevice(
+		Owner& owner,
 		Tr2RenderContextEnum::ShaderType shaderType,
-		Tr2ConstantBufferAL** buffers, 
+		Tr2ConstantBufferAL** buffers,
 		Tr2RenderContext& renderContext )
 	{
 #if TRINITY_PLATFORM == TRINITY_DIRECTX11
 		if( !m_bufferDirty )
 		{
-			renderContext.SetConstants( m_constantBuffer, 
-				shaderType, 
+			renderContext.SetConstants( m_constantBuffer,
+				shaderType,
 				Tr2Renderer::GetPerObjectStartRegister( shaderType ) );
 			return;
 		}
 #endif
 		uint32_t size = owner.GetPerObjectDataSize( shaderType );
+		if( size > 0 )
+		{
 #if TRINITY_PLATFORM != TRINITY_DIRECTX11
-		auto& buffer = *buffers[shaderType];
+			auto& buffer = *buffers[shaderType];
 #else
-		auto& buffer = m_constantBuffer;
-		if( !buffer.IsValid() || size > buffer.GetSize() )
-		{
-			CR_RETURN( buffer.Create( size, 0, nullptr, renderContext.GetPrimaryRenderContext() ) );
-		}
+			auto& buffer = m_constantBuffer;
+			if( !buffer.IsValid() || size > buffer.GetSize() )
+			{
+				CR_RETURN( buffer.Create( size, 0, nullptr, renderContext.GetPrimaryRenderContext() ) );
+			}
 #endif
-		if( void* data = buffer.GetBufferMirror( size, renderContext ) )
-		{
-			owner.UpdatePerObjectBuffer( shaderType, size, data );
-			buffer.UpdateFromMirror( renderContext );
-			renderContext.SetConstants( buffer, shaderType, Tr2Renderer::GetPerObjectStartRegister( shaderType ) );
+			if( void* data = buffer.GetBufferMirror( size, renderContext ) )
+			{
+				owner.UpdatePerObjectBuffer( shaderType, size, data );
+				buffer.UpdateFromMirror( renderContext );
+				renderContext.SetConstants( buffer, shaderType, Tr2Renderer::GetPerObjectStartRegister( shaderType ) );
+			}
 		}
 #if TRINITY_PLATFORM == TRINITY_DIRECTX11
 		m_bufferDirty = false;

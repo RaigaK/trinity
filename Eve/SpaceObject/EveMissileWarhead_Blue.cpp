@@ -15,6 +15,10 @@ const Be::ClassInfo* EveMissileWarhead::ExposeToBlue()
 		MAP_INTERFACE( EveTransform )
 
 		MAP_ATTRIBUTE( "startDataValid", m_startDataValid, "", Be::READWRITE )
+
+		MAP_ATTRIBUTE( "warheadLength", m_warheadLength, "Warhead model length", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "warheadRadius", m_warheadRadius, "Warhead model radius", Be::READWRITE | Be::PERSIST )
+
 		MAP_ATTRIBUTE( "pathOffset", m_pathOffset, "", Be::READWRITE )
 		MAP_ATTRIBUTE( "durationEjectPhase", m_durationEjectPhase, "The total length of the warhead's ejection phase.", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "startEjectVelocity", m_startEjectVelocity, "The warhead's speed at start of the ejection phase.", Be::READWRITE | Be::PERSIST )
@@ -27,6 +31,8 @@ const Be::ClassInfo* EveMissileWarhead::ExposeToBlue()
 		MAP_ATTRIBUTE( "doSpread", m_doSpread, "The warhead should(possibly) switch to a new damage locator if appropriate mid flight.", Be::READWRITE )
 		MAP_ATTRIBUTE( "targetLocatorID", m_targetLocator, "The target locator id that the warhead is aiming for.", Be::READ )
 		MAP_ATTRIBUTE( "spriteSet", m_spriteSet, "Sprites for the warhead.", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "pathOffsetNoiseScale", m_pathOffsetNoiseScale, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "pathOffsetNoiseSpeed", m_pathOffsetNoiseSpeed, "", Be::READWRITE | Be::PERSIST )
 
 		MAP_METHOD_AND_WRAP(
 			"PrepareLaunch",
