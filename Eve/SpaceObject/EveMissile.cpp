@@ -116,8 +116,6 @@ void EveMissile::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRende
 // --------------------------------------------------------------------------------
 void EveMissile::UpdateSyncronous( EveUpdateContext& updateContext )
 {
-	CCP_STATS_ZONE( __FUNCTION__ );
-
 	EveSpaceObject2::UpdateSyncronous( updateContext );
 	Be::Time time = updateContext.GetTime();
 	float deltaT = updateContext.GetDeltaT();
@@ -263,6 +261,16 @@ void EveMissile::GetRenderables( std::vector<ITr2Renderable*>& renderables, Tr2I
 }
 
 // --------------------------------------------------------------------------------
+void EveMissile::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	EveSpaceObject2::GetDebugOptions( options );
+	for( auto it = begin( m_warheads ); it != end( m_warheads ); ++it )
+	{
+		( *it )->GetDebugOptions( options );
+	}
+}
+
+// --------------------------------------------------------------------------------
 // Description:
 //   Here we can output some debug info, bounding boxes etc.
 // Arguments:
@@ -371,5 +379,3 @@ bool EveMissile::RebuildMissileBoundingSphere()
 	m_boundingSphereRadius = sphere.w;
 	return true;
 }
-
-

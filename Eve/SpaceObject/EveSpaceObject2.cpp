@@ -1273,8 +1273,6 @@ void EveSpaceObject2::UpdateVisibility( const TriFrustum& frustum, const Matrix&
 
 void EveSpaceObject2::GetRenderables( std::vector<ITr2Renderable*>& renderables, Tr2ImpostorManager* impostors )
 {
-	CCP_STATS_ZONE( __FUNCTION__ );
-
 	m_impostorMode = m_impostorMode && impostors != nullptr;
 	if( m_display && m_isVisible )
 	{
@@ -1655,8 +1653,6 @@ void EveSpaceObject2::ClearAnimations()
 
 int EveSpaceObject2::GetClosestDamageLocatorIndex( const Vector3* position )
 {
-	CCP_STATS_ZONE( __FUNCTION__ );
-
 	auto damageLocators = GetLocatorsForSet( DAMAGE_LOCATOR_SET_NAME );
 	if( !damageLocators )
 	{
@@ -1719,8 +1715,6 @@ static float GetDirectionFit( const Vector3& v0, const Vector3& v1 )
 
 int EveSpaceObject2::GetGoodDamageLocatorIndex( const Vector3& position )
 {
-	CCP_STATS_ZONE( __FUNCTION__ );
-	
 	float minDistance = FLT_MAX;
 	float maxDistance = FLT_MIN;
 	float bestDirectionFit = 0.0f;

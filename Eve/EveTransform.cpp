@@ -196,7 +196,7 @@ void EveTransform::RenderDebugInfo( Tr2DebugRenderer& renderer )
 		Vector4 sphere;
 		if( GetBoundingSphere( sphere ) )
 		{
-			renderer.DrawSphere( this, m_worldTransform, Vector3( sphere.x, sphere.x, sphere.x ), sphere.w, 10, Tr2DebugRenderer::Wireframe, 0xff808000 );
+			renderer.DrawSphere( this, Vector3( sphere.x, sphere.x, sphere.x ), sphere.w, 10, Tr2DebugRenderer::Wireframe, 0xff808000 );
 		}
 	}
 
