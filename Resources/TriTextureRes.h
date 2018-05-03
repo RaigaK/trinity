@@ -35,6 +35,9 @@ class Tr2ImageHandler;
 BLUE_DECLARE( Tr2RenderTarget );
 BLUE_DECLARE( Tr2DepthStencil );
 BLUE_DECLARE( Tr2HostBitmap );
+BLUE_DECLARE( Tr2TexturePipeline );
+BLUE_DECLARE( Tr2ImageRes );
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 // TriTextureRes
@@ -90,7 +93,9 @@ public:
 
 	bool SaveAsync( const wchar_t* filename );
 	bool Save( const wchar_t* filename );	// synchronous
-	
+
+
+	Tr2TexturePipeline* GetPipeline() const;
 	
 	//////////////////////////////////////////////////////////////////////////
 	// IBlueResource
@@ -174,6 +179,15 @@ private:
 
 	void* m_data;
 	uint32_t m_dataSize;
+
+	Tr2TexturePipelinePtr m_pipeline;
+	std::unordered_map<std::wstring, Tr2ImageResPtr> m_pipelineInputs;
+	CcpAtomic<uint32_t> m_resourceLoadCbId;
+	CcpAtomic<uint32_t> m_resourcePrepCbId;
+
+	static void StaticResourceLoadFinished( void* pContext );
+	static void StaticResourcePrepFinished( void* pContext );
+	void ResourcePrepFinished();
 
 	Tr2HostBitmapPtr	m_asyncSaveBitmap;
 	std::shared_ptr<Tr2ImageHandler> m_asyncSaveImage;

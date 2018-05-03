@@ -3,6 +3,8 @@
 #include "Tr2RenderTarget.h"
 #include "Tr2DepthStencil.h"
 #include "Tr2HostBitmap.h"
+#include "TexturePipeline/Tr2TexturePipeline.h"
+
 
 BLUE_DEFINE_INTERFACE( ITr2TextureProvider );
 
@@ -395,6 +397,8 @@ const Be::ClassInfo* TriTextureRes::ExposeToBlue()
 			":param usage: texture usage (trinity.BUFFER_USAGE_FLAGS)\n"
 			":type usage: Optional[int]\n"
 		)
+
+		MAP_METHOD_AND_WRAP( "GetPipeline", GetPipeline, "Returns pipeline associated with this texture if any" )
 
 #if PY_VERSION_HEX >= 0x02070000
 		MAP_METHOD

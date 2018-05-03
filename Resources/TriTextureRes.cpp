@@ -6,9 +6,12 @@
 #include "Tr2DepthStencil.h"
 #include "Tr2HostBitmap.h"
 #include "Tr2ImageIOHelpers.h"
+#include "Tr2ImageRes.h"
 
 #include "TriConstants.h"
 #include "TriDevice.h"
+
+#include "TexturePipeline/Tr2TexturePipeline.h"
 
 
 using namespace Tr2RenderContextEnum;
@@ -39,6 +42,14 @@ BLUE_REGISTER_RESOURCE_EXTENSION( L"jpg", CreateTextureResource );
 BLUE_REGISTER_RESOURCE_EXTENSION( L"jpeg", CreateTextureResource );
 BLUE_REGISTER_RESOURCE_EXTENSION( L"bmp", CreateTextureResource );
 BLUE_REGISTER_RESOURCE_EXTENSION( L"ecs", CreateTextureResource );
+BLUE_REGISTER_RESOURCE_EXTENSION( L"ctr", CreateTextureResource );
+
+
+bool IsCtrPath( const wchar_t* name )
+{
+	auto length = wcslen( name );
+	return length > 4 && _wcsicmp( name + length - 4, L".ctr" ) == 0;
+}
 
 } // end of anonymous namespace
 
@@ -56,7 +67,9 @@ TriTextureRes::TriTextureRes():
 	m_mipLevelMaxCount( std::numeric_limits<uint32_t>::max() ),
 	m_isTextureResizable( true ),
 	m_data( nullptr ),
-	m_dataSize( 0 )
+	m_dataSize( 0 ),
+	m_resourceLoadCbId( 0 ),
+	m_resourcePrepCbId( 0 )
 {}
 
 TriTextureRes::~TriTextureRes()
@@ -86,8 +99,45 @@ unsigned TriTextureRes::ComputeMipSkipCount()
 
 void TriTextureRes::Initialize( const wchar_t* name, const wchar_t* ext )
 {
+	if( m_resourceLoadCbId )
+	{
+		BeResMan->CancelFromQueue( BRMQ_BACKGROUND, m_resourceLoadCbId );
+		m_resourceLoadCbId = 0;
+	}
+	if( m_resourcePrepCbId )
+	{
+		BeResMan->CancelFromQueue( BRMQ_MAIN, m_resourcePrepCbId );
+		m_resourcePrepCbId = 0;
+	}
 	CancelPendingLoad();
 	CleanupAsyncSave(false);
+
+	m_pipeline = nullptr;
+	m_pipelineInputs.clear();
+
+	if( IsCtrPath( name ) )
+	{
+		m_pipeline = BlueCastPtr( BeResMan->LoadObjectW( name ) );
+		if( m_pipeline )
+		{
+			std::set<std::wstring> resources;
+			m_pipeline->GetResourceDependencies( resources );
+			for( auto it = begin( resources ); it != end( resources ); ++it )
+			{
+				Tr2ImageResPtr image;
+				BeResMan->GetResource( *it, L"raw", image );
+				m_pipelineInputs[*it] = image;
+			}
+			m_isGood = false;
+			m_isPrepared = false;
+			m_isLoading = true;
+			m_path = name;
+			m_ext = ext;
+
+			BeResMan->AddToQueue( BRMQ_BACKGROUND, StaticResourceLoadFinished, this, IBlueCallbackMan::BCBF_FENCE, &m_resourceLoadCbId );
+			return;
+		}
+	}
 
 	m_mipLevelMaxCount = 255;
 
@@ -98,8 +148,86 @@ void TriTextureRes::Initialize( const wchar_t* name, const wchar_t* ext )
 	BlueAsyncRes::Initialize( name, ext );
 }
 
+void TriTextureRes::StaticResourceLoadFinished( void* pContext )
+{
+	static_cast<TriTextureRes*>( pContext )->m_resourceLoadCbId = 0;
+	BeResMan->AddToQueue( BRMQ_MAIN, StaticResourcePrepFinished, pContext, 0, &static_cast<TriTextureRes*>( pContext )->m_resourcePrepCbId );
+}
+
+void TriTextureRes::StaticResourcePrepFinished( void* pContext )
+{
+	static_cast<TriTextureRes*>( pContext )->m_resourcePrepCbId = 0;
+	static_cast<TriTextureRes*>( pContext )->ResourcePrepFinished();
+}
+
+void TriTextureRes::ResourcePrepFinished()
+{
+	if( m_pipeline )
+	{
+		m_isLoading = false;
+		m_isPrepared = true;
+		m_isGood = false;
+
+		ON_BLOCK_EXIT( [&] { m_pipelineInputs.clear(); m_pipeline = nullptr; } );
+
+		std::unordered_map<std::wstring, const ImageIO::HostBitmap*> inputs;
+		for( auto it = begin( m_pipelineInputs ); it != end( m_pipelineInputs ); ++it )
+		{
+			inputs[it->first] = ( it->second && it->second->IsGood() ) ? &it->second->GetBitmap() : nullptr;
+		}
+		ImageIO::HostBitmap result;
+		if( m_pipeline->Execute( result, inputs, Tr2TexturePipelineParams() ) )
+		{
+			m_ownTexture = Tr2TextureAL();
+			SetTexture( m_ownTexture );
+
+			// No need to check for texture load disabled - we wouldn't have gotten here
+			// if it were.
+
+			if( !Tr2Renderer::IsResourceCreationAllowed() )
+			{
+				return;
+			}
+
+			bool isOK = false;
+			Tr2TextureAL face;
+			USE_MAIN_THREAD_RENDER_CONTEXT();
+			uint32_t memoryUse;
+			if( !Tr2ImageIOHelpers::CreateTexture( result, m_ownTexture,
+				memoryUse,
+				renderContext,
+				USAGE_IMMUTABLE ) )
+			{
+				CCP_LOGWARN( "Tr2ImageHandler failed to create texture '%S'", GetPath() );
+				return;
+			}
+
+			isOK = true;
+			SetTexture( m_ownTexture );
+			++m_resourceRebuiltCounter;
+		}
+		m_isGood = true;
+		NotifyRebuildCachedData();
+	}
+}
+
+Tr2TexturePipeline* TriTextureRes::GetPipeline() const
+{
+	return m_pipeline;
+}
+
 void TriTextureRes::OnShutdown()
 {
+	if( m_resourceLoadCbId )
+	{
+		BeResMan->CancelFromQueue( BRMQ_BACKGROUND, m_resourceLoadCbId );
+		m_resourceLoadCbId = 0;
+	}
+	if( m_resourcePrepCbId )
+	{
+		BeResMan->CancelFromQueue( BRMQ_MAIN, m_resourcePrepCbId );
+		m_resourcePrepCbId = 0;
+	}
 	ReleaseResources( TRISTORAGE_ALL );
 }
 
