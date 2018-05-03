@@ -189,7 +189,6 @@ void TriTextureRes::ResourcePrepFinished()
 				return;
 			}
 
-			bool isOK = false;
 			Tr2TextureAL face;
 			USE_MAIN_THREAD_RENDER_CONTEXT();
 			uint32_t memoryUse;
@@ -202,7 +201,6 @@ void TriTextureRes::ResourcePrepFinished()
 				return;
 			}
 
-			isOK = true;
 			SetTexture( m_ownTexture );
 			++m_resourceRebuiltCounter;
 		}
