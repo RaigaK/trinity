@@ -13,6 +13,7 @@
 #include "Tr2PickingHelperBatch.h"
 #include "Tr2DebugRenderer.h"
 #include "Tr2Renderer.h"
+#include "Utilities/MatrixUtils.h"
 
 
 static const char* PLANESET_PICK_EFFECT_PATH = "res:/Graphics/Effect/Managed/Space/SpaceObject/FX/PlanePicking.fx";
@@ -308,11 +309,29 @@ EvePlaneSetItemVector* EvePlaneSet::GetPlanes()
 	return &m_planes;
 }
 
-void EvePlaneSet::RenderDebugInfo( const Matrix& worldTransform, Tr2DebugRenderer& renderer )
+void EvePlaneSet::RenderDebugInfo( const Matrix& worldTransform, Tr2DebugRenderer& renderer, Tr2GrannyAnimationPtr animationUpdater )
 {
 	for( auto it = m_planes.begin(); it != m_planes.end(); ++it )
 	{
-		Matrix t( XMMatrixTransformation( Vector3( 0, 0, 0 ), Quaternion( 0, 0, 0, 1 ), ( *it )->m_scaling, Vector3( 0, 0, 0 ), ( *it )->m_rotation, ( *it )->m_position ) );
+		Quaternion rotation( ( *it )->m_rotation );
+		Vector3 position( ( *it )->m_position );
+		int boneIndex = (*it)->m_boneIndex;
+
+		if (boneIndex > 0 && animationUpdater && animationUpdater->IsInitialized())
+		{
+			size_t boneCount = size_t( animationUpdater->GetMeshBoneCount() );
+			if (boneCount)
+			{
+				const granny_matrix_3x4* bones = animationUpdater->GetMeshBoneMatrixList();
+				Matrix boneTF = IdentityMatrix();
+				TriMatrixCopyFrom3x4( &boneTF, &bones[boneIndex] );
+				position = XMVector3TransformCoord( position, boneTF );
+
+				rotation = XMQuaternionMultiply( rotation, XMQuaternionRotationMatrix( boneTF ) );
+			}
+		}
+
+		Matrix t( XMMatrixTransformation( Vector3( 0, 0, 0 ), Quaternion( 0, 0, 0, 1 ), ( *it )->m_scaling, Vector3( 0, 0, 0 ), rotation, position ) );
 		renderer.DrawBox( 
 			*it, 
 			t * worldTransform, 

@@ -9,6 +9,7 @@
 
 #include "ITr2GeometryProvider.h"
 #include "ITr2Renderable.h"
+#include "Tr2GrannyAnimation.h"
 
 #include "EvePlaneSetItem.h"
 
@@ -78,7 +79,7 @@ public:
 
 	EvePlaneSetItemVector* GetPlanes();
 
-	void RenderDebugInfo( const Matrix& worldTransform, Tr2DebugRenderer& renderer );
+	void RenderDebugInfo( const Matrix& worldTransform, Tr2DebugRenderer& renderer, Tr2GrannyAnimationPtr animationUpdater );
 private:
 	// toggle visibility
 	bool m_display;

@@ -663,7 +663,7 @@ void EveSpaceObject2::RenderDebugInfo( Tr2DebugRenderer& renderer )
 	{
 		for( auto it = m_planeSets.begin(); it != m_planeSets.end(); ++it )
 		{
-			( *it )->RenderDebugInfo( m_worldTransform, renderer );
+			( *it )->RenderDebugInfo( m_worldTransform, renderer, m_animationUpdater );
 		}
 	}
 
