@@ -2625,6 +2625,7 @@
     <ClInclude Include="Controllers\Actions\Tr2ActionOverlay.h" />
     <ClInclude Include="Controllers\Actions\Tr2ActionPlayCurveSet.h" />
     <ClInclude Include="Controllers\Actions\Tr2ActionPlayMeshAnimation.h" />
+    <ClInclude Include="Controllers\Actions\Tr2ActionResetClipSphereCenter.h" />
     <ClInclude Include="Controllers\Actions\Tr2ActionSetValue.h" />
     <ClInclude Include="Controllers\Finalizers\ITr2StateMachineStateFinalizer.h" />
     <ClInclude Include="Controllers\Finalizers\Tr2SyncToAnimation.h" />
@@ -3170,6 +3171,8 @@
     <ClCompile Include="Controllers\Actions\Tr2ActionPlayCurveSet_Blue.cpp" />
     <ClCompile Include="Controllers\Actions\Tr2ActionPlayMeshAnimation.cpp" />
     <ClCompile Include="Controllers\Actions\Tr2ActionPlayMeshAnimation_Blue.cpp" />
+    <ClCompile Include="Controllers\Actions\Tr2ActionResetClipSphereCenter.cpp" />
+    <ClCompile Include="Controllers\Actions\Tr2ActionResetClipSphereCenter_Blue.cpp" />
     <ClCompile Include="Controllers\Actions\Tr2ActionSetValue.cpp" />
     <ClCompile Include="Controllers\Actions\Tr2ActionSetValue_Blue.cpp" />
     <ClCompile Include="Controllers\Finalizers\Tr2SyncToAnimation.cpp" />
