@@ -13,7 +13,15 @@
 #include "Eve/SpaceObject/Children/EveChildContainer.h"
 #include "Tr2GrannyAnimation.h"
 #include "Tr2ExpressionTermInfo.h"
+#include "TriSettingsRegistrar.h"
 #include <regex>
+
+
+bool g_controllerFunctionOverrideEnabled = false;
+float g_controllerShipSpeed = 0;
+
+TRI_REGISTER_SETTING( "controllerFunctionOverrideEnabled", g_controllerFunctionOverrideEnabled );
+TRI_REGISTER_SETTING( "controllerShipSpeed", g_controllerShipSpeed );
 
 
 namespace
@@ -89,6 +97,10 @@ namespace
 
 	float ShipSpeed()
 	{
+		if( g_controllerFunctionOverrideEnabled )
+		{
+			return g_controllerShipSpeed;
+		}
 		if( IEveSpaceObject2Ptr spaceObject = BlueCastPtr( s_owner ) )
 		{
 			Vector3 velocity;
