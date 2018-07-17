@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "Tr2ImageIOHelpers.h"
+#include "cairo.h"
+#include "cairo-script-interpreter.h"
 
 using namespace Tr2RenderContextEnum;
 
@@ -98,6 +100,134 @@ bool CreateVolumeTexture( ImageIO::HostBitmap& bitmap, Tr2TextureAL &out,
 	return true;
 }
 
+
+struct CairoData
+{
+	bool isMainSurface;
+	bool rescale;
+	cairo_surface_t* surface;
+	uint32_t width;
+	uint32_t height;
+	double originalWidth;
+	double originalHeight;
+	const Tr2ImageIOHelpers::CairoScript* source;
+};
+
+cairo_surface_t* SurfaceCreate( void *closure, cairo_content_t, double width, double height, long )
+{
+	auto data = static_cast<CairoData*>( closure );
+	if( data->surface )
+	{
+		if( data->isMainSurface )
+		{
+			data->isMainSurface = false;
+			data->originalWidth = width;
+			data->originalHeight = height;
+			return cairo_surface_reference( data->surface );
+		}
+		else
+		{
+			data->isMainSurface = false;
+			if( data->rescale )
+			{
+				double xscale = data->width / data->originalWidth;
+				double yscale = data->height / data->originalHeight;
+				auto surface = cairo_image_surface_create( CAIRO_FORMAT_ARGB32, int( width * xscale ), int( height * yscale ) );
+				cairo_surface_set_device_scale( surface, xscale, yscale );
+				return surface;
+			}
+			else
+			{
+				return cairo_image_surface_create( CAIRO_FORMAT_ARGB32, int( width ), int( height ) );
+			}
+		}
+	}
+	else
+	{
+		data->originalWidth = width;
+		data->originalHeight = height;
+		if( data->width == 0 && data->height == 0 )
+		{
+			data->width = uint32_t( width + 0.5f );
+			data->height = uint32_t( height + 0.5f );
+		}
+		else if( data->width == 0 )
+		{
+			data->width = uint32_t( width * data->height / height + 0.5f );
+		}
+		else if( data->height == 0 )
+		{
+			data->height = uint32_t( width * data->width / height + 0.5f );
+		}
+		data->surface = cairo_image_surface_create( CAIRO_FORMAT_ARGB32, data->width, data->height );
+		if( data->rescale )
+		{
+			double xscale = data->width / data->originalWidth;
+			double yscale = data->height / data->originalHeight;
+			cairo_surface_set_device_scale( data->surface, xscale, yscale );
+		}
+		return cairo_surface_reference( data->surface );
+	}
+}
+
+cairo_t* ContextCreate( void *closure, cairo_surface_t *surface )
+{
+	auto context = cairo_create( surface );
+	auto data = static_cast<CairoData*>( closure );
+	if( data->source && surface == data->surface )
+	{
+		cairo_set_antialias( context, CAIRO_ANTIALIAS_BEST );
+		cairo_translate( context, data->source->translation.x, data->source->translation.y );
+		cairo_translate( context, data->originalWidth / 2, data->originalHeight / 2 );
+		cairo_rotate( context, data->source->rotation );
+		cairo_scale( context, data->source->scale, data->source->scale );
+		cairo_translate( context, -data->originalWidth / 2, -data->originalHeight / 2 );
+	}
+	return context;
+}
+
+bool ProtectedRasterize( const char* script, size_t length, CairoData* data )
+{
+	cairo_script_interpreter_hooks_t hooks = {
+		data,
+		&SurfaceCreate,
+		nullptr,
+		&ContextCreate,
+	};
+
+	bool success;
+
+#ifdef _MSC_VER
+	__try
+#endif
+	{
+		auto interpreter = cairo_script_interpreter_create();
+		cairo_script_interpreter_install_hooks( interpreter, &hooks );
+		auto result = cairo_script_interpreter_feed_string( interpreter, script, int( length ) );
+		success = result == CAIRO_STATUS_SUCCESS;
+		cairo_script_interpreter_finish( interpreter );
+		cairo_script_interpreter_destroy( interpreter );
+	}
+#ifdef _MSC_VER
+	__except( EXCEPTION_EXECUTE_HANDLER )
+	{ 
+		CCP_LOGERR( "Exception caught while rasterizing cairo script" );
+	}
+#endif
+	return success;
+}
+
+const BlueAsyncRes::QueryArgument* FindFirstQueryArgumentByName( const BlueAsyncRes::QueryArguments& arguments, const wchar_t* name )
+{
+	for( auto it = std::begin( arguments ); it != std::end( arguments ); ++it )
+	{
+		if( it->first == name )
+		{
+			return &( *it );
+		}
+	}
+	return nullptr;
+}
 
 }
 
@@ -353,5 +483,211 @@ void AddMargin(	const Tr2RenderContextEnum::PixelFormat format,
 	}
 }
 
+bool IsCairoScriptPath( const wchar_t* path )
+{
+	auto length = wcslen( path );
+    auto ext = path + length - 4;
+	return length > 4 && ext[0] == L'.' &&
+        ( ext[1] == L'e' || ext[1] == L'E' ) &&
+        ( ext[2] == L'c' || ext[2] == L'C' ) &&
+        ( ext[3] == L's' || ext[3] == L'S' );
+}
+
+bool RasterizeCairoScripts( const std::vector<CairoScript>& scripts, uint32_t width, uint32_t height, ImageIO::HostBitmap& bitmap )
+{
+	std::unique_ptr<CairoData> data( new CairoData );
+	data->surface = nullptr;
+	data->width = width;
+	data->height = height;
+	data->originalWidth = width;
+	data->originalHeight = height;
+	data->source = nullptr;
+	data->rescale = false;
+
+	bool success;
+	{
+		CCP_STATS_ZONE( "Cairo rasterizing" );
+		auto beginTime = CcpGetTimestamp();
+		for( auto it = begin( scripts ); it != end( scripts ); ++it )
+		{
+			data->isMainSurface = true;
+			data->source = &*it;
+			success = ProtectedRasterize( it->script, it->length, data.get() );
+		}
+		auto endTime = CcpGetTimestamp();
+		auto duration = float( double( endTime - beginTime ) / CcpGetTimestampFrequency() );
+		CCP_LOG( "Rasterize duration: %.1f ms", duration * 1000 );
+
+	}
+	if( !data->surface )
+	{
+		success = false;
+	}
+
+	if( success )
+	{
+		if( bitmap.Create( data->width, data->height, 1, Tr2RenderContextEnum::PIXEL_FORMAT_B8G8R8A8_UNORM ) )
+		{
+			cairo_surface_flush( data->surface );
+			auto src = cairo_image_surface_get_data( data->surface );
+			auto srcStride = cairo_image_surface_get_stride( data->surface );
+			auto dest = reinterpret_cast<uint8_t*>( bitmap.GetRawData() );
+			auto destStride = bitmap.GetPitch();
+
+			// we need to convert cairo's premultiplied alpha image to non-premultiplied alpha
+			for( uint32_t j = 0; j < data->height; ++j )
+			{
+				for( uint32_t i = 0; i < data->width; ++i )
+				{
+					float a = float( src[3] ) / 255.f;
+					if( a )
+					{
+						dest[0] = uint8_t( src[0] / a );
+						dest[1] = uint8_t( src[1] / a );
+						dest[2] = uint8_t( src[2] / a );
+					}
+					else
+					{
+						dest[0] = src[0];
+						dest[1] = src[1];
+						dest[2] = src[2];
+					}
+					dest[3] = src[3];
+					dest += 4;
+					src += 4;
+				}
+				src += srcStride - data->width * 4;
+				dest += destStride - data->width * 4;
+			}
+		}
+		else
+		{
+			success = false;
+		}
+	}
+	if( data->surface )
+	{
+		cairo_surface_destroy( data->surface );
+	}
+	return success;
+}
+
+bool RasterizeCairoScript( const char* script, size_t length, uint32_t width, uint32_t height, ImageIO::HostBitmap& bitmap )
+{
+	CCP_STATS_ZONE( __FUNCTION__ );
+
+	std::unique_ptr<CairoData> data( new CairoData );
+	data->surface = nullptr;
+	data->width = width;
+	data->height = height;
+	data->originalWidth = width;
+	data->originalHeight = height;
+	data->source = nullptr;
+	data->isMainSurface = true;
+	data->rescale = true;
+
+	bool success;
+	{
+		CCP_STATS_ZONE( "Cairo rasterizing" );
+		auto beginTime = CcpGetTimestamp();
+		success = ProtectedRasterize( script, length, data.get() );
+		auto endTime = CcpGetTimestamp();
+		auto duration = float( double( endTime - beginTime ) / CcpGetTimestampFrequency() );
+		CCP_LOG( "Rasterize duration: %.1f ms", duration * 1000 );
+
+	}
+	if( !data->surface )
+	{
+		success = false;
+	}
+
+	if( success )
+	{
+		if( bitmap.Create( data->width, data->height, 1, Tr2RenderContextEnum::PIXEL_FORMAT_B8G8R8A8_UNORM ) )
+		{
+			cairo_surface_flush( data->surface );
+			auto src = cairo_image_surface_get_data( data->surface );
+			auto srcStride = cairo_image_surface_get_stride( data->surface );
+			auto dest = reinterpret_cast<uint8_t*>( bitmap.GetRawData() );
+			auto destStride = bitmap.GetPitch();
+
+			// we need to convert cairo's premultiplied alpha image to non-premultiplied alpha
+			for( uint32_t j = 0; j < data->height; ++j )
+			{
+				for( uint32_t i = 0; i < data->width; ++i )
+				{
+					float a = float( src[3] ) / 255.f;
+					if( a )
+					{
+						dest[0] = uint8_t( src[0] / a );
+						dest[1] = uint8_t( src[1] / a );
+						dest[2] = uint8_t( src[2] / a );
+					}
+					else
+					{
+						dest[0] = src[0];
+						dest[1] = src[1];
+						dest[2] = src[2];
+					}
+					dest[3] = src[3];
+					dest += 4;
+					src += 4;
+				}
+				src += srcStride - data->width * 4;
+				dest += destStride - data->width * 4;
+			}
+		}
+		else
+		{
+			success = false;
+		}
+	}
+	if( data->surface )
+	{
+		cairo_surface_destroy( data->surface );
+	}
+	return success;
+}
+
+ImageIO::Result RasterizeCairoScript( IBlueStream* stream, const BlueAsyncRes::QueryArguments& arguments, ImageIO::HostBitmap& bitmap )
+{
+	if( !stream )
+	{
+		return ImageIO::Result( ImageIO::Result::INVALID_DATA );
+	}
+
+	uint32_t width = 0;
+	uint32_t height = 0;
+
+	auto widthArgument = FindFirstQueryArgumentByName( arguments, L"width" );
+	if( widthArgument )
+	{
+		width = uint32_t( wcstol( widthArgument->second.c_str(), nullptr, 10 ) );
+	}
+
+	auto heightArgument = FindFirstQueryArgumentByName( arguments, L"height" );
+	if( heightArgument )
+	{
+		height = uint32_t( wcstol( heightArgument->second.c_str(), nullptr, 10 ) );
+	}
+
+	CcpMallocBuffer script( "RasterizeCairoScript", stream->GetSize() );
+	if( !script.size() )
+	{
+		CCP_LOGERR( "RasterizeCairoScript: out of memory when reading stream of size %" CCP_SIZET_FORMAT, size_t( stream->GetSize() ) );
+		return ImageIO::Result( ImageIO::Result::OUT_OF_MEMORY );
+	}
+	if( stream->Read( script.get(), script.size() ) != script.size() )
+	{
+		CCP_LOGERR( "RasterizeCairoScript: failed to read file" );
+		return ImageIO::Result( ImageIO::Result::READ_FAILURE );
+	}
+
+	if( !RasterizeCairoScript( script.get(), script.size(), width, height, bitmap ) )
+	{
+		return ImageIO::Result( ImageIO::Result::INVALID_DATA );
+	}
+	return ImageIO::Result( ImageIO::Result::OK );
+}
 
 }

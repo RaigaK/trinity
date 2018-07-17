@@ -36,6 +36,25 @@ void AddMargin(	const Tr2RenderContextEnum::PixelFormat format,
 				std::vector<unsigned char> &output, 
 				unsigned &outputPitch );
 
+bool IsCairoScriptPath( const wchar_t* path );
+
+bool RasterizeCairoScript( const char* script, size_t length, uint32_t width, uint32_t height, ImageIO::HostBitmap& bitmap );
+
+struct CairoScript
+{
+	const char* script;
+	size_t length;
+
+	float scale;
+	float rotation;
+	Vector2 translation;
+	Color color;
+};
+
+bool RasterizeCairoScripts( const std::vector<CairoScript>& scripts, uint32_t width, uint32_t height, ImageIO::HostBitmap& bitmap );
+
+ImageIO::Result RasterizeCairoScript( IBlueStream* stream, const BlueAsyncRes::QueryArguments& arguments, ImageIO::HostBitmap& bitmap );
+
 }
 
 #endif
