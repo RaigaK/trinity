@@ -40,9 +40,9 @@ void Tr2ProfileTimer::ReleaseResources( TriStorage s )
 {
 	if( m_gpuTimer.GetMemoryClass() & s )
 	{
-		m_gpuTimer.Destroy();
+		m_gpuTimer = Tr2GpuTimerAL();
 	}
-	m_gpuTimer.Destroy();
+	m_gpuTimer = Tr2GpuTimerAL();
 }
 
 // -------------------------------------------------------------
@@ -143,7 +143,7 @@ void Tr2ProfileTimer::SetCaptureGpuTime( bool capture )
 	}
 	else
 	{
-		m_gpuTimer.Destroy();
+		m_gpuTimer = Tr2GpuTimerAL();
 	}
 }
 
