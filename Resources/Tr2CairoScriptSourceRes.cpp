@@ -35,6 +35,7 @@ namespace
 
 			auto lengthOfMatch = match.length( 0 );
 
+			// cppcheck-suppress unreadVariable
 			positionOfLastMatch = positionOfThisMatch + lengthOfMatch;
 
 			endOfLastMatch = startOfThisMatch;
