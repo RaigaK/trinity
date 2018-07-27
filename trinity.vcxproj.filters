@@ -684,6 +684,9 @@
     <ClInclude Include="Eve\SpaceObject\Attachments\EveTrailsSet.h">
       <Filter>Source Files\Eve\SpaceObject\Attachments</Filter>
     </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\Attachments\Sets\EveBannerSet.h">
+      <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
+    </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Attachments\Sets\EveHazeSet.h">
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
     </ClInclude>
@@ -712,6 +715,9 @@
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
     </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Attachments\Sets\EveSpriteSetItem.h">
+      <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
+    </ClInclude>
+    <ClInclude Include="Eve\SpaceObject\Attachments\Sets\IEveSpaceObjectChildSet.h">
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
     </ClInclude>
     <ClInclude Include="Eve\SpaceObject\Children\EveChildBulletStorm.h">
@@ -2483,6 +2489,12 @@
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Attachments\EveTrailsSet_Blue.cpp">
       <Filter>Source Files\Eve\SpaceObject\Attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Attachments\Sets\EveBannerSet.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
+    </ClCompile>
+    <ClCompile Include="Eve\SpaceObject\Attachments\Sets\EveBannerSet_Blue.cpp">
+      <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
     </ClCompile>
     <ClCompile Include="Eve\SpaceObject\Attachments\Sets\EveHazeSet.cpp">
       <Filter>Source Files\Eve\SpaceObject\Attachments\Sets</Filter>
