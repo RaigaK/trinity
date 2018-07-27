@@ -35,6 +35,11 @@ namespace
 	class RenderBatch : public TriRenderBatch
 	{
 	public:
+		RenderBatch()
+			:m_bannerSet( nullptr )
+		{
+		}
+
 		void SetBannerSet( const EveBannerSet* bannerSet )
 		{
 			m_bannerSet = bannerSet;
