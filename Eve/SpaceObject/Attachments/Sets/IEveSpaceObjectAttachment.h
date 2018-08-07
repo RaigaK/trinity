@@ -13,7 +13,7 @@ class Tr2QuadRenderer;
 class TriFrustum;
 
 
-BLUE_INTERFACE( IEveSpaceObjectChildSet ): public IRoot
+BLUE_INTERFACE( IEveSpaceObjectAttachment ): public IRoot
 {
 	virtual bool UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform, const granny_matrix_3x4* bones, size_t boneCount ) { return false; }
 

@@ -14,7 +14,7 @@
 #include "EveSpaceObject2.h"
 #include "Eve/EveSpaceScene.h"
 #include "Utils/EveLocator2.h"
-#include "Eve/SpaceObject/Attachments/Sets/IEveSpaceObjectChildSet.h"
+#include "Eve/SpaceObject/Attachments/Sets/IEveSpaceObjectAttachment.h"
 #include "Eve/SpaceObject/Attachments/Sets/EveSpriteSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EveSpotlightSet.h"
 #include "Eve/SpaceObject/Attachments/Sets/EvePlaneSet.h"
@@ -144,7 +144,7 @@ EveSpaceObject2::EveSpaceObject2( IRoot* lockobj ) :
 	PARENTLOCK( m_spotlightSets ),
 	PARENTLOCK( m_planeSets ),
 	PARENTLOCK( m_spriteLineSets ),
-	PARENTLOCK( m_graphicSets ),
+	PARENTLOCK( m_attachments ),
 	PARENTLOCK( m_hazeSets ),
 	PARENTLOCK( m_children ),
 	PARENTLOCK( m_curveSets ),
@@ -538,7 +538,7 @@ void EveSpaceObject2::GetDebugOptions( Tr2DebugRendererOptions& options )
 		options.insert( name.c_str() );
 	}
 
-	for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+	for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 	{
 		( *it )->GetDebugOptions( options );
 	}
@@ -773,13 +773,13 @@ void EveSpaceObject2::RenderDebugInfo( Tr2DebugRenderer& renderer )
 		}
 	}
 
-	if( !m_graphicSets.empty() )
+	if( !m_attachments.empty() )
 	{
 		size_t boneCount = 0;
 		const granny_matrix_3x4* bones = nullptr;
 		GetBoneList( bones, boneCount );
 
-		for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+		for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 		{
 			( *it )->RenderDebugInfo( renderer, m_worldTransform, bones, boneCount );
 		}
@@ -843,7 +843,7 @@ void EveSpaceObject2::GetBatches( ITriRenderBatchAccumulator* batches, TriBatchT
 		}
 	}
 
-	for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+	for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 	{
 		( *it )->GetBatches( batches, batchType, perObjectData );
 	}
@@ -1302,13 +1302,13 @@ void EveSpaceObject2::UpdateVisibility( const TriFrustum& frustum, const Matrix&
 		}
 	}
 
-	if( !m_graphicSets.empty() )
+	if( !m_attachments.empty() )
 	{
 		size_t boneCount = 0;
 		const granny_matrix_3x4* bones = nullptr;
 		GetBoneList( bones, boneCount );
 
-		for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+		for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 		{
 			if( ( *it )->UpdateVisibility( frustum, m_worldTransform, bones, boneCount ) )
 			{
@@ -1458,7 +1458,7 @@ void EveSpaceObject2::RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer )
 	{
 		( *it )->RegisterWithQuadRenderer( quadRenderer );
 	}
-	for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+	for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 	{
 		( *it )->RegisterWithQuadRenderer( quadRenderer );
 	}
@@ -1492,7 +1492,7 @@ void EveSpaceObject2::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2Quad
 	{
 		( *it )->AddToQuadRenderer( quadRenderer, m_worldTransform, m_spaceObjectShipData.y, bones, boneCount );
 	}
-	for( auto it = begin( m_graphicSets ); it != end( m_graphicSets ); ++it )
+	for( auto it = begin( m_attachments ); it != end( m_attachments ); ++it )
 	{
 		( *it )->AddToQuadRenderer( quadRenderer, m_worldTransform, m_spaceObjectShipData.y, m_spaceObjectShipData.x, bones, boneCount );
 	}

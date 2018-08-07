@@ -76,8 +76,8 @@ BLUE_DECLARE_VECTOR( Tr2ExternalParameter );
 BLUE_DECLARE_INTERFACE( ITr2Controller );
 BLUE_DECLARE_IVECTOR( ITr2Controller );
 
-BLUE_DECLARE_INTERFACE( IEveSpaceObjectChildSet );
-BLUE_DECLARE_IVECTOR( IEveSpaceObjectChildSet );
+BLUE_DECLARE_INTERFACE( IEveSpaceObjectAttachment );
+BLUE_DECLARE_IVECTOR( IEveSpaceObjectAttachment );
 
 
 struct granny_skeleton;
@@ -544,7 +544,7 @@ protected:
 	PEvePlaneSetVector m_planeSets;
 	PEveSpriteLineSetVector m_spriteLineSets;
 	PEveHazeSetVector m_hazeSets;
-	PIEveSpaceObjectChildSetVector m_graphicSets;
+	PIEveSpaceObjectAttachmentVector m_attachments;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// children

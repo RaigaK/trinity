@@ -9,7 +9,7 @@ BLUE_DEFINE_INTERFACE( IEveSpaceObject2 );
 BLUE_DEFINE_INTERFACE( IEveShadowCaster );
 BLUE_DEFINE_INTERFACE( IEveLightReceiver );
 BLUE_DEFINE_INTERFACE( IEveEffectChildrenOwner );
-BLUE_DEFINE_INTERFACE( IEveSpaceObjectChildSet );
+BLUE_DEFINE_INTERFACE( IEveSpaceObjectAttachment );
 BLUE_DEFINE_ABSTRACT( EveSpaceObject2 );
 
 #if BLUE_WITH_PYTHON
@@ -298,8 +298,8 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 
 		MAP_ATTRIBUTE
 		(
-			"graphicSets",
-			m_graphicSets,
+			"attachments",
+			m_attachments,
 			"Item sets attached to the object",
 			Be::READ | Be::PERSIST
 		)

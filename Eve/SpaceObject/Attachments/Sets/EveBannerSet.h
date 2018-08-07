@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "IEveSpaceObjectChildSet.h"
+#include "IEveSpaceObjectAttachment.h"
 #include "Utilities/BoundingBox.h"
 #include "Resources/Tr2LodResource.h"
 
@@ -31,7 +31,7 @@ BLUE_DECLARE_STRUCTURE_LIST( EveBannerItem );
 
 
 BLUE_CLASS( EveBannerSet )
-	: public IEveSpaceObjectChildSet,
+	: public IEveSpaceObjectAttachment,
 	public IInitialize,
 	public IBlueStructureListNotify,
 	public Tr2DeviceResource
