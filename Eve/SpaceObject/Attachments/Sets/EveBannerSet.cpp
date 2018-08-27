@@ -577,3 +577,160 @@ void EveBannerSet::CreateCurvedBannerGeometry( std::vector<Vertex>& vertexBuffer
 		}
 	}
 }
+
+namespace
+{
+	float GetVerticalCurvedBannerApectRatio( const EveBannerItem& banner )
+	{
+		auto transform = TransformationMatrix( banner.scaling, banner.rotation, banner.position );
+		auto normalTransform = Inverse( Transpose( transform ) );
+
+		float clamppedAngleY = std::max( 0.f, std::min( banner.angleY, 180.f ) );
+
+		uint32_t segmentsY = 1 + uint32_t( clamppedAngleY / 5 );
+
+		auto halfAngleY = clamppedAngleY / 180.f * XM_PI / 2;
+
+		float scaleY = 0.5f / sin( halfAngleY );
+
+		Vector3 prevPos;
+		float uLength = banner.scaling.x;
+		float vLength = 0;
+
+		for( uint32_t j = 0; j <= segmentsY; ++j )
+		{
+			float y = float( j ) / ( segmentsY );
+			float angleY = -halfAngleY + y * 2 * halfAngleY;
+			float sinAngleY = sin( angleY + XM_PIDIV2 );
+			float cosAngleY = cos( angleY + XM_PIDIV2 );
+
+			Vector3 pos = TransformCoord( Vector3( 0, cosAngleY * scaleY, ( sinAngleY - 1 ) * scaleY ), transform );
+			if( j )
+			{
+				vLength += Length( pos - prevPos );
+			}
+			prevPos = pos;
+		}
+
+		return uLength / vLength;
+	}
+
+	float GetHorizontalCurvedBannerApectRatio( const EveBannerItem& banner )
+	{
+		auto transform = TransformationMatrix( banner.scaling, banner.rotation, banner.position );
+		auto normalTransform = Inverse( Transpose( transform ) );
+
+		float clamppedAngleX = std::max( 0.f, std::min( banner.angleX, 180.f ) );
+
+		uint32_t segmentsX = 1 + uint32_t( clamppedAngleX / 5 );
+		uint32_t segmentsY = 1;
+
+		auto halfAngleX = clamppedAngleX / 180.f * XM_PI / 2;
+
+		float scaleX = 0.5f / sin( halfAngleX );
+
+		Vector3 prevPos;
+		float uLength = 0;
+		float vLength = banner.scaling.y;
+
+		for( uint32_t i = 0; i <= segmentsX; ++i )
+		{
+			float x = float( i ) / ( segmentsX );
+			float angleX = -halfAngleX + x * 2 * halfAngleX;
+			float sinAngleX = sin( angleX );
+			float cosAngleX = cos( angleX );
+
+			Vector3 pos = TransformCoord( Vector3( sinAngleX * scaleX, 0, ( cosAngleX - 1 ) * scaleX ), transform );
+			if( i )
+			{
+				uLength += Length( pos - prevPos );
+			}
+			prevPos = pos;
+		}
+		return uLength / vLength;
+	}
+
+	float GetCurvedBannerApectRatio( const EveBannerItem& banner )
+	{
+		auto transform = TransformationMatrix( banner.scaling, banner.rotation, banner.position );
+		auto normalTransform = Inverse( Transpose( transform ) );
+
+		float clamppedAngleX = std::max( 0.f, std::min( banner.angleX, 180.f ) );
+		float clamppedAngleY = std::max( 0.f, std::min( banner.angleY, 180.f ) );
+
+		uint32_t segmentsX = 1 + uint32_t( clamppedAngleX / 5 );
+		uint32_t segmentsY = 1 + uint32_t( clamppedAngleY / 5 );
+
+		auto halfAngleX = clamppedAngleX / 180.f * XM_PI / 2;
+		auto halfAngleY = clamppedAngleY / 180.f * XM_PI / 2;
+
+		float scaleX = 0.5f / sin( halfAngleX );
+		float scaleY = 0.5f / sin( halfAngleY );
+		float scaleZ = std::min( scaleX, scaleY );
+
+		Vector3 prevPos;
+		float uLength = 0;
+		float vLength = 0;
+
+		{
+			float sinAngleY = 1;
+			float cosAngleY = 0;
+
+			for( uint32_t i = 0; i <= segmentsX; ++i )
+			{
+				float x = float( i ) / ( segmentsX );
+				float angleX = -halfAngleX + x * 2 * halfAngleX;
+				float sinAngleX = sin( angleX );
+				float cosAngleX = cos( angleX );
+
+				Vector3 pos = TransformCoord( Vector3( sinAngleX * scaleX, 0, ( cosAngleX - 1 ) * scaleZ ), transform );
+				if( i )
+				{
+					uLength += Length( prevPos - pos );
+				}
+				prevPos = pos;
+			}
+		}
+
+		for( uint32_t j = 0; j <= segmentsY; ++j )
+		{
+			float y = float( j ) / ( segmentsY );
+			float angleY = -halfAngleY + y * 2 * halfAngleY;
+			float sinAngleY = sin( angleY + XM_PIDIV2 );
+			float cosAngleY = cos( angleY + XM_PIDIV2 );
+
+			float sinAngleX = 0;
+			float cosAngleX = 1;
+
+			Vector3 pos = TransformCoord( Vector3( 0, cosAngleY * scaleY, ( sinAngleY - 1 ) * scaleZ ), transform );
+			if( j )
+			{
+				vLength += Length( prevPos - pos );
+			}
+			prevPos = pos;
+		}
+		return uLength / vLength;
+	}
+}
+
+float EveBannerSet::GetBannerAspectRatio( const EveBannerItem& banner )
+{
+	bool flatX = banner.angleX <= 0;
+	bool flatY = banner.angleY <= 0;
+	if( flatX && flatY )
+	{
+		return banner.scaling.x / banner.scaling.y;
+	}
+	else if( flatX )
+	{
+		return GetVerticalCurvedBannerApectRatio( banner );
+	}
+	else if( flatY )
+	{
+		return GetHorizontalCurvedBannerApectRatio( banner );
+	}
+	else
+	{
+		return GetCurvedBannerApectRatio( banner );
+	}
+}

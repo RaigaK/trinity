@@ -578,6 +578,16 @@ public:
 
 	EveSOFDataHullBanner( IRoot* lockobj = nullptr );
 
+	float GetAspectRatio() const;
+	float GetTargetAspectRatio() const;
+
+	float GetAngleX() const;
+	void SetAngleX( float angle );
+	float GetAngleY() const;
+	void SetAngleY( float angle );
+	Vector3 GetScaling() const;
+	void SetScaling( const Vector3& scaling );
+
 	std::string m_name;
 	BlueSharedString m_visibilityGroup;
 
@@ -589,6 +599,8 @@ public:
 	float m_angleX;
 	float m_angleY;
 	int32_t m_boneIndex;
+
+	bool m_maintainAspectRatio;
 };
 TYPEDEF_BLUECLASS( EveSOFDataHullBanner );
 BLUE_DECLARE_VECTOR( EveSOFDataHullBanner );

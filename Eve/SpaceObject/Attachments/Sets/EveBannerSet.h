@@ -60,6 +60,8 @@ public:
 	unsigned int GetPickingID() const;
 
 	int32_t GetReference( size_t index ) const;
+
+	static float GetBannerAspectRatio( const EveBannerItem& banner );
 protected:
 	virtual void ReleaseResources( TriStorage s );
 	virtual bool OnPrepareResources();

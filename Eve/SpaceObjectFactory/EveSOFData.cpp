@@ -5,6 +5,7 @@
 //
 #include "StdAfx.h"
 #include "EveSOFData.h"
+#include "Eve/SpaceObject/Attachments/Sets/EveBannerSet.h"
 
 // --------------------------------------------------------------------------------
 // Description:
@@ -502,9 +503,91 @@ EveSOFDataHullBanner::EveSOFDataHullBanner( IRoot* )
 	m_rotation( 0, 0, 0, 1 ),
 	m_angleX( 0 ),
 	m_angleY( 0 ),
-	m_boneIndex( -1 )
+	m_boneIndex( -1 ),
+	m_maintainAspectRatio( true )
 {
 }
+
+float EveSOFDataHullBanner::GetTargetAspectRatio() const
+{
+	switch( m_usage )
+	{
+	case VERTICAL_BANNER:
+		return 0.25f;
+	case HORIZONTAL_BANNER:
+		return 4.f;
+	default:
+		return 1.f;
+	}
+}
+
+float EveSOFDataHullBanner::GetAspectRatio() const
+{
+	EveBannerItem banner;
+	banner.scaling = m_scaling;
+	banner.angleX = m_angleX;
+	banner.angleY = m_angleY;
+
+	return EveBannerSet::GetBannerAspectRatio( banner );
+}
+
+float EveSOFDataHullBanner::GetAngleX() const
+{
+	return m_angleX;
+}
+
+void EveSOFDataHullBanner::SetAngleX( float angle )
+{
+	m_angleX = angle;
+	if( m_maintainAspectRatio )
+	{
+		m_scaling.y *= GetAspectRatio() / GetTargetAspectRatio();
+	}
+}
+
+float EveSOFDataHullBanner::GetAngleY() const
+{
+	return m_angleY;
+}
+
+void EveSOFDataHullBanner::SetAngleY( float angle )
+{
+	m_angleY = angle;
+	if( m_maintainAspectRatio )
+	{
+		float ratio = GetAspectRatio();
+		if( ratio != 0 )
+		{
+			m_scaling.x *= GetTargetAspectRatio() / ratio;
+		}
+	}
+}
+
+Vector3 EveSOFDataHullBanner::GetScaling() const
+{
+	return m_scaling;
+}
+
+void EveSOFDataHullBanner::SetScaling( const Vector3& scaling )
+{
+	m_scaling = scaling;
+	if( m_maintainAspectRatio )
+	{
+		float ratio = GetAspectRatio();
+		if( GetTargetAspectRatio() < 1 )
+		{
+			if( ratio != 0 )
+			{
+				m_scaling.x *= GetTargetAspectRatio() / ratio;
+			}
+		}
+		else
+		{
+			m_scaling.y *= ratio / GetTargetAspectRatio();
+		}
+	}
+}
+
 
 EveSOFDataHullDecalSet::EveSOFDataHullDecalSet( IRoot* lockobj ):
 	PARENTLOCK( m_items ),
