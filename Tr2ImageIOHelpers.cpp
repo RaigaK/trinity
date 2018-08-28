@@ -245,11 +245,11 @@ bool WriteSvg( const std::vector<Tr2ImageIOHelpers::CairoScript>& scripts, Cairo
 	{
 		auto interpreter = cairo_script_interpreter_create();
 		cairo_script_interpreter_install_hooks( interpreter, &hooks );
-		for ( auto it = begin(scripts); it != end(scripts); ++it)
+		for ( size_t i = 0; i < scripts.size(); i++ )
 		{
 			data->isMainSurface = true;
-			data->source = &*it;
-			const auto result = cairo_script_interpreter_feed_string( interpreter, it->script, int( it->length ) );
+			data->source = &scripts[i];
+			const auto result = cairo_script_interpreter_feed_string( interpreter, scripts[i].script, int( scripts[i].length ) );
 			success = result == CAIRO_STATUS_SUCCESS;
 			if ( !success )
 			{
