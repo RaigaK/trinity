@@ -57,18 +57,12 @@ void Tr2MeshLod::ClearAssociatedResources()
 
 TriGeometryRes* Tr2MeshLod::GetGeometryResource() const
 {
-	if( m_geometryRes )
-	{
-		return m_geometryCache.GetResource();
-	}
-
-	return nullptr;
+	return m_geometryCache.GetResource( m_geometryRes );
 }
 
 void Tr2MeshLod::SetGeometryResource( Tr2LodResource* lodResource )
 {
 	m_geometryRes = lodResource;
-	m_geometryCache.SetResource( lodResource );
 }
 
 bool Tr2MeshLod::GetBoundingBox( Vector3& min, Vector3& max ) const

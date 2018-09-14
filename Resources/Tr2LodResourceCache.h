@@ -21,17 +21,11 @@ public:
 
 	~Tr2LodResourceCache() {};
 
-	void SetResource( Tr2LodResourcePtr resource )
+	T* GetResource( Tr2LodResourcePtr resource ) const
 	{
-		m_resource = resource;
-		m_resourceCache = nullptr;
-	}
-
-	T* GetResource() const
-	{
-		if( m_resource )
+		if( resource )
 		{
-			IBlueResource *data = m_resource->GetResource();
+			IBlueResource *data = resource->GetResource();
 			if( data != static_cast<void*>( m_resourceCache ) )
 			{
 				// Not undefined behaviour as long as Tr2LodResourceCache is not created as a const object
@@ -45,7 +39,6 @@ public:
 	}
 private:
 	T* m_resourceCache;
-	Tr2LodResourcePtr m_resource;
 };
 
 #endif
