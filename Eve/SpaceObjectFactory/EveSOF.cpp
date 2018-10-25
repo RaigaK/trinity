@@ -140,12 +140,14 @@ IRootPtr EveSOF::BuildFromDNA( const char* dnaString )
 	// set all easy consts
 	SetupConsts( newObj, dna );
 
+	InheritableTextures inheritableTextures;
+
 	// get us the base geometry
-	SetupMesh( newObj, dna );
+	SetupMesh( newObj, dna, inheritableTextures );
 	SetupCustomMask( newObj, dna );
 
 	// decals
-	SetupDecalSets( newObj, dna );
+	SetupDecalSets( newObj, dna, inheritableTextures );
 
 	// effects on ships
 	SetupSpriteSets( newObj, dna );
@@ -293,7 +295,7 @@ void EveSOF::SetupConsts( EveSpaceObject2Ptr ship, const EveSOFDNAPtr dna ) cons
 // Description:
 //   This is where it is all going to happen
 // --------------------------------------------------------------------------------
-void EveSOF::SetupMesh( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupMesh( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna, InheritableTextures& inheritableTextures ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -345,11 +347,11 @@ void EveSOF::SetupMesh( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
 	for( size_t hullIdx = 0; hullIdx < dna->GetMultiHullCount(); ++hullIdx )
 	{
 		size_t cntr = 0;
-		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_OPAQUE ), TRIBATCHTYPE_OPAQUE, dna, hullIdx, meshIndexOffset );
-		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_DECAL ), TRIBATCHTYPE_DECAL, dna, hullIdx, meshIndexOffset );
-		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_TRANSPARENT ), TRIBATCHTYPE_TRANSPARENT, dna, hullIdx, meshIndexOffset );
-		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_ADDITIVE ), TRIBATCHTYPE_ADDITIVE, dna, hullIdx, meshIndexOffset );
-		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_DISTORTION ), TRIBATCHTYPE_DISTORTION, dna, hullIdx, meshIndexOffset );
+		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_OPAQUE ), TRIBATCHTYPE_OPAQUE, dna, hullIdx, meshIndexOffset, &inheritableTextures );
+		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_DECAL ), TRIBATCHTYPE_DECAL, dna, hullIdx, meshIndexOffset, nullptr );
+		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_TRANSPARENT ), TRIBATCHTYPE_TRANSPARENT, dna, hullIdx, meshIndexOffset, nullptr );
+		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_ADDITIVE ), TRIBATCHTYPE_ADDITIVE, dna, hullIdx, meshIndexOffset, nullptr );
+		cntr += FillMeshAreaVector( lodResPerTexture, mesh->GetAreas( TRIBATCHTYPE_DISTORTION ), TRIBATCHTYPE_DISTORTION, dna, hullIdx, meshIndexOffset, nullptr );
 		meshIndexOffset += cntr;
 	}
 
@@ -408,7 +410,7 @@ void EveSOF::GenerateDepthFromAreaVector( Tr2MeshLodPtr mesh, const Tr2MeshAreaV
 // Description:
 //   Fill up mesh area vector given the hull and faction area data provided.
 // --------------------------------------------------------------------------------
-size_t EveSOF::FillMeshAreaVector( std::map<std::string, Tr2LodResourcePtr>& lodResCollector, Tr2MeshAreaVector* meshAreaVector, TriBatchType areaType, const EveSOFDNAPtr dna, size_t hullIdx, size_t meshIndexOffset ) const
+size_t EveSOF::FillMeshAreaVector( std::map<std::string, Tr2LodResourcePtr>& lodResCollector, Tr2MeshAreaVector* meshAreaVector, TriBatchType areaType, const EveSOFDNAPtr dna, size_t hullIdx, size_t meshIndexOffset, InheritableTextures* inheritableTextures ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -477,6 +479,17 @@ size_t EveSOF::FillMeshAreaVector( std::map<std::string, Tr2LodResourcePtr>& lod
 					newShader->AddResourceTexture2DLod( it->first, lodResource );
 					// also add it to the mesh for updating
 					lodResCollector[highResPath] = lodResource;
+
+
+					if( inheritableTextures )
+					{
+						InheritableTextureKey key;
+						key.hullIndex = hullIdx;
+						key.meshIndex = area->index;
+						key.name = it->first;
+
+						inheritableTextures->insert( std::make_pair( key, lodResource ) );
+					}
 				}
 			}
 			else
@@ -1796,7 +1809,7 @@ void EveSOF::SetupBoosters( EveShip2Ptr ship, const EveSOFDNAPtr dna ) const
 // Description:
 //   add the hull decals to the new ship based off the decal sets
 // --------------------------------------------------------------------------------
-void EveSOF::SetupDecalSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const
+void EveSOF::SetupDecalSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna, const InheritableTextures& inheritableTextures ) const
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -1883,11 +1896,23 @@ void EveSOF::SetupDecalSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) co
 					{
 						if( hdsiit->meshIndex != -1 )
 						{
-							// get the filepath from the hull
-							std::string resFilePath;
-							if( dna->GetHullTextureWithMeshIndex( resFilePath, *ptit, hdsiit->meshIndex, hullIdx ) )
+							InheritableTextureKey key;
+							key.hullIndex = hullIdx;
+							key.meshIndex = hdsiit->meshIndex;
+							key.name = *ptit;
+							auto found = inheritableTextures.find( key );
+							if( found != inheritableTextures.end() )
 							{
-								shader->AddResourceTexture2D( *ptit, resFilePath.c_str() );
+								shader->AddResourceTexture2DLod( *ptit, found->second );
+							}
+							else
+							{
+								// get the filepath from the hull
+								std::string resFilePath;
+								if( dna->GetHullTextureWithMeshIndex( resFilePath, *ptit, hdsiit->meshIndex, hullIdx ) )
+								{
+									shader->AddResourceTexture2D( *ptit, resFilePath.c_str() );
+								}
 							}
 						}
 					}
