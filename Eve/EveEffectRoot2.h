@@ -119,6 +119,7 @@ public:
 	void SetTransform( const Matrix& transform );
 
 	void SetControllerVariable( const char* name, float value );
+	void HandleControllerEvent( const char* name );
 	void StartControllers();
 private:
 	// general

@@ -376,6 +376,7 @@ public:
 	void AddExternalParameter( Tr2ExternalParameter* externalParameter );
 
 	void SetControllerVariable( const char* name, float value );
+	void HandleControllerEvent( const char* name );
 	void StartControllers();
 	std::map<std::string, float> GetControllerVariables() const;
 

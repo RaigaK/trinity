@@ -95,6 +95,7 @@ public:
 	void RenderDebugInfo( Tr2DebugRenderer& renderer );
 
 	void SetControllerVariable( const char* name, float value );
+	void HandleControllerEvent( const char* name ) override;
 	void StartControllers();
 	void GetWorldVelocity( Vector3& velocity ) const;
 	void SetInheritProperties( const Color* colorSet );

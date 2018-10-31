@@ -3000,6 +3000,18 @@ void EveSpaceObject2::SetControllerVariable( const char* name, float value )
 	}
 }
 
+void EveSpaceObject2::HandleControllerEvent( const char* name )
+{
+	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )
+	{
+		( *it )->HandleEvent( name );
+	}
+	for( auto it = begin( m_effectChildren ); it != end( m_effectChildren ); ++it )
+	{
+		( *it )->HandleControllerEvent( name );
+	}
+}
+
 void EveSpaceObject2::StartControllers()
 {
 	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )

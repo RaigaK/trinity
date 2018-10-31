@@ -441,6 +441,9 @@
     <ClInclude Include="Controllers\Tr2Controller.h">
       <Filter>Source Files\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="Controllers\Tr2ControllerEventHandler.h">
+      <Filter>Source Files\Controllers</Filter>
+    </ClInclude>
     <ClInclude Include="Controllers\Tr2ControllerExpression.h">
       <Filter>Source Files\Controllers</Filter>
     </ClInclude>
@@ -2071,6 +2074,12 @@
       <Filter>Source Files\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="Controllers\Tr2Controller.cpp">
+      <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Controllers\Tr2ControllerEventHandler.cpp">
+      <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Controllers\Tr2ControllerEventHandler_Blue.cpp">
       <Filter>Source Files\Controllers</Filter>
     </ClCompile>
     <ClCompile Include="Controllers\Tr2ControllerExpression.cpp">

@@ -25,4 +25,7 @@ BLUE_INTERFACE( ITr2Controller ) : public IRoot
 
 	// Sets controller variable to a new value.
 	virtual void SetVariable( const char* name, float value ) {}
+
+	// Handle an instanteous event
+	virtual void HandleEvent( const char* eventName ) {}
 };

@@ -481,7 +481,10 @@ BlueAsyncRes::LoadingResult TriTextureRes::DoLoad()
 			m_loadedBitmap.reset();
 		}
 	}
-	m_loadedBitmap->GetAverageColor( m_averageColor.r, m_averageColor.g, m_averageColor.b, m_averageColor.a);
+	if( result )
+	{
+		m_loadedBitmap->GetAverageColor( m_averageColor.r, m_averageColor.g, m_averageColor.b, m_averageColor.a );
+	}
 
 	const float secs = (float)t.GetSeconds();
 	if( secs > g_imageWarnLoadTime )

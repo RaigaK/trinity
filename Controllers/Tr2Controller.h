@@ -12,6 +12,8 @@ BLUE_DECLARE( Tr2ControllerFloatVariable );
 BLUE_DECLARE_VECTOR( Tr2ControllerFloatVariable );
 BLUE_DECLARE( Tr2StateMachine );
 BLUE_DECLARE_VECTOR( Tr2StateMachine );
+BLUE_DECLARE( Tr2ControllerEventHandler );
+BLUE_DECLARE_VECTOR( Tr2ControllerEventHandler );
 BLUE_DECLARE_INTERFACE( ITr2Updateable );
 
 
@@ -35,6 +37,8 @@ public:
 
 	virtual void SetVariable( const char* name, float value );
 
+	void HandleEvent( const char* eventName ) override;
+
 	IRoot* GetOwner() const;
 	Tr2ControllerFloatVariable* GetVariableByName( const char* name ) const;
 
@@ -47,6 +51,7 @@ private:
 	std::string m_name;
 	PTr2StateMachineVector m_stateMachines;
 	PTr2ControllerFloatVariableVector m_variables;
+	PTr2ControllerEventHandlerVector m_eventHandlers;
 	
 	TrackableStdSet<ITr2UpdateablePtr> m_updateables;
 

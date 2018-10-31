@@ -471,6 +471,14 @@ void EveChildContainer::SetControllerVariable( const char* name, float value )
 	}
 }
 
+void EveChildContainer::HandleControllerEvent( const char* name )
+{
+	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )
+	{
+		( *it )->HandleEvent( name );
+	}
+}
+
 void EveChildContainer::StartControllers()
 {
 	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )

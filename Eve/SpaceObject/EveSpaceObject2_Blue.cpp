@@ -559,6 +559,13 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 		)
 
 		MAP_METHOD_AND_WRAP(
+			"HandleControllerEvent",
+			HandleControllerEvent,
+			"Pass an event to controllers\n"
+			":param name: event name"
+		)
+
+		MAP_METHOD_AND_WRAP(
 			"StartControllers",
 			StartControllers,
 			"Start all controllers"
