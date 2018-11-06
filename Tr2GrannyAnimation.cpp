@@ -473,6 +473,11 @@ bool Tr2GrannyAnimation::GetDynamicBounds( Vector4& boundingSphere, Vector3 &aab
 
 void Tr2GrannyAnimation::RenderBones( const Matrix& modelTransform )
 {
+	if( !m_meshBinding )
+	{
+		return;
+	}
+
 	Vector3 initialPlacement( 0, 0, 0 );
 	const granny_file_info* fi = GetFileInfo();
 	Matrix initialTranslation;
