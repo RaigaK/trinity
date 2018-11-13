@@ -298,14 +298,30 @@ void EveSpriteSet::RenderDebugInfo( Tr2DebugRenderer& renderer, const Matrix& pa
 	{
 		for( auto it = m_sprites.begin(); it != m_sprites.end(); ++it )
 		{
+			Matrix transform = parentTransform;
+			auto boneIndex = ( *it )->m_boneIndex;
+			Tr2DebugColor color( Color( 0.0f, 0.7f, 0.9f, 0.5f ), Color( 0.0f, 0.7f, 0.9f, 0.1f ) );
+			if( boneIndex >= 0 )
+			{
+				if( boneIndex < int( boneCount ) )
+				{
+					Matrix boneTF = IdentityMatrix();
+					TriMatrixCopyFrom3x4( &boneTF, &bones[boneIndex] );
+					transform = boneTF * transform;
+				}
+				else
+				{
+					color = Tr2DebugColor( Color( 0.9f, 0.2f, 0.2f, 0.5f ), Color( 0.9f, 0.2f, 0.2f, 0.1f ) );
+				}
+			}
 			renderer.DrawSphere(
 				*it,
-				parentTransform,
+				transform,
 				( *it )->m_position,
 				( *it )->m_maxScale,
 				6,
 				Tr2DebugRenderer::Lit,
-				Tr2DebugColor( Color( 0.0f, 0.7f, 0.9f, 0.5f ), Color( 0.0f, 0.7f, 0.9f, 0.1f ) ) );
+				color );
 		}
 	}
 }
