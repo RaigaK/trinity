@@ -29,6 +29,10 @@ public:
 	uint32_t m_noiseOctaves;
 	Be::Time m_startTime;
 	std::string m_name;
+protected:
+	virtual void UpdateLight();
+
+	bool m_isDynamic;
 };
 
 TYPEDEF_BLUECLASS( Tr2PointLight );

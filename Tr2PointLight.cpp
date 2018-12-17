@@ -17,13 +17,18 @@ Tr2PointLight::Tr2PointLight( IRoot* lockobj )
 	m_noiseAmplitude( 0.f ),
 	m_noiseFrequency( 1.f ),
 	m_noiseOctaves( 1 ),
-	m_innerRadius(0.f)
+	m_innerRadius(0.f),
+	m_isDynamic( false )
 {
 	m_startTime = BeOS->GetCurrentFrameTime();
 }
 
 void Tr2PointLight::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, float scale )
 {
+	if( m_isDynamic )
+	{
+		UpdateLight();
+	}
 	float brightness = m_brightness;
 	if( m_noiseAmplitude != 0.f )
 	{
@@ -47,4 +52,8 @@ void Tr2PointLight::GetLight( Vector3& position, float& radius, Color& color )
 		brightness *= ( ( noise + 1.0f ) / 2.0f ) * m_noiseAmplitude;
 	}
 	color = m_color * brightness;
+}
+
+void Tr2PointLight::UpdateLight()
+{
 }
