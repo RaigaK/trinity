@@ -53,6 +53,8 @@ public:
 	void SetBoosterSet( EveBoosterSet2Ptr set );
 	// re-positions all attached boosters to the corresponding locators
 	void RebuildBoosterSet();
+
+	float GetMaxSpeed() const;
 protected:
 	// keep track of some ship's speed (in m/s)
 	TriFloatPtr m_speed;

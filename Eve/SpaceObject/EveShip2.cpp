@@ -357,3 +357,8 @@ void EveShip2::GetLights( Tr2LightManager& lightManager ) const
 		m_boosters->GetLights( lightManager, m_worldTransform );
 	}
 }
+
+float EveShip2::GetMaxSpeed() const
+{
+	return m_maxSpeed;
+}
