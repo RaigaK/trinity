@@ -1121,6 +1121,9 @@
     <ClInclude Include="PostProcess\Effects\Tr2PPBloomEffect.h">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcess\Effects\Tr2PPDesaturateEffect.h">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClInclude>
     <ClInclude Include="PostProcess\Effects\Tr2PPDynamicExposureEffect.h">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClInclude>
@@ -3099,6 +3102,12 @@
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClCompile>
     <ClCompile Include="PostProcess\Effects\Tr2PPBloomEffect_Blue.cpp">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess\Effects\Tr2PPDesaturateEffect.cpp">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess\Effects\Tr2PPDesaturateEffect_Blue.cpp">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClCompile>
     <ClCompile Include="PostProcess\Effects\Tr2PPDynamicExposureEffect.cpp">

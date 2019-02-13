@@ -2841,6 +2841,7 @@
     <ClInclude Include="PostProcess\Tr2PostProcess2.h" />
     <ClInclude Include="PostProcess\Tr2PostProcessRenderInfo.h" />
     <ClInclude Include="PostProcess\Effects\Tr2PPBloomEffect.h" />
+    <ClInclude Include="PostProcess\Effects\Tr2PPDesaturateEffect.h" />
     <ClInclude Include="PostProcess\Effects\Tr2PPDynamicExposureEffect.h" />
     <ClInclude Include="PostProcess\Effects\Tr2PPEffect.h" />
     <ClInclude Include="PostProcess\Effects\Tr2PPFilmGrainEffect.h" />
@@ -3505,6 +3506,8 @@
     <ClCompile Include="PostProcess\Tr2PostProcessRenderInfo_Blue.cpp" />
     <ClCompile Include="PostProcess\Effects\Tr2PPBloomEffect.cpp" />
     <ClCompile Include="PostProcess\Effects\Tr2PPBloomEffect_Blue.cpp" />
+    <ClCompile Include="PostProcess\Effects\Tr2PPDesaturateEffect.cpp" />
+    <ClCompile Include="PostProcess\Effects\Tr2PPDesaturateEffect_Blue.cpp" />
     <ClCompile Include="PostProcess\Effects\Tr2PPDynamicExposureEffect.cpp" />
     <ClCompile Include="PostProcess\Effects\Tr2PPDynamicExposureEffect_Blue.cpp" />
     <ClCompile Include="PostProcess\Effects\Tr2PPEffect.cpp" />
