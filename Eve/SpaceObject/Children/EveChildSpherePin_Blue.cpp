@@ -21,7 +21,7 @@ const Be::ClassInfo* EveChildSpherePin::ExposeToBlue()
 		MAP_ATTRIBUTE( "pinColor", m_pinColor, "color modulation", Be::READWRITE | Be::NOTIFY | Be::PERSIST )
 		MAP_ATTRIBUTE( "color", m_pinColor, "color modulation", Be::READWRITE | Be::NOTIFY | Be::PERSIST )
 		MAP_ATTRIBUTE( "pinAlphaThreshold", m_pinAlphaThreshold, "special alpha value that can be used to show a progress bar", Be::READWRITE | Be::NOTIFY | Be::PERSIST )
-		MAP_ATTRIBUTE( "curveSets", m_curveSets, "Curvesets for animating things", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "curveSets", m_curveSets, "Curvesets for animating things", Be::READ | Be::PERSIST )
 
 	EXPOSURE_CHAINTO( EveChildMesh )
 }
