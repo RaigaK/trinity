@@ -1151,6 +1151,9 @@
     <ClInclude Include="PostProcess\Effects\Tr2PPSignalLossEffect.h">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcess\Effects\Tr2PPTaaEffect.h">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClInclude>
     <ClInclude Include="PostProcess\Effects\Tr2PPVignetteEffect.h">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClInclude>
@@ -3177,6 +3180,12 @@
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClCompile>
     <ClCompile Include="PostProcess\Effects\Tr2PPSignalLossEffect_Blue.cpp">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess\Effects\Tr2PPTaaEffect.cpp">
+      <Filter>Source Files\PostProcess\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcess\Effects\Tr2PPTaaEffect_Blue.cpp">
       <Filter>Source Files\PostProcess\Effects</Filter>
     </ClCompile>
     <ClCompile Include="PostProcess\Effects\Tr2PPVignetteEffect.cpp">
