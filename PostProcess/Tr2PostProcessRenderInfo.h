@@ -34,9 +34,9 @@ public:
 
 	void SetSourceBuffer( Tr2RenderTarget* sourceBuffer );
 	Tr2RenderTarget* GetSourceBuffer() { return m_sourceBuffer; };
-	Tr2RenderTarget* GetSourceBufferCopy( bool force = false ) 
+	Tr2RenderTarget* GetSourceBufferCopy() 
 	{ 
-		if( force || m_sourceBuffer && m_sourceBuffer->GetMsaaType() > 1 )
+		if( m_sourceBuffer && m_sourceBuffer->GetMsaaType() > 1 )
 		{
 			return m_sourceBufferCopy;
 		}
@@ -49,9 +49,6 @@ public:
 	};
 
 	Tr2RenderTarget* GetDestBuffer() { return m_destBuffer; };
-	Tr2RenderTarget* GetVelocityBuffer() { return m_velocityBuffer; };
-	Tr2RenderTarget* GetDistortionBuffer() { return m_distortionBuffer; };
-	Tr2RenderTarget* GetAccumulationBuffer() { return m_accumulationBuffer; };
 	Tr2RenderTarget* GetRt1Buffer() { return m_rt1; };
 	Tr2RenderTarget* GetRt2Buffer() { return m_rt2; };
 	Tr2RenderTarget* GetBlackBuffer() { return m_black; };
@@ -63,9 +60,6 @@ private:
 	// Buffers
 	Tr2RenderTargetPtr m_sourceBuffer;
 	Tr2RenderTargetPtr m_destBuffer;
-	Tr2RenderTargetPtr m_velocityBuffer;
-	Tr2RenderTargetPtr m_distortionBuffer;
-	Tr2RenderTargetPtr m_accumulationBuffer;
 	Tr2RenderTargetPtr m_sourceBufferCopy;
 
 	Tr2RenderTargetPtr m_rt1;

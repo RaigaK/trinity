@@ -19,15 +19,6 @@ Tr2PostProcessRenderInfo::Tr2PostProcessRenderInfo( IRoot* lockobj )
 	m_sourceBufferCopy.CreateInstance();
 	m_sourceBufferCopy->m_name = "Source Copy";
 
-	m_accumulationBuffer.CreateInstance();
-	m_accumulationBuffer->m_name = "PostProcess Accumulation";
-
-	m_velocityBuffer.CreateInstance();
-	m_velocityBuffer->m_name = "PostProcess Velocity";
-
-	m_distortionBuffer.CreateInstance();
-	m_distortionBuffer->m_name = "PostProcess Distrotion";
-
 	m_black.CreateInstance();
 	m_black->m_name = "Black";
 	m_black->Create( 4, 4, 1, Tr2RenderContextEnum::PIXEL_FORMAT_B8G8R8A8_UNORM );
@@ -43,18 +34,6 @@ Tr2PostProcessRenderInfo::~Tr2PostProcessRenderInfo()
 	if( m_rt2->IsValid() )
 	{
 		m_rt2->Destroy();
-	}
-	if( m_accumulationBuffer->IsValid() )
-	{
-		m_accumulationBuffer->Destroy();
-	}
-	if( m_velocityBuffer->IsValid() )
-	{
-		m_velocityBuffer->Destroy();
-	}
-	if( m_distortionBuffer->IsValid() )
-	{
-		m_distortionBuffer->Destroy();
 	}
 	if( m_black->IsValid() )
 	{
@@ -110,10 +89,10 @@ void Tr2PostProcessRenderInfo::CopySourceTo( Tr2RenderTarget* renderTarget, floa
 		renderTarget->Create(
 			uint32_t( float( m_sourceBuffer->GetWidth() ) * sizeScale ),
 			uint32_t( float( m_sourceBuffer->GetHeight() ) * sizeScale ),
-			m_sourceBuffer->GetMipCount(),
+			1,
 			m_sourceBuffer->GetFormat(),
-			m_sourceBuffer->GetMsaaType(),
-			m_sourceBuffer->GetMsaaQuality() );
+			1,
+			0 );
 	}
 }
 

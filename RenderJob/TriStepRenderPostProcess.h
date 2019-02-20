@@ -41,8 +41,6 @@ public:
 
 	void py__init__( EveSpaceScene* scene, Tr2RenderTarget* source );
 private:
-	void PushRenderTarget( Tr2RenderContext& renderContext, Tr2RenderTarget* rt = nullptr );
-
 	// bloom
 	bool ProcessBloom( Tr2PPBloomEffect* bloom );
 	void RenderBloom( Tr2RenderContext& renderContext, Tr2PPBloomEffect* bloom );
