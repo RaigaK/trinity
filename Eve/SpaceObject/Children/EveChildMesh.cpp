@@ -281,6 +281,11 @@ void EveChildMesh::SetShaderOption( const BlueSharedString& name, const BlueShar
 	}
 }
 
+void EveChildMesh::SetScale( const Vector3& scale )
+{
+	m_scaling = scale;
+}
+
 void EveChildMesh::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
 	if( m_mesh )

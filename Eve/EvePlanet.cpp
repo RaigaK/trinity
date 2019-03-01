@@ -94,10 +94,9 @@ void EvePlanet::Update( EveUpdateContext& updateContext )
 		m_ballRotation->Update( &rotation, time );
 	}
 
-	auto scale = Vector3( m_scaling, m_scaling, m_scaling );
+	const auto scale = Vector3( m_scaling, m_scaling, m_scaling );
 
 	m_worldTransform = TransformationMatrix( scale, rotation, translation );
-
 	UpdateEffectChildren( updateContext, m_worldTransform);
 
 	for (auto it = m_curveSets.begin(); it != m_curveSets.end(); ++it)
@@ -111,6 +110,8 @@ void EvePlanet::Update( EveUpdateContext& updateContext )
 	{
 		(*it)->Update( m_worldTransform );
 	}
+
+	
 }
 
 Matrix EvePlanet::CalculatePlanetScaleTransform( const Matrix& worldTransform ) const
@@ -131,14 +132,15 @@ void EvePlanet::UpdateVisibility( const TriFrustum& frustum, const Matrix& paren
 	{
 		(*it)->UpdateVisibility( frustum, scaledTransform, m_currentLod );
 	}
-	UpdateZOnlyVisibility( frustum );
 }
 
 void EvePlanet::UpdateZOnlyVisibility( const TriFrustum& frustum )
 {
+	const auto scaledTransform = CalculatePlanetScaleTransform( m_worldTransform );
+
 	if( nullptr != m_zOnlyModel )
 	{
-		m_zOnlyModel->UpdateVisibility( frustum, m_worldTransform, m_currentLod );
+		m_zOnlyModel->UpdateVisibility( frustum, scaledTransform, m_currentLod );
 	}
 }
 
@@ -241,10 +243,10 @@ void EvePlanet::GetRenderables( std::vector<ITr2Renderable*>& renderables )
 			{
 				( *ecIt )->GetRenderables( renderables );
 			}
-			if( nullptr != m_zOnlyModel )
-			{
-				m_zOnlyModel->GetRenderables( renderables );
-			}
+		}
+		if( nullptr != m_zOnlyModel )
+		{
+			m_zOnlyModel->GetRenderables( renderables );
 		}
 	}
 	else if( m_currentLod != TR2_LOD_LOW )
