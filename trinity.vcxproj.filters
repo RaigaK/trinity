@@ -24,6 +24,7 @@
     <Filter Include="Source Files\Font" />
     <Filter Include="Source Files\Include" />
     <Filter Include="Source Files\Interior" />
+    <Filter Include="Source Files\Lights" />
     <Filter Include="Source Files\Particle" />
     <Filter Include="Source Files\PostProcess" />
     <Filter Include="Source Files\PostProcess\Effects" />
@@ -240,9 +241,6 @@
     <ClInclude Include="Tr2PickingHelperBatch.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tr2PointLight.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tr2PostProcess.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -322,9 +320,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Tr2TextureAtlasMan.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tr2TexturedPointLight.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Tr2TextureReference.h">
@@ -1046,6 +1041,12 @@
     </ClInclude>
     <ClInclude Include="Interior\Tr2IntSkinnedObject.h">
       <Filter>Source Files\Interior</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\Tr2PointLight.h">
+      <Filter>Source Files\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Lights\Tr2TexturedPointLight.h">
+      <Filter>Source Files\Lights</Filter>
     </ClInclude>
     <ClInclude Include="Particle\ITr2GenericEmitter.h">
       <Filter>Source Files\Particle</Filter>
@@ -1791,12 +1792,6 @@
     <ClCompile Include="Tr2PickBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tr2PointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2PointLight_Blue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tr2PostProcess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1942,12 +1937,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2TextureAtlas_Blue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2TexturedPointLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tr2TexturedPointLight_Blue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tr2TextureReference.cpp">
@@ -2990,6 +2979,18 @@
     </ClCompile>
     <ClCompile Include="Interior\Tr2IntSkinnedObject_Blue.cpp">
       <Filter>Source Files\Interior</Filter>
+    </ClCompile>
+    <ClCompile Include="Lights\Tr2PointLight.cpp">
+      <Filter>Source Files\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Lights\Tr2PointLight_Blue.cpp">
+      <Filter>Source Files\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Lights\Tr2TexturedPointLight.cpp">
+      <Filter>Source Files\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="Lights\Tr2TexturedPointLight_Blue.cpp">
+      <Filter>Source Files\Lights</Filter>
     </ClCompile>
     <ClCompile Include="Particle\Tr2CapsuleShapeAttributeGenerator.cpp">
       <Filter>Source Files\Particle</Filter>
