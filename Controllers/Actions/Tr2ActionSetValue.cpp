@@ -59,7 +59,7 @@ bool Tr2ActionSetValue::OnModified( Be::Var* value )
 	{
 		return true;
 	}
-	if( IsMatch( value, m_destination.m_path ) || IsMatch( value, m_destination.m_attribute ) || IsMatch( value, m_destination.m_object ) || IsMatch( value, m_isPathDynamic ) )
+	if( IsMatch( value, m_destination.m_path ) || IsMatch( value, m_destination.m_attribute ) || IsMatch( value, m_destination.m_object ) || IsMatch( value, m_delayBinding ) )
 	{
 		if( !HasDelayedBinding() )
 		{
