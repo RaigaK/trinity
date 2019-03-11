@@ -23,7 +23,8 @@ const unsigned FILTER_GROUP_DIM = 21844; // sum(2**(x+x) for x in range(1, MIP_C
 Tr2ReflectionProbe::Tr2ReflectionProbe( IRoot* lockobj )
 	: m_initialized( false ),
 	m_position( 0, 0, 0 ),
-	m_intermediateSize( FILTER_SIZE * 4 )
+	m_intermediateSize( FILTER_SIZE * 4 ),
+	m_prevCullInversion( false )
 {
 	m_renderTarget.CreateInstance();
 	m_renderTargetCube.CreateInstance();
