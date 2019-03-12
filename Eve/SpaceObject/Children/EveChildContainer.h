@@ -21,8 +21,8 @@ BLUE_DECLARE( TriCurveSet );
 BLUE_DECLARE_VECTOR( TriCurveSet );
 BLUE_DECLARE( TriObserverLocal );
 BLUE_DECLARE_VECTOR( TriObserverLocal );
-BLUE_DECLARE( Tr2PointLight );
-BLUE_DECLARE_VECTOR( Tr2PointLight );
+BLUE_DECLARE( Tr2Light );
+BLUE_DECLARE_VECTOR( Tr2Light );
 BLUE_DECLARE_INTERFACE( ITr2Controller );
 BLUE_DECLARE_IVECTOR( ITr2Controller );
 
@@ -107,7 +107,7 @@ protected:
 	BlueSharedString m_name;
 	PTriCurveSetVector m_curveSets;
 	PTriObserverLocalVector m_observers;
-	PTr2PointLightVector m_lights;
+	PTr2LightVector m_lights;
 	PITr2ControllerVector m_controllers;
 	TrackableStdUnorderedMap<std::string, float> m_controllerVariables;
 

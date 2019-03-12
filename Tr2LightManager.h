@@ -39,9 +39,20 @@ public:
 	Tr2LightManager( const char* effectPath );
 	~Tr2LightManager();
 
+	struct PerLightData
+	{
+		Vector3 position;
+		float radius;
+		Vector3 color;
+		float innerRadius;
+		Vector3 direction;
+		float angle;
+	};
+
 	void Clear();
 	void SetFrustum( const TriFrustum& frustum );
 	void AddPointLight( const Vector3& position, float radius, const Color& color, float innerRadius=0.0f);
+	void AddLight( PerLightData& data );
 	ALResult UpdateLists( uint32_t msaaType, Tr2RenderContext& renderContext );
 
 	virtual void ReleaseResources( TriStorage s );
@@ -51,14 +62,6 @@ public:
 	static Tr2LightManager* GetInstance();
 	static void DeleteInstance();
 private:
-	struct PerLightData
-	{
-		Vector3 position;
-		float radius;
-		Vector3 color;
-		float innerRadius;
-	};
-
 	Tr2LightManager( const Tr2LightManager& );
 	Tr2LightManager& operator=( const Tr2LightManager& );
 

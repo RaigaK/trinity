@@ -839,21 +839,60 @@ public:
 	EXPOSE_TO_BLUE();
 	EveSOFDataHullLightSetItem( IRoot* lockobj = NULL );
 	~EveSOFDataHullLightSetItem() {}
+	
+	enum LIGHT_TYPE 
+	{
+		POINT_LIGHT,
+		TEXTURED_POINT_LIGHT,
+		SPOT_LIGHT
+	};
+
+	struct HullLightSetItemData
+	{
+		Vector3 position;
+		Quaternion rotation;
+		float radius;
+		float innerRadius;
+		float brightness;
+		float noiseAmplitude;
+		float noiseFrequency;
+		int noiseOctaves;
+		EveSOFDataFactionColorSet::ColorType lightColor;
+		std::wstring texturePath;
+		float length;
+		LIGHT_TYPE type;
+	} m_data;
 
 	std::string m_name;
-	Vector3 m_position;
-	float m_radius;
-	float m_innerRadius;
-	float m_brightness;
-	float m_noiseAmplitude;
-	float m_noiseFrequency;
-	int m_noiseOctaves;
-	EveSOFDataFactionColorSet::ColorType m_lightColor;
-	std::wstring m_texturePath;		
 
 };
 TYPEDEF_BLUECLASS( EveSOFDataHullLightSetItem );
 BLUE_DECLARE_VECTOR( EveSOFDataHullLightSetItem );
+
+
+BLUE_CLASS( EveSOFDataHullLightSetTexturedPointLight ) :
+	public EveSOFDataHullLightSetItem
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullLightSetTexturedPointLight( IRoot* lockobj = NULL );
+	~EveSOFDataHullLightSetTexturedPointLight() {};
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullLightSetTexturedPointLight );
+BLUE_DECLARE_VECTOR( EveSOFDataHullLightSetTexturedPointLight );
+
+
+BLUE_CLASS( EveSOFDataHullLightSetSpotLight ) :
+	public EveSOFDataHullLightSetItem
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullLightSetSpotLight( IRoot* lockobj = NULL );
+	~EveSOFDataHullLightSetSpotLight() {};
+
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullLightSetSpotLight );
+BLUE_DECLARE_VECTOR( EveSOFDataHullLightSetSpotLight );
 
 
 BLUE_CLASS( EveSOFDataHullLightSet ) :

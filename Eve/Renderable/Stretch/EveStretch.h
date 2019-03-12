@@ -111,8 +111,8 @@ private:
 	EveTransformPtr m_stretchObject;
 	EveTransformPtr m_moveObject;
 
-	PTr2PointLightVector m_sourceLights;
-	PTr2PointLightVector m_destLights;
+	PTr2LightVector m_sourceLights;
+	PTr2LightVector m_destLights;
 
 	ITriScalarFunctionPtr m_progressCurve;
 	PTriCurveSetVector m_curveSets;

@@ -162,9 +162,36 @@ void Tr2LightManager::AddPointLight( const Vector3& position, float radius, cons
 		data.color.y *= radius * dimming;
 		data.color.z *= radius * dimming;
 		data.innerRadius = innerRadius;
+		data.direction = Vector3();	
+		data.angle = 0;
 		m_lightData.Add( data, "Tr2LightManager::m_lightData" );
 	}
 }
+
+void Tr2LightManager::AddLight( PerLightData& data )
+{
+	float brightness = std::max( std::max( data.color.x, data.color.y), data.color.z );
+	if( brightness <= 0 || data.radius <= 0 )
+	{
+		return;
+	}
+	if( !m_frustum.IsSphereVisible( reinterpret_cast<Vector4*>( &data.position ) ) )
+	{
+		return;
+	}
+
+	float size = m_frustum.GetPixelSizeAccross( reinterpret_cast<Vector4*>( &data.position ) );
+	float cutoff = CUTOFF_PIXEL_SIZE * g_eveSpaceSceneLODFactor;
+	if( size > cutoff )
+	{
+		float dimming = std::min( ( size - cutoff ) / FADE_SIZE, 1.f );
+		data.color.x *= data.radius * dimming;
+		data.color.y *= data.radius * dimming;
+		data.color.z *= data.radius * dimming;
+		m_lightData.Add( data, "Tr2LightManager::m_lightData" );
+	}
+}
+
 
 ALResult Tr2LightManager::ClearLightIndices( Tr2RenderContext& renderContext )
 {

@@ -594,16 +594,34 @@ EveSOFDataHullLightSet::EveSOFDataHullLightSet( IRoot* lockobj ) :
 
 
 EveSOFDataHullLightSetItem::EveSOFDataHullLightSetItem( IRoot* lockobj ) :
-	m_position( 0.f, 0.f, 0.f ),
-	m_radius( 0.0f ),
-	m_innerRadius( 0.0f ),
-	m_brightness( 0.0f ),
-	m_noiseAmplitude( 0.0f ),
-	m_noiseFrequency( 1.0f ),
-	m_noiseOctaves( 1 ),
-	m_lightColor( EveSOFDataFactionColorSet::TYPE_PRIMARY ),
-	m_texturePath( L"" )
-{}
+	m_name("")
+{
+	m_data.brightness = 0.0f;
+	m_data.innerRadius = 0.0f;
+	m_data.length = 0.0f;
+	m_data.lightColor = EveSOFDataFactionColorSet::TYPE_PRIMARY;
+	m_data.noiseAmplitude = 0.0f;
+	m_data.noiseFrequency = 1.0f;
+	m_data.noiseOctaves = 1;
+	m_data.position = Vector3( 0.f, 0.f, 0.f );
+	m_data.radius = 0.0f;
+	m_data.rotation = Quaternion( 0.f, 0.f, 0.f, 1.f );
+	m_data.texturePath = L"";
+	m_data.type = POINT_LIGHT;
+}
+
+EveSOFDataHullLightSetTexturedPointLight::EveSOFDataHullLightSetTexturedPointLight( IRoot* lockobj ) :
+	EveSOFDataHullLightSetItem( lockobj )
+{
+	m_data.type = TEXTURED_POINT_LIGHT;
+}
+
+
+EveSOFDataHullLightSetSpotLight::EveSOFDataHullLightSetSpotLight( IRoot* lockobj ) :
+	EveSOFDataHullLightSetItem( lockobj )
+{
+	m_data.type = SPOT_LIGHT;
+}
 
 
 EveSOFDataFactionVisibilityGroupSet::EveSOFDataFactionVisibilityGroupSet( IRoot* lockobj ) :

@@ -1,22 +1,25 @@
 ////////////////////////////////////////////////////////////
 //
-//    Created:   January 2015
-//    Copyright: CCP 2015
+//    Created:   February 2019
+//    Copyright: CCP 2019
 //
 
 #pragma once
+
 #include "Tr2Light.h"
 
 class Tr2LightManager;
 
-BLUE_CLASS( Tr2PointLight ): 
+BLUE_CLASS( Tr2SpotLight ):
 	public Tr2Light
 {
 public:
 	EXPOSE_TO_BLUE();
-	Tr2PointLight( IRoot* lockobj = nullptr );
-	
+
+	Tr2SpotLight( IRoot* lockobj = nullptr );
+
 	void RenderDebugInfo( Tr2DebugRenderer& renderer, const Matrix& worldMatrix ) override;
+	bool OnModified( Be::Var* value ) override;
 };
 
-TYPEDEF_BLUECLASS( Tr2PointLight );
+TYPEDEF_BLUECLASS( Tr2SpotLight );

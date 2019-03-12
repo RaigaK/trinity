@@ -636,6 +636,7 @@ float EveEffectRoot2::GetRangeDuration( const std::string& name, const std::stri
 void EveEffectRoot2::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
 	options.insert( "Bounding Sphere" );
+	options.insert( "Lights" );
 
 	for( auto it = begin( m_effectChildren ); it != end( m_effectChildren ); ++it )
 	{
@@ -659,6 +660,14 @@ void EveEffectRoot2::RenderDebugInfo( Tr2DebugRenderer& renderer )
 		if( auto renderable = dynamic_cast<ITr2DebugRenderable*>( *it ) )
 		{
 			renderable->RenderDebugInfo( renderer );
+		}
+	}
+
+	if( renderer.HasOption( GetRawRoot(), "Lights" ) )
+	{
+		for( auto it = begin( m_lights ); it != end( m_lights ); ++it )
+		{
+			( *it )->RenderDebugInfo( renderer, m_worldTransform );
 		}
 	}
 }

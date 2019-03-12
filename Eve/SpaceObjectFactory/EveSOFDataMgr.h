@@ -227,24 +227,10 @@ public:
 		std::vector<HullDecalSetItemData> items;
 	};
 
-
-	struct HullLightSetItemData
-	{
-		Vector3 position;
-		float radius;
-		float innerRadius;
-		float brightness;
-		float noiseAmplitude;
-		float noiseFrequency;
-		int noiseOctaves;
-		uint32_t lightColor;
-		std::wstring texturePath;
-	};
-
 	struct HullLightSetData
 	{
 		uint32_t visibilityGroup;
-		std::vector<HullLightSetItemData> items;
+		std::vector<EveSOFDataHullLightSetItem::HullLightSetItemData> items;
 	};
 
 	struct HullChild

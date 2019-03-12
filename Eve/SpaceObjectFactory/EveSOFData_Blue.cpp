@@ -861,24 +861,66 @@ const Be::ClassInfo* EveSOFDataHullDecalSet::ExposeToBlue()
 	EXPOSURE_END()
 }
 
+
 BLUE_DEFINE( EveSOFDataHullLightSetItem );
 const Be::ClassInfo* EveSOFDataHullLightSetItem::ExposeToBlue()
 {
 	EXPOSURE_BEGIN( EveSOFDataHullLightSetItem, "" )
 		MAP_INTERFACE( EveSOFDataHullLightSetItem )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "position", m_position, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE_WITH_CHOOSER( "lightColor", m_lightColor, "", Be::READWRITE | Be::PERSIST | Be::ENUM, EveSOFDataFactionColorSetTypeChooser )
-		MAP_ATTRIBUTE( "radius", m_radius, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "innerRadius", m_innerRadius, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "brightness", m_brightness, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "noiseAmplitude", m_noiseAmplitude, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "noiseFrequency", m_noiseFrequency, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "noiseOctaves", m_noiseOctaves, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "texturePath", m_texturePath, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "lightColor", m_data.lightColor, "", Be::READWRITE | Be::PERSIST | Be::ENUM, EveSOFDataFactionColorSetTypeChooser )
+		MAP_ATTRIBUTE( "radius", m_data.radius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "innerRadius", m_data.innerRadius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "brightness", m_data.brightness, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseAmplitude", m_data.noiseAmplitude, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseFrequency", m_data.noiseFrequency, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseOctaves", m_data.noiseOctaves, "", Be::READWRITE | Be::PERSIST )
 
 	EXPOSURE_END()
 }
+
+
+BLUE_DEFINE( EveSOFDataHullLightSetTexturedPointLight );
+const Be::ClassInfo* EveSOFDataHullLightSetTexturedPointLight::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataHullLightSetTexturedPointLight, "" )
+		MAP_INTERFACE( EveSOFDataHullLightSetTexturedPointLight )
+		MAP_INTERFACE( EveSOFDataHullLightSetItem )
+		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "radius", m_data.radius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "innerRadius", m_data.innerRadius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "brightness", m_data.brightness, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseAmplitude", m_data.noiseAmplitude, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseFrequency", m_data.noiseFrequency, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseOctaves", m_data.noiseOctaves, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "texturePath", m_data.texturePath, "", Be::READWRITE | Be::PERSIST )
+	EXPOSURE_END()
+}
+
+
+BLUE_DEFINE( EveSOFDataHullLightSetSpotLight );
+const Be::ClassInfo* EveSOFDataHullLightSetSpotLight::ExposeToBlue()
+{
+	EXPOSURE_BEGIN( EveSOFDataHullLightSetSpotLight, "" )
+		MAP_INTERFACE( EveSOFDataHullLightSetSpotLight )
+		MAP_INTERFACE( EveSOFDataHullLightSetItem )
+		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "rotation", m_data.rotation, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "lightColor", m_data.lightColor, "", Be::READWRITE | Be::PERSIST | Be::ENUM, EveSOFDataFactionColorSetTypeChooser )
+		MAP_ATTRIBUTE( "radius", m_data.radius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "innerRadius", m_data.innerRadius, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "length", m_data.length, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "brightness", m_data.brightness, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseAmplitude", m_data.noiseAmplitude, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseFrequency", m_data.noiseFrequency, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "noiseOctaves", m_data.noiseOctaves, "", Be::READWRITE | Be::PERSIST )
+
+	EXPOSURE_END()
+}
+
 
 BLUE_DEFINE( EveSOFDataHullLightSet );
 const Be::ClassInfo* EveSOFDataHullLightSet::ExposeToBlue()

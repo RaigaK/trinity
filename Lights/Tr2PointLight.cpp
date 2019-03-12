@@ -6,54 +6,21 @@
 
 #include "StdAfx.h"
 #include "Tr2PointLight.h"
-#include "Tr2LightManager.h"
-#include "Include/TriMath.h"
 
-Tr2PointLight::Tr2PointLight( IRoot* lockobj )
-	:m_position( 0.f, 0.f, 0.f ),
-	m_radius( 0.f ),
-	m_color( 0.f, 0.f, 0.f, 1.f ),
-	m_brightness( 1.f ),
-	m_noiseAmplitude( 0.f ),
-	m_noiseFrequency( 1.f ),
-	m_noiseOctaves( 1 ),
-	m_innerRadius(0.f),
-	m_isDynamic( false )
+
+Tr2PointLight::Tr2PointLight( IRoot* lockobj ):
+	Tr2Light( lockobj )
 {
-	m_startTime = BeOS->GetCurrentFrameTime();
+	m_type = POINT_LIGHT;
 }
 
-void Tr2PointLight::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, float scale )
+void Tr2PointLight::RenderDebugInfo( Tr2DebugRenderer& renderer, const Matrix& worldMatrix ) 
 {
-	if( m_isDynamic )
-	{
-		UpdateLight();
-	}
-	float brightness = m_brightness;
-	if( m_noiseAmplitude != 0.f )
-	{
-		float noise = float( PerlinNoise1D( TimeAsDouble( BeOS->GetCurrentFrameTime() - m_startTime ) * m_noiseFrequency, 2.f, 2.f, m_noiseOctaves ) );
-		brightness *= ( ( noise + 1.0f ) / 2.0f ) * m_noiseAmplitude;
-	}
-	lightManager.AddPointLight( 
-		Vector3( XMVector3TransformCoord( m_position, transform ) ), 
-		m_radius * scale, 
-		m_color * brightness, m_innerRadius );
+	auto baseColor = m_lightData.color * m_lightData.brightness;
+	baseColor.a = 0.2;
+	auto selectedColor = baseColor + Color( 0.0, 0.0, 0.0, 0.4 );
+	
+	renderer.DrawSphere( this, worldMatrix, m_lightData.position, m_lightData.radius, 10, Tr2DebugRenderer::Solid, Tr2DebugColor( selectedColor, baseColor ) );
+	renderer.DrawSphere( this, worldMatrix, m_lightData.position, m_lightData.innerRadius, 10, Tr2DebugRenderer::Solid, Tr2DebugColor( selectedColor, baseColor) );
 }
 
-void Tr2PointLight::GetLight( Vector3& position, float& radius, Color& color )
-{
-	position = m_position;
-	radius = m_radius;
-	float brightness = m_brightness;
-	if( m_noiseAmplitude != 0.f )
-	{
-		float noise = float( PerlinNoise1D( TimeAsDouble( BeOS->GetCurrentFrameTime() ) * m_noiseFrequency, 2.f, 2.f, m_noiseOctaves ) );
-		brightness *= ( ( noise + 1.0f ) / 2.0f ) * m_noiseAmplitude;
-	}
-	color = m_color * brightness;
-}
-
-void Tr2PointLight::UpdateLight()
-{
-}

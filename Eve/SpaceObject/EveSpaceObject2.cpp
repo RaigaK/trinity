@@ -23,7 +23,7 @@
 #include "Shader/Tr2Effect.h"
 #include "Utils/EveCustomMask.h"
 #include "TriSettingsRegistrar.h"
-#include "Lights/Tr2PointLight.h"
+#include "Lights/Tr2Light.h"
 #include "Shader/Utils/Tr2DataTextureManager.h"
 #include "Utilities/StringUtils.h"
 #include "Tr2ExternalParameter.h"
@@ -680,8 +680,7 @@ void EveSpaceObject2::RenderDebugInfo( Tr2DebugRenderer& renderer )
 	{
 		for( auto it = m_lights.begin(); it != m_lights.end(); ++it )
 		{
-			renderer.DrawSphere( *it, m_worldTransform, ( *it )->m_position, ( *it )->m_radius, 10, Tr2DebugRenderer::Solid, Tr2DebugColor( 0x66ffffff, 0x22ffffff ) );
-			renderer.DrawSphere( *it, m_worldTransform, (*it)->m_position, (*it)->m_innerRadius, 10, Tr2DebugRenderer::Solid, Tr2DebugColor( 0x99ffffff, 0x22ffffff ) );
+			( *it )->RenderDebugInfo( renderer, m_worldTransform );
 		}
 	}
 
@@ -2348,9 +2347,9 @@ void EveSpaceObject2::AddDecal( EveSpaceObjectDecalPtr newDecal )
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Add a new decal to this object from the outside
+//   Add a new light to this object from the outside
 // --------------------------------------------------------------------------------
-void EveSpaceObject2::AddLight( Tr2PointLight* newLight )
+void EveSpaceObject2::AddLight( Tr2Light* newLight )
 {
 	m_lights.Append( newLight->GetRawRoot() );
 }

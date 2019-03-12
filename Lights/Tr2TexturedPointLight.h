@@ -6,9 +6,8 @@
 BLUE_DECLARE( TriTextureRes );
 
 BLUE_CLASS( Tr2TexturedPointLight ): 
-	public Tr2PointLight, 
-	public IInitialize, 
-	public INotify
+	public Tr2PointLight,
+	public IInitialize
 {
 public:
 	Tr2TexturedPointLight( IRoot* lockobj = nullptr );
@@ -17,12 +16,12 @@ public:
 
 	bool Initialize() override;
 	bool OnModified( Be::Var* value ) override;
+	void SetLightData( LightData& data ) override;
 
-	void SetTexturePath( std::wstring path );
 protected:
-	void UpdateLight() override;
+	void Update() override;
 private:
-	std::wstring m_texturePath;
+	void SetTexturePath( std::wstring path );
 	TriTextureResPtr m_texture;
 };
 

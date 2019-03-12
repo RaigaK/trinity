@@ -48,6 +48,7 @@
 #include "Include/ITr2SoundEmitter.h"
 #include "Lights/Tr2PointLight.h"
 #include "Lights/Tr2TexturedPointLight.h"
+#include "Lights/Tr2SpotLight.h"
 
 
 // --------------------------------------------------------------------------------
@@ -1723,28 +1724,47 @@ void EveSOF::SetupLights( EveSpaceObject2Ptr spaceObject, const EveSOFDNAPtr dna
 			for( auto hlsi = hls->items.begin(); hlsi != hls->items.end(); ++hlsi )
 			{
 				auto lightSet = *hlsi;
-				Tr2PointLightPtr pointLight;
-				if( !lightSet.texturePath.empty() )
+				Tr2LightPtr light;
+
+				if( lightSet.type == EveSOFDataHullLightSetItem::POINT_LIGHT )
+				{
+					Tr2PointLightPtr pointLight;
+					pointLight.CreateInstance();
+					light = pointLight;
+				}
+				else if( lightSet.type == EveSOFDataHullLightSetItem::TEXTURED_POINT_LIGHT )
 				{
 					Tr2TexturedPointLightPtr texuredPointLight;
 					texuredPointLight.CreateInstance();
-					texuredPointLight->SetTexturePath( lightSet.texturePath );
-					pointLight = texuredPointLight;
+					light = texuredPointLight;
 				}
-				else
+				else if( lightSet.type == EveSOFDataHullLightSetItem::SPOT_LIGHT )
 				{
-					pointLight.CreateInstance();
+					Tr2SpotLightPtr spotLight;
+					spotLight.CreateInstance();
+					light = spotLight;
 				}
+				else 
+				{
+					CCP_LOGERR( "EveSOF::SetupLights: Invalid light set item type %s for hull %s", lightSet.type, dna->GetDnaString() );
+					continue;
+				}
+				
+				LightData data;
+				data.position = lightSet.position;
+				data.radius = lightSet.radius;
+				data.innerRadius = lightSet.innerRadius;
+				data.color = dna->GetColorSet()[lightSet.lightColor];
+				data.brightness = lightSet.brightness;
+				data.noiseAmplitude = lightSet.noiseAmplitude;
+				data.noiseFrequency = lightSet.noiseFrequency;
+				data.noiseOctaves = lightSet.noiseOctaves;
+				data.rotation = lightSet.rotation;
+				data.length = lightSet.length;
+				data.texturePath = lightSet.texturePath;
+				light->SetLightData( data );
 
-				pointLight->m_position = lightSet.position;
-				pointLight->m_radius = lightSet.radius;
-				pointLight->m_innerRadius = lightSet.innerRadius;
-				pointLight->m_color = dna->GetColorSet()[lightSet.lightColor];
-				pointLight->m_brightness = lightSet.brightness;
-				pointLight->m_noiseAmplitude = lightSet.noiseAmplitude;
-				pointLight->m_noiseFrequency = lightSet.noiseFrequency;
-				pointLight->m_noiseOctaves = lightSet.noiseOctaves;
-				spaceObject->AddLight( pointLight );
+				spaceObject->AddLight( light );
 			}
 		}
 

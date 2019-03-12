@@ -17,8 +17,8 @@
 #include "Shader/IShaderConfigurer.h"
 #include "ITr2SoundEmitterOwner.h"
 
-BLUE_DECLARE( Tr2PointLight );
-BLUE_DECLARE_VECTOR( Tr2PointLight );
+BLUE_DECLARE( Tr2Light );
+BLUE_DECLARE_VECTOR( Tr2Light );
 
 BLUE_DECLARE_INTERFACE( ITr2Controller );
 BLUE_DECLARE_IVECTOR( ITr2Controller );
@@ -172,7 +172,7 @@ private:
 	bool m_changeLOD;
 	Tr2Lod m_lodLevel;
 	
-	PTr2PointLightVector m_lights;
+	PTr2LightVector m_lights;
 
 	PITr2ControllerVector m_controllers;
 	TrackableStdUnorderedMap<std::string, float> m_controllerVariables;

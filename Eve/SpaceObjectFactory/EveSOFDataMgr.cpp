@@ -744,20 +744,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 
 		for( auto lsi = lightSet->m_items.begin(); lsi != lightSet->m_items.end(); ++lsi )
 		{
-			EveSOFDataHullLightSetItemPtr itemPtr = ( *lsi );
-			HullLightSetItemData itemData;
-
-			itemData.position = itemPtr->m_position;
-			itemData.radius = itemPtr->m_radius;
-			itemData.innerRadius = itemPtr->m_innerRadius;
-			itemData.brightness = itemPtr->m_brightness;
-			itemData.noiseAmplitude = itemPtr->m_noiseAmplitude;
-			itemData.noiseFrequency = itemPtr->m_noiseFrequency;
-			itemData.noiseOctaves = itemPtr->m_noiseOctaves;
-			itemData.lightColor = itemPtr->m_lightColor;
-			itemData.texturePath = itemPtr->m_texturePath;
-
-			lightSetData.items.push_back( itemData );
+			lightSetData.items.push_back( ( *lsi )->m_data );
 		}
 		hd.hullLightSets.push_back( lightSetData );
 	}

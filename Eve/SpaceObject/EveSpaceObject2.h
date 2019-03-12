@@ -59,8 +59,8 @@ BLUE_DECLARE_VECTOR( Tr2GPUParticleEmitter );
 
 BLUE_DECLARE( Tr2BindingVector3 );
 
-BLUE_DECLARE( Tr2PointLight );
-BLUE_DECLARE_VECTOR( Tr2PointLight );
+BLUE_DECLARE( Tr2Light );
+BLUE_DECLARE_VECTOR( Tr2Light );
 
 BLUE_DECLARE( Tr2ExternalParameter );
 BLUE_DECLARE_VECTOR( Tr2ExternalParameter );
@@ -326,7 +326,7 @@ public:
 	// access spritesets & co
 	void AddAttachment( IEveSpaceObjectAttachment* attachment );
 	void AddDecal( EveSpaceObjectDecalPtr newDecal );
-	void AddLight( Tr2PointLight* newLight );
+	void AddLight( Tr2Light* newLight );
 	void AddCurveSet( TriCurveSetPtr newCurveSet );
 	void AddLocator( EveLocator2* newLocator );
 	void AddOverlayEffect( EveMeshOverlayEffect* newOverlayEffect );
@@ -543,7 +543,7 @@ protected:
 	
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Dynamic lighting
-	PTr2PointLightVector m_lights;
+	PTr2LightVector m_lights;
 
 	
 	Color m_albedoColor;

@@ -445,6 +445,7 @@ void EveChildContainer::GetDebugOptions( Tr2DebugRendererOptions& options )
 			renderable->GetDebugOptions( options );
 		}
 	}
+	options.insert( "Lights" );
 }
 
 void EveChildContainer::RenderDebugInfo( Tr2DebugRenderer& renderer )
@@ -458,6 +459,13 @@ void EveChildContainer::RenderDebugInfo( Tr2DebugRenderer& renderer )
 		if( auto renderable = dynamic_cast<ITr2DebugRenderable*>( *it ) )
 		{
 			renderable->RenderDebugInfo( renderer );
+		}
+	}
+	
+	if( renderer.HasOption( this, "Lights" ) ) {
+		for( auto it = begin( m_lights ); it != end( m_lights ); ++it )
+		{
+			( *it )->RenderDebugInfo( renderer, m_worldTransform );
 		}
 	}
 }
