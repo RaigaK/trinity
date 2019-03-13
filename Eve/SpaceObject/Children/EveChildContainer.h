@@ -55,6 +55,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////
 	// IEveSpaceObjectChild
 	void SetShaderOption( const BlueSharedString& name, const BlueSharedString& value ) override;
+	bool IsAlwaysOn() const override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IEveEffectChildrenOwner
@@ -115,6 +116,7 @@ protected:
 	Vector3 m_worldVelocity;
 	bool m_display;
 	bool m_hideOnLowQuality;
+	bool m_isAlwaysOn;
 	EveChildInheritPropertiesPtr m_inheritProperties;
 	Origin m_origin;
 };

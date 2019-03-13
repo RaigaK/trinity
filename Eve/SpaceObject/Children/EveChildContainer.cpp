@@ -28,6 +28,7 @@ EveChildContainer::EveChildContainer( IRoot* lockobj ) :
 	m_worldVelocity( 0, 0, 0 ),
 	m_display( true ),
 	m_hideOnLowQuality( false ),
+	m_isAlwaysOn( false ),
 	m_origin( SPACE )
 {
 	m_controllers.SetNotify( this );
@@ -82,6 +83,12 @@ void EveChildContainer::SetShaderOption( const BlueSharedString& name, const Blu
 		child->SetShaderOption( name, value );
 	}
 }
+
+bool EveChildContainer::IsAlwaysOn() const
+{
+	return m_isAlwaysOn;
+}
+
 
 const char* EveChildContainer::GetName() const
 {
