@@ -27,6 +27,10 @@ Be::VarChooser EveSOFDataFactionColorSetTypeChooser[] =
 	{ "Darkhull", BeCast( EveSOFDataFactionColorSet::TYPE_DARKHULL ), "Material Darkhull Glow" },
 	{ "Booster", BeCast( EveSOFDataFactionColorSet::TYPE_BOOSTER ), "Material Hullarea Heat Shimmer Glow" },
 	{ "Killmark", BeCast( EveSOFDataFactionColorSet::TYPE_KILLMARK ), "Killmark glow color" },
+	{ "PrimaryLight", BeCast( EveSOFDataFactionColorSet::TYPE_PRIMARY_LIGHT ), "Primary light color" },
+	{ "SecondaryLight", BeCast( EveSOFDataFactionColorSet::TYPE_SECONDARY_LIGHT ), "Secondary light color" },
+	{ "TertiaryLight", BeCast( EveSOFDataFactionColorSet::TYPE_TERTIARY_LIGHT ), "Tertiary light color" },
+	{ "WhiteLight", BeCast( EveSOFDataFactionColorSet::TYPE_WHITE_LIGHT ), "White light color" },
 	{ 0 }
 };
 BLUE_REGISTER_ENUM_EX( "EveSOFDataFactionColorSetType", EveSOFDataFactionColorSet::ColorType, EveSOFDataFactionColorSetTypeChooser, ENUM_REG_ENUM_OBJECT_ON_MODULE );
@@ -130,6 +134,10 @@ const Be::ClassInfo* EveSOFDataFactionColorSet::ExposeToBlue()
 		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_DARKHULL].mKey, m_colors[TYPE_DARKHULL], ":jessica-group:Material Glow Colors", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_BOOSTER].mKey, m_colors[TYPE_BOOSTER], ":jessica-group:Material Glow Colors", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_KILLMARK].mKey, m_colors[TYPE_KILLMARK], ":jessica-group:Decal Glow Colors", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_PRIMARY_LIGHT].mKey, m_colors[TYPE_PRIMARY_LIGHT], ":jessica-group:Light Colors", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_SECONDARY_LIGHT].mKey, m_colors[TYPE_SECONDARY_LIGHT], ":jessica-group:Light Colors", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_TERTIARY_LIGHT].mKey, m_colors[TYPE_TERTIARY_LIGHT], ":jessica-group:Light Colors", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( EveSOFDataFactionColorSetTypeChooser[TYPE_WHITE_LIGHT].mKey, m_colors[TYPE_WHITE_LIGHT], ":jessica-group:Light Colors", Be::READWRITE | Be::PERSIST )
 		EXPOSURE_END()
 }
 
