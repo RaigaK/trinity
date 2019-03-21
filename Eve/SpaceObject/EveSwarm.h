@@ -9,6 +9,7 @@
 
 #include "Eve/IEveSpaceObject2.h"
 #include "ITr2Renderable.h"
+#include "TriFrustum.h"
 #include "include/ITriFunction.h"
 
 #include "Eve/SpaceObject/EveShip2.h"
@@ -274,6 +275,8 @@ private:
 	int m_count;
 	float m_debugSize;
 
+	// frustum so we can update the decal visibility
+	TriFrustum m_frustum;
 
 	// Squad bounds
 	Vector3 m_squadBoundsMin;

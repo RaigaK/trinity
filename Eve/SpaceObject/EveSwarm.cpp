@@ -709,9 +709,14 @@ void EveSwarm::PushRenderables( std::vector<ITr2Renderable*>& renderables )
 	// are decals visible?
 	if (DisplayDecals() && m_mesh && m_isMeshVisible)
 	{
+		// put together parent data for the decals
+		EveSpaceObjectDecal::ParentData pd;
+		FillDecalParentData( &pd );
+
 		for (auto it = m_renderables.begin(); it != m_renderables.end(); it++)
 		{
-			(*it)->PushDecals( renderables );
+			( *it )->UpdateDecalVisibility( m_frustum, pd, m_animationUpdater );
+			( *it )->PushDecals( renderables );
 		}
 	}
 }
@@ -720,14 +725,8 @@ void EveSwarm::UpdateVisibility( const TriFrustum& frustum, const Matrix& parent
 {
 	EveShip2::UpdateVisibility(
 		frustum, parentTransform );
-	for( auto it = m_renderables.begin(); it != m_renderables.end(); it++ )
-	{
-		// put together parent data for the decals
-		EveSpaceObjectDecal::ParentData pd;
-		FillDecalParentData( &pd );
 
-		( *it )->UpdateDecalVisibility( frustum, pd, m_animationUpdater );
-	}
+	m_frustum = frustum;
 }
 
 
