@@ -35,6 +35,10 @@ const Be::ClassInfo* EveChildInheritProperties::ExposeToBlue()
 		COLOR_DEFINE( Darkhull, DARKHULL )
 		COLOR_DEFINE( Booster, BOOSTER )
 		COLOR_DEFINE( Killmark, KILLMARK )
+		COLOR_DEFINE( PrimaryLight, PRIMARY_LIGHT )
+		COLOR_DEFINE( SecondaryLight, SECONDARY_LIGHT )
+		COLOR_DEFINE( TertiaryLight, TERTIARY_LIGHT )
+		COLOR_DEFINE( WhiteLight, WHITE_LIGHT )
 
 #undef COLOR_DEFINE
 
