@@ -35,7 +35,7 @@ Vector4 EveBoxVolume::GetBoundingSphere() const
 float EveBoxVolume::GetIntensity( Vector3 cameraPosition )
 {
 	// This is probably wrong, need test cases!
-	Vector3 cameraInVolumeSpace = Transform( cameraPosition, m_inverseBoxTransform );
+	Vector3 cameraInVolumeSpace = Transform( cameraPosition, m_inverseBoxTransform ).GetXYZ();
 	float distFromCenterSq = LengthSq( cameraInVolumeSpace );
 	float radiusSq = LengthSq( m_scaling ) * 0.5f;
 	if (distFromCenterSq > radiusSq)
