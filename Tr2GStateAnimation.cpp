@@ -651,7 +651,11 @@ void Tr2GStateAnimation::SetStartStateIdx(int StartState)
 
 void Tr2GStateAnimation::SetStartStateByName( const std::string& name)
 {
+#if GrannyProductMajorVersion > 2 || (GrannyProductMajorVersion == 2 && GrannyProductMinorVersion >= 11)
 	m_state_machine->SetStartState(m_state_machine->GetStateByName(name.c_str()));
+#else
+	CCP_LOGERR( "SetStartStateByName: outdated Granny version" );
+#endif
 }
 
 bool Tr2GStateAnimation::RequestChangeToState( const std::string& name )
@@ -667,11 +671,16 @@ bool Tr2GStateAnimation::StartTransitionByName( const std::string& name )
 
 float Tr2GStateAnimation::GetParameter( const std::string& param_node_name, granny_int32x param_idx )
 {
+#if GrannyProductMajorVersion > 2 || (GrannyProductMajorVersion == 2 && GrannyProductMinorVersion >= 11)
 	node *curr_param = m_state_machine->FindChildByName(param_node_name.c_str());
 	parameters* param_set = GSTATE_DYNCAST(curr_param, parameters);
 	assert(param_set);
 
 	return param_set->GetRequestedParam( param_idx );
+#else
+	CCP_LOGERR( "GetParameter: outdated Granny version" );
+	return 0;
+#endif
 }
 
 void Tr2GStateAnimation::SetParameter( const std::string& param_node_name, granny_int32x param_idx, float value )
@@ -685,16 +694,21 @@ void Tr2GStateAnimation::SetParameter( const std::string& param_node_name, grann
 
 void Tr2GStateAnimation::RequestParameter( const std::string& param_node_name, granny_int32x param_idx, float value )
 {
+#if GrannyProductMajorVersion > 2 || (GrannyProductMajorVersion == 2 && GrannyProductMinorVersion >= 11)
 	node *curr_param = m_state_machine->FindChildByName(param_node_name.c_str());
 	parameters* param_set = GSTATE_DYNCAST(curr_param, parameters);
 	assert(param_set);
 
 	param_set->RequestParameter( param_idx, value );
+#else
+	CCP_LOGERR( "RequestParameter: outdated Granny version" );
+#endif
 }
 
 
 void Tr2GStateAnimation::RequestParameterByName( const std::string& param_node_name, const std::string& param_name, float value )
 {
+#if GrannyProductMajorVersion > 2 || (GrannyProductMajorVersion == 2 && GrannyProductMinorVersion >= 11)
 	node *curr_param = m_state_machine->FindChildByName(param_node_name.c_str());
 	parameters* param_set = GSTATE_DYNCAST(curr_param, parameters);
 	assert(param_set);
@@ -712,6 +726,9 @@ void Tr2GStateAnimation::RequestParameterByName( const std::string& param_node_n
 
 	if ( param_idx != -1 )
 		param_set->RequestParameter( param_idx, value );
+#else
+	CCP_LOGERR( "RequestParameterByName: outdated Granny version" );
+#endif
 }
 
 granny_int32x Tr2GStateAnimation::GetParameterIndexByName( const std::string& param_node_name, const std::string& param_name )
