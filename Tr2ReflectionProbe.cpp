@@ -174,6 +174,7 @@ bool Tr2ReflectionProbe::OnPrepareResources()
 		auto source = dynamic_cast< ITr2TextureProvider* >( m_customSourceTexture.p );
 		m_preFilterEffect->SetParameter( BlueSharedString( "tex_hi_res" ), source ? source : static_cast<ITr2TextureProvider*>( m_renderTargetCube ) );
 		m_preFilterEffect->SetParameter( BlueSharedString( "tex_lo_res" ), m_preFilterTarget );
+		m_filterEffect->SetParameter( BlueSharedString( "tex_in" ), m_preFilterTarget );
 
 		for( int i = 0; i < MIP_COUNT; i++ )
 		{
@@ -206,6 +207,7 @@ bool Tr2ReflectionProbe::OnModified( Be::Var* value )
 void Tr2ReflectionProbe::Filter( Tr2RenderContext &renderContext )
 {
 	Tr2Renderer::RunComputeShader( m_preFilterEffect, FILTER_SIZE, FILTER_SIZE, 6, renderContext );
+	m_preFilterTarget->GenerateMipMaps();
 	Tr2Renderer::RunComputeShader( m_filterEffect, FILTER_GROUP_DIM, 6, 1, renderContext );
 }
 
