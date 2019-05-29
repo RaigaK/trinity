@@ -36,6 +36,11 @@ namespace
 		return ( ( b - a ) * s_currentCurve.back()->GetRandomConstant() ) + a;
 	}
 
+	float RandomHash( float a, float b, float x )
+	{
+		return ( ( b - a ) * float( ( CcpHashFNV1( &x, sizeof( x ), CcpHashFNV1( s_currentCurve.back(), sizeof( s_currentCurve.back() ) ) ) & 0xfffff ) / float( 0xfffff ) ) ) + a;
+	}
+
 	// --------------------------------------------------------------------------------
 	float Random( float a, float b )
 	{
@@ -79,6 +84,7 @@ Tr2CurveEulerRotationExpression::Tr2CurveEulerRotationExpression( IRoot* lockobj
 		parser.DefineFun( "randomConstant", &RandomConstant, false );
 		parser.DefineFun( "randconst", &RandomConstant, false );
 		parser.DefineFun( "random", &Random, false );
+		parser.DefineFun( "randconst", &RandomConstant, false );
 		parser.DefineFun( "input", &Input, false );
 		parser.DefineFun( "inputAt", &InputAt, false );
 		parser.DefineFun( "clamp", &TriClamp, false );
@@ -320,6 +326,7 @@ std::vector<Tr2ExpressionTermInfoPtr> Tr2CurveEulerRotationExpression::GetExpres
 	result.push_back( Tr2ExpressionTermInfo::Function( "Random", "randomConstant", "a", "b", "random per-curve constant in range [a, b)" ) );
 	result.push_back( Tr2ExpressionTermInfo::Function( "Random", "randconst", "a", "b", "random per-curve constant in range [a, b)" ) );
 	result.push_back( Tr2ExpressionTermInfo::Function( "Random", "random", "a", "b", "random value in range [a, b)" ) );
+	result.push_back( Tr2ExpressionTermInfo::Function( "Random", "randhash", "a", "b", "x", "random value in range [a, b) based on value x" ) );
 	result.push_back( Tr2ExpressionTermInfo::Function( "Inputs", "input", "n", "n-th input curve value at current time" ) );
 	result.push_back( Tr2ExpressionTermInfo::Function( "Inputs", "inputAt", "n", "t", "input curve value at time t" ) );
 	result.push_back( Tr2ExpressionTermInfo::Function( "Math", "clamp", "x", "min", "max", "value x clamped to [min, max] range" ) );
