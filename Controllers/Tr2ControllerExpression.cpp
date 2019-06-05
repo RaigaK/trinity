@@ -21,10 +21,12 @@
 bool g_controllerFunctionOverrideEnabled = false;
 float g_controllerShipSpeed = 0;
 float g_controllerShipMaxSpeed = 1;
+Be::Time g_controllerServerTime = 0;
 
 TRI_REGISTER_SETTING( "controllerFunctionOverrideEnabled", g_controllerFunctionOverrideEnabled );
 TRI_REGISTER_SETTING( "controllerShipSpeed", g_controllerShipSpeed );
 TRI_REGISTER_SETTING( "controllerShipMaxSpeed", g_controllerShipMaxSpeed );
+TRI_REGISTER_SETTING( "controllerServerTime", g_controllerServerTime );
 
 
 namespace
@@ -144,6 +146,120 @@ namespace
 		static std::regex namePattern( "[a-zA-Z_][a-zA-Z_0-9]*" );
 		return std::regex_match( name, namePattern );
 	}
+
+#ifdef _WIN32
+	// We really need something like FileTimeToSystemTime in blue and platform-independent
+
+	SYSTEMTIME GetServerTimeParts()
+	{
+		Be::Time time;
+		if( g_controllerFunctionOverrideEnabled )
+		{
+			time = g_controllerServerTime;
+		}
+		else
+		{
+			time = BeOS->GetCurrentFrameTime();
+		}
+
+		SYSTEMTIME st = {};
+		FileTimeToSystemTime( (FILETIME*)&time, &st );
+		return st;
+	}
+
+	float GetServerYear()
+	{
+		return float( GetServerTimeParts().wYear );
+	}
+
+	float GetServerMonth()
+	{
+		return float( GetServerTimeParts().wMonth );
+	}
+
+	float GetServerDay()
+	{
+		return float( GetServerTimeParts().wDay );
+	}
+
+	float GetServerDayOfWeek()
+	{
+		return float( GetServerTimeParts().wDayOfWeek );
+	}
+
+	float GetServerHour()
+	{
+		return float( GetServerTimeParts().wHour );
+	}
+
+	float GetServerMinute()
+	{
+		return float( GetServerTimeParts().wMinute );
+	}
+
+	float GetServerSecond()
+	{
+		return float( GetServerTimeParts().wSecond );
+	}
+#else
+	float GetServerYear()
+	{
+		return 0;
+	}
+
+	float GetServerMonth()
+	{
+		return 0;
+	}
+
+	float GetServerDay()
+	{
+		return 0;
+	}
+
+	float GetServerDayOfWeek()
+	{
+		return 0;
+	}
+
+	float GetServerHour()
+	{
+		return 0;
+	}
+
+	float GetServerMinute()
+	{
+		return 0;
+	}
+
+	float GetServerSecond()
+	{
+		return 0;
+	}
+#endif
+
+	float TimePhase( float period )
+	{
+		auto p = TimeFromDouble( period );
+		if( !p )
+		{
+			return 0;
+		}
+		if( p < 0 )
+		{
+			p = -p;
+		}
+		Be::Time time;
+		if( g_controllerFunctionOverrideEnabled )
+		{
+			time = g_controllerServerTime;
+		}
+		else
+		{
+			time = BeOS->GetCurrentFrameTime();
+		}
+		return TimeAsFloat( time % p );
+	}
 }
 
 
@@ -187,6 +303,16 @@ std::string Tr2ControllerExpression::CreateParser( const char* expression, Modif
 	m_expressionParser.DefineFun( "ShipSpeed", ShipSpeed, false );
 	m_expressionParser.DefineFun( "ShipMaxSpeed", ShipMaxSpeed, false );
 	m_expressionParser.DefineFun( "Random", Random, false );
+
+	m_expressionParser.DefineFun( "ServerYear", GetServerYear, false );
+	m_expressionParser.DefineFun( "ServerMonth", GetServerMonth, false );
+	m_expressionParser.DefineFun( "ServerDay", GetServerDay, false );
+	m_expressionParser.DefineFun( "ServerDayOfWeek", GetServerDayOfWeek, false );
+	m_expressionParser.DefineFun( "ServerHour", GetServerHour, false );
+	m_expressionParser.DefineFun( "ServerMinute", GetServerMinute, false );
+	m_expressionParser.DefineFun( "ServerSecond", GetServerSecond, false );
+	m_expressionParser.DefineFun( "ServerTimePhase", TimePhase, false );
+
 
 	if( modifyParser )
 	{
@@ -263,4 +389,14 @@ void Tr2ControllerExpression::GetExpressionTermInfo( std::vector<Tr2ExpressionTe
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "ShipSpeed", "owning ship speed" ) );
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "ShipMaxSpeed", "owning ship maximum speed" ) );
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "Random", "min", "max", "returns a random from 'min'-'max-1' " ) );
+
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerYear", "returns a year for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerMonth", "returns a month (1-12) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerDay", "returns a day of month (1-31) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerDayOfWeek", "returns a day of week (1-7) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerHour", "returns an hour (0-23) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerMinute", "returns a minute (0-60) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerSecond", "returns a second (0-60) for current server time" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "DateTime", "ServerTimePhase", "period", "returns seconds phase in a server time period of the given length" ) );
+
 }
