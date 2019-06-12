@@ -18,8 +18,8 @@ BLUE_REGISTER_ENUM_EX( "EveSpaceObjectChildOrigin", IEveSpaceObjectChild::Origin
 Be::VarChooser EveChildContainerDataSetShaderChooser[] =
 {
 	{ "None", BeCast(EveChildContainer::SHADER_ALL), "Visible to users with all shader settings" },
-	{ "Med + High", BeCast(EveChildContainer::SHADER_HIGHMID), "Visible for users with shader settings on Medium or High" },
-	{ "Low + Med", BeCast(EveChildContainer::SHADER_LOWMID), "Visible for users with shader settings on Low or Medium" },
+	{ "Medium and High", BeCast(EveChildContainer::SHADER_HIGHMID), "Visible for users with shader settings on Medium or High" },
+	{ "Low and Medium", BeCast(EveChildContainer::SHADER_LOWMID), "Visible for users with shader settings on Low or Medium" },
 	{ "High", BeCast(EveChildContainer::SHADER_HIGH), "Only visible for users with shader settings on High" },
 	{ "Medium", BeCast(EveChildContainer::SHADER_MED), "Only visible for users with shader settings on Medium" },
 	{ "Low", BeCast(EveChildContainer::SHADER_LOW), "Only visible for users with shader settings on Low" },
