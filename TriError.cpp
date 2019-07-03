@@ -31,7 +31,7 @@ namespace
 		CHK_ERRA( E_ABORT )
 		CHK_ERRA( E_FAIL )
 		CHK_ERRA( E_ACCESSDENIED )
-		CHK_ERRA( E_PENDING )
+		CHK_ERRA( E_DEVICELOST )
 #if TRINITY_PLATFORM==TRINITY_DIRECTX11 || TRINITY_PLATFORM==TRINITY_DIRECTX12
 		CHK_ERRA( DXGI_STATUS_OCCLUDED )
 		CHK_ERRA( DXGI_STATUS_CLIPPED )
@@ -61,7 +61,6 @@ namespace
 		CHK_ERRA( D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS )
 		CHK_ERRA( D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD )
 #endif
-
 		default: return "Unknown error.";
 		}
 	}
@@ -183,46 +182,24 @@ void TriError::CreateExceptionObjects(PyObject *modDict)
 	d3dException = BluePy(PyErr_NewException(const_cast<char*>("trinity.D3DError"), PyExc_RuntimeError, 0));
 	PyDict_SetItemString(modDict, "D3DError", d3dException);
 
-#ifdef _WIN32
+	const char* errorNames[] = {
+		"E_FAIL",
+		"D3DERR_DEVICELOST",
+		"D3DERR_NOTAVAILABLE",
+		"E_OUTOFMEMORY", };
 	HRESULT errors[] = {
-#if TRINITY_PLATFORM == TRINITY_DIRECTX9
-		D3DERR_CONFLICTINGRENDERSTATE,
-		D3DERR_CONFLICTINGTEXTUREFILTER,
-		D3DERR_CONFLICTINGTEXTUREPALETTE,
-		D3DERR_DEVICENOTRESET,
-		D3DERR_DRIVERINTERNALERROR,
-		D3DERR_DRIVERINVALIDCALL,
-		D3DERR_INVALIDCALL,
-		D3DERR_INVALIDDEVICE,
-		D3DERR_MOREDATA,
-		D3DERR_NOTAVAILABLE,
-		D3DERR_NOTFOUND,
-		D3DERR_OUTOFVIDEOMEMORY,
-		D3DERR_TOOMANYOPERATIONS,
-		D3DERR_UNSUPPORTEDALPHAARG,
-		D3DERR_UNSUPPORTEDALPHAOPERATION,
-		D3DERR_UNSUPPORTEDCOLORARG,
-		D3DERR_UNSUPPORTEDCOLOROPERATION,
-		D3DERR_UNSUPPORTEDFACTORVALUE,
-		D3DERR_UNSUPPORTEDTEXTUREFILTER,
-		D3DERR_WASSTILLDRAWING,
-		D3DERR_WRONGTEXTUREFORMAT,
-#endif
-		E_DEVICELOST,
 		E_FAIL,
-		E_INVALIDARG,
-//		E_INVALIDCALL, //not found?
-		E_NOINTERFACE,
-		E_NOTIMPL,
-		E_OUTOFMEMORY};
+		E_DEVICELOST,
+		(HRESULT)0x8876086A, // D3DERR_NOTAVAILABLE, not really issued, but is used by Python
+		E_OUTOFMEMORY, };
 
 	for (int i = 0; i<sizeof(errors)/sizeof(errors[0]); i++) {
 		HRESULT hr = errors[i];
-		const char *estring = GetErrorString(hr);
-		char edescription[1024];
+		char edescription[1024] = { 0 };
+#ifdef _WIN32
 		GetErrorDescription( hr, edescription, 1024 );
-		_ASSERT(estring && edescription);
-		std::string name = estring;
+#endif
+		std::string name = errorNames[i];
 		std::string fullname = "trinity." + name;
 		BluePyStr help(edescription);
 		BluePyDict dict(1);
@@ -232,29 +209,7 @@ void TriError::CreateExceptionObjects(PyObject *modDict)
 		PyDict_SetItemString(modDict, name.c_str(), ex);
 		d3dexceptions.insert(std::pair<HRESULT, BluePy>(hr, ex));
 	}
-#else
-    const char* errorNames[] = {
-        "D3DERR_DEVICELOST",
-        "D3DERR_NOTAVAILABLE",
-        "D3DERR_OUTOFVIDEOMEMORY", };
-    HRESULT errors[] = {
-        E_DEVICELOST,
-        (HRESULT)0x8876086A, // D3DERR_NOTAVAILABLE, not really issued, but is used by Python
-        E_OUTOFMEMORY, };
-	for (int i = 0; i<sizeof(errors)/sizeof(errors[0]); i++) {
-		const char *estring = errorNames[i];
-		const char *edescription = "";
-		std::string name = estring;
-		std::string fullname = "trinity." + name;
-		BluePyStr help(edescription);
-		BluePyDict dict(1);
-		dict.Set("__doc__", help);
-        
-		BluePy ex(PyErr_NewException((char*)fullname.c_str(), d3dException, dict));
-		PyDict_SetItemString(modDict, name.c_str(), ex);
-		d3dexceptions.insert(std::pair<HRESULT, BluePy>(errors[i], ex));
-	}
-#endif
+
 	//for backwards compatibility:
 	PyDict_SetItemString(modDict, "DeviceLostError",
 		                 d3dexceptions.find(E_DEVICELOST)->second);
