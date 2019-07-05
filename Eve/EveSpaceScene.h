@@ -19,6 +19,7 @@
 #include "Tr2QuadRenderer.h"
 #include "Tr2LightManager.h"
 #include "PostProcess/Tr2PostProcess2.h"
+#include "Include/ITr2NamedPredicate.h"
 
 class TriProjection;
 class TriView;
@@ -74,7 +75,8 @@ BLUE_CLASS( EveSpaceScene ) :
 	public IInitialize,
 	public INotify,
 	public Tr2DeviceResource,
-	public IListNotify
+	public IListNotify,
+	public ITr2NamedPredicate
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -97,7 +99,7 @@ public:
 	RenderPassResult RenderPass( PassType pass, Tr2RenderContext& renderContext );
 	void RenderMainPass( Tr2RenderContext& renderContext );
 	void RenderDepthPass( Tr2RenderContext& renderContext );
-	bool RenderBackgroundPass( Tr2RenderContext& renderContext );
+	void RenderBackgroundPass( Tr2RenderContext& renderContext );
 	void BeginRender( Tr2RenderContext& renderContext );
 	void EndRender( Tr2RenderContext& renderContext );
 	void Render3DUI( Tr2RenderContext& renderContext );
@@ -121,6 +123,10 @@ public:
 		ssize_t key2,
 		IRoot* value,
 		const struct IList* theList );
+
+	//////////////////////////////////////////////////////////////////////////
+	// ITr2NamedPredicate
+	bool GetPredicate( const char* name ) const override;
 
 	// all eve-specific visualize methods
 	enum EveVisualizeMethod
@@ -308,7 +314,7 @@ protected:
 	void RenderObjectsReceivingShadows( std::vector<ShadowReceiver>& objectReceivingShadows, bool renderShadows, Tr2RenderContext& renderContext );
 	void RenderOpaqueBatches( BatchMap& batches, Tr2RenderContext& renderContext );
 	void RenderTransparentBatches( BatchMap& batches, Tr2RenderContext& renderContext );
-	void RenderDistortionBatches( BatchMap& batches, Tr2RenderContext& renderContext );
+	bool RenderDistortionBatches( BatchMap& batches, Tr2RenderContext& renderContext );
 
 	// Utility rendering functions
 	void RenderBatch(		ITriRenderBatchAccumulator* batch, 
@@ -520,7 +526,13 @@ private:
 
 	void UpdateImpostors();
 
-	bool RenderBackgroundPassObjects( Tr2RenderContext& renderContext, bool runOcclusionQueries = true );
+	enum BackgroundRenderingReason
+	{
+		BACKGROUND_RENDER_COLOR,
+		BACKGROUND_RENDER_REFLECTION,
+	};
+
+	void RenderBackgroundPassObjects( Tr2RenderContext& renderContext, BackgroundRenderingReason reason );
 
 	Tr2ShLightingManagerPtr m_shLightingManager;
 
@@ -533,6 +545,9 @@ private:
 	float m_taaPixelOffsetScale;
 
 	size_t m_msaaSamples;
+
+	bool m_hasBackgroundDistortionBatches;
+	bool m_hasForegroundDistortionBatches;
 
 	float m_nebulaBrightnessOverride;
 	Tr2Variable m_nebulaBrightnessOverrideVar;

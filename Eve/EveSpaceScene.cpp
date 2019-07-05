@@ -168,7 +168,9 @@ EveSpaceScene::EveSpaceScene( IRoot* lockobj ) :
 	m_nebulaBrightnessOverride( 0.f ),
 	m_nebulaBrightnessOverrideVar( "NebulaBrightnessOverride", m_nebulaBrightnessOverride ),
 	m_hasDepthPass( false ),
-	m_msaaSamples( 0 )
+	m_msaaSamples( 0 ),
+	m_hasBackgroundDistortionBatches( false ),
+	m_hasForegroundDistortionBatches( false )
 {
 	TriPoolAllocator* allocator = Tr2Renderer::GetPoolAllocator();
 	m_primaryBatches[TRIBATCHTYPE_OPAQUE] = CCP_NEW( "EveSpaceScene/m_batches" ) TriRenderBatchAccumulator<EffectKeyGenerator>( allocator );
@@ -930,13 +932,13 @@ void EveSpaceScene::RenderTransparentBatches( BatchMap& batches, Tr2RenderContex
 //   renderingContext - Tr2RenderContext for rendering( unused at the moment ).
 //   batches - BatchMap that contains the distortion batches to be rendered
 // --------------------------------------------------------------------------------------
-void EveSpaceScene::RenderDistortionBatches( BatchMap& batches, Tr2RenderContext &renderContext )
+bool EveSpaceScene::RenderDistortionBatches( BatchMap& batches, Tr2RenderContext &renderContext )
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
-    if( !m_distortionMap )
+    if( !m_distortionMap || !batches[TRIBATCHTYPE_DISTORTION]->GetBatchCount() )
     {
-        return;
+        return false;
     }
 
     // Hold on to original depth stencil and back buffer
@@ -963,6 +965,7 @@ void EveSpaceScene::RenderDistortionBatches( BatchMap& batches, Tr2RenderContext
 
 	renderContext.m_esm.ApplyStandardStates( Tr2EffectStateManager::RM_ALPHA_ADDITIVE );
     renderContext.RenderBatches( batches[TRIBATCHTYPE_DISTORTION] );
+	return true;
 }
 
 // --------------------------------------------------------------------------------------
@@ -1623,30 +1626,32 @@ Tr2QuadRenderer* EveSpaceScene::GetQuadRenderer() const
 // Returns:
 //   boolean indicating whether background distortion is required.
 // --------------------------------------------------------------------------------------
-bool EveSpaceScene::RenderBackgroundPass( Tr2RenderContext& renderContext )
+void EveSpaceScene::RenderBackgroundPass( Tr2RenderContext& renderContext )
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
+
+	m_hasBackgroundDistortionBatches = false;
 
 	// "background" rendering
 	if( !m_backgroundRenderingEnabled )
 	{
-		return false;
+		return;
 	}
 
 	if( !m_display )
 	{
-		return false;
+		return;
 	}
 
 	TriPoolAllocator* allocator = Tr2Renderer::GetPoolAllocator();
 	if( !allocator )
 	{
-		return false;
+		return;
 	}
 
 	renderContext.AddGpuMarker( __FUNCTION__ );
 
-	bool doBackgroundDistortion = RenderBackgroundPassObjects( renderContext );
+	RenderBackgroundPassObjects( renderContext, BACKGROUND_RENDER_COLOR );
 
 	// Render background reflection cubemap
 	if( m_reflectionProbe && m_reflectionProbe->IsValid() )
@@ -1662,7 +1667,7 @@ bool EveSpaceScene::RenderBackgroundPass( Tr2RenderContext& renderContext )
 			PopulatePerFrameVSData( m_perFrameVS );
 			ApplyPerFrameData( renderContext );
 
-			RenderBackgroundPassObjects( renderContext, false );
+			RenderBackgroundPassObjects( renderContext, BACKGROUND_RENDER_REFLECTION );
 
 			m_reflectionProbe->EndRenderFace( i, renderContext );
 		}
@@ -1674,8 +1679,6 @@ bool EveSpaceScene::RenderBackgroundPass( Tr2RenderContext& renderContext )
 	}
 
 	renderContext.m_esm.EndManagedRendering();
-
-	return doBackgroundDistortion;
 }
 
 // --------------------------------------------------------------------------------------
@@ -1684,11 +1687,9 @@ bool EveSpaceScene::RenderBackgroundPass( Tr2RenderContext& renderContext )
 // Returns:
 //   boolean indicating whether background distortion is required.
 // --------------------------------------------------------------------------------------
-bool EveSpaceScene::RenderBackgroundPassObjects( Tr2RenderContext& renderContext, bool runOcclusionQueries )
+void EveSpaceScene::RenderBackgroundPassObjects( Tr2RenderContext& renderContext, BackgroundRenderingReason reason )
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
-
-	bool doBackgroundDistortion = false;
 
 	renderContext.AddGpuMarker( __FUNCTION__ );
 
@@ -1752,7 +1753,7 @@ bool EveSpaceScene::RenderBackgroundPassObjects( Tr2RenderContext& renderContext
 		// have their own view/projection and so their own z-depth, BUT before
 		// clear, we must render the lensfalre occlusion queries, so we don't lose
 		// the z info we have so far
-		if( runOcclusionQueries )
+		if( reason == BACKGROUND_RENDER_COLOR )
 		{
 			for( EveLensflareVector::const_iterator it = m_lensflares.begin(); it != m_lensflares.end(); ++it )
 			{
@@ -1773,17 +1774,14 @@ bool EveSpaceScene::RenderBackgroundPassObjects( Tr2RenderContext& renderContext
 		PrepareTransparentBatch( transparentObjects, m_secondaryBatches );
 		FinalizeBatches( m_secondaryBatches );
 		RenderTransparentBatches( m_secondaryBatches, renderContext );
-		if( m_secondaryBatches[TRIBATCHTYPE_DISTORTION]->GetBatchCount() > 0 )
+		if( reason == BACKGROUND_RENDER_COLOR )
 		{
-			RenderDistortionBatches( m_secondaryBatches, renderContext );
-			doBackgroundDistortion = true;
+			m_hasBackgroundDistortionBatches = RenderDistortionBatches( m_secondaryBatches, renderContext );
 		}
 		ClearBatches( m_secondaryBatches );
 	}
 
 	renderContext.m_esm.EndManagedRendering();
-
-	return doBackgroundDistortion;
 }
 
 // --------------------------------------------------------------------------------------
@@ -1855,6 +1853,8 @@ void EveSpaceScene::RenderDepthPass( Tr2RenderContext& renderContext )
 void EveSpaceScene::RenderMainPass( Tr2RenderContext& renderContext )
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
+
+	m_hasForegroundDistortionBatches = false;
 	
 	renderContext.m_esm.BeginManagedRendering();
 
@@ -1928,7 +1928,7 @@ void EveSpaceScene::RenderMainPass( Tr2RenderContext& renderContext )
 		renderContext.SetReadOnlyDepth( true );
 	}
 	RenderTransparentBatches( m_primaryBatches, renderContext );
-	RenderDistortionBatches( m_primaryBatches, renderContext );
+	m_hasForegroundDistortionBatches = RenderDistortionBatches( m_primaryBatches, renderContext );
 
 	//GPU particles
 	if( GetGpuParticleSystem() )
@@ -2139,10 +2139,7 @@ ITr2MultiPassScene::RenderPassResult EveSpaceScene::RenderPass( PassType pass, T
 		EndRender( renderContext );
 		break;
 	case RP_BACKGROUND_RENDER:
-		if( !RenderBackgroundPass( renderContext ) && m_distortionMap )
-		{
-			return PASS_RESULT_TERMINATE;
-		}
+		RenderBackgroundPass( renderContext );
 		break;
 	case RP_MAIN_RENDER:
 		RenderMainPass( renderContext );
@@ -2942,4 +2939,17 @@ Vector3 EveSpaceScene::PickInfinity( int x, int y, Matrix proj, Matrix view )
 void EveSpaceScene::UpdateSceneFromScript( Be::Time time )
 {
 	Update( time, time );
+}
+
+bool EveSpaceScene::GetPredicate( const char* name ) const
+{
+	if( strcmp( name, "hasBackgroundDistortionBatches" ) == 0 )
+	{
+		return m_hasBackgroundDistortionBatches;
+	}
+	else if( strcmp( name, "hasForegroundDistortionBatches" ) == 0 )
+	{
+		return m_hasForegroundDistortionBatches;
+	}
+	return false;
 }

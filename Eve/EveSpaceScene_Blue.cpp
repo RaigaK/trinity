@@ -127,6 +127,7 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
 		MAP_INTERFACE( ITr2Updateable )
 		MAP_INTERFACE( IInitialize )
 		MAP_INTERFACE( INotify )
+		MAP_INTERFACE( ITr2NamedPredicate )
 
 		MAP_ATTRIBUTE
 		( 
