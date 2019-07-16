@@ -47,9 +47,14 @@ BehaviorGroup::~BehaviorGroup()
 {
 }
 
-size_t BehaviorGroup::GetSize() const
+size_t BehaviorGroup::GetSize()
 {
 	return m_agents.size();
+}
+
+unsigned int BehaviorGroup::GetCount()
+{
+	return unsigned(m_count);
 }
 
 Tr2MeshPtr BehaviorGroup::GetMesh()

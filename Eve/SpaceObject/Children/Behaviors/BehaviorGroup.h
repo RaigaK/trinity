@@ -56,7 +56,8 @@ public:
 	Tr2MeshPtr GetMesh();
 
 	void AddAgent();
-	size_t GetSize() const;
+	size_t GetSize();
+	unsigned int GetCount();
 	void RemoveAgent();
 	void SetCount( int count );
 	int GetGroupIndexIndicator();

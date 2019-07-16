@@ -265,9 +265,9 @@ void EveChildBehaviorSystem::UpdateBuffer( Tr2RenderContext& renderContext )
 	{
 		(*it)->GetInfoForBuffer( data, WT );
 		(*it)->SetGroupIndexIndicator( I ); 
-		data += static_cast<unsigned int>((*it)->GetSize()) * m_stride;
+		data += (*it)->GetCount() * m_stride;
 		I++;
-		totalShipsSoFar += static_cast<unsigned int>((*it)->GetSize());
+		totalShipsSoFar += (*it)->GetCount();
 		m_offsets.push_back( totalShipsSoFar * m_stride );
 	}
 	m_vertexBuffer.UnmapForWriting( renderContext );
