@@ -3110,6 +3110,8 @@
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\IBehavior.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\SplineTunnelGroup.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\Wander.h" />
+    <ClInclude Include="Eve\SpaceObject\Children\Behaviors\BackAndForth.h" />
+    <ClInclude Include="Eve\SpaceObject\Children\Behaviors\Inertia.h" />
     <ClInclude Include="Eve\SpaceObject\Children\SocketParameters\EveSocketParameter.h" />
     <ClInclude Include="Eve\SpaceObject\Children\SocketParameters\IEveSocketParameter.h" />
     <ClInclude Include="Eve\SpaceObject\Children\TransformModifiers\EveChildModifierAttachToBone.h" />
@@ -3800,6 +3802,10 @@
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\SplineTunnelGroup_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Wander.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Wander_Blue.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\BackAndForth.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\BackAndForth_Blue.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Inertia.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Inertia_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\SocketParameters\EveSocketParameter.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\SocketParameters\EveSocketParameter_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\TransformModifiers\EveChildModifierAttachToBone.cpp" />

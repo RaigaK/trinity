@@ -23,8 +23,8 @@ struct DroneAgent
 		screenSize( 0.f ),
 		tunnelLock( -1 ),
 		tunnelPoint( 0 ),
-		seekWeight( 100.f ),
-		deliverWeight( 0.f ),
+		seek( true ),
+		deliver( false ),
 		arrived( true ),
 		avoidanceWeight( 75.f ),
 		lastAcceleration( 0, 0, 0 )
@@ -47,8 +47,8 @@ struct DroneAgent
 	int tunnelPoint;
 
 	//This will need to be moved to an extra attribute array
-	float seekWeight;
-	float deliverWeight;
+	bool seek;
+	bool deliver;
 	bool arrived;
 	float avoidanceWeight;
 	Vector3 lastAcceleration;
