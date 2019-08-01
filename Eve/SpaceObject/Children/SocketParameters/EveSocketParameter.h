@@ -59,7 +59,7 @@ TYPEDEF_BLUECLASS( EveSocketParameterBindingBase );
 		_valueType m_value;\
 		std::vector<_valueType> m_defaults;\
 	};\
-	TYPEDEF_BLUECLASS( ##_className## );
+	TYPEDEF_BLUECLASS( _className );
 
 SOCKET_PARAM_DECLARE( EveSocketParameterBool, bool );
 SOCKET_PARAM_DECLARE( EveSocketParameterInt, int );
