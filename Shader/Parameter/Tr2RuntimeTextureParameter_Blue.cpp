@@ -27,7 +27,9 @@ const Be::ClassInfo* Tr2RuntimeTextureParameter::ExposeToBlue()
 			Create,
 			3,
 			":param name: parameter name\n"
-			":param texture: texture associated with the parameter" )
+			":param texture: texture associated with the parameter\n"
+			":param mip: UAV mip level"
+		)
 
 	EXPOSURE_END()
 }

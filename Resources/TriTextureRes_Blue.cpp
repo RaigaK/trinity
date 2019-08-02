@@ -412,5 +412,5 @@ MAP_FUNCTION_AND_WRAP(
 	"OpenSharedTexture", 
 	OpenSharedTexture, 
 	"Creates a TriTextureRes object that has access to a previously created shared texture.\n" 
-	":para handle: shared handle of the texture\n"
+	":param handle: shared handle of the texture\n"
 );

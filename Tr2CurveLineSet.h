@@ -72,7 +72,6 @@ public:
 	unsigned int AddCurvedLineSph( const Vector3& position1, const Vector4& color1, const Vector3& position2, const Vector4& color2, const Vector3& center, const Vector3& middle, float width );
 	unsigned int AddSpheredLineCrt( const Vector3& position1, const Vector4& color1, const Vector3& position2, const Vector4& color2, const Vector3& center, float width );
 	unsigned int AddSpheredLineSph( const Vector3& position1, const Vector4& color1, const Vector3& position2, const Vector4& color2, const Vector3& center, float width );
-	unsigned int AddParticleLine( const Vector3& position1, const Vector3& position2, const Vector3& normal, float width );
 	// remove
 	void RemoveLine( unsigned int id );
 	void ClearLines();

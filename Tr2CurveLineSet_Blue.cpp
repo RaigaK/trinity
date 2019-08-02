@@ -83,11 +83,6 @@ const Be::ClassInfo* Tr2CurveLineSet::ExposeToBlue()
 			"\n:param lineWidth: The width of the line in pixel" )
 
 		MAP_METHOD_AND_WRAP(
-			"AddParticleLine",
-			AddParticleLine,
-			"DO NOT USE!\n" )
-
-		MAP_METHOD_AND_WRAP(
 			"ChangeLineColor",
 			ChangeLineColor,
 			"Changes the start and end color of a line. Requires a call to SubmitChanges before being updated on the video card."

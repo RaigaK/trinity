@@ -904,35 +904,6 @@ unsigned int Tr2CurveLineSet::AddSpheredLineSph( const Vector3& position1, const
 
 // -------------------------------------------------------------
 // Description:
-//   Experimental function, don't use it.
-// Arguments:
-// Return value:
-//   The line's id
-// -------------------------------------------------------------
-unsigned int Tr2CurveLineSet::AddParticleLine( const Vector3& position1, const Vector3& position2, const Vector3& normal, float width )
-{
-	LineData newLine;
-
-	newLine.type = LINETYPE_PARTICLE;
-	newLine.position1 = position1;
-	newLine.color1 = Color( 1.f, 1.f, 1.f, 1.f );
-	newLine.position2 = position2;
-	newLine.color2 = Color( 1.f, 1.f, 1.f, 1.f );
-	newLine.intermediatePosition = normal;
-	newLine.width = width;
-	newLine.multiColor = Color( 0.f, 0.f, 0.f, 0.f );
-	newLine.multiColorBorder = -1.f;
-	newLine.overlayColor = Color( 0.f, 0.f, 0.f, 0.f );
-	newLine.animationSpeed = 0.f;
-	newLine.animationScale = 1.f;
-	newLine.numOfSegments = 10;
-
-	// use helper function to put this line in list
-	return addLineData( &newLine );
-}
-
-// -------------------------------------------------------------
-// Description:
 //   Changes the start and end color of a line. Requires a call to SubmitChanges before being updated on the video card.
 // Arguments:
 //   id - The line ID returned by a previous call to AddXXX()

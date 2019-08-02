@@ -111,7 +111,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"GetParameters",
 			GetParameters,
 			"GetParameters( param_node )\n\n"
-			"Returns a list of names of parameters on a parameter node."
+			"Returns a list of names of parameters on a parameter node.\n"
+			":param nodeName: parameter node name"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -119,7 +120,9 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"GetParameterRange",
 			GetParameterRange,
 			"GetParameterRange( param_node, param_name )\n\n"
-			"Returns a list containing minimum and maximum values for a parameter."
+			"Returns a list containing minimum and maximum values for a parameter.\n"
+			":param nodeName: parameter node name\n"
+			":param paramName: parameter name"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -143,8 +146,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"SetStartStateIdx",
 			SetStartStateIdx,
 			"SetStartStateIdx( index )\n\n"
-			"Sets the starting state by index."
-			":param int: index for starting state"
+			"Sets the starting state by index.\n"
+			":param idx: index for starting state"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -152,8 +155,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"SetStartStateByName",
 			SetStartStateByName,
 			"SetStartStateByName( name )\n\n"
-			"Sets the starting state by name."
-			":param string: name for starting state"
+			"Sets the starting state by name.\n"
+			":param name: name for starting state"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -161,8 +164,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"RequestChangeToState",
 			RequestChangeToState,
 			"RequestChangeToState( state_name )\n\n"
-			"Requests a change to a particular state, through any intermediate transitions. Returns boolean that indicates whether the change will take place."
-			":param string: name for destination state"
+			"Requests a change to a particular state, through any intermediate transitions. Returns boolean that indicates whether the change will take place.\n"
+			":param state_name: name for destination state"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -170,8 +173,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"ForceChangeToState",
 			ForceChangeToState,
 			"ForceChangeToState( state_name )\n\n"
-			"Forces a change to a particular state, through any intermediate transitions. Returns boolean that indicates whether the change will take place."
-			":param string: name for destination state"
+			"Forces a change to a particular state, through any intermediate transitions. Returns boolean that indicates whether the change will take place.\n"
+			":param state_name: name for destination state"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -179,8 +182,8 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"StartTransitionByName",
 			StartTransitionByName,
 			"StartTransitionByName( transition_name )\n\n"
-			"Requests taking a particular transition. Returns boolean that indicates whether the change will take place."
-			":param string: name for transition to start"
+			"Requests taking a particular transition. Returns boolean that indicates whether the change will take place.\n"
+			":param transition_name: name for transition to start"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -188,9 +191,9 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"GetParameter",
 			GetParameter,
 			"GetParameter( parameter_node_name, param_index )\n\n"
-			"Queries the value of a given parameter in a parameter node.  Returns float."
-			":param string: name for parameter node to query"
-			":param int: index for parameter to query."
+			"Queries the value of a given parameter in a parameter node.  Returns float.\n"
+			":param parameter_node_name: name for parameter node to query\n"
+			":param param_index: index for parameter to query."
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -198,10 +201,10 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"SetParameter",
 			SetParameter,
 			"SetParameter( parameter_node_name, param_index, value )\n\n"
-			"Instantly sets a parameter by index on a named parameter node, to a float value."
-			":param string: name for parameter node to query"
-			":param int: index for parameter to query."
-			":param float: value to set."
+			"Instantly sets a parameter by index on a named parameter node, to a float value.\n"
+			":param parameter_node_name: name for parameter node to query\n"
+			":param param_index: index for parameter to query.\n"
+			":param value: value to set."
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -209,10 +212,10 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"RequestParameter",
 			RequestParameter,
 			"RequestParameter( parameter_node_name, param_index, value )\n\n"
-			"Sets a parameter by index on a named parameter node, to a float value, allowing a smooth transition."
-			":param string: name for parameter node to query"
-			":param int: index for parameter to query."
-			":param float: value to set."
+			"Sets a parameter by index on a named parameter node, to a float value, allowing a smooth transition.\n"
+			":param parameter_node_name: name for parameter node to query\n"
+			":param param_index: index for parameter to query.\n"
+			":param value: value to set.\n"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -220,10 +223,10 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"RequestParameterByName",
 			RequestParameterByName,
 			"RequestParameter( parameter_node_name, param_name, value )\n\n"
-			"Sets a parameter by index on a named parameter node, to a float value, allowing a smooth transition."
-			":param string: name for parameter node to request."
-			":param string: name for parameter to request."
-			":param float: value to set."
+			"Sets a parameter by index on a named parameter node, to a float value, allowing a smooth transition.\n"
+			":param parameter_node_name: name for parameter node to request.\n"
+			":param param_name: name for parameter to request.\n"
+			":param value: value to set."
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -231,9 +234,9 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"GetParameterByName",
 			GetParameterByName,
 			"GetParameterByName( parameter_node_name, param_name )\n\n"
-			"Returns the value of a parameter specified by name on a param node"
-			":param string: name for parameter node"
-			":param string: name for parameter"
+			"Returns the value of a parameter specified by name on a param node\n"
+			":param parameter_node_name: name for parameter node\n"
+			":param param_name: name for parameter\n"
 		)
 
 		MAP_METHOD_AND_WRAP
@@ -241,9 +244,9 @@ const Be::ClassInfo* Tr2GStateAnimation::ExposeToBlue()
 			"GetParameterIndexByName",
 			GetParameterIndexByName,
 			"GetParameterIndexByName( parameter_node_name, param_name )\n\n"
-			"Returns the integer index of a parameter name on a param node"
-			":param string: name for parameter node"
-			":param string: name for parameter"
+			"Returns the integer index of a parameter name on a param node\n"
+			":param parameter_node_name: name for parameter node\n"
+			":param param_name: name for parameter"
 		)
 
 		MAP_METHOD_AND_WRAP
