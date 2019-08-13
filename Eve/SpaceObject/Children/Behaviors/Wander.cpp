@@ -16,8 +16,8 @@ Wander::~Wander()
 {
 }
 
-std::vector<Vector3> Wander::CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-                                               BehaviorGroup& group, EveChildBehaviorSystem& system)
+std::vector<Vector3> Wander::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+												BehaviorGroup& group, EveChildBehaviorSystem& system )
 {	
 	std::vector<Vector3> forceVectors;
 

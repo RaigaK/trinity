@@ -32,6 +32,37 @@ BehaviorGroup::BehaviorGroup( IRoot* lockobj ) :
 	m_blendRangeMin( 500 ),
 	m_blendRangeValue( 1.0 )
 {
+	m_behaviors.SetNotify( this );
+}
+
+bool BehaviorGroup::Initialize()
+{
+	m_scratchData.resize( m_behaviors.size() );
+	return true;
+}
+
+void BehaviorGroup::OnListModified(
+	long event,		// BLUELISTEVENT values
+	ssize_t key,
+	ssize_t key2,
+	IRoot* value,
+	const struct IList* list
+)
+{
+	if( list == &m_behaviors && ( event & BELIST_LOADING ) == 0 )
+	{
+		switch( event & BELIST_EVENTMASK )
+		{
+		case BELIST_INSERTED:
+			m_scratchData.insert( m_scratchData.begin() + key, CcpMallocBuffer() );
+			break;
+		case BELIST_REMOVED:
+			m_scratchData.erase( m_scratchData.begin() + key );
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 // --------------------------------------------------------------------------------
@@ -44,6 +75,8 @@ void BehaviorGroup::InitializeGeometryResource()
 {
 	//to make resource load correctly they must be regenerated for this instance
 	m_agents.clear();
+	m_scratchData.clear();
+
 	const int t = m_count;
 	m_count = 0;
 	SetCount( t );
@@ -132,6 +165,21 @@ void BehaviorGroup::AddAgentPrivate()
 	agent.position = Vector3( 0, 0, 0 ); // TODO: We might want to find a 'smart' spawn location
 	agent.id = TriRandInt( 500 ); //TODO: look better into parameter, could the same ID be generate more than once?
 	m_agents.push_back( agent );
+
+	for( size_t i = 0; i < m_behaviors.size(); ++i )
+	{
+		auto size = m_behaviors[i]->GetScratchMemorySize();
+		if( m_scratchData.size() <= i )
+		{
+			m_scratchData.push_back( CcpMallocBuffer() );
+		}
+		if( size > 0)
+		{
+			m_scratchData[i].resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
+			m_behaviors[i]->InitializeScratch( agent, m_scratchData[i].get() + size * ( m_agents.size() - 1 ) );
+		}
+	}
+
 	m_count++;
 }
 
@@ -206,6 +254,19 @@ Vector3 BehaviorGroup::RemoveAgentPrivate()
 	DroneAgent v = m_agents[randDrone];
 	m_agents[randDrone] = m_agents.back();
 	m_agents.pop_back();
+
+	for( size_t i = 0; i < m_behaviors.size(); ++i )
+	{
+		auto size = m_behaviors[i]->GetScratchMemorySize();
+		if( size == 0 )
+		{
+			continue;
+		}
+
+		memcpy( m_scratchData[i].get() + size * randDrone, m_scratchData[i].get() + size * m_agents.size(), size );
+		m_scratchData[i].resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
+	}
+
 	m_count--;
 
 	return v.position;
@@ -217,9 +278,11 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 	if( m_collectForces )
 	{
 		m_forces.clear();
-		for ( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior )
+
+		auto scratch = m_scratchData.begin();
+		for ( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior, scratch++ )
 		{
-			std::vector<Vector3> forces = ( *behavior )->CalculateBehavior( m_agents, dt, *this, system );
+			std::vector<Vector3> forces = ( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system );
 			
 			for ( auto force = forces.begin(); force != forces.end(); ++force )
 			{
@@ -229,9 +292,10 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 	}
 	else
 	{
-		for ( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior )
+		auto scratch = m_scratchData.begin();
+		for( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior, scratch++ )
 		{
-			( *behavior )->CalculateBehavior( m_agents, dt, *this, system );
+			( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system );
 		}
 	}
 
@@ -268,23 +332,28 @@ void BehaviorGroup::UpdateVisibility( const TriFrustum & frustum, const Matrix &
 	// Check if an agent is visible and calculate the xfade value
 	for ( auto agent = m_agents.begin(); agent != m_agents.end(); ++agent )
 	{
-		if ( frustum.IsSphereVisible( agent->position, m_boundingSphereRadius ) ) {
+		if( frustum.IsSphereVisible( agent->position, m_boundingSphereRadius ) )
+		{
 			float pixelSize = frustum.GetPixelSizeAccross( agent->position, m_boundingSphereRadius );
 			agent->screenSize = pixelSize; // Store the screen size for each agent
 
-			if ( pixelSize >= m_blendScreenSizeMax ) {
+			if( pixelSize >= m_blendScreenSizeMax )
+			{
 				agent->xfade = 0.0; // Render as mesh
 			}
-			else if ( pixelSize <= m_blendScreenSizeMin ) {
+			else if( pixelSize <= m_blendScreenSizeMin )
+			{
 				agent->xfade = 1.0; // Render as sprite
 			}
-			else {
+			else
+			{
 				float s = 1.0;
-				agent->xfade = s - (pixelSize - m_blendScreenSizeMin) / (m_blendScreenSizeMax - m_blendScreenSizeMin);
+				agent->xfade = s - ( pixelSize - m_blendScreenSizeMin ) / ( m_blendScreenSizeMax - m_blendScreenSizeMin );
 			}
 			agent->isVisible = true;
 		}
-		else {
+		else
+		{
 			agent->isVisible = false;
 		}
 	}
@@ -317,28 +386,20 @@ bool BehaviorGroup::IsGroupVisible()
 
 void BehaviorGroup::GetInfoForBuffer( uint8_t* data, Matrix& parentWorldLocation )
 {
-	for ( auto agent = m_agents.begin(); agent != m_agents.end(); ++agent )
+	for( auto agent = m_agents.begin(); agent != m_agents.end(); ++agent )
 	{
-		float LOD = (*agent).xfade;
+		float LOD = ( *agent ).xfade;
 		float LODmod;
-		if ( LOD != 1 && agent->isVisible )
+		if( LOD != 1 && agent->isVisible )
 		{
-			LODmod = ( 1 - LOD ) * ( 0.5f + (1 - LOD) * 0.5f );
+			LODmod = ( 1 - LOD ) *( 0.5f + ( 1 - LOD ) * 0.5f );
 			Vector3 meshScale = m_scale * Vector3( LODmod, LODmod, LODmod );
 
-			if ( m_meshToggle )
+			if( m_meshToggle )
 			{
 				meshScale *= m_spriteScale;
 			}
 
-			//Vector3 aR = Vector3( agent->rotation ); // agentRotation
-			//Vector3 a = Cross( aR, agent->acceleration );
-			//Quaternion q = Normalize(Quaternion(a.x, a.y, a.z,
-			//                          sqrt((Length(aR) * Length(aR)) * (Length(agent->acceleration) * Length(
-			//	                          agent->acceleration))) + Dot(aR, (agent->acceleration))));
-			//static const Vector3 zAxis( 0.f, 0.f, 1.f );
-			//TriQuaternionRotationArc( &agent->rotation, &zAxis, &Vector3(q) );
-			
 			Matrix m = Transpose( TransformationMatrix( meshScale, agent->rotation, agent->position ) );
 			memcpy( data, &m, 12 * sizeof( float ) );
 		}
@@ -351,16 +412,15 @@ void BehaviorGroup::GetInfoForBuffer( uint8_t* data, Matrix& parentWorldLocation
 		data += 12 * sizeof( float );
 
 		// sprite
-		if ( LOD != 0 && agent->isVisible )
+		if( LOD != 0 && agent->isVisible )
 		{
-			LODmod = (1.0f - LOD) * (LOD * 0.3f) + (LOD * 1.0f);
+			LODmod = ( 1.0f - LOD ) * ( LOD * 0.3f ) + ( LOD * 1.0f );
 			Matrix agentMatrix = TransformationMatrix( m_scale * m_spriteScale * Vector3( LODmod, LODmod, LODmod ),
 				agent->rotation, agent->position );
 			agentMatrix = Billboard2D( agentMatrix );
 			Matrix m2 = Transpose( agentMatrix );
 			memcpy( data, &m2, 12 * sizeof( float ) );
 		}
-
 		data += 12 * sizeof( float );
 	}
 }

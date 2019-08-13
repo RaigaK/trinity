@@ -15,8 +15,8 @@ ProcessLifetime::~ProcessLifetime()
 }
 
 
-std::vector<Vector3> ProcessLifetime::CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-                                                      BehaviorGroup& group, EveChildBehaviorSystem& system)
+std::vector<Vector3> ProcessLifetime::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+														BehaviorGroup& sys, EveChildBehaviorSystem& system )
 {
 	auto tunnels = system.GetTunnels();
 

@@ -14,7 +14,7 @@ FollowASpline::~FollowASpline()
 {
 }
 
-float FollowASpline::ProcessTunnelEntrances(DroneAgent& agent, std::vector<SplineTunnel>& tunnels)
+float FollowASpline::ProcessTunnelEntrances( DroneAgent& agent, std::vector<SplineTunnel>& tunnels, FollowASplineData* data )
 {
 	// not associated with a tunnel
 	for ( auto tunnel = tunnels.begin(); tunnel != tunnels.end(); ++tunnel )
@@ -30,8 +30,8 @@ float FollowASpline::ProcessTunnelEntrances(DroneAgent& agent, std::vector<Splin
 		float length = Length( dist );
 		if ( length < t.pointOfNoReturnSize )
 		{
-			agent.tunnelLock = t.tunnelID;
-			agent.tunnelPoint = 0;
+			data->tunnelLock = t.tunnelID;
+			data->tunnelPoint = 0;
 		}
 		else if ( length < t.pullSize )
 		{
@@ -51,10 +51,10 @@ float FollowASpline::ProcessTunnelEntrances(DroneAgent& agent, std::vector<Splin
 }
 
 
-void FollowASpline::ProcessAssignedTunnel( DroneAgent& agent, std::vector<SplineTunnel>& tunnels, BehaviorGroup& group )
+void FollowASpline::ProcessAssignedTunnel( DroneAgent& agent, std::vector<SplineTunnel>& tunnels, BehaviorGroup& group, FollowASplineData* data )
 {
-	auto t = tunnels[ agent.tunnelLock ];
-	auto pID = agent.tunnelPoint; // Point ID
+	auto t = tunnels[ data->tunnelLock ];
+	auto pID = data->tunnelPoint; // Point ID
 
 	float lengthBetweenPoints;
 	Vector3 targetVector = t.splinePoints[ pID ].pos - agent.position;
@@ -90,8 +90,8 @@ void FollowASpline::ProcessAssignedTunnel( DroneAgent& agent, std::vector<Spline
 		// the Dot product is positive if the agent is facing the target point
 		if ( Dot( targetVector, Vector3( agent.rotation ) ) < 0 )
 		{
-			agent.tunnelLock = -1;
-			agent.tunnelPoint = 0;
+			data->tunnelLock = -1;
+			data->tunnelPoint = 0;
 		}
 	}
 	else
@@ -115,21 +115,30 @@ void FollowASpline::ProcessAssignedTunnel( DroneAgent& agent, std::vector<Spline
 
 		if ((lengthFromShip - group.GetBoundingSphereRadius()) < (t.cylWidth)/2)
 		{
-			agent.tunnelPoint++;
+			data->tunnelPoint++;
 		}
 
 		//rework into cylinder collision
 		if ( lengthFromShip > ( group.GetBoundingSphereRadius() + lengthBetweenPoints * 1.5) && Dot( targetVector, vectorBetween ) < 0 )
 		{
-			agent.tunnelLock = -1;
-			agent.tunnelPoint = 0;
+			data->tunnelLock = -1;
+			data->tunnelPoint = 0;
 		}
 	}
 }
 
-std::vector<Vector3> FollowASpline::CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-                                                      BehaviorGroup& group,
-                                                      EveChildBehaviorSystem& system)
+size_t FollowASpline::GetScratchMemorySize() const
+{
+	return sizeof( FollowASplineData );
+}
+
+void FollowASpline::InitializeScratch( const DroneAgent& drone, void* scratchMemory )
+{
+	*static_cast<FollowASplineData*>( scratchMemory ) = FollowASplineData();
+}
+
+std::vector<Vector3> FollowASpline::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+														BehaviorGroup& group, EveChildBehaviorSystem& system )
 {
 	auto tunnels = system.GetTunnels();
 	m_targetPointVector.clear();
@@ -163,20 +172,21 @@ std::vector<Vector3> FollowASpline::CalculateBehavior(std::vector<DroneAgent>& a
 		return forceVectors;
 	}
 
-	for ( auto drone = agents.begin(); drone != agents.end(); ++drone )
+	auto data = static_cast<FollowASplineData*>( scratchData );
+	for ( auto drone = agents.begin(); drone != agents.end(); ++drone, data++ )
 	{
 		m_desiredVector = Vector3( 0, 0, 0 );
 		float rampingForce = 1;
 
-		if ( drone->tunnelLock == -1 )
+		if ( data->tunnelLock == -1 )
 		{
-			rampingForce = ProcessTunnelEntrances( *drone, tunnels);
+			rampingForce = ProcessTunnelEntrances( *drone, tunnels, data );
 		}
 
 		// tunnelLock can change in ProcessTunnelEntrances so if/else is not equivalent
-		if ( drone->tunnelLock != -1 )
+		if ( data->tunnelLock != -1 )
 		{
-			ProcessAssignedTunnel( *drone, tunnels, group );
+			ProcessAssignedTunnel( *drone, tunnels, group, data );
 		}
 
 		if ( m_desiredVector == Vector3( 0, 0, 0 ) )

@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "BackAndForth.h"
 #include "include/TriMath.h"
+#include "BehaviorGroup.h"
 
 const BlueSharedString DELIVER_LOCATOR_SET_NAME( "deliver" );
 const BlueSharedString SEEK_LOCATOR_SET_NAME( "seek" );
@@ -16,33 +17,49 @@ BackAndForth::~BackAndForth()
 {
 }
 
-std::vector<Vector3> BackAndForth::CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-                                                     BehaviorGroup& sys, EveChildBehaviorSystem& system)
+size_t BackAndForth::GetScratchMemorySize() const
 {
-	for (auto agent = agents.begin(); agent != agents.end(); ++agent)
+	return sizeof( BackAndForthData );
+}
+
+void BackAndForth::InitializeScratch( const DroneAgent& drone, void* scratchMemory )
+{
+	*static_cast<BackAndForthData*>( scratchMemory ) = BackAndForthData();
+}
+
+std::vector<Vector3> BackAndForth::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+														BehaviorGroup& group, EveChildBehaviorSystem& system )
+{	
+	auto data = static_cast<BackAndForthData*>( scratchData );
+
+	for (auto agent = agents.begin(); agent != agents.end(); ++agent, data++ )
 	{
-		if( agent->arrived )
+		if (data->arrived)
 		{
-			if( agent->seek )
+			if (data->seek)
 			{
 				//Get all locators under the "seek" locatorSet
-				auto seekLocators = sys.GetLocatorsForSet( SEEK_LOCATOR_SET_NAME );
-				m_rand = TriRandInt( 0, (int)seekLocators->size() );
-				agent->target = seekLocators[0][m_rand].position;
-			
+				auto seekLocators = group.GetLocatorsForSet( SEEK_LOCATOR_SET_NAME );
+				if (seekLocators != NULL)
+				{
+					m_rand = TriRandInt( 0, (int)seekLocators->size() );
+					data->locatorTarget = seekLocators[0][m_rand].position;
+				}
 			}
 			//If the deliver behavior is active
-			else if( agent->deliver )
+			else if (data->deliver)
 			{
 				//Get all locators under the "deliver" locatorSet
-				auto deliverLocators = sys.GetLocatorsForSet( DELIVER_LOCATOR_SET_NAME );
-				m_rand = TriRandInt( 0, (int)deliverLocators->size() );
-				agent->target = deliverLocators[0][m_rand].position;
-				
+				auto deliverLocators = group.GetLocatorsForSet( DELIVER_LOCATOR_SET_NAME );
+				if (deliverLocators != NULL)
+				{
+					m_rand = TriRandInt( 0, (int)deliverLocators->size() );
+					data->locatorTarget = deliverLocators[0][m_rand].position;
+				}
 			}
-			agent->arrived = false;
+			data->arrived = false;
 		}
-		Vector3 target = agent->target - agent->position;
+		Vector3 target = data->locatorTarget - agent->position;
 		float distance = Length( target );
 		target = Normalize( target );
 
@@ -50,21 +67,21 @@ std::vector<Vector3> BackAndForth::CalculateBehavior(std::vector<DroneAgent>& ag
 		if (distance < m_slowDownRadius)
 		{
 			// make the agent slow down before arriving at target
-			target = target * m_backAndForthWeight * ( distance / m_slowDownRadius );
-			
+			target = target * m_backAndForthWeight * (distance / m_slowDownRadius);
+
 			//If the agent has arrived to the target, then switch targets
 			if (distance < m_arrivedRadius)
 			{
-				std::swap( agent->seek, agent->deliver );
-				agent->arrived = true;
-			}	
-		}
-		else
-		{
-			target *= m_backAndForthWeight;
-		}
-
+				std::swap( data->seek, data->deliver );
+				data->arrived = true;
+			}
+			else
+			{
+				target *= m_backAndForthWeight;
+			}
+		}	
 		agent->acceleration += target;
+
 	}
 	std::vector<Vector3> todo;
 	return todo;

@@ -4,6 +4,22 @@
 #include "Eve/SpaceObject/Children/EveChildBehaviorSystem.h"
 #include "IBehavior.h"
 
+
+struct BackAndForthData
+{
+	BackAndForthData() :
+		locatorTarget( 0, 0, 0 ),
+		seek( true ),
+		deliver( false ),
+		arrived( true )
+	{}
+
+	Vector3 locatorTarget;
+	bool seek;
+	bool deliver;
+	bool arrived;
+};
+
 BLUE_CLASS( BackAndForth ) :
 	public IBehavior
 {
@@ -12,8 +28,12 @@ public:
 	BackAndForth( IRoot* lockobj = nullptr );
 	~BackAndForth();
 
-	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system);
+
+	virtual size_t GetScratchMemorySize() const;
+	virtual void InitializeScratch( const DroneAgent& drone, void* scratchMemory );
+
+	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+	                                               BehaviorGroup& group, EveChildBehaviorSystem& system );
 	void RenderDebugInfo(Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation);
 
 private:

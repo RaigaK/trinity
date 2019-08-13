@@ -8,7 +8,9 @@ const Be::ClassInfo* BehaviorGroup::ExposeToBlue()
 {
 	EXPOSURE_BEGIN( BehaviorGroup, "" )
 		MAP_INTERFACE( BehaviorGroup )
-		
+		MAP_INTERFACE( IInitialize )
+		MAP_INTERFACE( IListNotify )
+
 		MAP_ATTRIBUTE( "display", m_display, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "count", m_count, "Number of ships", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "maxVelocity", m_maxVelocity, "", Be::READWRITE | Be::PERSIST )

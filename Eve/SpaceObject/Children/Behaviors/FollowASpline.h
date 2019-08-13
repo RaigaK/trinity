@@ -4,6 +4,18 @@
 #include "Eve/SpaceObject/Children/EveChildBehaviorSystem.h"
 #include "IBehavior.h"
 
+struct FollowASplineData
+{
+	FollowASplineData() :
+		tunnelLock( -1 ),
+		tunnelPoint( 0 )
+	{
+	}
+
+	int tunnelLock;
+	int tunnelPoint;
+};
+
 BLUE_DECLARE( TriCurveSet );
 BLUE_DECLARE( SplineTunnelGroup );
 BLUE_DECLARE_VECTOR( SplineTunnelGroup );
@@ -16,13 +28,16 @@ public:
 	FollowASpline( IRoot* lockobj = nullptr );
 	~FollowASpline();
 	
-	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-	                                               BehaviorGroup& group, EveChildBehaviorSystem& system);
+
+	virtual size_t GetScratchMemorySize() const;
+	virtual void InitializeScratch( const DroneAgent& drone, void* scratchMemory );
+	virtual std::vector<Vector3> CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+													BehaviorGroup& group, EveChildBehaviorSystem& system );
 	void RenderDebugInfo(Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation);
 
 private:
-	float ProcessTunnelEntrances(DroneAgent& agent, std::vector<SplineTunnel>& tunnels);
-	void ProcessAssignedTunnel(DroneAgent& agent, std::vector<SplineTunnel>& tunnels, BehaviorGroup& group);
+	float ProcessTunnelEntrances(DroneAgent& agent, std::vector<SplineTunnel>& tunnels, FollowASplineData* data);
+	void ProcessAssignedTunnel(DroneAgent& agent, std::vector<SplineTunnel>& tunnels, BehaviorGroup& group, FollowASplineData* data);
 
 	PSplineTunnelGroupVector m_splineTunnels;
 	TunnelGroupType m_tunnelGroupType;

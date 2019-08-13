@@ -14,8 +14,8 @@ public:
 	ProcessLifetime( IRoot* lockobj = nullptr );
 	~ProcessLifetime();
 	
-	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-	                                               BehaviorGroup& group, EveChildBehaviorSystem& system);
+	virtual std::vector<Vector3> CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+													BehaviorGroup& sys, EveChildBehaviorSystem& system );
 	void RenderDebugInfo(Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation);
 
 private:

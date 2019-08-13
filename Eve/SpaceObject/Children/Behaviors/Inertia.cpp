@@ -13,13 +13,28 @@ Inertia::~Inertia()
 {
 }
 
-std::vector<Vector3> Inertia::CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-                                                BehaviorGroup& group, EveChildBehaviorSystem& system)
+
+size_t Inertia::GetScratchMemorySize() const
 {
-	for (auto agent = agents.begin(); agent != agents.end(); ++agent)
+	//return sizeof( InertiaData );
+	auto size = sizeof( Vector3);
+	return sizeof( Vector3 );
+}
+
+void Inertia::InitializeScratch( const DroneAgent& drone, void* scratchMemory )
+{
+	*static_cast<Vector3*>( scratchMemory ) = Vector3( 0, 0, 0 );
+}
+
+std::vector<Vector3> Inertia::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+													BehaviorGroup& group, EveChildBehaviorSystem& system )
+{
+	auto data = static_cast<Vector3*>( scratchData );
+
+	for (auto agent = agents.begin(); agent != agents.end(); ++agent, data++)
 	{
-		auto lastAccelNormalized = Normalize( agent->lastAcceleration );
-		auto lastAccelLength = Length( agent->lastAcceleration );
+		auto lastAccelNormalized = Normalize( *data );
+		auto lastAccelLength = Length( *data );
 		auto accelNormalized = Normalize( agent->acceleration );
 		auto accelLength = Length( agent->acceleration );
 		agent->target = agent->acceleration;
@@ -50,7 +65,7 @@ std::vector<Vector3> Inertia::CalculateBehavior(std::vector<DroneAgent>& agents,
 			 agent->acceleration = ClampLength( agent->acceleration, m_maxAcceleration );
 
 		}
-		agent->lastAcceleration = agent->acceleration;
+		*data = agent->acceleration;
 	}
 	std::vector<Vector3> noNeedToReturnForces;
 	return noNeedToReturnForces;

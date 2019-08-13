@@ -4,6 +4,17 @@
 #include "Eve/SpaceObject/Children/EveChildBehaviorSystem.h"
 #include "IBehavior.h"
 
+/*
+struct InertiaData
+{
+	InertiaData() :
+		lastAcceleration( 0, 0, 0 )
+	{
+	}
+
+	Vector3 lastAcceleration; // Instead use std::vector<Vector3> lastAcceleration
+};
+*/
 BLUE_CLASS( Inertia ) :
 	public IBehavior
 {
@@ -12,9 +23,11 @@ public:
 	Inertia( IRoot* lockobj = nullptr );
 	~Inertia();
 
-	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, const float deltaTime,
-	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system);
-	void RenderDebugInfo(Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation);
+	virtual size_t GetScratchMemorySize() const;
+	virtual void InitializeScratch( const DroneAgent& drone, void* scratchMemory );
+	virtual std::vector<Vector3> CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+													BehaviorGroup& group, EveChildBehaviorSystem& system );
+	void RenderDebugInfo( Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation );
 
 private:
 	float m_maxAcceleration;
