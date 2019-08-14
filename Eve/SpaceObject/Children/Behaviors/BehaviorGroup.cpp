@@ -74,7 +74,10 @@ void BehaviorGroup::InitializeGeometryResource()
 {
 	//to make resource load correctly they must be regenerated for this instance
 	m_agents.clear();
-	m_scratchData.clear();
+	for( auto it = begin( m_scratchData ); it != end( m_scratchData ); ++it )
+	{
+		it->clear();
+	}
 
 	const int t = m_count;
 	m_count = 0;
@@ -160,7 +163,10 @@ void BehaviorGroup::AddAgent()
 
 void BehaviorGroup::AddAgentPrivate()
 {
-	DroneAgent agent;
+
+	//This function should change to resize the m_agents once and the buffer once, because if we setCount(1000) this is gonna be really slow
+	//Now we are adding an agent, repositioning it and repositioning the buffer as well. 
+ 	DroneAgent agent;
 	agent.position = Vector3( 0, 0, 0 ); // TODO: We might want to find a 'smart' spawn location
 	agent.id = TriRandInt( 500 ); //TODO: look better into parameter, could the same ID be generate more than once?
 	m_agents.push_back( agent );
@@ -168,10 +174,6 @@ void BehaviorGroup::AddAgentPrivate()
 	for( size_t i = 0; i < m_behaviors.size(); ++i )
 	{
 		auto size = m_behaviors[i]->GetScratchMemorySize();
-		if( m_scratchData.size() <= i )
-		{
-			m_scratchData.push_back( CcpMallocBuffer() );
-		}
 		if( size > 0)
 		{
 			m_scratchData[i].resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
