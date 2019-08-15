@@ -99,6 +99,23 @@ bool EvePlaneSet::OnModified( Be::Var* val )
 
 // --------------------------------------------------------------------------------
 // Description:
+//   Allow access to change the pickbuffer ID. (this is so the SOF can set the 
+//   pickbuffers for hangar/space videos
+// --------------------------------------------------------------------------------
+void EvePlaneSet::SetPickBufferID( uint8_t pickBufferID )
+{
+	m_pickBufferID = pickBufferID;
+
+	if( m_planes.empty() )
+	{
+		return;
+	}
+
+	Rebuild();
+}
+
+// --------------------------------------------------------------------------------
+// Description:
 //   We have to free all device stuff, so release vertex declaration and free
 //   all the vertex buffer
 // --------------------------------------------------------------------------------

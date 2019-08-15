@@ -1769,22 +1769,8 @@ bool Tr2Renderer::GetSystemShaderOptions( Tr2ShaderOption** options, size_t* cou
 
 bool Tr2Renderer::GetGeometryShaderSupport()
 {
-#if defined( TRINITY_DIRECTX11 ) || defined( TRINITY_DIRECTX12 ) || defined( TRINITY_VULKAN )
-	USE_MAIN_THREAD_RENDER_CONTEXT();
-
-	// Trivial empty geometry shader
-	const uint32_t bytecode[] =
-	{
-		0x43425844, 0x5b1f31ef, 0xd1efb39f, 0xbd11db87, 0xa78bee3f, 0x00000001, 0x000000a8, 0x00000003,
-		0x0000002c, 0x00000060, 0x00000070, 0x4e475349, 0x0000002c, 0x00000001, 0x00000008, 0x00000020,
-		0x00000000, 0x00000001, 0x00000003, 0x00000000, 0x0000000f, 0x505f5653, 0x5449534f, 0x004e4f49,
-		0x3547534f, 0x00000008, 0x00000000, 0x00000008, 0x58454853, 0x00000030, 0x00020050, 0x0000000c,
-		0x0100086a, 0x05000061, 0x002010f2, 0x00000003, 0x00000000, 0x00000001, 0x0100185d, 0x0200005e,
-		0x00000001, 0x0100003e
-	};
-
-	Tr2ShaderAL shader;
-	return SUCCEEDED( shader.Create( GEOMETRY_SHADER, bytecode, Tr2ShaderSignatureAL(), renderContext ) );
+#if TRINITY_PLATFORM == TRINITY_DIRECTX11 || TRINITY_PLATFORM == TRINITY_DIRECTX12 || TRINITY_PLATFORM == TRINITY_VULKAN
+	return true;
 #else
 	return false;
 #endif

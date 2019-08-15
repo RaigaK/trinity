@@ -79,6 +79,9 @@ public:
 	// access items
 	void AddPlaneItem( EvePlaneSetItemPtr item );
 
+	// access pickBufferID
+	void SetPickBufferID( uint8_t pickBufferID );
+
 	// rebuild the interal vertexbuffers etc.
 	void Rebuild();
 

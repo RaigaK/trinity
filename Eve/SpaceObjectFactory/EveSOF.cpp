@@ -54,6 +54,7 @@
 namespace
 {
 	const float MIN_DECAL_SCREEN_SIZE = 10.f;
+	const uint8_t PICKABLE_HANGARVIEO_BUFFER_ID = 100;
 }
 
 
@@ -810,6 +811,8 @@ void EveSOF::SetupPlaneSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) co
 			case EveSOFDataHullPlaneSet::USAGE_HANGAR_VIDEO:
 				effectResPath = planeSetData->skinned ? "res:/graphics/effect/managed/space/spaceobject/fx/skinned_planehologram.fx" : "res:/graphics/effect/managed/space/spaceobject/fx/planehologram.fx";
 				imageMapResPath = "dynamic:/hangarvideos";
+				// Set the pickbuffer so we can pick the videos in the client
+				planeSet->SetPickBufferID( PICKABLE_HANGARVIEO_BUFFER_ID );
 				break;
 			}
 
