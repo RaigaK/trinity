@@ -672,6 +672,16 @@ void TriStepRenderPostProcess::ProcessFade(Tr2PPFadeEffect* fade)
 	}
 }
 
+int StringToWString(std::wstring &ws, const std::string &s)
+{
+	std::wstring wsTmp(s.begin(), s.end());
+
+	ws = wsTmp;
+
+	return 0;
+}
+
+
 void TriStepRenderPostProcess::ProcessLut(Tr2PPLutEffect* lut)
 {
 	if (lut && lut->IsActive())
@@ -688,7 +698,16 @@ void TriStepRenderPostProcess::ProcessLut(Tr2PPLutEffect* lut)
 			}
 			else
 			{
-				dynamic_cast<TriTextureParameter*>(resource)->SetResourcePath(lut->m_path.c_str());
+				const auto param = dynamic_cast<TriTextureParameter*>(resource);
+				const auto currPath = param->GetResourcePath();
+				const std::string possibleNewPathStr = lut->m_path.c_str() ;
+
+				const std::wstring possibleNewPathWstr(possibleNewPathStr.begin(), possibleNewPathStr.end());
+
+				if (currPath != possibleNewPathWstr)
+				{
+					param->SetResourcePath(lut->m_path.c_str());
+				}
 			}
 			m_tonemappingEffect->SetOption(BlueSharedString("LUT_TOGGLE"), BlueSharedString("LUT_ENABLED"));
 			m_tonemappingEffect->EndUpdate();
