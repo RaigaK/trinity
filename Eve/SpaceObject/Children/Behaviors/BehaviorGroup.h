@@ -31,9 +31,6 @@ struct DroneAgent
 	Vector3 target;
 	float lifetime;
 	int id;
-	
-	//Collision avoidance
-	//float avoidanceWeight;  
 
 	float xfade; // Crossfade between mesh and sprite. 1.0 = mesh, 0.0 = sprite
 	bool isVisible; // Don't render agents off-screen

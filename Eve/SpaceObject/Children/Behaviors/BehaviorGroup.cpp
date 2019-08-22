@@ -327,16 +327,19 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 		Vector3 test = agent->velocity - agent->acceleration;
 		
 		// only apply force if boosters are facing the correct direction
-		float angle = Dot( Normalize( Vector3( agent->acceleration ) ), Normalize( agent->target ) );
+		//float angle = Dot( Normalize( Vector3( agent->acceleration ) ), Normalize( agent->target ) );
 		
+		/*
 		if( angle > 0.7 )
 		{
 			angle = ( angle - 0.7f)*10.f / 3.f;
 			// TODO Here we can enable booster effect 
 			agent->velocity += agent->acceleration * angle;
 		}
-		
-		Vector3 temp =  agent->acceleration;
+		*/
+		agent->velocity += agent->acceleration;// *angle;
+	
+		Vector3 temp =  agent->velocity;
 		TriQuaternionRotationArc( &agent->rotation, &zAxis, &temp);
 
 		agent->velocity = ClampLength( agent->velocity, m_maxVelocity );
