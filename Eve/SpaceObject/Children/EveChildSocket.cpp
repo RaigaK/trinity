@@ -172,10 +172,22 @@ void EveChildSocket::BindParameters()
 	}
 }
 
+void EveChildSocket::Propogate()
+{
+	if ( m_plug )
+	{
+		for ( auto it = begin( m_parameters ); it != end( m_parameters ); ++it )
+		{
+			( *it )->Propagate();
+		}
+	}
+}
+
 bool EveChildSocket::Initialize()
 {
 	LoadChild();
 	BindParameters();
+	Propogate();
 
 	return true;
 }
@@ -197,6 +209,23 @@ const char* EveChildSocket::GetName() const
 void EveChildSocket::SetName( const char* name )
 {
 	m_name = BlueSharedString( name );
+}
+
+IEveSpaceObjectChildPtr EveChildSocket::GetEffectChildByName( const char* name ) const
+{
+	if ( m_plug )
+	{
+		return m_plug->GetEffectChildByName( name );
+	}
+	return nullptr;
+}
+
+void EveChildSocket::AddToEffectChildrenList( IEveSpaceObjectChild* child )
+{
+}
+
+void EveChildSocket::RemoveFromEffectChildrenList( IEveSpaceObjectChild* child )
+{
 }
 
 void EveChildSocket::UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform, Tr2Lod parentLod )
@@ -293,14 +322,55 @@ void EveChildSocket::GetLocalToWorldTransform( Matrix& transform ) const
 	transform = m_worldTransform;
 }
 
-bool EveChildSocket::IsAlwaysOn() const
+void EveChildSocket::PlayCurveSet( const std::string& name, const std::string& rangeName )
 {
 	if ( m_plug )
 	{
-		return m_plug->IsAlwaysOn();
+		m_plug->PlayCurveSet( name, rangeName );
 	}
-	return false;
-};
+}
+
+void EveChildSocket::StopCurveSet( const std::string& name )
+{
+	if ( m_plug )
+	{
+		m_plug->StopCurveSet( name );
+	}
+}
+
+void EveChildSocket::UpdateCurveSet( const std::string& name, Be::Time time )
+{
+	if ( m_plug )
+	{
+		m_plug->UpdateCurveSet( name, time );
+	}
+}
+
+float EveChildSocket::GetCurveSetDuration( const std::string& name ) const
+{
+	if ( m_plug )
+	{
+		return m_plug->GetCurveSetDuration( name );
+	}
+	return 0.f;
+}
+
+float EveChildSocket::GetRangeDuration( const std::string& name, const std::string& rangeName ) const
+{
+	if ( m_plug )
+	{
+		return m_plug->GetRangeDuration( name, rangeName );
+	}
+	return 0.f;
+}
+
+void EveChildSocket::SetShaderOption( const BlueSharedString& name, const BlueSharedString& value )
+{
+	if ( m_plug )
+	{
+		return m_plug->SetShaderOption( name, value );
+	}
+}
 
 void EveChildSocket::Setup( const Vector3* scale, const Quaternion* rotation, const Vector3* translation, Tr2Lod lowestLodVisible )
 {
@@ -389,4 +459,13 @@ bool EveChildSocket::LoadChild()
 		return false;
 	}
 	return true;
+}
+
+ITr2SoundEmitter* EveChildSocket::FindSoundEmitter( const char* name )
+{
+	if ( m_plug )
+	{
+		return m_plug->FindSoundEmitter( name );
+	}
+	return nullptr;
 }

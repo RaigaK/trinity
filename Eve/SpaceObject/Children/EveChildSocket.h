@@ -8,9 +8,13 @@
 #define EveChildSocket_H
 
 #include "IEveSpaceObjectChild.h"
+#include "IEveEffectChildrenOwner.h"
 #include "EveChildTransform.h"
 #include "Tr2DebugRenderer.h"
 #include "SocketParameters/IEveSocketParameter.h"
+#include "ITr2CurveSetOwner.h"
+#include "EveChildInheritProperties.h"
+#include "ITr2SoundEmitterOwner.h"
 
 
 BLUE_DECLARE( EveChildPlug );
@@ -20,9 +24,13 @@ BLUE_DECLARE_IVECTOR( IEveSocketParameter );
 BLUE_CLASS( EveChildSocket ) :
 	public IEveSpaceObjectChild,
 	public EveChildTransform,
+	public ITr2CurveSetOwner,
 	public IInitialize,
+	public INotify,
+	public IEveEffectChildrenOwner,
 	public ITr2DebugRenderable,
-	public INotify
+	public IShaderConfigurer,
+	public ITr2SoundEmitterOwner
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -36,6 +44,7 @@ public:
 	void Reload();
 	bool AddParameterForExternal( Tr2ExternalParameter& externalParam );
 	void BindParameters();
+	void Propogate();
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	// IInitialize
@@ -50,6 +59,12 @@ public:
 	const char* GetName() const;
 	void SetName( const char* name );
 
+	/////////////////////////////////////////////////////////////////////////////////////
+	// IEveEffectChildrenOwner
+	IEveSpaceObjectChildPtr GetEffectChildByName( const char* name ) const;
+	void AddToEffectChildrenList( IEveSpaceObjectChild* child );
+	void RemoveFromEffectChildrenList( IEveSpaceObjectChild* child );
+
 	void UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform, Tr2Lod parentLod );
 	void GetRenderables( std::vector<ITr2Renderable*>& renderables );
 	bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query = EVE_BOUNDS_NORMAL ) const;
@@ -58,12 +73,17 @@ public:
 
 	void UpdateSyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
 	void UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
-
 	void GetLocalToWorldTransform( Matrix& transform ) const;
 
-	bool IsAlwaysOn() const;
+	void SetShaderOption( const BlueSharedString& name, const BlueSharedString& value ) override;
 
 	void Setup( const Vector3* scale, const Quaternion* rotation, const Vector3* translation, Tr2Lod lowestLodVisible );
+
+	void PlayCurveSet( const std::string& name, const std::string& rangeName );
+	void StopCurveSet( const std::string& name );
+	void UpdateCurveSet( const std::string& name, Be::Time time );
+	float GetCurveSetDuration( const std::string& name ) const;
+	float GetRangeDuration( const std::string& name, const std::string& rangeName ) const;
 
 	void ChangeLOD( Tr2Lod lod );
 	void GetLights( Tr2LightManager& lightManager ) const;
@@ -78,7 +98,9 @@ public:
 	void GetDebugOptions( Tr2DebugRendererOptions& options );
 	void RenderDebugInfo( Tr2DebugRenderer& renderer );
 
-private:
+	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+
+protected:
 	bool LoadChild();
 
 	EveChildPlugPtr m_plug;

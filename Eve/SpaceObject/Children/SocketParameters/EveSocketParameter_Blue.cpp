@@ -21,7 +21,7 @@ const Be::ClassInfo* EveSocketParameterBindingBase::ExposeToBlue()
 	BLUE_DEFINE( _className );\
 	const Be::ClassInfo* _className::ExposeToBlue()\
 	{\
-		EXPOSURE_BEGIN( _className, "" )\
+		EXPOSURE_BEGIN( _className, "\n:jessica-icon: fal-paragraph\n:jessica-icon-color: (123, 28, 212)\n:jessica-help-url: https://wiki.ccpgames.com/pages/viewpage.action?spaceKey=TTL&title=Plugs+and+Sockets \n" )\
 			MAP_INTERFACE( IEveSocketParameter )\
 			MAP_ATTRIBUTE( "name", m_name, "Attribute name.", Be::READWRITE | Be::PERSIST )\
 			MAP_ATTRIBUTE( "value", m_value, _valueDescription, Be::READWRITE | Be::PERSIST )\

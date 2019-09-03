@@ -7,12 +7,13 @@
 #ifndef EveChildPlug_H
 #define EveChildPlug_H
 
+
 #include "IEveSpaceObjectChild.h"
 #include "IEveEffectChildrenOwner.h"
 #include "EveChildTransform.h"
 #include "Tr2DebugRenderer.h"
-#include "TransformModifiers/IEveChildTransformModifier.h"
 #include "ITr2CurveSetOwner.h"
+#include "EveChildInheritProperties.h"
 #include "ITr2SoundEmitterOwner.h"
 
 
@@ -23,9 +24,13 @@ BLUE_DECLARE_VECTOR( Tr2ExternalParameter );
 BLUE_CLASS( EveChildPlug ) :
 	public IEveSpaceObjectChild,
 	public EveChildTransform,
+	public ITr2CurveSetOwner,
 	public IInitialize,
+	public IListNotify,	
 	public IEveEffectChildrenOwner,
-	public ITr2DebugRenderable
+	public ITr2DebugRenderable,
+	public IShaderConfigurer,
+	public ITr2SoundEmitterOwner
 {
 public:
 	EXPOSE_TO_BLUE();
@@ -36,6 +41,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////////////////
 	// IInitialize
 	bool Initialize();
+
+	//////////////////////////////////////////////////////////////////////////////////////
+	// IListNotify
+	virtual void OnListModified( long event, ssize_t key, ssize_t key2, IRoot* value, const IList* list );
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IEveEffectChildrenOwner
@@ -51,13 +60,28 @@ public:
 	bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const;
 	void RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer );
 	void AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer ) const;
-	
+
 	void UpdateSyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
 	void UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
-	void UpdateAsyncronous( EveUpdateContext& updateContext, Matrix& parentTransform );
 	void GetLocalToWorldTransform( Matrix& transform ) const;
 
+	void SetShaderOption( const BlueSharedString& name, const BlueSharedString& value ) override;
+
 	void Setup( const Vector3* scale, const Quaternion* rotation, const Vector3* translation, Tr2Lod lowestLodVisible );
+
+	void PlayCurveSet( const std::string& name, const std::string& rangeName );
+	void StopCurveSet( const std::string& name );
+	void UpdateCurveSet( const std::string& name, Be::Time time );
+	float GetCurveSetDuration( const std::string& name ) const;
+	float GetRangeDuration( const std::string& name, const std::string& rangeName ) const;
+
+	void ChangeLOD( Tr2Lod lod );
+	void GetLights( Tr2LightManager& lightManager ) const;
+
+	void SetControllerVariable( const char* name, float value );
+	void HandleControllerEvent( const char* name );
+	void StartControllers();
+	void SetInheritProperties( const Color* colorSet );
 
 	void GetDebugOptions( Tr2DebugRendererOptions& options );
 	void RenderDebugInfo( Tr2DebugRenderer& renderer );
@@ -66,16 +90,18 @@ public:
 	void AddExternalParameter( Tr2ExternalParameter* externalParameter );
 	const PTr2ExternalParameterVector& GetExternalParameters() const;
 
-	/////////////////////////////////////////////////////////////////////////////////////
-	// IEveSpaceObjectChild
-	void ChangeLOD( Tr2Lod lod ) {};
-	void GetLights( Tr2LightManager& lightManager ) const {};
+	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
 
-	PIEveSpaceObjectChildVector m_objects;
 protected:
+	PIEveSpaceObjectChildVector m_objects;
+
 	BlueSharedString m_name;
 
+	PITr2ControllerVector m_controllers;
+	TrackableStdUnorderedMap<std::string, float> m_controllerVariables;
 	PTr2ExternalParameterVector m_externalParameters;
+	EveChildInheritPropertiesPtr m_inheritProperties;
+	Matrix m_worldTransform;
 
 	bool m_display;
 };

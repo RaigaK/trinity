@@ -11,11 +11,15 @@ BLUE_DEFINE( EveChildRef );
 
 const Be::ClassInfo* EveChildRef::ExposeToBlue()
 {
-	EXPOSURE_BEGIN( EveChildRef, "\n:jessica-icon: alicorn\n" )
+	EXPOSURE_BEGIN( EveChildRef, "\n:jessica-icon: alicorn\n:jessica-icon-color: (123, 28, 212)\n:jessica-help-url: https://wiki.ccpgames.com/pages/viewpage.action?spaceKey=TTL&title=Plugs+and+Sockets \n" )
 		MAP_INTERFACE( EveChildRef )
 		MAP_INTERFACE( IEveSpaceObjectChild )
+		MAP_INTERFACE( ITr2CurveSetOwner )
 		MAP_INTERFACE( IInitialize )
 		MAP_INTERFACE( INotify )
+		MAP_INTERFACE( IEveEffectChildrenOwner )
+		MAP_INTERFACE( IShaderConfigurer )
+		MAP_INTERFACE( ITr2SoundEmitterOwner )
 
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "resPath", m_resPath, "Path to a red file.", Be::READWRITE | Be::PERSIST | Be::NOTIFY )

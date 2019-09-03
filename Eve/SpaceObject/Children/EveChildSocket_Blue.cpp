@@ -11,11 +11,15 @@ BLUE_DEFINE( EveChildSocket );
 
 const Be::ClassInfo* EveChildSocket::ExposeToBlue()
 {
-	EXPOSURE_BEGIN( EveChildSocket, "\n:jessica-icon:blender-phone\n" )
+	EXPOSURE_BEGIN( EveChildSocket, "\n:jessica-icon:blender-phone\n:jessica-icon-color: (123, 28, 212)\n:jessica-help-url: https://wiki.ccpgames.com/pages/viewpage.action?spaceKey=TTL&title=Plugs+and+Sockets \n" )
 		MAP_INTERFACE( EveChildSocket )
 		MAP_INTERFACE( IEveSpaceObjectChild )
+		MAP_INTERFACE( ITr2CurveSetOwner )
 		MAP_INTERFACE( IInitialize )
 		MAP_INTERFACE( INotify )
+		MAP_INTERFACE( IEveEffectChildrenOwner )
+		MAP_INTERFACE( IShaderConfigurer )
+		MAP_INTERFACE( ITr2SoundEmitterOwner )
 
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "resPath", m_plugResPath, "Path to the plug (must be a red file with just an EveChildPlug).", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
