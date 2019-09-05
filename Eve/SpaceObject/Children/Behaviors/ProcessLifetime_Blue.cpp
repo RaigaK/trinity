@@ -18,14 +18,15 @@ const Be::ClassInfo* ProcessLifetime::ExposeToBlue()
 	EXPOSURE_BEGIN( ProcessLifetime, "" )
 		MAP_INTERFACE( ProcessLifetime )
 		MAP_INTERFACE( IBehavior )
-
-		MAP_ATTRIBUTE_WITH_CHOOSER( "tunnelGroupType", m_tunnelGroupType, "control when drones interact with these tunnels",
-											Be::READWRITE | Be::PERSIST | Be::ENUM, ProcessLifetimeTunnelGroupTypeChooser )
+		MAP_INTERFACE( INotify )
 
 		MAP_ATTRIBUTE( "firstAgentLifetime", m_firstAgentLifetime, "Current lifetime for first agent in the group", Be::READ )
+		MAP_ATTRIBUTE( "behaviorWeight", m_behaviorWeight, "pull force multiplier", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "returningAge", m_returningAge, "designate when agent should exit the scene", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "useEntryTunnels", m_useEntryTunnels, "should it look for and use entry_tunnels when it spawns", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "useExitTunnels", m_useExitTunnels, "should it look for and use exit_tunnels when it spawns", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "respawnAgentsOnDeath", m_respawnAgentsOnDeath, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "splineTunnels", m_splineTunnels, "", Be::READ | Be::PERSIST | Be::NOTIFY )
+
+		
 
 	EXPOSURE_END()
 }

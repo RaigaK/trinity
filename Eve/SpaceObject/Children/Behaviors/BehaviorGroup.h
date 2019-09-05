@@ -5,7 +5,7 @@
 #include "Eve/SpaceObject/Children/EveChildBehaviorSystem.h"
 #include <functional>
 #include "TriFrustum.h"
-#include "KDdroneManagementTree.h"
+#include "EveKDdroneManagementTree.h"
 
 #include "DroneAgent.h"
 
@@ -63,6 +63,7 @@ public:
 	void CreateAgentTree();
 	void SetMeshToggle( bool toggle );
 	void RemoveAgent();
+	Vector3 RemoveSpecificAgent(int index);
 	void SetCount( int count );
 	float AllTheSame();
 	int GetGroupIndexIndicator() const;
@@ -89,7 +90,6 @@ public:
 private:
 	void ToggleMesh();
 	void AddAgentPrivate();
-	Vector3 RemoveAgentPrivate();
 
 	BlueSharedString m_behaviorGroupName; 	// name to identify group
 	int m_count; // Number of agents
@@ -140,7 +140,7 @@ private:
 	float m_boundingSphereRadius;
 
 	// Spatial partitioning manager/tree
-	KDdroneManagementTreePtr m_tree;
+	EveKDdroneManagementTreePtr m_tree;
 
 	Vector3 m_TEMPDEBUGVECTORTOFINDCLOSEDRONES;
 

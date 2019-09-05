@@ -14,8 +14,8 @@ public:
 	}
 
 	// This function should apply a force to the acceleration and return an array with pos and force vector for each agent
-	virtual std::vector<Vector3> CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
-	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system,  std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius ) = 0;
+	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius) = 0;
 	
 	virtual void RenderDebugInfo( Tr2DebugRenderer& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation ) = 0;
 	

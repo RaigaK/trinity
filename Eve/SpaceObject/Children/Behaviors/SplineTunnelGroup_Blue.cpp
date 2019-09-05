@@ -31,7 +31,7 @@ const Be::ClassInfo* SplineTunnelGroup::ExposeToBlue()
 		MAP_ATTRIBUTE( "entrancePullSize", m_entrancePullSize, "", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "entrySize", m_entrySize, "", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 
-		MAP_METHOD_AND_WRAP("createSplineTunnels", createSplineTunnels,
+		MAP_METHOD_AND_WRAP("createSplineTunnels", CreateSplineTunnels,
 		                    "recreate all tunnels \n:jessica-placement: TOOLBAR\n:jessica-icon: far-bomb\n")
 
 	EXPOSURE_END()

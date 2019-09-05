@@ -16,8 +16,8 @@ Allign::~Allign()
 }
 
 
-std::vector<Vector3> Allign::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
-													BehaviorGroup& group, EveChildBehaviorSystem& system, std::vector < std::vector<DroneAgent*>>& dronesInSearchRadius )
+std::vector<Vector3> Allign::CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+                                               BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius)
 {
 	std::vector<Vector3> returnForces;
 	int c = 0;
@@ -42,11 +42,17 @@ std::vector<Vector3> Allign::CalculateBehavior( std::vector<DroneAgent>& agents,
 				groupDirection += ( *a )->acceleration;
 			}
 
-			groupDirection /= static_cast< float >( dronesInSearchRadius[ c ].size() );
-
 			Vector3 pullVector = Normalize( groupDirection ) * m_behaviorWeight;
-			agent->acceleration += pullVector;
-			m_lastPullForces.push_back( pullVector );
+
+			if( LengthSq( pullVector ) > 0 )
+			{
+				agent->acceleration += pullVector;
+				m_lastPullForces.push_back( pullVector );
+			}
+			else
+			{
+				m_lastPullForces.push_back( Vector3(0,0,0 ) );
+			}
 
 			if ( group.m_collectForces )
 			{
@@ -65,9 +71,14 @@ std::vector<Vector3> Allign::CalculateBehavior( std::vector<DroneAgent>& agents,
 
 		for ( auto agent = agents.begin(); agent != agents.end(); ++agent, c++ )
 		{
-			agent->acceleration += m_lastPullForces[c];
+			if ( c >= m_lastPullForces.size() )
+			{
+				break;
+			}
 
-			if ( group.m_collectForces )
+			agent->acceleration += m_lastPullForces[ c ];
+
+			if ( group.m_collectForces && m_lastPullForces[ c ] != Vector3( 0, 0, 0 ) )
 			{
 				Vector3 forceOffset = Normalize( m_lastPullForces[ c ] ) * group.GetBoundingSphereRadius();
 				returnForces.push_back( agent->position + forceOffset );

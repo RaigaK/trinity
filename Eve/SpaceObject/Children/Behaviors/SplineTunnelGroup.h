@@ -40,11 +40,11 @@ struct SplineTunnel
 		pointOfNoReturnSize( 20 ),
 		cylWidth( 20 ),
 		tunnelID( -1 ),
-		tunnelGroupID( 0 )
+		tunnelGroupType( 0 )
 	{}
 
 	int tunnelID;
-	int tunnelGroupID;
+	int tunnelGroupType;
 	std::vector<SplineTunnelPoint> splinePoints;
 	float cylWidth;
 	float accelerationMultiplier;
@@ -62,13 +62,22 @@ BLUE_CLASS( SplineTunnelGroup ) :
 {
 public:
 	EXPOSE_TO_BLUE();
+
+	enum TunnelGroupType
+	{
+		EXIT_TUNNELS = 0,
+		ENTRANCE_TUNNELS = 1,
+		OTHER_TUNNELS = 2,
+	};
+
 	SplineTunnelGroup( IRoot* lockobj = nullptr );
 	~SplineTunnelGroup();
-	void SetSystemTunnelFunctionReference(const std::function<void()>& F);
+	TunnelGroupType GetTunnelGroupType() const;
+	void SetSystemTunnelFunctionReferenceAndColor(const std::function<void()>& F, uint32_t color );
 
 	// This ( SplineTunnelGroup | special functions )
-	void createSplineTunnels();
-	std::vector<SplineTunnel> GetTunnels() const;
+	void CreateSplineTunnels();
+	std::vector<SplineTunnel>* GetTunnels();
 	void SetNumBreakPoints(int val);
 	int GetNumBreakPoints() const;
 
@@ -78,16 +87,11 @@ public:
 	virtual void RenderDebugInfo( Tr2DebugRenderer& renderer, Matrix& parentWorldLocation );
 
 	// IInitialize
-	bool Initialize();
+	static bool Initialize();
 	void OnListModified(long event, ssize_t key, ssize_t key2, IRoot* value, const IList* theList);
 	bool OnModified( Be::Var* value );
 
-	enum TunnelGroupType
-	{
-		EXIT_TUNNELS = 0,
-		ENTRANCE_TUNNELS = 1,
-		OTHER_TUNNELS = 2,
-	};
+	
 
 private:
 
@@ -99,6 +103,7 @@ private:
 	float m_tunnelWidth;
 	float m_entrancePullSize;
 	float m_entrySize;
+	uint32_t m_debugColor;
 
 }; 
 

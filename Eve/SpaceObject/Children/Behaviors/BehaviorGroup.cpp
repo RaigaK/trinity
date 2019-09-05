@@ -1,4 +1,3 @@
-
 #include "StdAfx.h"
 #include "BehaviorGroup.h"
 #include "include/TriMath.h"
@@ -7,6 +6,8 @@
 #include "Eve/SpaceObject/Children/TransformModifiers/EveChildModifierTransformCommon.h" 
 #include "Resources/TriGeometryRes.h"
 
+//temp
+//#include "float.h"
 
 BehaviorGroup::BehaviorGroup( IRoot* lockobj ) :
 	PARENTLOCK( m_behaviors ),
@@ -56,32 +57,34 @@ void BehaviorGroup::OnListModified(
 	{
 		switch( event & BELIST_EVENTMASK )
 		{
-		case BELIST_INSERTED:
-		{
-			m_scratchData.insert( m_scratchData.begin() + key, CcpMallocBuffer() );
-			if( !m_agents.empty() )
+			case BELIST_INSERTED:
 			{
-				auto size = m_behaviors[key]->GetScratchMemorySize();
-				auto& scratchData = m_scratchData[key];
-				scratchData.resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
-				for( size_t i = 0; i < m_agents.size(); ++i )
+				m_scratchData.insert( m_scratchData.begin() + key, CcpMallocBuffer() );
+				if( !m_agents.empty() )
 				{
-					m_behaviors[key]->InitializeScratch( m_agents[i], scratchData.get() + size * i );
+					auto size = m_behaviors[key]->GetScratchMemorySize();
+					auto& scratchData = m_scratchData[key];
+					scratchData.resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
+					for( size_t i = 0; i < m_agents.size(); ++i )
+					{
+						m_behaviors[key]->InitializeScratch( m_agents[i], scratchData.get() + size * i );
+					}
 				}
+				CreateAgentTree();
+				break;
 			}
-			break;
-		}
-		case BELIST_REMOVED:
-			m_scratchData.erase( m_scratchData.begin() + key );
-			break;
-		case BELIST_SWAPPED:
-			std::swap( m_scratchData[key], m_scratchData[key2] );
-			break;
-		case BELIST_UNLOADSTART:
-			m_scratchData.clear();
-			break;
-		default:
-			break;
+			case BELIST_REMOVED:
+				m_scratchData.erase( m_scratchData.begin() + key );
+				CreateAgentTree();
+				break;
+			case BELIST_SWAPPED:
+				std::swap( m_scratchData[key], m_scratchData[key2] );
+				break;
+			case BELIST_UNLOADSTART:
+				m_scratchData.clear();
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -132,7 +135,7 @@ void BehaviorGroup::CreateAgentTree()
 	{
 		return;
 	}
-	m_tree->CreateTree( m_agents );
+	m_tree->CreateTree( m_agents, m_behaviors.size());
 }
 
 // For Artists when they are creating the sprite to easily swap between mesh's
@@ -231,7 +234,7 @@ void BehaviorGroup::SetCount( int count )
 		int difference = m_count - count;
 		for ( int i = 0; i < difference; i++ )
 		{
-			RemoveAgentPrivate();
+			RemoveSpecificAgent( TriRandInt( m_count ) );
 		}
 	}
 
@@ -260,10 +263,10 @@ float BehaviorGroup::AllTheSame()
 	return same;
 }
 
+// The function without arguments to be called from the UI
 void BehaviorGroup::RemoveAgent()
 {
-	// The function without arguments to be called from the UI
-	RemoveAgentPrivate();
+	RemoveSpecificAgent( TriRandInt( m_count ) );
 
 	if ( m_changeBufferVertexCount )
 	{
@@ -273,16 +276,15 @@ void BehaviorGroup::RemoveAgent()
 }
 
 // returns a vector so we can do something with the location. explosion etc
-Vector3 BehaviorGroup::RemoveAgentPrivate()
+Vector3 BehaviorGroup::RemoveSpecificAgent( int index )
 {
 	if ( m_agents.empty() )
 	{
 		return Vector3( 0, 0, 0 );
 	}
 
-	int randDrone = TriRandInt( m_count );
-	DroneAgent v = m_agents[randDrone];
-	m_agents[randDrone] = m_agents.back();
+	Vector3 pos = m_agents[ index ].position;
+	m_agents[ index ] = m_agents.back();
 	m_agents.pop_back();
 
 	for( size_t i = 0; i < m_behaviors.size(); ++i )
@@ -293,13 +295,13 @@ Vector3 BehaviorGroup::RemoveAgentPrivate()
 			continue;
 		}
 
-		memcpy( m_scratchData[i].get() + size * randDrone, m_scratchData[i].get() + size * m_agents.size(), size );
+		memcpy( m_scratchData[i].get() + size * index, m_scratchData[i].get() + size * m_agents.size(), size );
 		m_scratchData[i].resize( "BehaviorGroup::m_scratchData", m_agents.size() * size );
 	}
 
 	m_count--;
 
-	return v.position;
+	return pos;
 }
 
 void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system )
@@ -325,7 +327,7 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 		}
 	}
 
-	std::vector < std::vector<std::vector<DroneAgent*>>> dronesInRange = m_tree->FindDronesInRange( m_agents, ranges, m_boundingSphereRadius );
+	const std::vector < std::vector<std::vector<DroneAgent*>>>* dronesInRange = m_tree->FindDronesInRange( m_agents, ranges, m_boundingSphereRadius );
 	int groupIndex = 0;
 
 	//Calculate the behaviors
@@ -337,7 +339,7 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 		for ( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior, scratch++ )
 		{
 			
-			std::vector<Vector3> forces = ( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system, dronesInRange[groupIndex] );
+			std::vector<Vector3> forces = ( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system, (*dronesInRange)[groupIndex]);
 			groupIndex++;
 			for ( auto force = forces.begin(); force != forces.end(); ++force )
 			{
@@ -350,7 +352,14 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 		auto scratch = m_scratchData.begin();
 		for( auto behavior = m_behaviors.begin(); behavior != m_behaviors.end(); ++behavior, scratch++ )
 		{
-			( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system, dronesInRange[ groupIndex ] );
+			( *behavior )->CalculateBehavior( m_agents, scratch->get(), dt, *this, system, (*dronesInRange)[ groupIndex ]);
+
+			// XXX TEMP DEBUG XXX breaks Mac build but is good to catch unchecked behaviors
+			/*if ( _isnan( m_agents[0].acceleration[ 0 ] ) )
+			{
+				m_agents[ 0 ].velocity += Vector3( 0, 0, 0 );
+			}*/
+
 			groupIndex++;
 		}
 	}
@@ -374,6 +383,7 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 		//} 
 		// Vector3 facingDir =  agent->acceleration;
 
+		
 		agent->velocity += agent->acceleration;
 		Vector3 facingDir = agent->velocity;
 		TriQuaternionRotationArc( &agent->rotation, &zAxis, &facingDir );
@@ -394,7 +404,7 @@ void BehaviorGroup::UpdateVisibility( const TriFrustum & frustum, const Matrix &
 		if( frustum.IsSphereVisible( agent->position, m_boundingSphereRadius ) )
 		{
 			float pixelSize = frustum.GetPixelSizeAccross( agent->position, m_boundingSphereRadius );
-			agent->screenSize = pixelSize; // Store the screen size for each agent
+			agent->screenSize = pixelSize * m_scale[0]; // Store the screen size for each agent
 
 			if( pixelSize >= m_blendScreenSizeMax )
 			{
@@ -605,7 +615,7 @@ void BehaviorGroup::RenderDebugInfo( Tr2DebugRenderer& renderer, Matrix& parentW
 
 	if( m_TEMPDEBUGVECTORTOFINDCLOSEDRONES != Vector3(0,0,0)) // TODO remove, gona leave it here for a while to debug interaction with BHgroups
 	{
-		DroneAgent* p = m_tree->findClosestAgent( m_TEMPDEBUGVECTORTOFINDCLOSEDRONES );
+		DroneAgent* p = m_tree->FindClosestAgent( m_TEMPDEBUGVECTORTOFINDCLOSEDRONES );
 		if( p != nullptr )
 			renderer.DrawSphere( this, TranslationMatrix( ( p->position ) ) * parentWorldLocation,
 													72, 6, Tr2DebugRenderer::Wireframe, 0xffcc11ff );

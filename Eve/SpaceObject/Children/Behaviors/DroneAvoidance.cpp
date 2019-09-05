@@ -16,8 +16,8 @@ DroneAvoidance::~DroneAvoidance()
 }
 
 
-std::vector<Vector3> DroneAvoidance::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
-	BehaviorGroup& group, EveChildBehaviorSystem& system, std::vector < std::vector<DroneAgent*>>& dronesInSearchRadius )
+std::vector<Vector3> DroneAvoidance::CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+                                                       BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius)
 {
 	std::vector<Vector3> returnForces;
 	int c = 0;
@@ -38,26 +38,39 @@ std::vector<Vector3> DroneAvoidance::CalculateBehavior( std::vector<DroneAgent>&
 				continue;
 			}
 
-			Vector3 avoidanceDirection = Vector3( 0, 0, 0 );
+			Vector3 avoidanceDirection = Vector3( 0.1, 0.1, 0.1 );
+
 			for ( auto a = dronesInSearchRadius[ c ].begin(); a != dronesInSearchRadius[ c ].end(); ++a )
 			{
 				if ( ( *a )->id == agent->id )
 				{
 					continue;
 				}
+				
 				avoidanceDirection += agent->position - ( *a )->position;
 			}
 
-
-			avoidanceDirection /= static_cast< float >( dronesInSearchRadius[ c ].size() );
+			if ( avoidanceDirection == Vector3( 0, 0, 0 ) )
+			{
+				m_lastPullForces.push_back( Vector3( 0, 0, 0 ) );
+				continue;
+			}
 
 			Vector3 pullVector = Normalize( avoidanceDirection ) * m_behaviorWeight;
-			agent->acceleration += pullVector;
-			m_lastPullForces.push_back( pullVector );
+
+			if ( LengthSq( pullVector ) > 0 )
+			{
+				agent->acceleration += pullVector;
+				m_lastPullForces.push_back( pullVector );
+			}
+			else
+			{
+				m_lastPullForces.push_back( Vector3( 0, 0, 0 ) );
+			}
 
 			if ( group.m_collectForces )
 			{
-				Vector3 forceOffset = Normalize( pullVector ) * group.GetBoundingSphereRadius();
+				Vector3 forceOffset = Normalize( avoidanceDirection ) * group.GetBoundingSphereRadius();
 				returnForces.push_back( agent->position + forceOffset );
 				returnForces.push_back( pullVector );
 			}
@@ -72,9 +85,14 @@ std::vector<Vector3> DroneAvoidance::CalculateBehavior( std::vector<DroneAgent>&
 
 		for ( auto agent = agents.begin(); agent != agents.end(); ++agent, c++ )
 		{
+			if ( c >= m_lastPullForces.size() )
+			{
+				break;
+			}
+
 			agent->acceleration += m_lastPullForces[ c ];
 
-			if ( group.m_collectForces )
+			if ( group.m_collectForces && m_lastPullForces[ c ] != Vector3(0,0,0))
 			{
 				Vector3 forceOffset = Normalize( m_lastPullForces[ c ] ) * group.GetBoundingSphereRadius();
 				returnForces.push_back( agent->position + forceOffset );

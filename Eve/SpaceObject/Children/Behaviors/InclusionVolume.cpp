@@ -15,8 +15,8 @@ InclusionVolume::~InclusionVolume()
 }
 
 
-std::vector<Vector3> InclusionVolume::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
-	BehaviorGroup& group, EveChildBehaviorSystem& system, std::vector < std::vector<DroneAgent*>>& dronesInSearchRadius )
+std::vector<Vector3> InclusionVolume::CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+                                                        BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius)
 {
 	std::vector<Vector3> returnForces;
 	for ( auto agent = agents.begin(); agent != agents.end(); ++agent)

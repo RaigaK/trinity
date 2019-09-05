@@ -68,7 +68,7 @@ public:
 	void GetLights( Tr2LightManager& lightManager ) const;
 
 	void ChangeBufferVertexCount();
-	std::vector<SplineTunnel> GetTunnels() const;
+	const std::vector<SplineTunnel>* GetTunnels() const;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2InstanceData

@@ -173,21 +173,21 @@ void EveChildBehaviorSystem::OnListModified( long event, ssize_t key, ssize_t ke
 			if (SplineTunnelGroupPtr handler = BlueCastPtr( value ))
 			{
 				std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
-				handler->SetSystemTunnelFunctionReference( f );
+				handler->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 			}
 			break;
 		case BELIST_REMOVED:
 			if (SplineTunnelGroupPtr handler = BlueCastPtr( value ))
 			{
 				std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
-				handler->SetSystemTunnelFunctionReference( f );
+				handler->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 			}
 			break;
 		case BELIST_LOADFINISHED:
 			if (SplineTunnelGroupPtr handler = BlueCastPtr( value ))
 			{
 				std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
-				handler->SetSystemTunnelFunctionReference( f );
+				handler->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 			}
 			else m_needToPassInTunnelFunction = true; //this is for when this file is loaded but the groups have yet to be loaded
 			break;
@@ -283,7 +283,7 @@ void EveChildBehaviorSystem::PassInTunnelFunctionsToBehaviorGroups()
 	for (auto it = begin( m_splineTunnels ); it != end( m_splineTunnels ); ++it)
 	{
 		std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
-		(*it)->SetSystemTunnelFunctionReference( f );
+		(*it)->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 	}
 	m_needToPassInTunnelFunction = false;
 }
@@ -577,9 +577,9 @@ void EveChildBehaviorSystem::RenderDebugInfo( Tr2DebugRenderer& renderer )
 	}
 }
 
-std::vector<SplineTunnel> EveChildBehaviorSystem::GetTunnels() const
+const std::vector<SplineTunnel>* EveChildBehaviorSystem::GetTunnels() const
 {
-	return m_tunnels;
+	return &m_tunnels;
 }
 
 void EveChildBehaviorSystem::UpdateTunnelRegistry()
@@ -589,12 +589,17 @@ void EveChildBehaviorSystem::UpdateTunnelRegistry()
 	for (auto it = begin( m_splineTunnels ); it != end( m_splineTunnels ); ++it)
 	{
 		auto group = (*it)->GetTunnels();
-		for (auto tunnel = begin( group ); tunnel != end( group ); ++tunnel)
+		for (auto tunnel = begin( *group ); tunnel != end( *group ); ++tunnel)
 		{
 			(*tunnel).tunnelID = id;
 			id++;
 			m_tunnels.push_back(*tunnel);
 		}
+	}
+
+	for ( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
+	{
+		( *it )->InitializeGeometryResource();
 	}
 }
 

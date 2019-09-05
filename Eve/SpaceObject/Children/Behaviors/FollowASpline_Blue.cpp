@@ -20,6 +20,7 @@ const Be::ClassInfo* FollowASpline::ExposeToBlue()
 	EXPOSURE_BEGIN( FollowASpline, "" )
 		MAP_INTERFACE( FollowASpline )
 		MAP_INTERFACE( IBehavior )
+		MAP_INTERFACE( INotify )
 
 		MAP_ATTRIBUTE_WITH_CHOOSER( "tunnelGroupType", m_tunnelGroupType, "designate what TunnelGroup this behavior Should Look for",
 			Be::READWRITE | Be::PERSIST | Be::ENUM, FollowASplineTunnelGroupTypeChooser )
@@ -28,6 +29,11 @@ const Be::ClassInfo* FollowASpline::ExposeToBlue()
 		MAP_ATTRIBUTE( "smoothPullFactor", m_smoothPullFactor, "0: pull-to-start point is the same everywhere, 1: pulling force grows the closer you get to the entrance, [0-1] a blend (this var is heavily affected by behavior weight) ", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "cornerSmoothener", m_cornerSmoothener, "The lower this one is the more it factors the next splinePoint, looks more natural when lower but is more reliable for complex tunnels (and sharp turns)", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "splineTunnels", m_splineTunnels, "", Be::READ | Be::PERSIST )
+
+		MAP_METHOD_AND_WRAP( "remapTunnels", UpdateTunnelRegistry,
+			"if you added system tunnels after this behavior you need to recalibrate with this \n:jessica-placement: TOOLBAR\n:jessica-icon: far-bomb\n" )
+
+		
 
 	EXPOSURE_END()
 }

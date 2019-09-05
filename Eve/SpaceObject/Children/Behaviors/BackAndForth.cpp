@@ -27,8 +27,8 @@ void BackAndForth::InitializeScratch( const DroneAgent& drone, void* scratchMemo
 	*static_cast<BackAndForthData*>( scratchMemory ) = BackAndForthData();
 }
 
-std::vector<Vector3> BackAndForth::CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
-														BehaviorGroup& group, EveChildBehaviorSystem& system, std::vector < std::vector<DroneAgent*>>& dronesInSearchRadius )
+std::vector<Vector3> BackAndForth::CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
+                                                     BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius)
 {	
 	auto data = static_cast<BackAndForthData*>( scratchData );
 
