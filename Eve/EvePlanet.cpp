@@ -15,7 +15,8 @@ const float FOV_MIN = 0.65f;
 extern float g_eveSpaceSceneMediumDetailThreshold;
 extern float g_eveSpaceSceneVisibilityThreshold;
 
-EvePlanet::EvePlanet( IRoot* lockobj ) :  
+EvePlanet::EvePlanet( IRoot* lockobj ) :
+	EveEffectRoot2( lockobj ),
 	m_update( true ),
 	m_renderScale( SCALE ),
 	m_estimatedPixelDiameter( 0.f ),

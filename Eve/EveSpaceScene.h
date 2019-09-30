@@ -66,6 +66,8 @@ BLUE_DECLARE( Tr2ImpostorManager );
 BLUE_DECLARE( Tr2DebugRenderer );
 BLUE_DECLARE( EveEffectRoot2 );
 BLUE_DECLARE( Tr2ReflectionProbe );
+BLUE_DECLARE( EvePlanet );
+BLUE_DECLARE_VECTOR( EvePlanet );
 
 enum TAASampling { TAA_NONE=0, TAA_RANDOM=1, TAA_2X=2, TAA_3X=3, TAA_4X=4 };
 
