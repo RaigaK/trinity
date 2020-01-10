@@ -398,12 +398,10 @@ bool EveTurretFiringFX::Update( EveUpdateContext& updateContext )
 	// check all stretch effects and see if we have to start them
 	for( unsigned int i = 0; i < m_stretch.size(); ++i )
 	{
-		if( !m_perMuzzleData[i].started )
+		if( m_perMuzzleData[i].started )
 		{
-			continue;
+			m_perMuzzleData[i].elapsedTime += deltaT;
 		}
-
-		m_perMuzzleData[i].elapsedTime += deltaT;
 
 		if( m_perMuzzleData[i].elapsedTime < m_firingDuration || m_isLoopFiring )
 		{
