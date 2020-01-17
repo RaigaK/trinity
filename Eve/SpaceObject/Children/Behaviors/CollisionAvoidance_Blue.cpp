@@ -9,6 +9,7 @@ const Be::ClassInfo* CollisionAvoidance::ExposeToBlue()
 		MAP_INTERFACE( CollisionAvoidance )
 		MAP_INTERFACE( IBehavior )
 
+		MAP_ATTRIBUTE( "exclusionVolumes", m_exclusionVolumes, "", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "avoidanceScalar", m_collisionAvoidanceScalar, ":jessica-group: Inertia", Be::READWRITE | Be::PERSIST )
 
 	EXPOSURE_END()

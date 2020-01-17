@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Tr2DebugRenderer.h"
-#include "Eve/Volume/IEveVolume.h"
 #include "Eve/SpaceObject/Children/EveChildBehaviorSystem.h"
 #include <functional>
 #include "TriFrustum.h"
@@ -17,8 +16,6 @@ BLUE_DECLARE( Tr2Mesh );
 BLUE_DECLARE( TriGeometryRes );
 BLUE_DECLARE_INTERFACE( IBehavior );
 BLUE_DECLARE_IVECTOR( IBehavior );
-BLUE_DECLARE_INTERFACE( IEveVolume );
-BLUE_DECLARE_IVECTOR( IEveVolume );
 BLUE_DECLARE( KDdroneManagementTree );
 
 BLUE_CLASS( BehaviorGroup ) :
@@ -88,8 +85,6 @@ public:
 	float m_estimatedPixelDiameter;
 	bool m_collectForces; // Bool toggle to skip bunch of calculations when debug is not being used
 
-	PIEveVolumeVector m_exclusionVolumes;
-
 private:
 	void ToggleMesh();
 	void AddAgentPrivate();
@@ -107,7 +102,6 @@ private:
 	unsigned int m_cachedVD; // A cached Vertex Declaration to detect change
 	unsigned int m_cachedSVD; // A cached Vertex Declaration for the sprite to detect change
 	BlueSharedString m_name; // A string so you can find the thing by name
-	PIEveVolumeVector m_volumes; // Probably moved soon to the behavior system since this is a global thing for all groups
 	PIBehaviorVector m_behaviors; // AI systems for the AgentGroup
 	std::vector<int> m_sortedBehaviorIndexes; // A sorted list by processPriority
 	std::vector<DroneAgent> m_agents; // The agents

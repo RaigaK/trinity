@@ -11,8 +11,6 @@
 
 BehaviorGroup::BehaviorGroup( IRoot* lockobj ) :
 	PARENTLOCK( m_behaviors ),
-	PARENTLOCK( m_volumes ),
-	PARENTLOCK( m_exclusionVolumes ),
 	m_vertexDeclarationHandle( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
 	m_count( 0 ),
 	m_display( true ),
@@ -649,14 +647,6 @@ void BehaviorGroup::RenderDebugInfo( ITr2DebugRenderer2& renderer, Matrix& paren
 		}
 	}
 
-	if ( renderer.HasOption( this, "Volumes" ) )
-	{
-		for ( auto volume = m_volumes.begin(); volume != m_volumes.end(); ++volume )
-		{
-			( *volume )->RenderDebugInfo( renderer, parentWorldLocation );
-		}
-	}
-
 	if( m_TEMPDEBUGVECTORTOFINDCLOSEDRONES != Vector3(0,0,0)) // TODO remove, gona leave it here for a while to debug interaction with BHgroups
 	{
 		renderer.DrawSphere( this, TranslationMatrix( m_TEMPDEBUGVECTORTOFINDCLOSEDRONES ) * parentWorldLocation,
@@ -666,14 +656,6 @@ void BehaviorGroup::RenderDebugInfo( ITr2DebugRenderer2& renderer, Matrix& paren
 		if( p != nullptr )
 			renderer.DrawSphere( this, TranslationMatrix( ( p->position ) ) * parentWorldLocation,
 													72, 6, Tr2DebugRenderer::Wireframe, 0xffcc11ff );
-	}
-
-	if ( renderer.HasOption( this, "ExclusionVolumes" ) )
-	{
-		for ( auto volume = m_exclusionVolumes.begin(); volume != m_exclusionVolumes.end(); ++volume )
-		{
-			(*volume)->RenderDebugInfo( renderer, parentWorldLocation );
-		}
 	}
 
 	if (renderer.HasOption( this, "Bounding Sphere" ))
