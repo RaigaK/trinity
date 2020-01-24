@@ -108,12 +108,12 @@ void PlayFX::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAge
 {
 }
 
-void PlayFX::Update( EveUpdateContext& updateContext, BehaviorGroup& group )
+void PlayFX::Update( EveUpdateContext& updateContext, const TriFrustum & frustum, const Matrix & parentTransform )
 {
 	for( auto fx = m_firingEffects.begin(); fx != m_firingEffects.end(); ++fx )
 	{
 		( *fx )->Update( updateContext );
-		( *fx )->UpdateVisibility( group.m_frustum, group.m_parentTransform );
+		( *fx )->UpdateVisibility( frustum, parentTransform );
 	}
 }
 

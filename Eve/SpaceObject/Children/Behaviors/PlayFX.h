@@ -42,7 +42,8 @@ public:
 	int GetProcessPriority();
 
 	void GetRenderables( std::vector<ITr2Renderable*>& renderables );
-	void Update( EveUpdateContext& updateContext, BehaviorGroup& group );
+	void Update( EveUpdateContext& updateContext, const TriFrustum & frustum, const Matrix & parentTransform );
+
 
 	void UpdateState( bool state ) { m_stop = state; }
 

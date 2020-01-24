@@ -21,42 +21,28 @@ public:
 		PROCESS_LAST = 4,	// things that should have more priority than direct control (ships pushing each other away, wind, or similar effects)
 	};
 
-	virtual size_t GetScratchMemorySize() const // per-agent
-	{
-		return 0;
-	}
+	virtual size_t GetScratchMemorySize() const { return 0; }
 
-	virtual void InitializeScratch( const DroneAgent& drone, void* scratchMemory )
-	{
-	}
+	virtual void InitializeScratch( const DroneAgent& drone, void* scratchMemory ) {}
 
-	virtual int GetProcessPriority()
-	{
-		return PROCESS_FIRST;
-	}
+	virtual int GetProcessPriority() { return PROCESS_FIRST; }
 
-	virtual std::string GetBehaviorName()
-	{
-		return "unnamed";
-	}
+	virtual std::string GetBehaviorName() { return "unnamed"; }
 
-	virtual void Reset(){}
+	// Used in Formation
+	virtual void Reset() {}
 
 	// This function should apply a force to the acceleration and return an array with pos and force vector for each agent
 	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
 	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius) = 0;
 	
-	virtual void RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation ) = 0;
+	virtual void RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation ) { }
 	
 	// this is for Groups to do all range detections at the same time. ( return -1 if you don't care about other agents ) 
 	// this function could utilize deltaTime but it's probably a good thing that it updates less frequently when the system is tanking
-	virtual float GetBehaviorSearchRadius()
-	{
-		return -1;
-	}
-
-	virtual void GetRenderables( std::vector<ITr2Renderable*>& renderables ) {}
-	virtual void Update( EveUpdateContext& updateContext, BehaviorGroup& group ) {}
+	virtual float GetBehaviorSearchRadius() { return -1; }
+	
+	// Can be used in behaviors to set state of another behavior, e.g. set to active/inactive or behaviorWeight
 	virtual void UpdateState( bool state ) {}
 };
 

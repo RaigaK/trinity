@@ -5,6 +5,7 @@
 #include "Tr2InstancedMesh.h"
 #include "Eve/SpaceObject/Children/TransformModifiers/EveChildModifierTransformCommon.h" 
 #include "Resources/TriGeometryRes.h"
+#include "PlayFX.h"
 
 BehaviorGroup::BehaviorGroup( IRoot* lockobj ) :
 	PARENTLOCK( m_behaviors ),
@@ -606,17 +607,29 @@ void BehaviorGroup::CreateVertexDeclaration()
 
 void BehaviorGroup::GetRenderables( std::vector<ITr2Renderable*>& renderables )
 {
-	for( auto it = begin( m_behaviors ); it != end( m_behaviors ); ++it )
+	auto behavior = GetBehaviorByName( "PlayFX" );
+
+	if( behavior != nullptr )
 	{
-		( *it )->GetRenderables( renderables );
+		auto tmp = dynamic_cast<PlayFX*>( behavior );
+		if( tmp )
+		{
+			tmp->GetRenderables( renderables );
+		}
 	}
 }
 
 void BehaviorGroup::Update( EveUpdateContext& updateContext )
 {
-	for( auto it = begin( m_behaviors ); it != end( m_behaviors ); ++it )
+	auto behavior = GetBehaviorByName( "PlayFX" );
+
+	if( behavior != nullptr )
 	{
-		( *it )->Update( updateContext, ( *this ) );
+		auto tmp = dynamic_cast<PlayFX*>( behavior );
+		if( tmp )
+		{
+			tmp->Update( updateContext, m_frustum, m_parentTransform );
+		}
 	}
 }
 
