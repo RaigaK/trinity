@@ -101,6 +101,7 @@ EveChildLineSet::EveChildLineSet( IRoot* lockobj ) :
 	m_circleDistort( 1, 0, 1, 0 ),
 	m_objectScale( 1, 1, 1 ),
 	m_numSegments( 64 ),
+	m_exposedNumSegments( 64 ),
 	m_completeness( 1 ),
 	m_baseColor( 1, 1, 1,1 ),
 	m_animColor( 0, 0, 0,1 ),
@@ -111,6 +112,7 @@ EveChildLineSet::EveChildLineSet( IRoot* lockobj ) :
 	m_point2( 0, 0, 0 ),
 	m_bezierPoint(0, 0, 0 ),
 	m_curveSegments( 24 ),
+	m_exposedCurveSegments( 24 ),
 	m_type( LINE_RENDER ),
 	m_objType( CIRCLE ),
 	m_additiveBatch( false )
@@ -145,15 +147,15 @@ bool EveChildLineSet::OnModified( Be::Var* value )
 		m_completeness = min( 2.f, max( 0.f, m_completeness ) );
 	}
 
-	if( IsMatch( value, m_numSegments ) )
+	if( IsMatch( value, m_exposedNumSegments ) )
 	{
-		m_numSegments = min( max( 1, m_numSegments ), 256 );
+		m_numSegments = min( max( 1, int( m_exposedNumSegments + 0.5f ) ), 256 );
 		// 256: enough for each 1/4th circle segment to have up to 64 segments each as a "smoothness limit" for our artists
 	}
 
-	if( IsMatch( value, m_curveSegments ) )
+	if( IsMatch( value, m_exposedCurveSegments ) )
 	{
-		m_curveSegments = min( max( 1, m_curveSegments ), 128 );
+		m_curveSegments = min( max( 1, int( m_exposedCurveSegments + 0.5f ) ), 128 );
 		// 128: enough for each arc segment to have up to 64 segments each as a "smoothness limit" for our artists
 	}
 
@@ -435,8 +437,18 @@ void EveChildLineSet::UpdateBuffer( Tr2RenderContext& renderContext )
 		}
 		else
 		{
+			Vector3 dirToNextPoint( 0.f, 1.f, 0.f );
 			int nextPoint = ( i + 1 ) % int(m_managedPoints.size());
-			const Vector3 dirToNextPoint = m_managedPoints[nextPoint] - m_managedPoints[i];
+			
+			if ( nextPoint == 0 )
+			{
+				dirToNextPoint = m_managedPoints[i] - m_managedPoints[i-1];
+			}
+			else
+			{
+				dirToNextPoint = m_managedPoints[nextPoint] - m_managedPoints[i];
+			}
+			
 			Quaternion rotation;
 			TriQuaternionArcFromForward( &rotation, &dirToNextPoint );
 			Matrix matrix = TransformationMatrix( m_objectScale, rotation, m_managedPoints[i] ) * WT;

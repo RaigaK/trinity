@@ -48,13 +48,13 @@ const Be::ClassInfo* EveChildLineSet::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "circleRadius", m_circleRadius, "the circle's radius\n"":jessica-group: Circle", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "circleDistort", m_circleDistort, "use this if you want to author an elipsoid or bend the circle in 3d space (.y and .w -> curvature) (.x and .z -> distort on x/z-axis)\n"":jessica-group: Circle", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
-		MAP_ATTRIBUTE( "numSegments", m_numSegments, "nuber of segments that the circle is split up into\n:jessica-group: Circle", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE( "numSegments", m_exposedNumSegments, "nuber of segments that the circle is split up into\n:jessica-group: Circle", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "completeness", m_completeness, "is the circle complete or is it half a circle (0.5) etc [0-1]\n:jessica-group: Circle", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 
 		MAP_ATTRIBUTE( "point1", m_point1, "endpoint for the curve\n"":jessica-group: Curve", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "point2", m_point2, "endpoint for the curve\n"":jessica-group: Curve", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		MAP_ATTRIBUTE( "bezierPoint", m_bezierPoint, "use this to bend the curve\n"":jessica-group: Curve", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
-		MAP_ATTRIBUTE( "curveSegments", m_curveSegments, "nuber of segments that the curve is split up into\n:jessica-group: Curve", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
+		MAP_ATTRIBUTE( "curveSegments", m_exposedCurveSegments, "nuber of segments that the curve is split up into\n:jessica-group: Curve", Be::READWRITE | Be::PERSIST | Be::NOTIFY )
 		
 	
 		MAP_ATTRIBUTE( "lineWidth", m_lineWidth, "thickness of the circle's line\n:jessica-group: LineRender", Be::READWRITE | Be::PERSIST | Be::NOTIFY )

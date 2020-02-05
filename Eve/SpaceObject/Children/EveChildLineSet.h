@@ -112,6 +112,7 @@ private:
 	// circle attributes
 	float m_circleRadius;
 	int m_numSegments;
+	float m_exposedNumSegments;
 	Vector4 m_circleDistort;
 	float m_completeness;
 	
@@ -152,6 +153,7 @@ private:
 	Vector3 m_point2;
 	Vector3 m_bezierPoint;
 	int m_curveSegments;
+	float m_exposedCurveSegments;
 };
 
 TYPEDEF_BLUECLASS( EveChildLineSet );
