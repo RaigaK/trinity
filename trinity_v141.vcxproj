@@ -1340,7 +1340,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>BLUE_WITH_PYTHON=1;BUILDING_GRANNY_STATIC;CCP_ASSERT_ENABLED=1;D3DTARGET=9;DEPRECATED_ENABLED=1;INTERIORS_ENABLED=1;NDEBUG;NO_SHLWAPI_ISOS;TBB_ENABLED=1;TRINITYNAME=$(TargetName);TRINITY_PLATFORM=TRINITY_OPENGLES2;_CRT_RAND_S;_SCL_SECURE_NO_WARNINGS;BLUE_OVERRIDE_VECTOR_TYPES=1;TRINITYBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\Python\27_64\include;$(CcpSdkPath)\glew\1.7.0\include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\Python\27_64\include;$(CcpSdkPath)\glew\1.7.0\include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>True</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>True</WholeProgramOptimization>
@@ -1480,7 +1480,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>BLUE_WITH_PYTHON=1;BUILDING_GRANNY_STATIC;CCP_ASSERT_ENABLED=1;CCP_STACKLESS=1;D3DTARGET=9;DEPRECATED_ENABLED=1;INTERIORS_ENABLED=1;NDEBUG;NO_SHLWAPI_ISOS;TBB_ENABLED=1;TRINITYNAME=$(TargetName);TRINITY_PLATFORM=TRINITY_DIRECTX9;_CRT_RAND_S;_SCL_SECURE_NO_WARNINGS;BLUE_OVERRIDE_VECTOR_TYPES=1;TRINITYBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\nvidia\NVAPI\R265\include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..\..\..\carbon\src\stackless\include;..\..\..\carbon\src\stackless\pc;..\..\..\carbon\src\stackless\stackless;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\nvidia\NVAPI\R265\include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..\..\..\carbon\src\stackless\include;..\..\..\carbon\src\stackless\pc;..\..\..\carbon\src\stackless\stackless;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>True</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>True</WholeProgramOptimization>
@@ -1726,7 +1726,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>BLUE_WITH_PYTHON=1;BUILDING_GRANNY_STATIC;CCP_STACKLESS=1;DEPRECATED_ENABLED=1;INTERIORS_ENABLED=1;NO_SHLWAPI_ISOS;TBB_ENABLED=1;TRINITYNAME=_trinity_stub_internal;TRINITY_PLATFORM=TRINITY_STUB;_CRT_RAND_S;_DEBUG;_SCL_SECURE_NO_WARNINGS;BLUE_OVERRIDE_VECTOR_TYPES=1;TRINITYBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..\..\..\carbon\src\stackless\include;..\..\..\carbon\src\stackless\pc;..\..\..\carbon\src\stackless\stackless;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..\..\..\carbon\src\stackless\include;..\..\..\carbon\src\stackless\pc;..\..\..\carbon\src\stackless\stackless;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>True</MultiProcessorCompilation>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <TreatWarningAsError>True</TreatWarningAsError>
@@ -2504,7 +2504,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>BLUE_WITH_PYTHON=1;BUILDING_GRANNY_STATIC;CCP_ASSERT_ENABLED=1;D3DTARGET=9;DEPRECATED_ENABLED=1;INTERIORS_ENABLED=1;NDEBUG;NO_SHLWAPI_ISOS;TBB_ENABLED=1;TRINITYNAME=$(TargetName);TRINITY_PLATFORM=TRINITY_DIRECTX9;_CRT_RAND_S;_SCL_SECURE_NO_WARNINGS;BLUE_OVERRIDE_VECTOR_TYPES=1;TRINITYBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\Python\27\include;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\nvidia\NVAPI\R265\include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;$(CcpBranchPath)/carbon/src$(CcpSdkPath)/amd/FidelityFX/1.0;CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/Granny/2.12.0.5/include;$(CcpSdkPath)/tbb/tbb2017_20160916oss/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\ATI\CrossFire Detect;$(CcpSdkPath)\Python\27\include;$(CcpSdkPath)\directx\february2010\Include;$(CcpSdkPath)\granny\2.12.0.5\gstate;$(CcpSdkPath)\nvidia\NVAPI\R265\include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;$(CcpBranchPath)/carbon/src;$(CcpSdkPath)/amd/FidelityFX/1.0;$(CcpSdkPath)/cairo/1.15.12/include;$(CcpSdkPath)/freetype/2.6.0/include;$(CcpSdkPath)/libjpg/jpeg-9b;$(CcpSdkPath)/libpng/1.6.29/include;$(CcpSdkPath)/muparser/v2.2.5/include;$(CcpSdkPath)/squish/1.10/include;$(CcpSdkPath)/zlib/1.2.11/include;$(CcpSdkPath)\telemetry\3.0.1.1008\include;.;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>True</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WholeProgramOptimization>True</WholeProgramOptimization>
@@ -2854,6 +2854,7 @@
     <ClInclude Include="autoversion.h" />
     <ClInclude Include="EveSprite2dBracket.h" />
     <ClInclude Include="EveSprite2dBracketRenderer.h" />
+    <ClInclude Include="Eve\SpaceObject\Children\EveChildLineSet.h" />
     <ClInclude Include="GrannyBoneOffset.h" />
     <ClInclude Include="IRenderCallback.h" />
     <ClInclude Include="ITr2AttributeGenerator.h" />
@@ -2924,6 +2925,7 @@
     <ClInclude Include="Tr2PrimitiveScene.h" />
     <ClInclude Include="Tr2PrimitiveSet.h" />
     <ClInclude Include="Tr2PrimitiveText.h" />
+    <ClInclude Include="Tr2ProceduralResources.h" />
     <ClInclude Include="Tr2ProfileTimer.h" />
     <ClInclude Include="Tr2ProjectBoundingBoxBracket.h" />
     <ClInclude Include="Tr2PushPopDS.h" />
@@ -3129,7 +3131,9 @@
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\IBehavior.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\InclusionVolume.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\Inertia.h" />
+    <ClInclude Include="Eve\SpaceObject\Children\Behaviors\PlayFX.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\ProcessLifetime.h" />
+    <ClInclude Include="Eve\SpaceObject\Children\Behaviors\SeekTarget.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\SplineTunnelGroup.h" />
     <ClInclude Include="Eve\SpaceObject\Children\Behaviors\Wander.h" />
     <ClInclude Include="Eve\SpaceObject\Children\SocketParameters\EveSocketParameter.h" />
@@ -3406,6 +3410,8 @@
     <ClCompile Include="EveSprite2dBracketRenderer.cpp" />
     <ClCompile Include="EveSprite2dBracketRenderer_Blue.cpp" />
     <ClCompile Include="EveSprite2dBracket_Blue.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\EveChildLineSet.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\EveChildLineSet_Blue.cpp" />
     <ClCompile Include="GrannyBoneOffset.cpp" />
     <ClCompile Include="GrannyBoneOffset_Blue.cpp" />
     <ClCompile Include="ITr2PickableScene.cpp" />
@@ -3492,6 +3498,7 @@
     <ClCompile Include="Tr2PrimitiveSet_Blue.cpp" />
     <ClCompile Include="Tr2PrimitiveText.cpp" />
     <ClCompile Include="Tr2PrimitiveText_Blue.cpp" />
+    <ClCompile Include="Tr2ProceduralResources.cpp" />
     <ClCompile Include="Tr2ProfileTimer.cpp" />
     <ClCompile Include="Tr2ProjectBoundingBoxBracket.cpp" />
     <ClCompile Include="Tr2ProjectBoundingBoxBracket_Blue.cpp" />
@@ -3854,8 +3861,12 @@
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\InclusionVolume_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Inertia.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Inertia_Blue.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\PlayFX.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\PlayFX_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\ProcessLifetime.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\ProcessLifetime_Blue.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\SeekTarget.cpp" />
+    <ClCompile Include="Eve\SpaceObject\Children\Behaviors\SeekTarget_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\SplineTunnelGroup.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\SplineTunnelGroup_Blue.cpp" />
     <ClCompile Include="Eve\SpaceObject\Children\Behaviors\Wander.cpp" />
