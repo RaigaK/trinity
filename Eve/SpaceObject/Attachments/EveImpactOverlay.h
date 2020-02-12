@@ -99,6 +99,7 @@ public:
 	ImpactConfiguration GetImpactConfiguration() const;
 	bool HasShieldEllipsoid() const;
 	float GetActivationStrength( EveUpdateContext& updateContext ) const;
+	float GetArmorImpactLifeTime() const;
 
 	// control animation
 	void ToggleEffect( const std::string& name, bool on, float duration );
@@ -130,6 +131,7 @@ private:
 	ImpactConfiguration m_configuration;
 	int m_impactDataNextIdx;
 	bool m_debugForceSpawnDebris;
+	float m_armorImpactLifeTime;
 
 	// priotiy
 	float m_renderPriority;

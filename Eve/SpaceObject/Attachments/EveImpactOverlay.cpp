@@ -41,6 +41,7 @@ EveImpactOverlay::EveImpactOverlay( IRoot* lockobj ) :
 	m_maxShieldImpacts( 8 ),
 	m_impactDataNextIdx( 1 ),
 	m_debugForceSpawnDebris( false ),
+	m_armorImpactLifeTime( 10.f ),
 	m_renderPriority( 0.f ),
 	m_isVisibleLast( false ),
 	m_dataTextureBlockID( -1 ),
@@ -190,7 +191,7 @@ void EveImpactOverlay::UpdateAsyncronous( EveUpdateContext& updateContext, EveSp
 		// ok, we want to have less impacts, so close the holes
 		while( aidit != m_armorImpactData.end() )
 		{
-			aidit->second.size -= 0.1f * updateContext.GetDeltaT();
+			aidit->second.size -= updateContext.GetDeltaT() / m_armorImpactLifeTime;
 			if( aidit->second.size <= 0.f )
 			{
 				m_armorImpactData.erase(aidit++);
@@ -478,6 +479,15 @@ float EveImpactOverlay::GetActivationStrength( EveUpdateContext& updateContext )
 	}
 
 	return 1.f;
+}
+
+// --------------------------------------------------------------------------------
+// Description:
+//    How long is the duration of the armor impact effect
+// --------------------------------------------------------------------------------
+float EveImpactOverlay::GetArmorImpactLifeTime() const
+{
+	return m_armorImpactLifeTime;
 }
 
 // --------------------------------------------------------------------------------
