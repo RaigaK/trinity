@@ -347,12 +347,15 @@ void EveChildLineSet::UpdateBoundingSphere()
 	
 	if( m_type != LINE_RENDER )
 	{
-		if( m_mesh->GetGeometryResource() != nullptr )
+		if( m_mesh != nullptr)
 		{
-			if( ( m_mesh->GetGeometryResource() )->IsGood() )
+			if( m_mesh->GetGeometryResource() != nullptr )
 			{
-				TriGeometryResMeshData* meshData = m_mesh->GetGeometryResource()->GetMeshData( m_mesh->GetMeshIndex() );
-				objectSizeBonus += meshData->m_boundingSphere.w;
+				if( ( m_mesh->GetGeometryResource() )->IsGood() )
+				{
+					TriGeometryResMeshData* meshData = m_mesh->GetGeometryResource()->GetMeshData( m_mesh->GetMeshIndex() );
+					objectSizeBonus += meshData->m_boundingSphere.w;
+				}
 			}
 		}
 	}

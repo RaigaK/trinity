@@ -162,7 +162,7 @@ private:
 	Vector4 m_boundingSphere;
 	float m_currentScreenSize;
 	float m_minScreenSize;
-	float m_isVisible;
+	bool m_isVisible;
 };
 
 TYPEDEF_BLUECLASS( EveChildLineSet );
