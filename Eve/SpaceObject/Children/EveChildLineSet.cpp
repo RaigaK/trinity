@@ -572,7 +572,7 @@ void EveChildLineSet::CreateSpriteVertexDeclaration()
 		}
 	}
 	m_cachedSVD = -1;
-	m_vertexDeclarationHandle = 0;
+	m_vertexDeclarationHandle = -1;
 }
 
 // for validation and objects interacting with the shader attributes
@@ -647,6 +647,11 @@ void EveChildLineSet::GetBatches( ITriRenderBatchAccumulator* batches, TriBatchT
 		return;
 	}
 
+	if( m_cachedSVD == -1 || m_vertexDeclarationHandle == -1)
+	{
+		return;
+	}
+	
 	if( !m_vertexBuffer.IsValid() )
 	{
 		return;
@@ -795,6 +800,13 @@ void EveChildLineSet::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 void EveChildLineSet::GetWorldVelocity( Vector3& velocity ) const
 {
 	velocity = m_worldVelocity;
+}
+
+
+void EveChildLineSet::ReleaseResources( TriStorage s )
+{
+	m_cachedSVD = -1;
+	m_vertexDeclarationHandle = -1;
 }
 
 float EveChildLineSet::GetOwnerMaxSpeed() const
