@@ -121,6 +121,9 @@ private:
 	EveSpaceScenePtr m_scene;
 	Tr2PostProcessRenderInfoPtr m_renderInfo;
 
+	void SetRenderTarget( Tr2RenderTarget* rt );
+	Tr2RenderTargetPtr GetRenderTarget() const;
+
 
     // General
 	PostProcessingQuality m_quality;

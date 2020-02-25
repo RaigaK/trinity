@@ -22,6 +22,7 @@ const Be::ClassInfo* TriStepRenderPostProcess::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "scene", m_scene, "The scene to be rendered", Be::READWRITE )
 		MAP_ATTRIBUTE( "renderInfo", m_renderInfo, "The rendering information for the post process", Be::READWRITE )
+		MAP_PROPERTY( "renderTarget", GetRenderTarget, SetRenderTarget, "Gets/Sets the main rendertarget")
 		MAP_ATTRIBUTE( "bloomHighPassFilter", m_bloomHighPassFilter, "The bloom high pass effect", Be::READWRITE )
 		MAP_ATTRIBUTE( "bloomHorizontalBlur", m_bloomHorizontalBlur, "The bloom horizontal blur effect", Be::READWRITE )
 		MAP_ATTRIBUTE( "bloomVerticalBlur", m_bloomVerticalBlur, "The bloom vertical blur", Be::READWRITE )

@@ -92,19 +92,7 @@ void TriStepRenderPostProcess::py__init__(EveSpaceScene* scene, Tr2RenderTarget*
 	m_sceneDirty = true;
 	m_scene->SetupTAA(m_velocityBuffer, 0, TAA_NONE);
 
-	m_renderInfo->SetSourceBuffer(source);
-
-	if (source != nullptr)
-	{
-		m_tilesX = source->GetWidth() / HISTOGRAM_TILE_SIZE_X + 1;
-		m_tilesY = source->GetHeight() / HISTOGRAM_TILE_SIZE_Y + 1;
-		m_localHistogramCount = m_tilesX * m_tilesY * 16;
-		m_mergeHistogramXDim = m_tilesX * m_tilesY / NUM_TILES_PER_THREAD_GROUP + 1;
-	}
-
-	m_tonemappingEffect->StartUpdate();
-	m_tonemappingEffect->SetParameter(BlueSharedString("BlitOriginal"), m_renderInfo->GetSourceBufferCopy());
-	m_tonemappingEffect->EndUpdate();
+	SetRenderTarget( source );
 }
 
 void SetDirtyIfNotNull(Tr2PPEffect *effect)
@@ -627,7 +615,6 @@ bool TriStepRenderPostProcess::ProcessDynamicExposure( Tr2RenderContext &renderC
 			m_tonemappingEffect->SetOption(BlueSharedString("DYNAMIC_EXPOSURE_TOGGLE"), BlueSharedString("DYNAMIC_EXPOSURE_DISABLED"));
 			m_tonemappingEffect->EndUpdate();
 		}
-
 	}
 
 	return dynamicExposure != nullptr && dynamicExposure->IsActive();
@@ -998,7 +985,7 @@ void TriStepRenderPostProcess::RenderFog(Tr2RenderContext& renderContext, Tr2PPF
 	// final composite
 	renderContext.m_esm.PushRenderTarget(*m_renderInfo->GetSourceBuffer());
 	Tr2Renderer::DrawScreenQuad( renderContext, m_fogCompositeEffect);
-	renderContext.m_esm.PopRenderTarget();
+		renderContext.m_esm.PopRenderTarget();
 }
 
 bool TriStepRenderPostProcess::ProcessTaa(Tr2PPTaaEffect* taa)
@@ -1077,4 +1064,31 @@ void TriStepRenderPostProcess::RenderTaa(Tr2RenderContext& renderContext, Tr2PPT
 
 	m_renderInfo->GetSourceBufferCopy()->GetRenderTarget().Resolve(*m_accumulationBuffer, renderContext);
 
+}
+
+
+void TriStepRenderPostProcess::SetRenderTarget( Tr2RenderTarget* rt )
+{
+	if( rt != GetRenderTarget() )
+	{
+		m_renderInfo->SetSourceBuffer( rt );
+		m_renderInfo->Setup();
+
+		if( rt != nullptr )
+		{
+			m_tilesX = rt->GetWidth() / HISTOGRAM_TILE_SIZE_X + 1;
+			m_tilesY = rt->GetHeight() / HISTOGRAM_TILE_SIZE_Y + 1;
+			m_localHistogramCount = m_tilesX * m_tilesY * 16;
+			m_mergeHistogramXDim = m_tilesX * m_tilesY / NUM_TILES_PER_THREAD_GROUP + 1;
+		}
+
+		m_tonemappingEffect->StartUpdate();
+		m_tonemappingEffect->SetParameter( BlueSharedString( "BlitOriginal" ), m_renderInfo->GetSourceBufferCopy() );
+		m_tonemappingEffect->EndUpdate();
+	}
+}
+
+Tr2RenderTargetPtr TriStepRenderPostProcess::GetRenderTarget() const
+{
+	return m_renderInfo->GetSourceBuffer();
 }
