@@ -490,6 +490,11 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 
 		MAP_METHOD_AND_WRAP( "GetDamageLocatorCount", GetDamageLocatorCount, "Get number of damage locators on this ship" )
 		MAP_METHOD_AND_WRAP(
+			"GetLocatorCount",
+			GetLocatorCount,
+			"Get number of locators on this model. \n"
+			":param locatorSetName: name of locatorSet" )
+		MAP_METHOD_AND_WRAP(
 			"GetDamageLocator",
 			GetDamageLocator,
 			"Get the position of indexed damage locator, (0,0,0) is returned for indices out of range.\n"
@@ -520,6 +525,13 @@ const Be::ClassInfo* EveSpaceObject2::ExposeToBlue()
 			":param name: animation name\n"
 			":param enable: enable/disable animation\n"
 			":param duration: animation duration\n"
+		)
+		MAP_METHOD_AND_WRAP(
+			"GetCloseLocatorIndex",
+			GetCloseLocatorIndex,
+			"Get the closest locator in set to target, does not mind about direction of locator.\n"
+			":param position: position of target\n"
+			":param locatorSetName: name of locator set \n"
 		)
 		MAP_METHOD_AND_WRAP( "ClearImpactDamage", ClearImpactDamage, "Clear all the impact/damage effects." )
 		MAP_METHOD_AND_WRAP(

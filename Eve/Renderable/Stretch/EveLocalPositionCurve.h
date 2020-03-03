@@ -35,6 +35,7 @@ public:
 		POS_OFFSET_POSITION,
 		POS_OFFSET_PLANE_ROTATION,
 		POS_COUNT,
+		POS_NEAREST_FIRING_LOCATOR,
 	};
 	LocalPositionBehavior m_behavior;
 
@@ -66,6 +67,8 @@ private:
 	ITriVectorFunctionPtr m_alignPositionCurve;
 
 	float m_offset;
+	int m_locatorIndex;
+	BlueSharedString m_locatorSetName;
 	Vector3 m_value;
 	Vector3 m_boundingBoxSize;
 	Vector3 m_positionOffset;
@@ -83,6 +86,7 @@ private:
 	Vector3* GetCenterBoundingSphere( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocator( Vector3* in, Be::Time t );
 	Vector3* GetDamageLocatorImpact( Vector3* in, Be::Time t );
+	Vector3* GetNearestFiringLocator( Vector3* in, Be::Time t );
 };
 
 TYPEDEF_BLUECLASS(EveLocalPositionCurve);

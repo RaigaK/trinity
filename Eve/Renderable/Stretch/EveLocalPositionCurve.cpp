@@ -11,6 +11,7 @@ EveLocalPositionCurve::EveLocalPositionCurve(IRoot* lockobj) :
 	m_boundingBoxSize( 0.f, 0.f, 0.f ),
 	m_positionOffset( 0.f, 0.f, 0.f ),
 	m_damageLocatorIndex( -1 ),
+	m_locatorIndex( -1 ),
 	m_impactEffectIndex( -1 ),
 	m_impactSize( 1.f ),
 	m_behavior ( POS_NONE ),
@@ -180,6 +181,23 @@ Vector3* EveLocalPositionCurve::GetDamageLocator( Vector3* in, Be::Time t )
 	return in;
 }
 
+Vector3* EveLocalPositionCurve::GetNearestFiringLocator( Vector3* in, Be::Time t )
+{
+	if( m_parentObject && m_locatorIndex != -1 && !m_locatorSetName.empty())
+	{
+		if( EveSpaceObject2Ptr target = BlueCastPtr( m_parentObject ) )
+		{
+			Vector3 locatorPos( 0, 0, 0 );
+			target->GetLocatorPosition( &locatorPos, m_locatorIndex, true, m_locatorSetName );
+	
+			in->x = locatorPos.x;
+			in->y = locatorPos.y;
+			in->z = locatorPos.z;
+		}
+	}
+	return in;
+}
+
 // --------------------------------------------------------------------------------
 // Description:
 //   Calculate impact position onto the target aiming for a damage locator
@@ -249,6 +267,8 @@ Vector3* EveLocalPositionCurve::Update(
 		return CalculateOffsetPosition( in, t );
 	case POS_OFFSET_PLANE_ROTATION:
 		return CalculateOffsetPlaneRotation( in, t );
+	case POS_NEAREST_FIRING_LOCATOR:
+		return GetNearestFiringLocator( in, t );
 	default:
 		break;
 	}

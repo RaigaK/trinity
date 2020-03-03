@@ -116,10 +116,10 @@ void GetSortedBatchesFromMeshAreaVector(	const Tr2MeshAreaVector* areas,
 
 namespace
 {
-	bool IsDamageLocatorFacingPosition( const Vector3& damageLocatorDir, const Vector3& posInObjectSpace )
+	bool IsLocatorFacingPosition( const Vector3& locatorDir, const Vector3& posInObjectSpace )
 	{
 		auto lengthOfPos = LengthSq( posInObjectSpace );
-		auto lengthOfMovedPos = LengthSq( posInObjectSpace - damageLocatorDir );
+		auto lengthOfMovedPos = LengthSq( posInObjectSpace - locatorDir );
 
 		return lengthOfMovedPos < lengthOfPos;
 	}
@@ -1786,13 +1786,18 @@ void EveSpaceObject2::ClearAnimations()
 
 int EveSpaceObject2::GetClosestDamageLocatorIndex( const Vector3* position )
 {
-	auto damageLocators = GetLocatorsForSet( DAMAGE_LOCATOR_SET_NAME );
-	if( !damageLocators )
+	return GetClosestLocatorIndex( position, DAMAGE_LOCATOR_SET_NAME );
+}
+
+int EveSpaceObject2::GetClosestLocatorIndex( const Vector3* position, BlueSharedString locatorSetName )
+{
+	auto locators = GetLocatorsForSet( locatorSetName );
+	if( !locators )
 	{
 		return 0;
 	}
 
-	// Run a single pass on the transformed damage locator positions and select the closest
+	// Run a single pass on the transformed locator positions and select the closest
 	float closestLength = std::numeric_limits<float>::max();
 	int closestIndex = -1;
 
@@ -1800,17 +1805,17 @@ int EveSpaceObject2::GetClosestDamageLocatorIndex( const Vector3* position )
 
 	Vector3 locatorPosition, locatorDirection;
 
-	for( unsigned int i = 0; i < damageLocators->size(); ++i )
+	for( unsigned int i = 0; i < locators->size(); ++i )
 	{
-		auto& locator = ( *damageLocators )[i];
+		auto& locator = ( *locators )[i];
 		GetLocatorInObjectSpace( locatorPosition, locatorDirection, locator );
-		if( IsDamageLocatorFacingPosition( locatorDirection, posInObjectSpace ) )
+		if( IsLocatorFacingPosition( locatorDirection, posInObjectSpace ) )
 		{
-			auto distanceFromDamageLocator = LengthSq( locatorPosition - posInObjectSpace );
-			if( distanceFromDamageLocator < closestLength )
+			auto distanceFromLocator = LengthSq( locatorPosition - posInObjectSpace );
+			if( distanceFromLocator < closestLength )
 			{
 				closestIndex = int( i );
-				closestLength = distanceFromDamageLocator;
+				closestLength = distanceFromLocator;
 			}
 		}
 	}
@@ -1818,6 +1823,39 @@ int EveSpaceObject2::GetClosestDamageLocatorIndex( const Vector3* position )
 	return closestIndex;
 }
 
+// Function to find closest locator without worrying about direction of the locator
+int EveSpaceObject2::GetCloseLocatorIndex( const Vector3& position, BlueSharedString locatorSetName )
+{
+	auto locators = GetLocatorsForSet( locatorSetName );
+	if( !locators )
+	{
+		return -1;
+	}
+
+	// Run a single pass on the transformed locator positions and select the closest
+	float closestLength = std::numeric_limits<float>::max();
+	int closestIndex = -1;
+
+	// Get the targets position in object space
+	Vector3 posInObjectSpace = (Vector3)XMVector3Transform( position, m_invWorldTransform );
+
+	Vector3 locatorPosition, locatorDirection;
+
+	for( unsigned int i = 0; i < locators->size(); ++i )
+	{
+		auto& locator = ( *locators )[i];
+		GetLocatorInObjectSpace( locatorPosition, locatorDirection, locator );
+
+		auto distanceFromLocator = LengthSq( locatorPosition - posInObjectSpace );
+		if( distanceFromLocator < closestLength )
+		{
+			closestIndex = int( i );
+			closestLength = distanceFromLocator;
+		}
+	}
+
+	return closestIndex;
+}
 
 static float GetDistanceFit( float minDist, float fitScale, Vector3& vec )
 {
@@ -1848,31 +1886,36 @@ static float GetDirectionFit( const Vector3& v0, const Vector3& v1 )
 
 int EveSpaceObject2::GetGoodDamageLocatorIndex( const Vector3& position )
 {
+	return GetGoodLocatorIndex( position, DAMAGE_LOCATOR_SET_NAME );
+}
+
+int EveSpaceObject2::GetGoodLocatorIndex( const Vector3& position, BlueSharedString locatorSetName )
+{
 	float minDistance = FLT_MAX;
 	float maxDistance = FLT_MIN;
 	float bestDirectionFit = 0.0f;
 
-	Vector3 posInObjectSpace = ( Vector3) XMVector3Transform( position, m_invWorldTransform );
-	auto damageLocators = GetLocatorsForSet( DAMAGE_LOCATOR_SET_NAME );
-	if( !damageLocators )
+	Vector3 posInObjectSpace = (Vector3)XMVector3Transform( position, m_invWorldTransform );
+	auto locators = GetLocatorsForSet( locatorSetName );
+	if( !locators )
 	{
 		return 0;
 	}
 
-	Vector3 damageLocatorPosition, damageLocatorDirection;
+	Vector3 locatorPosition, locatorDirection;
 
-	for( size_t i = 0; i < damageLocators->size(); ++i )
+	for( size_t i = 0; i < locators->size(); ++i )
 	{
-		auto& locator = ( *damageLocators )[i];
-		GetLocatorInObjectSpace( damageLocatorPosition, damageLocatorDirection, locator );
-		if( IsDamageLocatorFacingPosition( damageLocatorDirection, posInObjectSpace ) )
+		auto& locator = ( *locators )[i];
+		GetLocatorInObjectSpace( locatorPosition, locatorDirection, locator );
+		if( IsLocatorFacingPosition( locatorDirection, posInObjectSpace ) )
 		{
-			Vector3 v( XMVectorSubtract( damageLocatorPosition, posInObjectSpace ) );
+			Vector3 v( XMVectorSubtract( locatorPosition, posInObjectSpace ) );
 			float length = Length( v );
 			minDistance = min( minDistance, length );
 			maxDistance = max( maxDistance, length );
 			v = Normalize( v );
-			float directionFit = GetDirectionFit( damageLocatorDirection, v );
+			float directionFit = GetDirectionFit( locatorDirection, v );
 			bestDirectionFit = max( bestDirectionFit, directionFit );
 		}
 	}
@@ -1881,27 +1924,27 @@ int EveSpaceObject2::GetGoodDamageLocatorIndex( const Vector3& position )
 	float bestFit = 1.0f;
 
 	int bestLocator = -1;
-	for( size_t i = 0; i < damageLocators->size(); ++i )
+	for( size_t i = 0; i < locators->size(); ++i )
 	{
-		auto& locator = ( *damageLocators )[i];
-		GetLocatorInObjectSpace( damageLocatorPosition, damageLocatorDirection, locator );
-		if( IsDamageLocatorFacingPosition( damageLocatorDirection, posInObjectSpace ) )
+		auto& locator = ( *locators )[i];
+		GetLocatorInObjectSpace( locatorPosition, locatorDirection, locator );
+		if( IsLocatorFacingPosition( locatorDirection, posInObjectSpace ) )
 		{
-			Vector3 v( XMVectorSubtract( damageLocatorPosition, posInObjectSpace ) );
+			Vector3 v( XMVectorSubtract( locatorPosition, posInObjectSpace ) );
 			float fitValue = GetDistanceFit( minDistance, maxDistance - minDistance, v );
 			v = Normalize( v );
-			fitValue *= GetDirectionFit( damageLocatorDirection, v );
+			fitValue *= GetDirectionFit( locatorDirection, v );
 			if( std::abs( fitValue - desiredFit ) < bestFit )
 			{
 				bestFit = std::abs( fitValue - desiredFit );
-				bestLocator = ( int) i;
+				bestLocator = (int)i;
 			}
 		}
 	}
 
 	if( bestLocator < 0 )
 	{
-		bestLocator = GetClosestDamageLocatorIndex( &position );
+		bestLocator = GetClosestLocatorIndex( &position, locatorSetName );
 	}
 
 	return bestLocator;
@@ -1914,22 +1957,27 @@ float EveSpaceObject2::GetRadius() const
 
 bool EveSpaceObject2::GetDamageLocatorPosition( Vector3* out, int index, bool inWorldSpace )
 {
+	return GetLocatorPosition( out, index, inWorldSpace, DAMAGE_LOCATOR_SET_NAME );
+}
+
+bool EveSpaceObject2::GetLocatorPosition( Vector3* out, int index, bool inWorldSpace, BlueSharedString locatorSetName )
+{
 	if( index < 0 )
 	{
 		*out = inWorldSpace ? m_worldTransform.GetTranslation() : Vector3( 0.f, 0.f, 0.f );
 		return false;
 	}
 
-	auto damageLocators = GetLocatorsForSet( DAMAGE_LOCATOR_SET_NAME );
-	if( !damageLocators || index >= int( damageLocators->size() ) )
+	auto locators = GetLocatorsForSet( locatorSetName );
+	if( !locators || index >= int( locators->size() ) )
 	{
 		*out = inWorldSpace ? m_worldTransform.GetTranslation() : Vector3( 0.f, 0.f, 0.f );
 		return false;
 	}
-	const Locator& damageLocator = ( *damageLocators )[index];
+	const Locator& locator = ( *locators )[index];
 
 	Vector3 position, direction;
-	GetLocatorInObjectSpace( position, direction, damageLocator );
+	GetLocatorInObjectSpace( position, direction, locator );
 
 	if( inWorldSpace )
 	{
@@ -2629,13 +2677,17 @@ bool EveSpaceObject2::UpdateImpact( Vector3& out, const Vector3& direction, int 
 	return false;
 }
 
-
 unsigned int EveSpaceObject2::GetDamageLocatorCount() const
 {
-	auto damageLocators = GetLocatorsForSet( DAMAGE_LOCATOR_SET_NAME );
-	if( damageLocators )
+	return GetLocatorCount( DAMAGE_LOCATOR_SET_NAME );
+}
+
+unsigned int EveSpaceObject2::GetLocatorCount( BlueSharedString locatorSetName ) const
+{
+	auto locators = GetLocatorsForSet( locatorSetName );
+	if( locators )
 	{
-		return ( unsigned int) damageLocators->size();
+		return (unsigned int)locators->size();
 	}
 	return 0;
 }

@@ -41,6 +41,11 @@ Be::VarChooser EveLocalPositionChooser[] =
 		"Moves the vector from parentPositionCurve(or 0, 0, 0) to alignedPositionCurve OR positionOffset to the xz plane "
 		"containing parentPositionCurve, maintaining the vector's length."
 	},
+	{
+		"nearestFiringLocator",
+		BeCast( EveLocalPositionCurve::POS_NEAREST_FIRING_LOCATOR ),
+		"Use the nearest firing locator of source object"
+	},
 	{ 0 }
 };
 
@@ -118,6 +123,22 @@ const Be::ClassInfo* EveLocalPositionCurve::ExposeToBlue()
 			m_offset,         
 			"na", 
 			Be::READWRITE | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"locatorSetName",
+			m_locatorSetName,
+			"The locatorSet name that is being used by the curve",
+			Be::READWRITE
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"locatorIndex",
+			m_locatorIndex,
+			"The locator index that is being used by the curve",
+			Be::READWRITE
 		)
 
 		MAP_ATTRIBUTE
