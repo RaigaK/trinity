@@ -85,7 +85,7 @@ std::vector<Vector3> PlayFX::CalculateBehavior( std::vector<DroneAgent>& agents,
 		// Set the agent's position to world space because if the parent object had an offset the effect would also offset
 		Matrix worldTransform = system.GetWorldTransform();
 		Vector3 agentPositionWS = XMVector3TransformCoord( agent->position, worldTransform );
-		Vector3 offsetEffect = agentPositionWS + Normalize( agent->targetDirection ) * m_distanceFromCenter;
+		Vector3 offsetEffect = agentPositionWS + Normalize( agent->targetDirection ) * group.GetBoundingSphereRadius();
 
 		// Without this the drone will start shooting at the new target because of the cooldown of the effect
 		if( data->oldTarget != Vector3( 0, 0, 0 ) )
