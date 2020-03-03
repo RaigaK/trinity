@@ -96,20 +96,12 @@ void EveChildMesh::GetRenderables( std::vector<ITr2Renderable*>& renderables )
 
 bool EveChildMesh::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query ) const
 {
-	if( m_mesh )
+
+	if( m_mesh && m_mesh->GetBoundingSphere( sphere ) )
 	{
-		if( m_mesh->GetBoundingSphere( sphere ) )
-		{
-			if( sphere.w <= 0 )
-			{
-				// TODO: leaving as is because for now S.Manekeller wants a child mesh to play around with
-				// Fix asap <Logi 27. aug 2015>
-				sphere.w = 100000;
-			}
-			BoundingSphereTransform( m_worldTransform, sphere );
-			return true;
-		}
+		return true;
 	}
+
 	return false;
 }
 
