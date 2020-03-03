@@ -104,24 +104,25 @@ EveChildLineSet::EveChildLineSet( IRoot* lockobj ) :
 	m_numSegments( 64 ),
 	m_exposedNumSegments( 64 ),
 	m_completeness( 1 ),
-	m_baseColor( 1, 1, 1,1 ),
-	m_animColor( 0, 0, 0,1 ),
+	m_baseColor( 1, 1, 1, 1 ),
+	m_animColor( 0, 0, 0, 1 ),
 	m_animValue( 0 ),
 	m_animSpeed( 0 ),
 	m_lineWidth( 1 ),
 	m_point1( 0, 0, 0 ),
 	m_point2( 0, 0, 0 ),
-	m_bezierPoint(0, 0, 0 ),
+	m_bezierPoint( 0, 0, 0 ),
 	m_curveSegments( 24 ),
 	m_brightness( 1 ),
-	m_boundingSphere( 0,0,0,1 ),
+	m_boundingSphere( 0, 0, 0, 1 ),
 	m_currentScreenSize( 1 ),
 	m_minScreenSize( -1 ),
 	m_isVisible( true ),
 	m_exposedCurveSegments( 24 ),
 	m_type( LINE_RENDER ),
 	m_objType( CIRCLE ),
-	m_additiveBatch( false )
+	m_additiveBatch( false ),
+	m_updateLineSet( true )
 {
 	Initialize();
 }
@@ -173,10 +174,9 @@ bool EveChildLineSet::OnModified( Be::Var* value )
 	{
 		m_lineSet->SetAdditiveFlag( m_additiveBatch );
 	}
-	
-	GenerateManagedPoints();
-	InitializeLineSet();
-	UpdateBoundingSphere();
+
+	m_updateLineSet = true;
+
 	return true;
 }
 
@@ -422,6 +422,16 @@ void EveChildLineSet::GetRenderables( std::vector<ITr2Renderable*>& renderables 
 	{
 		return;
 	}
+
+
+	if( m_updateLineSet )
+	{
+		GenerateManagedPoints();
+		InitializeLineSet();
+		UpdateBoundingSphere();
+		m_updateLineSet = false;
+	}
+	
 	
 	if( LINE_RENDER != m_type )
 	{

@@ -111,6 +111,7 @@ private:
 	float m_ownerMaxSpeed;
 	bool m_display;
 	bool m_isAlwaysOn;
+	bool m_updateLineSet;
 
 	// circle attributes
 	float m_circleRadius;
