@@ -10,12 +10,14 @@ struct PlayFXData
 {
 	PlayFXData() :
 		effectPlaying( false ),
+		droneArrived( false ),
 		seconds( 10 ),
 		oldTarget( 0, 0, 0 )
 	{
 	}
 
 	bool effectPlaying;
+	bool droneArrived;
 	int seconds;
 	Vector3 oldTarget;
 };

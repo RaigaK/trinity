@@ -9,8 +9,8 @@ PlayFX::PlayFX( IRoot* lockobj ) :
 	m_behaviorWeight( 20.f ),
 	m_delay( 0.f ),
 	m_distanceFromCenter( 5.f ),
-	m_minSec( 10 ),
-	m_maxSec( 20 ),
+	m_minSec( 1 ),
+	m_maxSec( 3 ),
 	m_stop( false )
 {
 	m_firingEffect = nullptr;
@@ -75,12 +75,24 @@ std::vector<Vector3> PlayFX::CalculateBehavior( std::vector<DroneAgent>& agents,
 	// This behavior will be activated when the drone has arrived near the damage locator
 	for( ; agent != agents.end() && firingEffect != m_firingEffects.end(); ++agent, ++firingEffect, ++data )
 	{
+		// Make sure the effect isn't showing when loading everything up
+		if( data->droneArrived == false )
+		{
+			( *firingEffect )->SetDisplay( false );
+		}
+	
 		// Drone has arrived to target so play effect
 		if( agent->playFX && !data->effectPlaying )
 		{
+			if( data->droneArrived == false )
+			{
+				data->droneArrived = true;
+				( *firingEffect )->SetDisplay( true );
+			}
+			
 			data->seconds = TriRandInt( m_minSec, m_maxSec );
 			data->effectPlaying = true;
-
+			
 			( *firingEffect )->StartFiring( m_delay );
 		}
 
