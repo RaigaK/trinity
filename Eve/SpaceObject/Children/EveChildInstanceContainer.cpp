@@ -403,7 +403,8 @@ void EveChildInstanceContainer::StartControllers()
 void EveChildInstanceContainer::PlayCurveSet( const std::string& name, const std::string& rangeName )
 {
 	RunOnInstances( [&name, &rangeName]( IEveSpaceObjectChild* c ) { 
-		if( ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() ) )
+		ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() );
+		if( cso != nullptr )
 		{
 			cso->PlayCurveSet( name, rangeName );
 		}
@@ -413,7 +414,9 @@ void EveChildInstanceContainer::PlayCurveSet( const std::string& name, const std
 void EveChildInstanceContainer::StopCurveSet( const std::string& name )
 {
 	RunOnInstances( [&name]( IEveSpaceObjectChild* c ) {
-		if( ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() ) )
+		ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() );
+
+		if( cso != nullptr )
 		{
 			cso->StopCurveSet( name );
 		}
@@ -423,7 +426,8 @@ void EveChildInstanceContainer::StopCurveSet( const std::string& name )
 void EveChildInstanceContainer::UpdateCurveSet( const std::string& name, Be::Time time )
 {
 	RunOnInstances( [&name, time]( IEveSpaceObjectChild* c ) {
-		if( ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() ) )
+		ITr2CurveSetOwnerPtr cso = BlueCastPtr( c->GetRootObject() );
+		if( cso != nullptr )
 		{
 			cso->UpdateCurveSet( name, time );
 		}
@@ -457,7 +461,8 @@ float EveChildInstanceContainer::GetRangeDuration( const std::string& name, cons
 void EveChildInstanceContainer::PlayAllCurveSets()
 {
 	RunOnInstances( []( IEveSpaceObjectChild* c ) {
-		if( EveChildContainerPtr cc = BlueCastPtr( c->GetRootObject() ) )
+		EveChildContainerPtr cc = BlueCastPtr( c->GetRootObject() );
+		if( cc != nullptr )
 		{
 			cc->PlayAllCurveSets();
 		}
@@ -467,7 +472,8 @@ void EveChildInstanceContainer::PlayAllCurveSets()
 void EveChildInstanceContainer::StopAllCurveSets()
 {
 	RunOnInstances( []( IEveSpaceObjectChild* c ) {
-		if( EveChildContainerPtr cc = BlueCastPtr( c->GetRootObject() ) )
+		EveChildContainerPtr cc = BlueCastPtr( c->GetRootObject() );
+		if( cc != nullptr )
 		{
 			cc->StopAllCurveSets();
 		}
