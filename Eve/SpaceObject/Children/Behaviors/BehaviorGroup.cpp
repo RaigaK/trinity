@@ -766,16 +766,8 @@ void BehaviorGroup::Update( EveUpdateContext& updateContext )
 void BehaviorGroup::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
 	options.insert( "AgentsKDTree" );
-	options.insert( "Volumes" );
-	options.insert( "ExclusionVolumes" );
 	options.insert( "Bounding Sphere" );
-	options.insert( "Locators" );
 	options.insert( "DebugBehaviors" );
-	options.insert( "BehaviorVisionRanges" );
-	options.insert( "Wander" );
-	options.insert( "LocatorRadius" );
-	options.insert( "Formation" );
-	options.insert( "SeekTarget" );
 }
 
 float BehaviorGroup::GetBoundingSphereRadius()

@@ -148,6 +148,11 @@ void SeekTarget::SetExit( bool value )
 	m_exit = value;
 }
 
+void SeekTarget::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "SeekTarget" );
+}
+
 void SeekTarget::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation )
 {
 	if( renderer.HasOption( this, "SeekTarget" ) )

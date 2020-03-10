@@ -56,9 +56,14 @@ std::vector<Vector3> InclusionVolume::CalculateBehavior(std::vector<DroneAgent>&
 	return returnForces;
 }
 
+void InclusionVolume::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "InclusionVolumes" );
+}
+
 void InclusionVolume::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation)
 {
-	if ( renderer.HasOption( this, "ExclusionVolumes" ) )
+	if ( renderer.HasOption( this, "InclusionVolumes" ) )
 	{
 		for ( auto volume = m_inclusionVolumes.begin(); volume != m_inclusionVolumes.end(); ++volume )
 		{

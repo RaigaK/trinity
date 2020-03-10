@@ -136,7 +136,7 @@ void SplineTunnelGroup::OnListModified( long event, ssize_t key, ssize_t key2, I
 
 void SplineTunnelGroup::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
-	options.insert( "splineTunnels" );
+	options.insert( "SplineTunnels" );
 }
 
 void SplineTunnelGroup::RenderDebugInfo( ITr2DebugRenderer2& renderer, Matrix& parentWorldLocation )

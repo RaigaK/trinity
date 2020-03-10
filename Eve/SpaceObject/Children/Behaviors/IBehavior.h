@@ -36,6 +36,8 @@ public:
 	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
 	                                               BehaviorGroup& sys, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius) = 0;
 	
+	// Debug renderable
+	virtual void GetDebugOptions( Tr2DebugRendererOptions& options ) { }
 	virtual void RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation ) { }
 	
 	// this is for Groups to do all range detections at the same time. ( return -1 if you don't care about other agents ) 

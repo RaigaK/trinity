@@ -56,6 +56,11 @@ std::vector<Vector3> CollisionAvoidance::CalculateBehavior( std::vector<DroneAge
 	return forceVectors;
 }
 
+void CollisionAvoidance::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "ExclusionVolumes" );
+}
+
 void CollisionAvoidance::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation )
 {
 	if( renderer.HasOption( this, "ExclusionVolumes" ) )

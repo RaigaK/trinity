@@ -362,9 +362,14 @@ void ProcessLifetime::ReassignTunnelIDsAndAddSystemTunnels( EveChildBehaviorSyst
 	m_shouldReassignTunnelIDs = false;
 }
 
+void ProcessLifetime::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "SplineTunnels" );
+}
+
 void ProcessLifetime::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation )
 {
-	if ( renderer.HasOption( this, "splineTunnels" ) )
+	if ( renderer.HasOption( this, "SplineTunnels" ) )
 	{
 		for ( auto t = m_splineTunnels.begin(); t != m_splineTunnels.end(); ++t )
 		{

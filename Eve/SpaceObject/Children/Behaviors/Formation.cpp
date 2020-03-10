@@ -339,6 +339,10 @@ void Formation::UpdateAgents( std::vector<DroneAgent>& agents, void* scratchData
 	}
 }
 
+void Formation::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "Formation" );
+}
 
 void Formation::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation)
 {

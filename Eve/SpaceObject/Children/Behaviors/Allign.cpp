@@ -103,6 +103,11 @@ float Allign::GetBehaviorSearchRadius()
 	}
 }
 
+void Allign::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "BehaviorVisionRanges" );
+}
+
 void Allign::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation)
 {
 	if ( renderer.HasOption( this, "BehaviorVisionRanges" ) )

@@ -64,6 +64,11 @@ std::vector<Vector3> Wander::CalculateBehavior(std::vector<DroneAgent>& agents, 
 	return forceVectors;
 }
 
+void Wander::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "Wander" );
+}
+
 void Wander::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation )
 {
 	if( renderer.HasOption( this, "Wander" ) )

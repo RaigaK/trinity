@@ -87,6 +87,12 @@ std::vector<Vector3> BackAndForth::CalculateBehavior(std::vector<DroneAgent>& ag
 	return todo;
 }
 
+void BackAndForth::GetDebugOptions( Tr2DebugRendererOptions& options )
+{
+	options.insert( "Locators" );
+	options.insert( "LocatorRadius" );
+}
+
 void BackAndForth::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation)
 {
 	if( renderer.HasOption( this, "Locators" ) )
