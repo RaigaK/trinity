@@ -192,8 +192,6 @@ public:
 	EXPOSE_TO_BLUE();
 	EveSOFDataBlink( IRoot* lockobj = NULL );
 	~EveSOFDataBlink() {}
-
-	//PEveSOFDataTextureVector m_textures;
 };
 TYPEDEF_BLUECLASS( EveSOFDataBlink );
 
