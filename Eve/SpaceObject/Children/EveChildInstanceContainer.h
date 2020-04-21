@@ -122,6 +122,7 @@ public:
 
 	void CreateInstance(const Vector3& scale, const Quaternion& rotation, const Vector3& translation, const int32_t boneIndex = -1);
 	void ClearInstanceList();
+	void PopFront();
 
 protected:
 	void CreateInstances( IEveSpaceObject2* parent );

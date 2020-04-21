@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   April 2020
+//    Copyright: CCP 2020
+//
+
 #include "StdAfx.h"
 #include "EveChildEffectPropagator.h"
 #include "Eve/EveUpdateContext.h"
@@ -10,6 +16,7 @@ EveChildEffectPropagator::EveChildEffectPropagator( IRoot* lockobj )
 	m_effectScaling( 1.0f, 1.0f, 1.0f ),
 	m_triggerSphereOffset( 0.0f, 0.0f, 0.0f ),
 	m_type( LOCAL_LOCATORS ),
+	m_triggerMethood( TRIGGER_SPHERE_CURVE ),
 	m_isPlaying( false ),
 	m_playTime( 0 ),
 	m_currentTriggerIndex( 0 ),
@@ -24,6 +31,10 @@ EveChildEffectPropagator::EveChildEffectPropagator( IRoot* lockobj )
 	m_completeness( 1 ),
 	m_randScaleMin( 1 ),
 	m_randScaleMax( 1 ),
+	m_frequency( 1 ),
+	m_numDeleted( 0 ),
+	m_effectDuration( 3 ),
+	m_stopAfterNumTriggers( -1 ),
 	m_trigger( false )
 {
 }
@@ -34,14 +45,9 @@ EveChildEffectPropagator::~EveChildEffectPropagator()
 
 bool EveChildEffectPropagator::OnModified( Be::Var* value )
 {
-	if( IsMatch( value, m_triggerSphereOffset ) )
+	if( IsMatch( value, m_completeness ) )
 	{
-		DistanceSortLocators();
-	}
-
-	if( IsMatch( value, m_completeness) )
-	{
-		m_completeness = min( 1.f, max( 0.f, m_completeness) );
+		m_completeness = min( 1.f, max( 0.f, m_completeness ) );
 	}
 
 	if( IsMatch( value, m_randScaleMin ) )
@@ -53,6 +59,16 @@ bool EveChildEffectPropagator::OnModified( Be::Var* value )
 	{
 		m_randScaleMax = max( m_randScaleMax, m_randScaleMin );
 	}
+
+	if( IsMatch( value, m_frequency ) )
+	{
+		if( m_frequency <= 0 )
+		{
+			m_frequency = 1;
+		}
+	}
+	
+	m_trigger = true;
 
 	return true;
 }
@@ -84,6 +100,7 @@ void EveChildEffectPropagator::Stop()
 	m_isPlaying = false;
 	m_playTime = 0;
 	m_currentTriggerIndex = 0;
+	m_numDeleted = 0;
 	if( m_effect != nullptr )
 	{
 		m_effect->ClearInstanceList();
@@ -97,7 +114,7 @@ void EveChildEffectPropagator::ManageTriggers()
 		return;
 	}
 
-	if (nullptr == m_effect)
+	if( nullptr == m_effect )
 	{
 		return;
 	}
@@ -107,7 +124,7 @@ void EveChildEffectPropagator::ManageTriggers()
 
 	for( auto it = m_processedTransforms.begin() + m_currentTriggerIndex; it != m_processedTransforms.end(); ++it )
 	{
-		if( it->sqrDistToSphereCenter < currentRadSqr  )
+		if( it->sqrDistToSphereCenter < currentRadSqr )
 		{
 			m_effect->CreateInstance( it->scale, it->rotation, it->position );
 			m_currentTriggerIndex++;
@@ -129,38 +146,16 @@ void EveChildEffectPropagator::UpdateSyncronous( EveUpdateContext& updateContext
 	{
 		ProcessLocators( params.spaceObjectParent );
 		Play();
-	}
 
-	if( m_isPlaying )
-	{
-		auto dt = updateContext.GetDeltaT();
-		m_playTime += dt;
-		if( nullptr != m_effect )
+		if( m_triggerMethood == INTERVAL_TRIGGERS )
 		{
-			ManageTriggers();
-		}
-		
-		if( nullptr == m_triggerSphereRadiusCurve )
-		{
-			Stop();
-			return;
-		}
-
-		if( m_playTime > m_triggerSphereRadiusCurve->Length() )
-		{
-			if( m_replayAfterDelay )
+			int size = (int) max( floor( m_effectDuration * m_frequency ), 0.f );
+			std::vector<int> arr(size);
+			for( int x = 0; x < size; ++x )
 			{
-				if( m_delayTimer > 0 )
-				{
-					m_delayTimer -= dt;
-				}
-
-				Play();
+				arr[x] = -1;
 			}
-			else
-			{
-				Stop();
-			}
+			m_lastTriggered = arr;
 		}
 	}
 
@@ -168,6 +163,140 @@ void EveChildEffectPropagator::UpdateSyncronous( EveUpdateContext& updateContext
 	{
 		m_effect->UpdateSyncronous( updateContext, params );
 	}
+
+	if( !m_isPlaying )
+	{
+		return;
+	}
+
+	switch( m_triggerMethood )
+	{
+	case TRIGGER_SPHERE_CURVE:
+		UpdateTriggerCurve( updateContext );
+		break;
+	case INTERVAL_TRIGGERS:
+		UpdateTriggerInterval( updateContext );
+		break;
+	case INSTANT_PERMANENT:
+		m_playTime += updateContext.GetDeltaT();
+		if( m_currentTriggerIndex == 0 ) 
+		{
+			for( auto it = m_processedTransforms.begin(); it != m_processedTransforms.end(); ++it )
+			{
+				m_effect->CreateInstance( it->scale, it->rotation, it->position );
+			}
+			m_currentTriggerIndex++;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void EveChildEffectPropagator::UpdateTriggerCurve( EveUpdateContext& updateContext )
+{
+	auto dt = updateContext.GetDeltaT();
+	m_playTime += dt;
+
+	if( nullptr != m_effect )
+	{
+		ManageTriggers();
+	}
+
+	if( nullptr == m_triggerSphereRadiusCurve )
+	{
+		Stop();
+		return;
+	}
+
+	if( m_playTime > m_triggerSphereRadiusCurve->Length() )
+	{
+		if( m_replayAfterDelay )
+		{
+			if( m_delayTimer > 0 )
+			{
+				m_delayTimer -= dt;
+			}
+			else
+			{
+				Play();
+			}
+		}
+		else
+		{
+			Stop();
+		}
+	}
+}
+
+void EveChildEffectPropagator::UpdateTriggerInterval( EveUpdateContext& updateContext )
+{
+	auto dt = updateContext.GetDeltaT();
+	m_playTime += dt;
+
+	if( m_stopAfterNumTriggers != -1 && m_playTime > (  m_stopAfterNumTriggers / m_frequency + m_effectDuration ) )
+	{
+		Stop();
+		return;
+	}
+
+	// triggers based on the frequency interval unless maximum ammount of spawns has been reached
+	if( m_playTime > m_currentTriggerIndex / m_frequency && ( m_currentTriggerIndex < m_stopAfterNumTriggers || m_stopAfterNumTriggers == -1 ) )
+	{
+		int locatorIndex = GetSmartRandomLocatorIndex();
+		if( !m_lastTriggered.empty() )
+		{
+			m_lastTriggered.erase( m_lastTriggered.begin() );
+		}
+		m_lastTriggered.push_back( locatorIndex );
+
+		auto it = &m_processedTransforms.at( locatorIndex );
+		m_effect->CreateInstance( it->scale, it->rotation, it->position );
+		m_currentTriggerIndex++;
+	}
+	
+	if( m_playTime > ( m_numDeleted / m_frequency ) + m_effectDuration )
+	{
+		m_effect->PopFront();
+		m_numDeleted++;
+
+		if( m_numDeleted == m_currentTriggerIndex )
+		{
+			m_currentTriggerIndex = 0;  // prevent debug rendering on a running loop after it finishes (see InstanceContainers)
+		}
+	}
+}
+
+int EveChildEffectPropagator::GetSmartRandomLocatorIndex()
+{
+	int locatorIndex = -1;
+	int ptSize = (int) m_processedTransforms.size();
+	int ltSize = (int) m_lastTriggered.size();
+
+	if( ltSize >= ptSize )
+	{
+		locatorIndex = TriRandInt( ptSize );
+	}
+	else
+	{
+		// this loop should never repeat more than 2-3 times and most often no 
+		// repeats at all. The assumtion is that this is faster than keeping an organized
+		// index array barring excleded indexes. The only bad scenario is when all of these 
+		// 3 things line up: small locatorSet, long effect duration and very frequent triggers
+		while( locatorIndex == -1 )
+		{
+			locatorIndex = TriRandInt( ptSize );
+			for( int i = 0; i < ltSize; i++ )
+			{
+				if( locatorIndex == m_lastTriggered[i] )
+				{
+					locatorIndex = -1;
+					break;
+				}
+			}
+		}
+	}
+	return locatorIndex;
 }
 
 void EveChildEffectPropagator::UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params )
@@ -181,11 +310,13 @@ void EveChildEffectPropagator::UpdateAsyncronous( EveUpdateContext& updateContex
 	{
 		m_effect->UpdateAsyncronous( updateContext, params );
 	}
+
+	EveChildContainer::UpdateAsyncronous( updateContext, params );
 }
 
 void EveChildEffectPropagator::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer ) const
 {
-	if(!IsRendering())
+	if( !IsRendering() )
 	{
 		return;
 	}
@@ -225,6 +356,107 @@ void EveChildEffectPropagator::GetRenderables( std::vector<ITr2Renderable*>& ren
 	}
 }
 
+void EveChildEffectPropagator::ProcessLocatorsLocalLocators()
+{
+	if( m_localLocators == nullptr )
+	{
+		return;
+	}
+
+	const LocatorStructureList* ls = m_localLocators->GetLocators();
+
+	m_triggerSphereScalarMulti = 0;
+	for( auto it = ls->begin(); it != ls->end(); ++it )
+	{
+		if( TriRand() > m_completeness )
+		{
+			continue;
+		}
+
+		Transform t;
+		t.position = (TranslationMatrix( it->position ) * m_worldTransform).GetTranslation();
+		float l = LengthSq( t.position );
+		m_triggerSphereScalarMulti = m_triggerSphereScalarMulti > l ? m_triggerSphereScalarMulti : l;
+		t.rotation = it->direction;
+		float rand = m_randScaleMin + TriRand() * (m_randScaleMax - m_randScaleMin);
+		t.scale = m_effectScaling * rand;
+		m_processedTransforms.emplace_back( t );
+	}
+
+	m_triggerSphereScalarMulti = std::sqrt( m_triggerSphereScalarMulti ) * 2.f;
+}
+
+void EveChildEffectPropagator::ProcessLocatorsRefLocators( IEveSpaceObject2* parent )
+{
+	if( m_locatorSetName.empty() )
+	{
+		m_locatorSetName = BlueSharedString( "damage" );
+	}
+
+	const LocatorStructureList* locators;
+
+	if( EveSpaceObject2Ptr spaceObject = BlueCastPtr( parent ) )
+	{
+		locators = spaceObject->GetLocatorsForSet( m_locatorSetName );
+		Vector4 bounds;
+		spaceObject->GetBoundingSphere( bounds );
+		m_triggerSphereScalarMulti = bounds.w;
+	}
+	else
+	{
+		return;
+	}
+
+	if( locators )
+	{
+		for( auto locator = locators->begin(); locator != locators->end(); ++locator )
+		{
+			if( TriRand() > m_completeness )
+			{
+				continue;
+			}
+
+			Transform t;
+			t.position = locator->position;
+			t.rotation = locator->direction;
+			float rand = m_randScaleMin + TriRand() * (m_randScaleMax - m_randScaleMin);
+			t.scale = m_effectScaling * rand;
+			m_processedTransforms.emplace_back( t );
+		}
+	}
+
+}
+
+void EveChildEffectPropagator::ProcessLocatorsRandomSpread()
+{
+	for( int i = 0; i < m_numTriggers; i++ )
+	{
+		if( TriRand() > m_completeness )
+		{
+			continue;
+		}
+
+		float dist = TriRand();
+		dist += (m_rndClosenessPreference - dist) * TriRand();
+		dist = m_rndMinRangeThreshold + (m_rndRange - m_rndMinRangeThreshold) * dist;
+
+		float a = TRI_2PI * TriRand();
+		float z = TriRand() * 2.f - 1.f;
+		Vector3 angle( sqrt( 1.f - z * z ) * cos( a ), sqrt( 1.f - z * z ) * sin( a ), z );
+
+		Transform t;
+
+		t.position = (TranslationMatrix( angle * dist ) * m_worldTransform).GetTranslation();
+
+		TriQuaternionDirVector( &t.rotation, &angle );
+
+		float rand = m_randScaleMin + TriRand() * (m_randScaleMax - m_randScaleMin);
+		t.scale = m_effectScaling * rand;
+		m_processedTransforms.emplace_back( t );
+	}
+	m_triggerSphereScalarMulti = m_rndRange;
+}
+
 // --------------------------------------------------------------------------------------
 // Description:
 //   Based on a menu selection this function populates the vector maintaining all the
@@ -233,108 +465,27 @@ void EveChildEffectPropagator::GetRenderables( std::vector<ITr2Renderable*>& ren
 void EveChildEffectPropagator::ProcessLocators( IEveSpaceObject2* parent )
 {
 	m_processedTransforms.clear();
-	const Vector3 zAxis(0.f, 0.f, 1.f);
-	const LocatorStructureList* ls;
-
-	if( m_localLocators != nullptr )
-	{
-		ls = m_localLocators->GetLocators();
-	}
+	const Vector3 zAxis( 0.f, 0.f, 1.f );
 
 	switch( m_type )
 	{
 	case LOCAL_LOCATORS:
-		if( m_localLocators == nullptr )
-		{
-			break;
-		}
-		m_triggerSphereScalarMulti = 0;
-		for( auto it = ls->begin(); it != ls->end(); ++it )
-		{
-			if( TriRand() > m_completeness)
-			{
-				continue;
-			}
-
-			Transform t;
-			t.position = ( TranslationMatrix( it->position ) * m_worldTransform ).GetTranslation();
-			float l = LengthSq(t.position);
-			m_triggerSphereScalarMulti = m_triggerSphereScalarMulti > l ? m_triggerSphereScalarMulti : l;
-			t.rotation = it->direction; 
-			float rand = m_randScaleMin + TriRand() * ( m_randScaleMax - m_randScaleMin );
-			t.scale = m_effectScaling * rand;
-			m_processedTransforms.emplace_back( t );
-		}
-		m_triggerSphereScalarMulti = std::sqrt(m_triggerSphereScalarMulti) * 2.f;
-
+		ProcessLocatorsLocalLocators();
 		break;
 	case LOCATOR_SET_BY_REF:
-		if( !m_locatorSetName.empty() )
-		{
-			const LocatorStructureList* locators;
-			
-			if( nullptr != m_refObject )
-			{
-				locators = m_refObject->GetLocatorsForSet( m_locatorSetName );
-			}
-			else
-			{
-				if( EveSpaceObject2Ptr spaceObject = BlueCastPtr( parent ) )
-				{
-					locators = spaceObject->GetLocatorsForSet( m_locatorSetName );
-					Vector4 bounds;
-					spaceObject->GetBoundingSphere( bounds );
-					m_triggerSphereScalarMulti = bounds.w;
-				}
-				else
-				{
-					return;
-				}
-			}
-
-			if( locators )
-			{
-				for ( auto locator = locators->begin(); locator != locators->end(); ++locator  )
-				{
-					if ( TriRand() > m_completeness )
-					{
-						continue;
-					}
-					Transform t;
-					t.position = locator->position;
-					t.rotation = locator->direction;
-					float rand = m_randScaleMin + TriRand() * ( m_randScaleMax - m_randScaleMin );
-					t.scale = m_effectScaling * rand;
-					m_processedTransforms.emplace_back( t );
-				}
-			}
-		}
+		ProcessLocatorsRefLocators( parent );
 		break;
 	case RANDOM_SPREAD:
-		for( int i = 0; i < m_numTriggers; i++ )
-		{
-			float dist = TriRand();
-			dist += ( m_rndClosenessPreference - dist ) * TriRand();
-			dist = m_rndMinRangeThreshold + ( m_rndRange - m_rndMinRangeThreshold ) * dist;
-
-			float a = TRI_2PI * TriRand();
-			float z = TriRand() * 2.f - 1.f;
-			Vector3 angle( sqrt( 1.f - z*z ) * cos( a ), sqrt( 1.f - z*z ) * sin( a ), z );
-			
-			Transform t;
-			
- 			t.position = ( TranslationMatrix( angle * dist ) * m_worldTransform ).GetTranslation();
-			
-			TriQuaternionDirVector( &t.rotation, &angle );
-			
-			float rand = m_randScaleMin + TriRand() * ( m_randScaleMax - m_randScaleMin );
-			t.scale = m_effectScaling * rand;
-			m_processedTransforms.emplace_back( t );
-		}
-		m_triggerSphereScalarMulti = m_rndRange;
+		ProcessLocatorsRandomSpread();
 		break;
 	default:
 		break;
+	}
+
+	if( m_processedTransforms.empty() )
+	{
+		Stop();
+		return;
 	}
 
 	DistanceSortLocators();
@@ -342,9 +493,9 @@ void EveChildEffectPropagator::ProcessLocators( IEveSpaceObject2* parent )
 
 void EveChildEffectPropagator::GetLights( Tr2LightManager& lightManager ) const
 {
-	if (m_effect != nullptr)
+	if( m_effect != nullptr )
 	{
-		m_effect->GetLights(lightManager);
+		m_effect->GetLights( lightManager );
 	}
 }
 
@@ -357,9 +508,9 @@ void EveChildEffectPropagator::DistanceSortLocators()
 {
 	for( auto it = m_processedTransforms.begin(); it != m_processedTransforms.end(); ++it )
 	{
-		it->sqrDistToSphereCenter = LengthSq( it->position - m_triggerSphereOffset * m_triggerSphereScalarMulti);
+		it->sqrDistToSphereCenter = LengthSq( it->position - m_triggerSphereOffset * m_triggerSphereScalarMulti );
 	}
-	
+
 	std::sort( m_processedTransforms.begin(), m_processedTransforms.end(), SortByCircleDist() );
 }
 
@@ -370,7 +521,7 @@ void EveChildEffectPropagator::GetDebugOptions( Tr2DebugRendererOptions& options
 {
 	options.insert( "EffectPropagator" );
 
-	if( m_effect != nullptr ) 
+	if( m_effect != nullptr )
 	{
 		m_effect->GetDebugOptions( options );
 	}
@@ -388,19 +539,40 @@ void EveChildEffectPropagator::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 		float currentRad = m_triggerSphereRadiusCurve->GetValueAt( m_playTime ) * m_triggerSphereScalarMulti;
 		renderer.DrawSphere( this, TranslationMatrix( m_triggerSphereOffset * m_triggerSphereScalarMulti ) * m_worldTransform, currentRad, 12, Tr2DebugRenderer::Wireframe, 0xbbffbbff );
 	}
-	
-	for( auto it = m_processedTransforms.begin(); it != m_processedTransforms.end(); ++it )
+
+	if( m_type == LOCAL_LOCATORS )
 	{
-		renderer.DrawSphereArrow(
-			this,
-			it->position + m_worldTransform.GetTranslation(),
-			Vector3( it->rotation ),
-			Length( m_effectScaling ) * 10.f,
-			8,
-			Tr2DebugRenderer::Lit,
-			0x990088ff 
-		);
+		const LocatorStructureList& locators = *m_localLocators->GetLocators();
+		int i = 0;
+		for( auto it = m_processedTransforms.begin(); it != m_processedTransforms.end(); ++it, i++ )
+		{
+			renderer.DrawSphereArrow(
+				Tr2DebugObjectReference( &locators, uint32_t( i ) ),
+				it->position,
+				Vector3( it->rotation ),
+				Length( it->scale ) * m_triggerSphereScalarMulti / 50.f,
+				8,
+				Tr2DebugRenderer::Lit,
+				0x990088ff
+			);
+		}
 	}
+	else
+	{
+		for( auto it = m_processedTransforms.begin(); it != m_processedTransforms.end(); ++it )
+		{
+			renderer.DrawSphereArrow(
+				this,
+				Vector3( XMVector3TransformCoord( it->position, m_worldTransform ) ),
+				Vector3( it->rotation ),
+				Length( it->scale ) * m_triggerSphereScalarMulti / 50.f,
+				8,
+				Tr2DebugRenderer::Lit,
+				0x990088ff
+			);
+		}
+	}
+
 
 	if( m_effect != nullptr )
 	{

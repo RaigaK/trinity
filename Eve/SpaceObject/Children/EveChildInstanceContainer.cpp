@@ -150,6 +150,11 @@ void EveChildInstanceContainer::CreateInstances( IEveSpaceObject2* parent )
 // --------------------------------------------------------------------------------------
 void EveChildInstanceContainer::CreateInstance( const Vector3& scale, const Quaternion& rotation, const Vector3& translation, const int32_t boneIndex )
 {
+	if( m_source == nullptr )
+	{
+		return;
+	}
+	
 	EveChildContainerPtr translationParent;
 	translationParent.CreateInstance();
 
@@ -213,6 +218,14 @@ void EveChildInstanceContainer::RunOnInstances( std::function<void( IEveSpaceObj
 void EveChildInstanceContainer::ClearInstanceList()
 {
 	m_instances.Clear();
+}
+
+void EveChildInstanceContainer::PopFront()
+{
+	if( !m_instances.empty() )
+	{
+		m_instances.Remove( 0 );
+	}
 }
 
 float EveChildInstanceContainer::GetOwnerMaxSpeed() const

@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   April 2020
+//    Copyright: CCP 2020
+//
+
 #pragma once
 #define EveChildEffectPropagator_H
 
@@ -28,26 +34,33 @@ public:
 	void Play();
 	void Stop();
 
-	bool OnModified( Be::Var* value );
+	bool OnModified( Be::Var* value ) override;
 
-	void UpdateVisibility(const TriFrustum& frustum, const Matrix& parentTransform, Tr2Lod parentLod) override;
-	void AddQuadsToQuadRenderer(const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer) const override;
-	void GetRenderables(std::vector<ITr2Renderable*>& renderables) override;
-	void UpdateAsyncronous(EveUpdateContext& updateContext, const EveChildUpdateParams& params) override;
-	void GetLights(Tr2LightManager& lightManager) const override;
-	void UpdateSyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
-	void RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer );
-	
+	void UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform, Tr2Lod parentLod ) override;
+	void AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer ) const override;
+	void GetRenderables( std::vector<ITr2Renderable*>& renderables ) override;
+	void UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params ) override;
+	void GetLights( Tr2LightManager& lightManager ) const override;
+	void UpdateSyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params ) override;
+	void RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer ) override;
+
 	void GetDebugOptions( Tr2DebugRendererOptions & options ) override;
 	void RenderDebugInfo( ITr2DebugRenderer2& renderer ) override;
 
-	enum PropagationType 
-	{ 
-		LOCAL_LOCATORS, 
-		LOCATOR_SET_BY_REF, 
-		RANDOM_SPREAD, 
+	enum PropagationType
+	{
+		LOCAL_LOCATORS = 0,
+		LOCATOR_SET_BY_REF = 1,
+		RANDOM_SPREAD = 2,
 	};
-	
+
+	enum TriggerType
+	{
+		TRIGGER_SPHERE_CURVE = 0,
+		INTERVAL_TRIGGERS = 1,
+		INSTANT_PERMANENT = 2,
+	};
+
 private:
 	struct Transform
 	{
@@ -56,7 +69,7 @@ private:
 		Vector3 scale;
 		float sqrDistToSphereCenter;
 	};
-	
+
 	struct SortByCircleDist
 	{
 		bool operator()( const Transform& lhs, const Transform& rhs ) const
@@ -64,10 +77,18 @@ private:
 			return lhs.sqrDistToSphereCenter < rhs.sqrDistToSphereCenter;
 		}
 	};
-	
+
 	void ProcessLocators( IEveSpaceObject2* parent );
+	void ProcessLocatorsRandomSpread();
+	void ProcessLocatorsLocalLocators();
+	void ProcessLocatorsRefLocators( IEveSpaceObject2* parent );
+
+	void UpdateTriggerCurve( EveUpdateContext& updateContext );
+	void UpdateTriggerInterval( EveUpdateContext& updateContext );
+
 	void DistanceSortLocators();
 	void ManageTriggers();
+	int GetSmartRandomLocatorIndex();
 
 	float m_playTime;
 
@@ -77,15 +98,13 @@ private:
 	Vector3 m_effectScaling;
 	float m_randScaleMin;
 	float m_randScaleMax;
-	
 	Vector3 m_triggerSphereOffset;
 	Tr2CurveScalarPtr m_triggerSphereRadiusCurve;
 	float m_triggerSphereScalarMulti;
-
 	EveLocatorSetsPtr m_localLocators;
-
 	std::vector<Transform> m_processedTransforms;
 	PropagationType m_type;
+	TriggerType m_triggerMethood;
 
 	int m_currentTriggerIndex; // skip processing triggers until this point
 
@@ -94,7 +113,6 @@ private:
 	bool m_replayAfterDelay;
 
 	// Locator By Referance 
-	EveSpaceObject2Ptr m_refObject;
 	BlueSharedString m_locatorSetName;
 	float m_completeness;
 
@@ -103,7 +121,14 @@ private:
 	float m_rndRange;
 	float m_rndClosenessPreference;
 	float m_rndMinRangeThreshold;
-	
+
+	// Interval triggers
+	float m_frequency;
+	float m_effectDuration;
+	int m_stopAfterNumTriggers;
+	int m_numDeleted;
+	std::vector<int> m_lastTriggered;
+
 	// Is the effect playing
 	bool m_isPlaying;
 	bool m_trigger;
