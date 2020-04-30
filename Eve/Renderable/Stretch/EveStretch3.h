@@ -5,11 +5,13 @@
 //
 
 #pragma once
+#include "Audio/ITr2Audio.h"
 #include "Eve/IEveFiringEffectElement.h"
 #include "Eve/IEveSpaceObject2.h"
 #include "Tr2DebugRenderer.h"
 #include "ITr2CurveSetOwner.h"
 #include "ITr2DynamicBindingOwner.h"
+#include "ITr2SoundEmitterOwner.h"
 #include "Controllers/ITr2ControllerOwner.h"
 
 BLUE_DECLARE( EveStretch3 );
@@ -37,12 +39,13 @@ BLUE_CLASS( EveStretch3 ):
 	public INotify,
 	public IListNotify,
 	public IInitialize,
-	public ITr2CurveSetOwner
+	public ITr2CurveSetOwner,
+	public ITr2SoundEmitterOwner
 {
 public:
     EXPOSE_TO_BLUE();
     EveStretch3( IRoot* lockobj = NULL );
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	// IInitialize
 	bool Initialize() override;
@@ -109,6 +112,10 @@ public:
 	// ITr2DynamicBindingOwner
 	std::unordered_map<std::string, IRoot*> GetParameterMap() const override;
 
+	//////////////////////////////////////////////////////////////////////////
+	// ITr2SoundEmitterOwner
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
+
 private:
 	void RunOnComponents( std::function<void( IEveSpaceObjectChild* )> func ) const;
 	float RunOnComponentsGetMax( std::function<float( IEveSpaceObjectChild* )> func ) const;
@@ -120,7 +127,7 @@ private:
 
 	float m_destObjectScale;
 
-	Vector3 m_sourcePosition; 
+	Vector3 m_sourcePosition;
 	Vector3 m_destinationPosition;
 
 	ITriVectorFunctionPtr m_source;
@@ -130,13 +137,13 @@ private:
 
 	IEveSpaceObject2Ptr m_sourceSpaceObject;
 	IEveSpaceObject2Ptr m_destSpaceObject;
-	
+
 	IEveSpaceObjectChildPtr m_sourceObject;
 	IEveSpaceObjectChildPtr m_destObject;
 	IEveSpaceObjectChildPtr m_stretchObject;
 	IEveSpaceObjectChildPtr m_moveObject;
 	PTriCurveSetVector m_curveSets;
-	
+
 	Be::Time m_startTime;
 	PITr2ControllerVector m_controllers;
 	PTr2DynamicBindingVector m_dynamicBindings;
@@ -148,6 +155,8 @@ private:
 
 	Matrix m_sourceMatrix;
 	bool m_isMuzzleEffect;
+
+	ITr2AudioPtr m_audio;
 };
 
 TYPEDEF_BLUECLASS( EveStretch3 );

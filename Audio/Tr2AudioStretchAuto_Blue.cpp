@@ -5,18 +5,15 @@
 //
 
 #include "StdAfx.h"
-#include "Tr2AudioStretch.h"
+#include "Tr2AudioStretchAuto.h"
 
-BLUE_DEFINE( Tr2AudioStretch );
-BLUE_DEFINE_INTERFACE( ITr2Audio );
-BLUE_DEFINE_INTERFACE( ITr2AudEmitter );
+BLUE_DEFINE( Tr2AudioStretchAuto );
 
-const Be::ClassInfo* Tr2AudioStretch::ExposeToBlue()
+const Be::ClassInfo* Tr2AudioStretchAuto::ExposeToBlue()
 {
-	EXPOSURE_BEGIN( Tr2AudioStretch, "Use this to add audio to lasers or other looping stretch effects." )
-		MAP_INTERFACE( ITr2Audio )
-		MAP_INTERFACE( ITr2DebugRenderable )
-		MAP_INTERFACE( IInitialize)
+	EXPOSURE_BEGIN( Tr2AudioStretchAuto, ":jessica-help-url: https://wiki.ccpgames.com/display/CAudio/Tr2AudioStretchAuto" )
+		MAP_INTERFACE( Tr2AudioStretchBase )
+        MAP_INTERFACE( ITr2Audio )
 
 		MAP_ATTRIBUTE(
 			"sourceEmitter",

@@ -10,6 +10,7 @@
 #include "EveSOFDNA.h"
 #include "EveSOFUtils.h"
 #include "Tr2ExternalParameter.h"
+#include "Audio/ITr2AudEmitter.h"
 #include "Eve/EveTransform.h"
 #include "Eve/Turret/EveTurretSet.h"
 #include "Eve/SpaceObject/EveShip2.h"
@@ -45,7 +46,6 @@
 #include "Particle/Tr2DynamicEmitter.h"
 #include "Particle/Tr2GpuUniqueEmitter.h"
 #include "TriSequencer.h"
-#include "Include/ITr2SoundEmitter.h"
 #include "Lights/Tr2PointLight.h"
 #include "Lights/Tr2TexturedPointLight.h"
 #include "Lights/Tr2SpotLight.h"
@@ -1452,8 +1452,8 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 			observer->SetObserver( emitter );
 			obj->AddObserver( observer );
 
-			ITr2SoundEmitterPtr theRealEmitter;
-			if( emitter->QueryInterface( BlueInterfaceIID<ITr2SoundEmitter>(), reinterpret_cast<void**>( &theRealEmitter.p ), BEQI_SILENT ) && theRealEmitter )
+			ITr2AudEmitterPtr theRealEmitter;
+			if( emitter->QueryInterface( BlueInterfaceIID<ITr2AudEmitter>(), reinterpret_cast<void**>( &theRealEmitter.p ), BEQI_SILENT ) && theRealEmitter )
 			{
 				theRealEmitter->Initialize( cit->name.c_str(), cit->prefix.c_str(), cit->position );
 			}

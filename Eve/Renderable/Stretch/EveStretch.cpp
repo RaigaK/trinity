@@ -7,7 +7,8 @@
 #include "Eve/Turret/EveTurretSet.h"
 #include "Curves/Tr2CurveScalar.h"
 #include "Lights/Tr2PointLight.h"
-#include "Audio/Tr2AudioStretch.h"
+#include "Audio/Tr2AudioStretchAuto.h"
+#include "Audio/Tr2AudioStretchBase.h"
 
 static const Vector3 Y_AXIS(0.0f, 1.0f, 0.0f);
 
@@ -95,7 +96,7 @@ void EveStretch::UpdateAsyncronous( EveUpdateContext& updateContext )
 		m_destObject->Update( updateContext );
 	}
 
-	if (auto tmp = dynamic_cast< Tr2AudioStretch* > ( m_audio.p ))
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
 	{
 		tmp->Update( m_sourcePosition, m_destinationPosition );
 	}
@@ -309,7 +310,7 @@ void EveStretch::StartMoving()
 		m_moveObject->SetDisplay( true );
 	}
 
-	if ( auto tmp = dynamic_cast< Tr2AudioStretch* > ( m_audio.p ) )
+	if ( auto tmp = dynamic_cast< Tr2AudioStretchAuto* > ( m_audio.p ) )
 	{
 		tmp->TriggerStretchEvent();
 	}
@@ -324,7 +325,7 @@ void EveStretch::Start()
 	{
 		m_curveSets.front()->Play();
 
-		if ( auto tmp = dynamic_cast< Tr2AudioStretch* > ( m_audio.p ) )
+		if ( auto tmp = dynamic_cast< Tr2AudioStretchAuto* > ( m_audio.p ) )
 		{
 			tmp->TriggerOutburstEvent();
 			tmp->TriggerImpactEvent();
@@ -539,7 +540,7 @@ void EveStretch::GetLights( Tr2LightManager& lightManager ) const
 
 void EveStretch::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
-	if (auto tmp = dynamic_cast< Tr2AudioStretch* > ( m_audio.p ))
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
 	{
 		tmp->GetDebugOptions( options );
 	}
@@ -547,7 +548,7 @@ void EveStretch::GetDebugOptions( Tr2DebugRendererOptions& options )
 
 void EveStretch::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 {
-	if (auto tmp = dynamic_cast< Tr2AudioStretch* > ( m_audio.p ))
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
 	{
 		tmp->RenderDebugInfo( renderer );
 	}

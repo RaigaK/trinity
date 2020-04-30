@@ -126,7 +126,9 @@ public:
 	void HandleControllerEvent( const char* name ) override;
 	void StartControllers();
 
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+	/////////////////////////////////////////////////////////////////////////////////////
+	// ITr2SoundEmitterOwner
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
 
 	void Start();
 	void Stop();

@@ -7,12 +7,11 @@
 //      An interface allowing for an abstraction of audio on an asset.
 
 #pragma once
-#ifndef ITr2Audio_h_
-#define ITr2Audio_h_
+
+#include "ITr2AudEmitter.h"
 
 BLUE_INTERFACE( ITr2Audio ) : public IRoot
 {
 	virtual void Update( Vector3& sourcePosition, Vector3& destPosition) = 0;
+	virtual ITr2AudEmitterPtr FindEmitterByName( const char* name ) = 0;
 };
-
-#endif

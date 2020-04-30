@@ -98,7 +98,7 @@ public:
 	void GetDebugOptions( Tr2DebugRendererOptions& options );
 	void RenderDebugInfo( ITr2DebugRenderer2& renderer );
 
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
 
 protected:
 	bool LoadChild();

@@ -81,7 +81,7 @@ public:
 	bool GetBoundingSphere( Vector4& sphere, BoundingSphereQuery query=EVE_BOUNDS_NORMAL ) const;
 	void RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer );
 	void AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer ) const;
-	
+
 	void UpdateSyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
 	void UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params );
 	void UpdateAsyncronous( EveUpdateContext& updateContext, Matrix& parentTransform );
@@ -101,14 +101,14 @@ public:
 
 	void PlayAllCurveSets();
 	void StopAllCurveSets();
-	
+
 	void GetDebugOptions( Tr2DebugRendererOptions& options );
 	void RenderDebugInfo( ITr2DebugRenderer2& renderer );
 
 	void GetWorldVelocity( Vector3& velocity ) const;
 	void SetInheritProperties( const Color* colorSet );
 
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
 
 	float GetOwnerMaxSpeed() const;
 

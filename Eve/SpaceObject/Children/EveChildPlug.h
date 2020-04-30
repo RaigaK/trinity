@@ -90,7 +90,7 @@ public:
 	void AddExternalParameter( Tr2ExternalParameter* externalParameter );
 	const PTr2ExternalParameterVector& GetExternalParameters() const;
 
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
 
 protected:
 	PIEveSpaceObjectChildVector m_objects;

@@ -7,10 +7,9 @@
 #pragma once
 
 
-BLUE_DECLARE_INTERFACE( ITr2SoundEmitter );
-
+BLUE_DECLARE_INTERFACE( ITr2AudEmitter );
 
 BLUE_INTERFACE( ITr2SoundEmitterOwner ): public IRoot
 {
-	virtual ITr2SoundEmitter* FindSoundEmitter( const char* name ) = 0;
+	virtual ITr2AudEmitterPtr FindSoundEmitter( const char* name ) = 0;
 };

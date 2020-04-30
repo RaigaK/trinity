@@ -463,7 +463,7 @@ bool EveChildSocket::LoadChild()
 	return true;
 }
 
-ITr2SoundEmitter* EveChildSocket::FindSoundEmitter( const char* name )
+ITr2AudEmitterPtr EveChildSocket::FindSoundEmitter( const char* name )
 {
 	if ( m_plug )
 	{

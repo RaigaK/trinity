@@ -19,6 +19,9 @@
 #include "Eve/SpaceObject/Children/TransformModifiers/EveChildModifierStretch.h"
 #include "Eve/SpaceObject/Children/IEveSpaceObjectChild.h"
 
+#include "Audio/Tr2AudioStretchAuto.h"
+#include "Audio/Tr2AudioStretchBase.h"
+
 EveStretch3::EveStretch3( IRoot* lockobj ) :
 	PARENTLOCK( m_curveSets ),
 	PARENTLOCK( m_controllers ),
@@ -54,7 +57,7 @@ bool EveStretch3::Initialize()
 	{
 		( *it )->Link( *GetRawRoot() );
 	}
-	
+
 	for( auto binding = m_dynamicBindings.begin(); binding != m_dynamicBindings.end(); ++binding )
 	{
 		( *binding )->SetOwner( this );
@@ -64,7 +67,7 @@ bool EveStretch3::Initialize()
 	return true;
 }
 
-void EveStretch3::RunOnComponents( std::function<void( IEveSpaceObjectChild* )> func ) const 
+void EveStretch3::RunOnComponents( std::function<void( IEveSpaceObjectChild* )> func ) const
 {
 	if( m_sourceObject )
 	{
@@ -115,7 +118,7 @@ float EveStretch3::RunOnComponentsGetMax( std::function<float( IEveSpaceObjectCh
 std::unordered_map<std::string, IRoot*> EveStretch3::GetParameterMap() const
 {
 	std::unordered_map<std::string, IRoot*> parameterMap;
-	
+
 	for( auto curveset = m_curveSets.begin(); curveset != m_curveSets.end(); ++curveset )
 	{
 		auto c = ( *curveset );
@@ -123,7 +126,7 @@ std::unordered_map<std::string, IRoot*> EveStretch3::GetParameterMap() const
 	}
 
 	parameterMap["Owner"] = this->GetRawRoot();
-	if( m_sourceSpaceObject ) 
+	if( m_sourceSpaceObject )
 	{
 		parameterMap["SourceSpaceObject"] = m_sourceSpaceObject->GetRootObject();
 	}
@@ -157,7 +160,7 @@ bool EveStretch3::OnModified( Be::Var* value )
 	if( IsMatch( value, m_stretchObject ) )
 	{
 		if( m_stretchObject )
-		{	
+		{
 			m_stretchModifier.CreateInstance();
 			if( m_dest )
 			{
@@ -230,7 +233,7 @@ void EveStretch3::UpdateSyncronous( EveUpdateContext& updateContext )
 	{
 		return;
 	}
-	
+
 	Be::Time time = updateContext.GetTime();
 
 	for( auto binding = m_dynamicBindings.begin(); binding != m_dynamicBindings.end(); ++binding )
@@ -242,7 +245,7 @@ void EveStretch3::UpdateSyncronous( EveUpdateContext& updateContext )
 	{
 		( *it )->Update();
 	}
-	
+
 	if( m_source )
 	{
 		m_source->Update( &m_sourcePosition, time );
@@ -354,6 +357,11 @@ void EveStretch3::UpdateAsyncronous( EveUpdateContext& updateContext )
 		params.localToWorldTransform = ScalingMatrix( Vector3( 1, 1, 1 ) * m_destObjectScale ) * oneEighty * rotationMatrix * TranslationMatrix( m_destinationPosition );
 		m_destObject->UpdateAsyncronous( updateContext, params );
 	}
+
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
+	{
+		tmp->Update( m_sourcePosition, m_destinationPosition );
+	}
 }
 
 void EveStretch3::Update( EveUpdateContext& updateContext )
@@ -363,7 +371,7 @@ void EveStretch3::Update( EveUpdateContext& updateContext )
 }
 
 void EveStretch3::StartMoving()
-{ 
+{
 }
 
 void EveStretch3::UpdateVisibility( const TriFrustum& frustum, const Matrix& parentTransform )
@@ -382,15 +390,15 @@ void EveStretch3::UpdateVisibility( const TriFrustum& frustum, const Matrix& par
 	{
 		m_sourceObject->UpdateVisibility( frustum, sourceMatrix, TR2_LOD_HIGH );
 	}
-	
+
 	if( m_destObject )
 	{
 		m_destObject->UpdateVisibility( frustum, destMatrix, TR2_LOD_HIGH );
 	}
-	
+
 	if( m_stretchObject )
 	{
-		// We need to figure out a better way of doing this, maybe we need to be able to pass in 
+		// We need to figure out a better way of doing this, maybe we need to be able to pass in
 		// an inverse modifier to update this correctly
 		// Currently this will almost always be visible, because of the stretch
 		// If we can not make it stretched, then we could make it invisible sooner
@@ -406,7 +414,7 @@ void EveStretch3::UpdateVisibility( const TriFrustum& frustum, const Matrix& par
 
 		m_moveObject->UpdateVisibility( frustum, moveMatrix, TR2_LOD_HIGH );
 	}
-	
+
 }
 
 void EveStretch3::GetRenderables( std::vector<ITr2Renderable*>& renderables)
@@ -597,29 +605,34 @@ void EveStretch3::GetModelCenterWorldPosition( Vector3& position ) const
 }
 
 bool EveStretch3::GetLocalBoundingBox( Vector3& min, Vector3& max )
-{ 
-	return false; 
+{
+	return false;
 }
 
 void EveStretch3::GetLocalToWorldTransform( Matrix& transform ) const
 {
 }
 
-void EveStretch3::SetDestObjectScale( float scale ) 
+void EveStretch3::SetDestObjectScale( float scale )
 {
-	m_destObjectScale = scale; 
+	m_destObjectScale = scale;
 }
 
 void EveStretch3::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
 	options.insert( "Lights" );
-	RunOnComponents( [&options]( IEveSpaceObjectChild* c ) { 
+	RunOnComponents( [&options]( IEveSpaceObjectChild* c ) {
 		auto debugRenderable = dynamic_cast< ITr2DebugRenderable* >( c );
 		if( debugRenderable )
 		{
 			debugRenderable->GetDebugOptions( options );
 		}
 	} );
+
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
+	{
+		tmp->GetDebugOptions( options );
+	}
 }
 
 void EveStretch3::RenderDebugInfo( ITr2DebugRenderer2& renderer )
@@ -635,6 +648,11 @@ void EveStretch3::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 			debugRenderable->RenderDebugInfo( renderer );
 		}
 	} );
+
+	if (auto tmp = dynamic_cast< Tr2AudioStretchBase* > ( m_audio.p ))
+	{
+		tmp->RenderDebugInfo( renderer );
+	}
 }
 
 void EveStretch3::PlayCurveSet( const std::string& name, const std::string& rangeName )
@@ -702,7 +720,7 @@ void EveStretch3::UpdateCurveSet( const std::string& name, Be::Time time )
 			( *it )->Update( time, time );
 		}
 	}
-	
+
 	RunOnComponents( [name, time]( IEveSpaceObjectChild* c ) {
 		auto curveSetOwner = dynamic_cast< ITr2CurveSetOwner* >( c );
 		if( curveSetOwner )
@@ -766,4 +784,13 @@ float EveStretch3::GetRangeDuration( const std::string& name, const std::string&
 	} );
 
 	return max(maxDuration, componentMax);
+}
+
+ITr2AudEmitterPtr EveStretch3::FindSoundEmitter( const char* name )
+{
+	if ( auto tmp = dynamic_cast<Tr2AudioStretchBase*> (m_audio.p) )
+	{
+		return tmp->FindEmitterByName( name );
+	}
+	return nullptr;
 }

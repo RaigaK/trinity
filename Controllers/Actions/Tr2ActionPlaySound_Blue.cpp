@@ -8,8 +8,6 @@
 #include "Tr2ActionPlaySound.h"
 
 
-BLUE_DEFINE_INTERFACE( ITr2SoundEmitter );
-
 BLUE_DEFINE( Tr2ActionPlaySound );
 
 

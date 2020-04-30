@@ -373,7 +373,7 @@ void EveChildPlug::SetInheritProperties( const Color* colorSet )
 	m_inheritProperties->SetProperties( colorSet );
 }
 
-ITr2SoundEmitter* EveChildPlug::FindSoundEmitter( const char* name )
+ITr2AudEmitterPtr EveChildPlug::FindSoundEmitter( const char* name )
 {
 	for ( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{

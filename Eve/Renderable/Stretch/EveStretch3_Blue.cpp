@@ -21,6 +21,7 @@ const Be::ClassInfo* EveStretch3::ExposeToBlue()
 		MAP_INTERFACE( ITr2ControllerOwner )
 		MAP_INTERFACE( ITr2CurveSetOwner )
 		MAP_INTERFACE( ITr2DynamicBindingOwner )
+		MAP_INTERFACE( ITr2SoundEmitterOwner )
 
 		MAP_ATTRIBUTE
 		(
@@ -175,6 +176,14 @@ const Be::ClassInfo* EveStretch3::ExposeToBlue()
 			m_length,
 			"Distance between the source and the destination",
 			Be::READ | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"audio",
+			m_audio,
+			"The type of audio to be used for this asset",
+			Be::READWRITE | Be::PERSIST
 		)
 
 		MAP_METHOD_AND_WRAP(

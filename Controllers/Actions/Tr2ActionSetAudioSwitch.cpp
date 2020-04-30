@@ -8,7 +8,7 @@
 #include "Tr2ActionSetAudioSwitch.h"
 #include "Controllers/Tr2Controller.h"
 #include "ITr2SoundEmitterOwner.h"
-#include "Include/ITr2SoundEmitter.h"
+#include "Audio/ITr2AudEmitter.h"
 
 
 Tr2ActionSetAudioSwitch::Tr2ActionSetAudioSwitch( IRoot* )

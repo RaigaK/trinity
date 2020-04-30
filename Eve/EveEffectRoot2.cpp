@@ -771,14 +771,14 @@ void EveEffectRoot2::SetShaderOption( const BlueSharedString& name, const BlueSh
 	}
 }
 
-ITr2SoundEmitter* EveEffectRoot2::FindSoundEmitter( const char* name )
+ITr2AudEmitterPtr EveEffectRoot2::FindSoundEmitter( const char* name )
 {
 	for( auto it = begin( m_observers ); it != end( m_observers ); ++it )
 	{
 		auto observer = *it;
 		if( observer->m_name == name )
 		{
-			ITr2SoundEmitterPtr listener = BlueCastPtr( observer->GetObserver() );
+			ITr2AudEmitterPtr listener = BlueCastPtr( observer->GetObserver() );
 			return listener;
 		}
 	}

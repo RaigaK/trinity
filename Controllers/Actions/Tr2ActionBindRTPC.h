@@ -9,7 +9,7 @@
 #include "Include/ITriFunction.h"
 #include "ITr2ControllerAction.h"
 #include "Controllers/Tr2ControllerExpression.h"
-#include "Include/ITr2SoundEmitter.h"
+#include "Audio/ITr2AudEmitter.h"
 
 
 BLUE_DECLARE( Tr2ExpressionTermInfo );
@@ -48,7 +48,7 @@ private:
 	ITriScalarFunctionPtr m_curve;
 
 	Tr2ControllerExpression m_evaluator;
-	ITr2SoundEmitterPtr m_emitter;
+	ITr2AudEmitterPtr m_emitter;
 	const Tr2Controller* m_controller;
 
 	Be::Time m_startTime;

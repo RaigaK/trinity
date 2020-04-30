@@ -5,18 +5,18 @@
 //
 
 #include "StdAfx.h"
-#include "Tr2AudioStretch.h"
+#include "Tr2AudioStretchBase.h"
 #include "Tr2Renderer.h"
 
-Tr2AudioStretch::Tr2AudioStretch( IRoot* lockobj )
+Tr2AudioStretchBase::Tr2AudioStretchBase( IRoot* lockobj )
 {
 	Initialize();
 }
 
-Tr2AudioStretch::~Tr2AudioStretch()
+Tr2AudioStretchBase::~Tr2AudioStretchBase()
 {}
 
-bool Tr2AudioStretch::Initialize()
+bool Tr2AudioStretchBase::Initialize()
 {
 	// If emitters don't already exist, create and set default names
 	if ( nullptr == m_sourceEmitter )
@@ -38,7 +38,7 @@ bool Tr2AudioStretch::Initialize()
 	return true;
 }
 
-void Tr2AudioStretch::Update( Vector3& sourcePosition, Vector3& destPosition )
+void Tr2AudioStretchBase::Update( Vector3& sourcePosition, Vector3& destPosition )
 {
 	Vector3 front, top;
 	if ( nullptr != m_sourceEmitter )
@@ -64,34 +64,24 @@ void Tr2AudioStretch::Update( Vector3& sourcePosition, Vector3& destPosition )
 	}
 }
 
-unsigned int Tr2AudioStretch::TriggerOutburstEvent()
-{
-	if ( nullptr != m_sourceEmitter )
+ITr2AudEmitterPtr Tr2AudioStretchBase::FindEmitterByName( const char* name )
+{	
+	if ( m_sourceEmitter->GetName() == name )
 	{
-		return m_sourceEmitter.p->SendEvent( m_outburstEvent );
+		return m_sourceEmitter;
 	}
-	return 0;
+	else if ( m_destEmitter->GetName() == name )
+	{
+		return m_destEmitter;
+	}
+	else if ( m_stretchEmitter->GetName() == name )
+	{
+		return m_stretchEmitter;
+	}
+	return nullptr;
 }
 
-unsigned int Tr2AudioStretch::TriggerImpactEvent()
-{
-	if ( nullptr != m_destEmitter)
-	{
-		return m_destEmitter.p->SendEvent( m_impactEvent );
-	}
-	return 0;
-}
-
-unsigned int Tr2AudioStretch::TriggerStretchEvent()
-{
-	if ( nullptr != m_stretchEmitter)
-	{
-		return m_stretchEmitter.p->SendEvent( m_stretchEvent );
-	}
-	return 0;
-}
-
-void Tr2AudioStretch::GetDebugOptions( Tr2DebugRendererOptions& options )
+void Tr2AudioStretchBase::GetDebugOptions( Tr2DebugRendererOptions& options )
 {
 	if ( auto tmp = dynamic_cast< ITr2DebugRenderable* > ( m_sourceEmitter.p ) )
 	{
@@ -107,7 +97,7 @@ void Tr2AudioStretch::GetDebugOptions( Tr2DebugRendererOptions& options )
 	}
 }
 
-void Tr2AudioStretch::RenderDebugInfo( ITr2DebugRenderer2& renderer )
+void Tr2AudioStretchBase::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 {
 	if ( auto tmp = dynamic_cast< ITr2DebugRenderable* > ( m_sourceEmitter.p ) )
 	{

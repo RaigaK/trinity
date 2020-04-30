@@ -3254,14 +3254,14 @@ bool EveSpaceObject2::GetBoneList( const granny_matrix_3x4*& bones, size_t& bone
 	return false;
 }
 
-ITr2SoundEmitter* EveSpaceObject2::FindSoundEmitter( const char* name )
+ITr2AudEmitterPtr EveSpaceObject2::FindSoundEmitter( const char* name )
 {
 	for( auto it = begin( m_observers ); it != end( m_observers ); ++it )
 	{
 		auto observer = *it;
 		if( observer->m_name == name )
 		{
-			ITr2SoundEmitterPtr listener = BlueCastPtr( observer->GetObserver() );
+			ITr2AudEmitterPtr listener = BlueCastPtr( observer->GetObserver() );
 			return listener;
 		}
 	}

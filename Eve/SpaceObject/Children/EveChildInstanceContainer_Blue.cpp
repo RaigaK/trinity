@@ -18,7 +18,6 @@ const Be::ClassInfo* EveChildInstanceContainer::ExposeToBlue()
 		MAP_INTERFACE( INotify )
 		MAP_INTERFACE( IEveEffectChildrenOwner )
 		MAP_INTERFACE( IShaderConfigurer )
-		MAP_INTERFACE( ITr2SoundEmitterOwner )
 		MAP_INTERFACE( ITr2ControllerOwner )
 		MAP_INTERFACE( IListNotify )
 		

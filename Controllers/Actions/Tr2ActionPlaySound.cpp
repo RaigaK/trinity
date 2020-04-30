@@ -8,7 +8,7 @@
 #include "Tr2ActionPlaySound.h"
 #include "Controllers/Tr2Controller.h"
 #include "ITr2SoundEmitterOwner.h"
-#include "Include/ITr2SoundEmitter.h"
+#include "Audio/ITr2AudEmitter.h"
 
 
 Tr2ActionPlaySound::Tr2ActionPlaySound( IRoot* )
@@ -21,7 +21,7 @@ void Tr2ActionPlaySound::Start( Tr2Controller& controller )
 	{
 		if( auto emitter = emitters->FindSoundEmitter( m_emitterName.c_str() ) )
 		{
-			emitter->SendSoundEvent( m_soundEvent.c_str() );
+			emitter->SendEvent( m_soundEvent );
 		}
 	}
 }

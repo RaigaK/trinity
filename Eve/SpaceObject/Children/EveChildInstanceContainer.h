@@ -10,7 +10,6 @@
 #include "EveChildTransform.h"
 #include "Tr2DebugRenderer.h"
 #include "ITr2CurveSetOwner.h"
-#include "ITr2SoundEmitterOwner.h"
 #include "Controllers/ITr2ControllerOwner.h"
 #include "Shader/IShaderConfigurer.h"
 #include "TransformModifiers/IEveChildTransformModifier.h"
@@ -41,7 +40,6 @@ BLUE_CLASS( EveChildInstanceContainer ) :
 	public IEveEffectChildrenOwner,
 	public ITr2DebugRenderable,
 	public IShaderConfigurer,
-	public ITr2SoundEmitterOwner,
 	public ITr2ControllerOwner,
 	public EveChildTransform,
 	public IBlueStructureListNotify	,
@@ -103,10 +101,6 @@ public:
 	// ITr2DebugRenderable
 	void GetDebugOptions( Tr2DebugRendererOptions& options );
 	void RenderDebugInfo( ITr2DebugRenderer2& renderer );
-
-	/////////////////////////////////////////////////////////////////////////////////////
-	// ITr2SoundEmitterOwner
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// INotify

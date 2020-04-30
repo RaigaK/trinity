@@ -402,7 +402,7 @@ public:
 
 	void SetShaderOption( const BlueSharedString& name, const BlueSharedString& value ) override;
 
-	ITr2SoundEmitter* FindSoundEmitter( const char* name ) override;
+	ITr2AudEmitterPtr FindSoundEmitter( const char* name ) override;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// clip sphere modification

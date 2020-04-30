@@ -517,13 +517,3 @@ void EveChildInstanceContainer::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 		}
 	} );
 }
-
-ITr2SoundEmitter* EveChildInstanceContainer::FindSoundEmitter( const char* name )
-{
-	// don't really know what to do here...
-	if( ITr2SoundEmitterOwnerPtr seo = BlueCastPtr( m_source->GetRootObject() ) )
-	{
-		return seo->FindSoundEmitter( name );
-	}
-	return nullptr;
-}

@@ -313,7 +313,7 @@ bool EveChildRef::LoadChild()
 	return true;
 }
 
-ITr2SoundEmitter* EveChildRef::FindSoundEmitter( const char* name )
+ITr2AudEmitterPtr EveChildRef::FindSoundEmitter( const char* name )
 {
 	if ( auto owner = dynamic_cast<ITr2SoundEmitterOwner*>( m_child.p ) )
 	{
