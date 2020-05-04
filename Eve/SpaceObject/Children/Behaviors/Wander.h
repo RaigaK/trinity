@@ -14,13 +14,13 @@ public:
 
 	virtual std::vector<Vector3> CalculateBehavior(std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
 	                                               BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius);
-	void GetDebugOptions( Tr2DebugRendererOptions& options );
-	void RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<DroneAgent>& agents, Matrix& parentWorldLocation );
 
 private:
-	float m_circleDistance;
-	float m_circleRadius;
 	float m_weightWander;	//priority of behavior
+	float rand1;
+	float rand2;
+	float rand3;
+	float m_freq;
 
 };
 
