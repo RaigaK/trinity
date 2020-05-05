@@ -119,6 +119,14 @@ BehaviorGroupBooster::BehaviorGroupBooster( IRoot* lockobj ) :
 
 bool BehaviorGroupBooster::Initialize()
 {
+	if( m_ambientFlareEffect != nullptr )
+	{
+		InitializeAmbientFlare();
+	}
+	if( m_haloFlareEffect != nullptr )
+	{
+		InitializeHaloFlare();
+	}
 	return true;
 }
 
@@ -205,7 +213,8 @@ void BehaviorGroupBooster::SetupQuads()
 	Quad ambientFlare( IdentityMatrix(), ambientTransform, m_ambientFlareColor, 0.0f );
 	Quad haloFlare( IdentityMatrix(), haloTransform, m_haloFlareColor, 0.0f );
 
-	m_haloMatrix = TransformationMatrix( Vector3( 1, 1, 1 ), Quaternion(0, 1, 0, 0), m_haloFlareOffset );
+	// turn the halo correctly so it works with the halo modifier
+	m_haloMatrix = RotationMatrix( Quaternion( 0, 1, 0, 0 ) );
 
 	for( unsigned int i = 0; i < m_flareCount; ++i )
 	{
@@ -435,8 +444,8 @@ void BehaviorGroupBooster::AddLight( Tr2LightManager& lightManager, Vector3 posi
 
 void BehaviorGroupBooster::AddFlare( Matrix& agentTransform, float lod, float intensity, unsigned int agentIndex, float shipBoundingSphereRadius )
 {
-        // This is unlikely, but can happen during editing (importing a booster before it has been told how many flares there are)	
-        if( m_flareCount == 0 )
+    // This is unlikely, but can happen during editing (importing a booster before it has been told how many flares there are)	
+    if( m_flareCount == 0 )
 	{
 		return;
 	}
@@ -444,10 +453,15 @@ void BehaviorGroupBooster::AddFlare( Matrix& agentTransform, float lod, float in
 	if( m_haloFlareEffect && m_haloFlares.size() == m_flareCount )
 	{
 		auto& q = m_haloFlares[agentIndex];
-		auto haloMatrix = m_haloModifier->ApplyTransform( m_haloMatrix * agentTransform, 0, nullptr );
 		float haloModification = ( 1.0f + lod ) * ( 1.0f + lod ) * ( lod - 1.0f ) * ( lod - 1.0f );
 		haloModification = max( 0.0f, haloModification );
 		float scaledBrightness = ( 0.1f + 0.9f * intensity ) * m_haloFlareBrightness * haloModification;
+		
+		// offset the halo towards the center of the ship when we lod out
+		Vector3 modOffset = haloModification * m_haloFlareOffset;
+		auto offset = TranslationMatrix( modOffset );
+
+		auto haloMatrix = m_haloModifier->ApplyTransform( m_haloMatrix * offset * agentTransform, 0, nullptr );		
 
 		if( m_haloFlareNoiseAmplitude != 0.f )
 		{

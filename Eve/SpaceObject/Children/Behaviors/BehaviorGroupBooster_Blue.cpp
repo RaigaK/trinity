@@ -47,7 +47,7 @@ const Be::ClassInfo* BehaviorGroupBooster::ExposeToBlue()
 		MAP_ATTRIBUTE( "lightColor", m_lightColor, "The color of the light. \n:jessica-group: Light", Be::READWRITE | Be::PERSIST )
 		
 		MAP_ATTRIBUTE( "displayBoosters", m_displayBoosters, "Should the boosters be displayed \njessica-group: Debug", Be::READWRITE )
-		MAP_ATTRIBUTE( "displayHazeFlare", m_displayHazeFlare, "Should the haze flare be displayed \njessica-group: Debug", Be::READWRITE  )
+		MAP_ATTRIBUTE( "displayHazeFlare", m_displayHazeFlare, "Should the halo flare be displayed \njessica-group: Debug", Be::READWRITE  )
 		MAP_ATTRIBUTE( "displayAmbientFlare", m_displayAmbientFlare, "Should the ambient flare be displayed \njessica-group: Debug", Be::READWRITE )
 
 		MAP_METHOD_AND_WRAP( "InitializeEffects", InitializeEffects, "Initializes effects that have not been set (booster, haze flare and ambient flare)")
