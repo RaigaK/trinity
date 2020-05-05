@@ -42,22 +42,11 @@ public:
 			m_parentTransform0 = Vector4( parentTransform._11, parentTransform._21, parentTransform._31, parentTransform._41 );
 			m_parentTransform1 = Vector4( parentTransform._12, parentTransform._22, parentTransform._32, parentTransform._42 );
 			m_parentTransform2 = Vector4( parentTransform._13, parentTransform._23, parentTransform._33, parentTransform._43 );
-
-			m_localTransform0[0] = Float_16( localTransform._11 );
-			m_localTransform0[1] = Float_16( localTransform._21 );
-			m_localTransform0[2] = Float_16( localTransform._31 );
-			m_localTransform0[3] = Float_16( localTransform._41 );
-
-			m_localTransform1[0] = Float_16( localTransform._12 );
-			m_localTransform1[1] = Float_16( localTransform._22 );
-			m_localTransform1[2] = Float_16( localTransform._32 );
-			m_localTransform1[3] = Float_16( localTransform._42 );
-
-			m_localTransform2[0] = Float_16( localTransform._13 );
-			m_localTransform2[1] = Float_16( localTransform._23 );
-			m_localTransform2[2] = Float_16( localTransform._33 );
-			m_localTransform2[3] = Float_16( localTransform._43 );
 			
+			m_localTransform0 = Vector4( localTransform._11, localTransform._21, localTransform._31, localTransform._41 );
+			m_localTransform1 = Vector4( localTransform._12, localTransform._22, localTransform._32, localTransform._42 );
+			m_localTransform2 = Vector4( localTransform._13, localTransform._23, localTransform._33, localTransform._43 );
+						
 			m_color[0] = Float_16( color.r );
 			m_color[1] = Float_16( color.g );
 			m_color[2] = Float_16( color.b );
@@ -70,9 +59,9 @@ public:
 		Vector4 m_parentTransform1;
 		Vector4 m_parentTransform2;
 
-		Float_16 m_localTransform0[4];
-		Float_16 m_localTransform1[4];
-		Float_16 m_localTransform2[4];
+		Vector4 m_localTransform0;
+		Vector4 m_localTransform1;
+		Vector4 m_localTransform2;
 
 		Float_16 m_color[4];
 		Float_16 m_brightness[2];
@@ -83,6 +72,8 @@ public:
 
 	// IInitialize
 	bool Initialize() override;
+
+	void InitializeEffects();
 
 	// INotify
 	bool OnModified( Be::Var* value ) override;
@@ -114,6 +105,10 @@ public:
 private:
 	Tr2EffectPtr CreateBoosterEffect( const BlueSharedString& lodOption );
 	Tr2EffectPtr CreateFlareEffect();
+
+	void InitializeHaloFlare();
+	void InitializeAmbientFlare();
+
 	void SetupBoosterEffect( Tr2EffectPtr effect );
 	void SetupQuads();
 		
@@ -132,9 +127,11 @@ private:
 	
 	Vector3 m_haloFlareOffset;
 	Vector3 m_haloFlareScale;
-	Quaternion m_haloFlareRotation;
 	float m_haloFlareBrightness;
 	Color m_haloFlareColor;
+	float m_haloFlareNoiseAmplitude;
+	float m_haloFlareNoiseSpeed;
+	uint32_t m_haloFlareNoiseOctaves;
 	EveChildModifierHaloPtr m_haloModifier;
 	Matrix m_haloMatrix;
 	
@@ -144,8 +141,9 @@ private:
 	Vector3 m_ambientFlareScale;
 	float m_ambientFlareBrightness;
 	Color m_ambientFlareColor;
-	float m_ambientFlareDistanceScale;
-	float m_ambientFlareDistanceBrightness;
+	float m_ambientFlareNoiseAmplitude;
+	float m_ambientFlareNoiseSpeed;
+	uint32_t m_ambientFlareNoiseOctaves;
 
 	TrackableStdVector<Quad> m_ambientFlares;
 	TrackableStdVector<Quad> m_haloFlares;

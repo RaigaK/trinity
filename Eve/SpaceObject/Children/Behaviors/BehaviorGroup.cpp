@@ -51,6 +51,10 @@ bool BehaviorGroup::OnModified( Be::Var* value )
 	{
 		CreateVertexDeclaration();
 	}
+	if( IsMatch( value, m_booster ) && m_booster != nullptr )
+	{
+		m_booster->RebuildFlareBuffer( m_count );
+	}
 
 	return true;
 }
@@ -619,7 +623,7 @@ void BehaviorGroup::GetInfoForBuffer( uint8_t* data, Matrix& parentWorldLocation
 	{
 		float LOD = m_debugMode ? m_debugLodLevel : ( *agent ).xfade;
 		float LODmod;
-		Matrix agentTransform = TransformationMatrix(agentScale, agent->rotation, agent->position );
+		Matrix agentTransform = TransformationMatrix( agentScale, agent->rotation, agent->position );
 		if( agent->isVisible )
 		{
 			Matrix meshData = Matrix( zeroMatrix );
@@ -634,9 +638,9 @@ void BehaviorGroup::GetInfoForBuffer( uint8_t* data, Matrix& parentWorldLocation
 			data += 12 * sizeof( float );
 
 			// boosters
-			Vector4 boosterPos = Vector4();
-			Quaternion boosterQuaternion = Quaternion();
-			Vector4 boosterInfo = Vector4();
+			Vector4 boosterPos = Vector4( 0, 0, 0, 0 );
+			Quaternion boosterQuaternion = Quaternion( 0, 0, 0, 1 );
+			Vector4 boosterInfo = Vector4( 0, 0, 0, 0 );
 			if( m_booster != nullptr )
 			{
 				boosterPos.GetXYZ() = TransformCoord( m_booster->GetOffset() * LODmod, agentTransform );
@@ -681,6 +685,8 @@ void BehaviorGroup::GetInfoForBuffer( uint8_t* data, Matrix& parentWorldLocation
 			// boosters
 			memcpy( data, &zeroMatrix, 12 * sizeof( float ) );
 			data += 12 * sizeof( float );
+
+			m_booster->AddFlare( IdentityMatrix(), 0, 0, agentIndex, m_boundingSphereRadius );
 		}
 		agentIndex++;
 	}

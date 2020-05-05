@@ -67,9 +67,9 @@ namespace
 			def.Add( def.FLOAT32_4, def.POSITION, 0, 1, 1 );
 			def.Add( def.FLOAT32_4, def.POSITION, 1, 1, 1 );
 			def.Add( def.FLOAT32_4, def.POSITION, 2, 1, 1 );
-			def.Add( def.FLOAT16_4, def.POSITION, 3, 1, 1 );
-			def.Add( def.FLOAT16_4, def.POSITION, 4, 1, 1 );
-			def.Add( def.FLOAT16_4, def.POSITION, 5, 1, 1 );
+			def.Add( def.FLOAT32_4, def.POSITION, 3, 1, 1 );
+			def.Add( def.FLOAT32_4, def.POSITION, 4, 1, 1 );
+			def.Add( def.FLOAT32_4, def.POSITION, 5, 1, 1 );
 
 			def.Add( def.FLOAT16_4, def.TEXCOORD, 0, 1, 1 );
 			def.Add( def.FLOAT16_2, def.TEXCOORD, 1, 1, 1 );
@@ -92,17 +92,20 @@ BehaviorGroupBooster::BehaviorGroupBooster( IRoot* lockobj ) :
 	m_haloFlareHash( 0 ),
 	m_haloFlareOffset( 0, 0, 0 ),
 	m_haloFlareScale( 1, 1, 1 ),
-	m_haloFlareRotation( 0, 0, 0, 1 ),
 	m_haloFlareBrightness( 0 ),
 	m_haloFlareColor( 1, 1, 1, 1 ),
+	m_haloFlareNoiseAmplitude( 0.2f ),
+	m_haloFlareNoiseSpeed( 1.0f ),
+	m_haloFlareNoiseOctaves( 1 ),
 	m_haloMatrix( IdentityMatrix() ),
 	m_ambientFlareHash( 0 ),
 	m_ambientFlareOffset( 0, 0, 0 ),
 	m_ambientFlareScale( 1, 1, 1 ),
 	m_ambientFlareBrightness( 0 ),
 	m_ambientFlareColor( 1, 1, 1, 1 ),
-	m_ambientFlareDistanceScale( 1.0f ),
-	m_ambientFlareDistanceBrightness( 1.0f ),
+	m_ambientFlareNoiseAmplitude( 0.2f ),
+	m_ambientFlareNoiseSpeed( 1.0f ),
+	m_ambientFlareNoiseOctaves( 1 ),
 	m_flareCount( 0 ),
 	m_displayBoosters( true ),
 	m_displayHazeFlare( true ),
@@ -110,10 +113,16 @@ BehaviorGroupBooster::BehaviorGroupBooster( IRoot* lockobj ) :
 	m_haloFlares( "BehaviorGroupBooster::m_haloFlares" ),
 	m_ambientFlares( "BehaviorGroupBooster::m_ambientFlares" )
 {
+	m_haloModifier.CreateInstance();
 }
 
 
 bool BehaviorGroupBooster::Initialize()
+{
+	return true;
+}
+
+void BehaviorGroupBooster::InitializeEffects()
 {
 	if( m_boosterEffect == nullptr )
 	{
@@ -122,23 +131,56 @@ bool BehaviorGroupBooster::Initialize()
 	if( m_ambientFlareEffect == nullptr )
 	{
 		m_ambientFlareEffect = CreateFlareEffect();
+		InitializeAmbientFlare();
 	}
 	if( m_haloFlareEffect == nullptr )
 	{
-		m_haloFlareEffect = CreateFlareEffect();
+		m_haloFlareEffect = CreateFlareEffect();		
+		InitializeHaloFlare();
 	}
-	m_haloModifier.CreateInstance();
-
-
-	return true;
+	SetupQuads();
 }
 
+void BehaviorGroupBooster::InitializeHaloFlare()
+{
+	m_haloFlareHash = m_haloFlareEffect->GetHashValue();
+	Tr2QuadRenderer::Instance()->RegisterEffect( m_haloFlareHash, TRIBATCHTYPE_ADDITIVE, sizeof( Quad ), 1, GetQuadDefinition(), m_haloFlareEffect );
+
+	m_haloFlares.resize( m_flareCount );
+}
+
+void BehaviorGroupBooster::InitializeAmbientFlare()
+{
+	m_ambientFlareHash = m_ambientFlareEffect->GetHashValue();
+	Tr2QuadRenderer::Instance()->RegisterEffect( m_ambientFlareHash, TRIBATCHTYPE_ADDITIVE, sizeof( Quad ), 1, GetQuadDefinition(), m_ambientFlareEffect );
+	m_ambientFlares.resize( m_flareCount );
+}
 
 bool BehaviorGroupBooster::OnModified( Be::Var* value )
 {
-	if( IsMatch( value, m_haloFlareEffect ) && m_haloFlareEffect != nullptr )
+	if( IsMatch( value, m_haloFlareEffect ) )
 	{
-		m_haloModifier.CreateInstance();
+		if( m_haloFlareEffect != nullptr )
+		{
+			InitializeHaloFlare();
+			SetupQuads();
+		}
+		else 
+		{
+			m_haloFlares.clear();
+		}
+	}
+	if( IsMatch( value, m_ambientFlareEffect ) )
+	{
+		if( m_ambientFlareEffect != nullptr )
+		{
+			InitializeAmbientFlare();
+			SetupQuads();
+		}
+		else 
+		{
+			m_ambientFlares.clear();
+		}
 	}
 	else
 	{
@@ -149,18 +191,32 @@ bool BehaviorGroupBooster::OnModified( Be::Var* value )
 
 void BehaviorGroupBooster::SetupQuads()
 {
+	bool createAmbientFlares = m_ambientFlareEffect != nullptr;
+	bool createHaloFlares = m_haloFlareEffect != nullptr;
+
+	if( !createAmbientFlares && !createHaloFlares )
+	{
+		return;
+	}
+
 	auto ambientTransform = TransformationMatrix( Vector3( 1.0f, 1.0f, 1.0f ), IdentityQuaternion(), m_ambientFlareOffset );
 	auto haloTransform = TransformationMatrix( m_haloFlareScale, IdentityQuaternion(), Vector3( 0.f, 0.f, 0.f ) );
 
 	Quad ambientFlare( IdentityMatrix(), ambientTransform, m_ambientFlareColor, 0.0f );
 	Quad haloFlare( IdentityMatrix(), haloTransform, m_haloFlareColor, 0.0f );
 
-	m_haloMatrix = TransformationMatrix( Vector3( 1, 1, 1 ), m_haloFlareRotation, m_haloFlareOffset );
+	m_haloMatrix = TransformationMatrix( Vector3( 1, 1, 1 ), Quaternion(0, 1, 0, 0), m_haloFlareOffset );
 
 	for( unsigned int i = 0; i < m_flareCount; ++i )
 	{
-		m_haloFlares[i] = Quad(haloFlare);
-		m_ambientFlares[i] = Quad(ambientFlare);
+		if( createHaloFlares )
+		{
+			m_haloFlares[i] = Quad( haloFlare );
+		}
+		if( createAmbientFlares )
+		{
+			m_ambientFlares[i] = Quad( ambientFlare );
+		}
 	}
 }
 
@@ -182,7 +238,6 @@ Vector3 BehaviorGroupBooster::GetOffset() const
 {
 	return m_boosterOffset;
 }
-
 
 unsigned int BehaviorGroupBooster::GetAtlasIndex0() const {
 	return m_atlasIndex0;
@@ -272,8 +327,15 @@ void BehaviorGroupBooster::RebuildFlareBuffer( unsigned int count )
 {
 	m_flareCount = count;
 
-	m_haloFlares.resize( count );
-	m_ambientFlares.resize( count );
+	if( m_haloFlareEffect != nullptr )
+	{
+		m_haloFlares.resize( count );
+	}
+	
+	if( m_ambientFlareEffect != nullptr )
+	{
+		m_ambientFlares.resize( count );
+	}
 
 	SetupQuads();
 }
@@ -355,7 +417,7 @@ void BehaviorGroupBooster::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr
 		return;
 	}
 	
-	if( !m_haloFlares.empty() && m_haloFlareEffect && m_displayHazeFlare)
+	if( !m_haloFlares.empty() && m_haloFlareEffect && m_displayHazeFlare )
 	{
 		quadRenderer.AddQuads( m_haloFlareHash, &m_haloFlares[0], m_flareCount );
 	}
@@ -373,7 +435,13 @@ void BehaviorGroupBooster::AddLight( Tr2LightManager& lightManager, Vector3 posi
 
 void BehaviorGroupBooster::AddFlare( Matrix& agentTransform, float lod, float intensity, unsigned int agentIndex, float shipBoundingSphereRadius )
 {
-	if( m_haloFlareEffect )
+        // This is unlikely, but can happen during editing (importing a booster before it has been told how many flares there are)	
+        if( m_flareCount == 0 )
+	{
+		return;
+	}
+
+	if( m_haloFlareEffect && m_haloFlares.size() == m_flareCount )
 	{
 		auto& q = m_haloFlares[agentIndex];
 		auto haloMatrix = m_haloModifier->ApplyTransform( m_haloMatrix * agentTransform, 0, nullptr );
@@ -381,13 +449,19 @@ void BehaviorGroupBooster::AddFlare( Matrix& agentTransform, float lod, float in
 		haloModification = max( 0.0f, haloModification );
 		float scaledBrightness = ( 0.1f + 0.9f * intensity ) * m_haloFlareBrightness * haloModification;
 
+		if( m_haloFlareNoiseAmplitude != 0.f )
+		{
+			float noise = float( PerlinNoise1D( TimeAsDouble( BeOS->GetCurrentFrameTime() + TimeFromMS( agentIndex * 10 ) ) * m_haloFlareNoiseSpeed, 2.f, 2.f, m_haloFlareNoiseOctaves ) );
+			scaledBrightness *= ( ( noise + 1.0f ) / 2.0f ) * m_haloFlareNoiseAmplitude;
+		}
+
 		q.m_brightness[0] = Float_16( scaledBrightness );
 		q.m_parentTransform0 = Vector4( haloMatrix._11, haloMatrix._21, haloMatrix._31, haloMatrix._41 );
 		q.m_parentTransform1 = Vector4( haloMatrix._12, haloMatrix._22, haloMatrix._32, haloMatrix._42 );
 		q.m_parentTransform2 = Vector4( haloMatrix._13, haloMatrix._23, haloMatrix._33, haloMatrix._43 );
 	}
 
-	if( m_ambientFlareEffect )
+	if( m_ambientFlareEffect && m_ambientFlares.size() == m_flareCount )
 	{
 		auto& q = m_ambientFlares[agentIndex];
 
@@ -399,20 +473,26 @@ void BehaviorGroupBooster::AddFlare( Matrix& agentTransform, float lod, float in
 		// the further away from the camera, the closer the flare is to the center of the agent
 		Vector3 modOffset = mod * m_ambientFlareOffset; 
 
+		if( m_ambientFlareNoiseAmplitude != 0.f )
+		{
+			float noise = float( PerlinNoise1D( TimeAsDouble( BeOS->GetCurrentFrameTime() + TimeFromMS( agentIndex * 10 ) ) * m_ambientFlareNoiseSpeed, 2.f, 2.f, m_ambientFlareNoiseOctaves ) );
+			scaledBrightness *= ( ( noise + 1.0f ) / 2.0f ) * m_ambientFlareNoiseAmplitude;
+		}
+
 		q.m_brightness[0] = Float_16( scaledBrightness  );
 		q.m_parentTransform0 = Vector4( agentTransform._11, agentTransform._21, agentTransform._31, agentTransform._41 );
 		q.m_parentTransform1 = Vector4( agentTransform._12, agentTransform._22, agentTransform._32, agentTransform._42 );
 		q.m_parentTransform2 = Vector4( agentTransform._13, agentTransform._23, agentTransform._33, agentTransform._43 );
 
 		// adjust the scale
-		q.m_localTransform0[0] = Float_16( nearScale.x + farScale );
-		q.m_localTransform1[1] = Float_16( nearScale.y + farScale );
-		q.m_localTransform2[2] = Float_16( nearScale.z + farScale );
+		q.m_localTransform0.x = nearScale.x + farScale;
+		q.m_localTransform1.y = nearScale.y + farScale;
+		q.m_localTransform2.z = nearScale.z + farScale;
 
 		// adjust the offset
-		q.m_localTransform0[3] = Float_16( modOffset.x );
-		q.m_localTransform1[3] = Float_16( modOffset.y );
-		q.m_localTransform2[3] = Float_16( modOffset.z );
+		q.m_localTransform0.w = modOffset.x;
+		q.m_localTransform1.w = modOffset.y;
+		q.m_localTransform2.w = modOffset.z;
 	}
 }
 
