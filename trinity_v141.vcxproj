@@ -2854,6 +2854,7 @@
     <ClInclude Include="Audio\Tr2AudioStretchAuto.h" />
     <ClInclude Include="Audio\Tr2AudioStretchBase.h" />
     <ClInclude Include="autoversion.h" />
+    <ClInclude Include="Controllers\Actions\Tr2ActionSetAttenuationScaling.h" />
     <ClInclude Include="EveSprite2dBracket.h" />
     <ClInclude Include="EveSprite2dBracketRenderer.h" />
     <ClInclude Include="GrannyBoneOffset.h" />
@@ -3419,6 +3420,8 @@
     <ClCompile Include="Audio\Tr2AudioStretchAuto_Blue.cpp" />
     <ClCompile Include="Audio\Tr2AudioStretchBase.cpp" />
     <ClCompile Include="Audio\Tr2AudioStretchBase_Blue.cpp" />
+    <ClCompile Include="Controllers\Actions\Tr2ActionSetAttenuationScaling.cpp" />
+    <ClCompile Include="Controllers\Actions\Tr2ActionSetAttenuationScaling_Blue.cpp" />
     <ClCompile Include="EveSprite2dBracket.cpp" />
     <ClCompile Include="EveSprite2dBracketRenderer.cpp" />
     <ClCompile Include="EveSprite2dBracketRenderer_Blue.cpp" />

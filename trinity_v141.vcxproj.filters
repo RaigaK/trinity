@@ -4416,6 +4416,9 @@
     <ClInclude Include="Audio\Tr2AudioStretchBase.h">
       <Filter>Source Files\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="Controllers\Actions\Tr2ActionSetAttenuationScaling.h">
+      <Filter>Source Files\Controllers\Actions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Tr2AudioStretchAuto.cpp">
@@ -4429,6 +4432,12 @@
     </ClCompile>
     <ClCompile Include="Audio\Tr2AudioStretchBase_Blue.cpp">
       <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Controllers\Actions\Tr2ActionSetAttenuationScaling.cpp">
+      <Filter>Source Files\Controllers\Actions</Filter>
+    </ClCompile>
+    <ClCompile Include="Controllers\Actions\Tr2ActionSetAttenuationScaling_Blue.cpp">
+      <Filter>Source Files\Controllers\Actions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
