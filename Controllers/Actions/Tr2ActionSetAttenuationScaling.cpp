@@ -1,0 +1,64 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   May 2020
+//    Copyright: CCP 2020
+//
+
+#include "StdAfx.h"
+#include "Audio/ITr2AudEmitter.h"
+#include "Controllers/Tr2Controller.h"
+#include "Controllers/Tr2ControllerFloatVariable.h"
+#include "ITr2SoundEmitterOwner.h"
+#include "Tr2ActionSetAttenuationScaling.h"
+
+
+Tr2ActionSetAttenuationScaling::Tr2ActionSetAttenuationScaling( IRoot* lockobj ) :
+	m_scalingPercent( 100 )
+{
+}
+
+void Tr2ActionSetAttenuationScaling::Link( Tr2Controller& controller )
+{
+	m_controller = &controller;
+}
+
+void Tr2ActionSetAttenuationScaling::Unlink()
+{
+	m_controller = nullptr;
+}
+
+void Tr2ActionSetAttenuationScaling::Start( Tr2Controller& controller )
+{
+	if( ITr2SoundEmitterOwnerPtr emitters = BlueCastPtr( controller.GetOwner() ) )
+	{
+		if( auto emitter = emitters->FindSoundEmitter( m_emitterName.c_str() ) )
+		{
+			emitter->SetAttenuationScalingFactor( GetScalingFactor() );
+		}
+	}
+}
+
+// Convert a scaling percentage to float for Wwise. If defined, apply 
+// a value from a controller variable to the final scaling factor.
+float Tr2ActionSetAttenuationScaling::GetScalingFactor() const
+{
+	float controllerVariableValue = 0;
+	float floatPercent = m_scalingPercent / 100.0f;
+
+	if ( !m_controllerVariableName.empty() && m_controller != nullptr )
+	{
+		if ( auto var = m_controller->GetVariableByName( m_controllerVariableName.c_str()) )
+		{
+			controllerVariableValue = var->GetValue();
+		}
+	}
+
+	if ( controllerVariableValue != 0 )
+	{
+		return floatPercent * controllerVariableValue;
+	}
+	else
+	{
+		return floatPercent;
+	}
+}

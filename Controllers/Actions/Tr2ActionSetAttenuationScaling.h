@@ -1,0 +1,33 @@
+////////////////////////////////////////////////////////////
+//
+//    Created:   May 2020
+//    Copyright: CCP 2020
+//
+
+#pragma once
+
+#include "ITr2ControllerAction.h"
+
+BLUE_CLASS( Tr2ActionSetAttenuationScaling ) :
+    public ITr2ControllerAction
+{
+public:
+	Tr2ActionSetAttenuationScaling( IRoot* lockobj = nullptr );
+
+	EXPOSE_TO_BLUE();
+
+	void Link( Tr2Controller& controller ) override;
+	void Unlink() override;
+	void Start( Tr2Controller& controller ) override;
+
+	float GetScalingFactor() const;
+
+protected:
+	Tr2ControllerPtr m_controller;
+
+	std::string m_emitterName;
+	std::string m_controllerVariableName;
+	int m_scalingPercent;
+};
+
+TYPEDEF_BLUECLASS( Tr2ActionSetAttenuationScaling );
