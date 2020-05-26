@@ -361,7 +361,7 @@ void EveChildLineSet::UpdateBoundingSphere()
 		
 	if (m_objType == CIRCLE)
 	{
-		m_boundingSphere = Vector4( (TranslationMatrix( m_translation ) * m_worldTransform ).GetTranslation(), m_circleRadius + m_lineWidth + objectSizeBonus );
+		m_boundingSphere = Vector4( m_translation, m_circleRadius + m_lineWidth + objectSizeBonus );
 	}
 	
 	if( m_objType == BEZIER_CURVE )
@@ -372,7 +372,7 @@ void EveChildLineSet::UpdateBoundingSphere()
 		center += m_bezierPoint;
 		center /= 3.f;
 		float rad = max( max( LengthSq( m_bezierPoint - center ), LengthSq( m_point2 - center ) ), LengthSq( m_point1 - center ) );
-		m_boundingSphere = Vector4(  (TranslationMatrix(center) * m_worldTransform).GetTranslation(), sqrt(rad) + m_lineWidth + objectSizeBonus );
+		m_boundingSphere = Vector4(  center, sqrt(rad) + m_lineWidth + objectSizeBonus );
 	}
 }
 
