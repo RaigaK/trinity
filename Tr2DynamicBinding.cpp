@@ -251,7 +251,10 @@ void Tr2DynamicBinding::Link()
 		m_binding->SetSource( m_sourceObjectAttribute.c_str(), static_cast<IRoot*>( m_source ) );
 		m_binding->SetScale( m_scale );
 		m_binding->Initialize();
-		m_bindingTime = BeOS->GetCurrentFrameTime() + TimeFromMS( m_bindingDelay );
+		if( m_bindingTime == 0 )
+		{
+			m_bindingTime = BeOS->GetCurrentFrameTime() + TimeFromMS( m_bindingDelay );
+		}
 	}	
 }
 
