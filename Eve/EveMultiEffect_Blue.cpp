@@ -37,14 +37,6 @@ const Be::ClassInfo* EveMultiEffect::ExposeToBlue()
 
 		MAP_ATTRIBUTE
 		(
-			"bindings",
-			m_bindings,
-			"A list of bindings between parameters/curves",
-			Be::READ | Be::PERSIST
-		)
-
-		MAP_ATTRIBUTE
-		(
 			"controllers",
 			m_controllers,
 			"A list of controllers that control the multieffect",
@@ -64,6 +56,14 @@ const Be::ClassInfo* EveMultiEffect::ExposeToBlue()
 			"curveSets",
 			m_curveSets,
 			"A list of curvesets",
+			Be::READ | Be::PERSIST
+		)
+
+		MAP_ATTRIBUTE
+		(
+			"bindings",
+			m_bindings,
+			"A list of bindings between parameters/curves",
 			Be::READ | Be::PERSIST
 		)
 
