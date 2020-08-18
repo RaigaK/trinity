@@ -410,6 +410,15 @@ void BehaviorGroup::AddAgentsByCount( int size )
 	size_t sizeBeforeResize = m_agents.size();
 	m_agents.resize( size );
 
+	// This is because the process priority behavior can also affect where drones spawn
+	if( m_spawnPosition != Vector3( 0.f, 0.f, 0.f ) )
+	{
+		for( auto agent = m_agents.begin(); agent != m_agents.end(); ++agent )
+		{
+			agent->position = m_spawnPosition;
+		}
+	}
+
 	while( m_scratchData.size() < m_behaviors.size() )
 	{
 		m_scratchData.push_back( CcpMallocBuffer() );
