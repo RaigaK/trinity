@@ -106,8 +106,8 @@ private:
 	void PassInVertexesToBehaviorGroups();
 	void PassInTunnelFunctionsToBehaviorGroups();
 	char* m_name;
-	bool m_needToPassInVertexFunction;
-	bool m_needToPassInTunnelFunction;
+	bool m_behaviorGroupLoaded;
+	bool m_behaviorGroupLoadedForTunnel;
 
 	/////////////////////////////////////////////////////////////////////////////////////
 	// ITr2DebugRenderable

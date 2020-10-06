@@ -13,6 +13,7 @@
 BehaviorGroup::BehaviorGroup( IRoot* lockobj ) :
 	PARENTLOCK( m_behaviors ),
 	m_vertexDeclarationHandle( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
+	m_cachedVD( Tr2EffectStateManager::UNINITIALIZED_DECLARATION ),
 	m_count( 0 ),
 	m_display( true ),
 	m_maxVelocity( 100 ),

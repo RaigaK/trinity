@@ -123,7 +123,8 @@ EveChildBehaviorSystem::EveChildBehaviorSystem( IRoot* lockobj ) :
 	m_stride( 12 * sizeof( float ) ),
 	m_vertexCount( 1 ),
 	m_display( true ),
-	m_needToPassInVertexFunction( true )
+	m_behaviorGroupLoaded( false ),
+	m_behaviorGroupLoadedForTunnel( false )
 {
 	m_behaviorGroups.SetNotify( this );
 	m_splineTunnels.SetNotify( this );
@@ -173,7 +174,7 @@ void EveChildBehaviorSystem::OnListModified( long event, ssize_t key, ssize_t ke
 				handler->SetVertexFunctionReferance( f );
 				handler->InitializeGeometryResource();
 			}
-			else m_needToPassInVertexFunction = true; //this is for when this file is loaded but the groups have yet to be loaded
+			else m_behaviorGroupLoaded = false; //this is for when this file is loaded but the groups have yet to be loaded
 			break;
 		default:
 			break;
@@ -203,7 +204,7 @@ void EveChildBehaviorSystem::OnListModified( long event, ssize_t key, ssize_t ke
 				std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
 				handler->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 			}
-			else m_needToPassInTunnelFunction = true; //this is for when this file is loaded but the groups have yet to be loaded
+			else m_behaviorGroupLoadedForTunnel = false; //this is for when this file is loaded but the groups have yet to be loaded
 			break;
 		default:
 			break;
@@ -278,7 +279,7 @@ void EveChildBehaviorSystem::PassInVertexesToBehaviorGroups()
 		(*it)->SetVertexFunctionReferance( f );
 		(*it)->InitializeGeometryResource();
 	}
-	m_needToPassInVertexFunction = false;
+	m_behaviorGroupLoaded = true;
 }
 
 // A Simple function to handle cases where a behavior system is loaded along with all it's children from a single file
@@ -290,7 +291,7 @@ void EveChildBehaviorSystem::PassInTunnelFunctionsToBehaviorGroups()
 		std::function<void( void )> f = std::bind( &EveChildBehaviorSystem::UpdateTunnelRegistry, this );
 		(*it)->SetSystemTunnelFunctionReferenceAndColor( f, 0xffffff00 );
 	}
-	m_needToPassInTunnelFunction = false;
+	m_behaviorGroupLoadedForTunnel = true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -301,22 +302,23 @@ void EveChildBehaviorSystem::UpdateSyncronous( EveUpdateContext& updateContext, 
 
 	// might be a better way to get these initialized but Iinitialize doesn't work
 	// since these need to be called after children are initialized so basically a single frame later...
-	if( m_needToPassInVertexFunction )
+	if( !m_behaviorGroupLoaded )
 	{
 		PassInVertexesToBehaviorGroups();
 	}
-	if( m_needToPassInTunnelFunction )
+	if( !m_behaviorGroupLoadedForTunnel )
 	{
 		PassInTunnelFunctionsToBehaviorGroups();
 	}
-
-	USE_MAIN_THREAD_RENDER_CONTEXT();
-	UpdateBuffer( renderContext );
 
 	for ( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
 	{
 		(*it)->CreateVertexDeclaration();
 	}
+
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	UpdateBuffer( renderContext );
+
 
 	for( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
 	{
@@ -535,7 +537,7 @@ Tr2PerObjectData* EveChildBehaviorSystem::GetPerObjectData( ITriRenderBatchAccum
 void EveChildBehaviorSystem::Draw( TriBehaviorSystemInstancingBatch* batch, Tr2RenderContext& renderContext, int count,
 	unsigned int vertexDecl, int groupIndex, RenderType renderType )
 {
-	if( m_offsets.empty() )
+	if( !m_behaviorGroupLoaded )
 	{
 		return;
 	}
