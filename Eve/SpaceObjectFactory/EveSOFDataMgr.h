@@ -257,7 +257,21 @@ public:
 		Vector3 scaling;
 		int id;
 		int groupIndex;
+	};
+
+	struct HullChildSetItemData
+	{
+		std::string redFilePath;
+		Tr2Lod lowestLodVisible;
+		Vector3 translation;
+		Quaternion rotation;
+		Vector3 scaling;
+	};
+
+	struct HullChildSetData
+	{
 		uint32_t visibilityGroup;
+		std::vector<HullChildSetItemData> items;		
 	};
 
 	struct HullMeshInstance
@@ -324,6 +338,7 @@ public:
 		std::vector<HullBannerSetData> bannerSets;
 		std::vector<HullDecalSetData> hullDecalSets;
 		std::vector<HullLightSetData> hullLightSets;
+		std::vector<HullChildSetData> childSets;
 		PatternProjectionData defaultPattern;
 		EveSOFDataHull::ImpactEffectType impactEffectType;
 		std::vector<HullAreas> opaqueAreas;

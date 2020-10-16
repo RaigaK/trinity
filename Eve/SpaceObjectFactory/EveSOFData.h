@@ -783,6 +783,48 @@ public:
 TYPEDEF_BLUECLASS( EveSOFDataHullLocatorSet );
 BLUE_DECLARE_VECTOR( EveSOFDataHullLocatorSet );
 
+BLUE_CLASS( EveSOFDataHullChildSetItem ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullChildSetItem( IRoot* lockobj = NULL );
+	~EveSOFDataHullChildSetItem()
+	{
+	}
+
+	std::string GetName();
+
+	// data
+	std::string m_redFilePath;
+	Tr2Lod m_lowestLodVisible;
+	Vector3 m_translation;
+	Quaternion m_rotation;
+	Vector3 m_scaling;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullChildSetItem );
+BLUE_DECLARE_VECTOR( EveSOFDataHullChildSetItem );
+
+
+BLUE_CLASS( EveSOFDataHullChildSet ) :
+	public IRoot
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullChildSet( IRoot* lockobj = NULL );
+	~EveSOFDataHullChildSet()
+	{
+	}
+
+	std::string GetName();
+
+	// data
+	BlueSharedString m_visibilityGroup;
+	PEveSOFDataHullChildSetItemVector m_items;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullChildSet );
+BLUE_DECLARE_VECTOR( EveSOFDataHullChildSet );
+
 
 BLUE_CLASS( EveSOFDataHullChild ) :
 	public IRoot
@@ -803,7 +845,6 @@ public:
 	Vector3 m_scaling;
 	int m_id;
 	int m_groupIndex;
-	BlueSharedString m_visibilityGroup;
 };
 TYPEDEF_BLUECLASS( EveSOFDataHullChild );
 BLUE_DECLARE_VECTOR( EveSOFDataHullChild );
@@ -1094,6 +1135,9 @@ public:
 
 	// children
 	PEveSOFDataHullChildVector m_children;
+
+	// childset
+	PEveSOFDataHullChildSetVector m_childSets;
 
 	// instanced meshes
 	PEveSOFDataInstancedMeshVector m_instancedMeshes;

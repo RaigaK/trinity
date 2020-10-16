@@ -89,6 +89,7 @@ public:
 	EveSOFDataHull::ImpactEffectType GetImpactEffectType() const;
 	const std::vector<EveSOFDataMgr::HullAreas>* GetHullMeshAreas( TriBatchType type, size_t n ) const;
 	const std::vector<EveSOFDataMgr::HullChild>& GetHullChildren() const;
+	const std::vector<EveSOFDataMgr::HullChildSetData>& GetHullChildSets() const;
 	const std::vector<EveSOFDataMgr::HullInstancedMesh>& GetHullInstancedMeshes() const;
 	const std::vector<EveSOFDataMgr::HullAnimation>& GetHullAnimations() const;
 	const std::vector<EveSOFDataMgr::HullSoundEmitter>& GetHullSoundEmitters() const;

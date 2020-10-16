@@ -844,9 +844,29 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		hc.scaling = child->m_scaling;
 		hc.id = child->m_id;
 		hc.groupIndex = child->m_groupIndex;
-		hc.visibilityGroup = GetVisibilityGroupHash( child->m_visibilityGroup );
 
 		hd.children.push_back( hc );
+	}
+
+	hd.childSets.clear();
+	for( auto csit = srcData->m_childSets.begin(); csit != srcData->m_childSets.end(); ++csit )
+	{
+		EveSOFDataHullChildSetPtr childSet = ( *csit );
+		HullChildSetData hcsd;;
+		hcsd.visibilityGroup = GetVisibilityGroupHash( childSet->m_visibilityGroup );
+		for( auto cit = childSet->m_items.begin(); cit != childSet->m_items.end(); ++cit )
+		{
+			EveSOFDataHullChildSetItemPtr child = ( *cit );
+			HullChildSetItemData hcd;
+			hcd.redFilePath = child->m_redFilePath;
+			hcd.lowestLodVisible = child->m_lowestLodVisible;
+			hcd.translation = child->m_translation;
+			hcd.rotation = child->m_rotation;
+			hcd.scaling = child->m_scaling;
+			hcsd.items.push_back( hcd );
+		}
+
+		hd.childSets.push_back( hcsd );
 	}
 
 	// instanced meshes

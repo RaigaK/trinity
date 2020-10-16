@@ -172,8 +172,20 @@ IRootPtr EveSOF::BuildFromDNA( const char* dnaString )
 	// attachments to ship
 	SetupLocators( newObj, dna );
 
-	// children, animations and particles
-	SetupChildrenAndAnimations( newObj, dna );
+	
+	if( !dna->IsUsingExperimentalFeatures() )
+	{
+		// children, animations and particles
+		SetupChildrenAndAnimations( newObj, dna );	
+	}
+	else
+	{
+		// children from childsets
+		SetupEffectChildren( newObj, dna );
+	}
+
+	SetupAudio( newObj, dna );
+	SetupControllers( newObj, dna );
 
 	// model curves
 	SetupModelCurves( newObj, dna );
@@ -1305,25 +1317,13 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 	for( auto childIt = hullChildren.begin(); childIt != hullChildren.end(); ++childIt )
 	{
 		const EveSOFDataMgr::FactionChildData* fcd = dna->GetFactionChildData( childIt->groupIndex );
-			   		
-		if( !dna->IsUsingExperimentalFeatures() )
+
+		// child can be invisibe for this faction
+		if( fcd && !fcd->isVisible )
 		{
-			// SOF UPDATE - Remove this if block when phase6 is complete!
-	                // child can be invisibe for this faction
-			if( fcd && !fcd->isVisible )
-			{
-				continue;
-			}
+			continue;
 		}
-		else
-		{
-                        // child can be invisibe for this faction
-			if( !dna->IsInVisibilityData( childIt->visibilityGroup ) )
-			{
-				continue;
-			}
-		}
-		
+
 		IRootPtr p;
 		IRoot* tmp = BeResMan->LoadObject( childIt->redFilePath.c_str() );
 		if( !tmp )
@@ -1366,7 +1366,6 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 		}
 	}
 
-
 	const std::vector<EveSOFDataMgr::HullAnimation>& hullAnimations = dna->GetHullAnimations();
 	for( auto animIt = hullAnimations.begin(); animIt != hullAnimations.end(); ++animIt )
 	{
@@ -1386,12 +1385,12 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 			std::vector<EveTransformPtr> transformVector = childrenToBindTo[animIt->id];
 			for( auto transformIt = transformVector.begin(); transformIt != transformVector.end(); ++transformIt )
 			{
-				RecursiveBindParticleEmitters( (*transformIt), curveSet, scalarCurve );
+				RecursiveBindParticleEmitters( ( *transformIt ), curveSet, scalarCurve );
 			}
 			std::vector<IEveSpaceObjectChildPtr> childVector = soChildrenToBindTo[animIt->id];
 			for( auto childIt = childVector.begin(); childIt != childVector.end(); ++childIt )
 			{
-				RecursiveBindParticleEmitters( (*childIt), curveSet, scalarCurve );
+				RecursiveBindParticleEmitters( ( *childIt ), curveSet, scalarCurve );
 			}
 
 			curveSet->AddCurve( (ITriFunctionPtr)scalarCurve );
@@ -1432,44 +1431,114 @@ void EveSOF::SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNA
 			// TODO
 		}
 	}
+	
+}
 
+
+// --------------------------------------------------------------------------------
+// Description:
+//   add effect children to the space object
+// --------------------------------------------------------------------------------
+void EveSOF::SetupEffectChildren( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const
+{
+	// Experimental features for phase 6
+	// Note that this will ignore the child id and the animation id thing... don't know what will happen with the rorqual...
+	const std::vector<EveSOFDataMgr::HullChildSetData>& hullChildSets = dna->GetHullChildSets();
+
+	for( auto childSet : hullChildSets )
 	{
-		auto& hullEmitters = dna->GetHullSoundEmitters();
-		for( auto cit = begin( hullEmitters ); cit != end( hullEmitters ); ++cit )
+		if( !dna->IsInVisibilityData( childSet.visibilityGroup ) )
 		{
-			TriObserverLocalPtr observer;
-			observer.CreateInstance();
-			observer->m_name = cit->name;
-			observer->SetPosition( cit->position );
+			continue;
+		}
 
-			IBluePlacementObserverPtr emitter;
-			BeClasses->CreateInstanceFromName( "AudEmitter", BlueInterfaceIID<IBluePlacementObserver>(), reinterpret_cast<void**>( &emitter.p ) );
-			if( !emitter )
+		for( auto childSetItem : childSet.items )
+		{
+			IRootPtr p;
+			IRoot* tmp = BeResMan->LoadObject( childSetItem.redFilePath.c_str() );
+			if( !tmp )
 			{
-				CCP_LOGERR( "EveSOF: failed to create an audio emitter" );
+				CCP_LOGERR( "resource file %s is invalid!", childSetItem.redFilePath.c_str() );
 				continue;
 			}
-			observer->SetObserver( emitter );
-			obj->AddObserver( observer );
+			p.Attach( tmp );
 
-			ITr2AudEmitterPtr theRealEmitter;
-			if( emitter->QueryInterface( BlueInterfaceIID<ITr2AudEmitter>(), reinterpret_cast<void**>( &theRealEmitter.p ), BEQI_SILENT ) && theRealEmitter )
+			// is it of right type?
+			EveTransformPtr child;
+			IEveSpaceObjectChildPtr effectChild;
+			if( p->QueryInterface( BlueInterfaceIID<EveTransform>(), (void**)&child, BEQI_SILENT ) )
 			{
-				theRealEmitter->Initialize( cit->name.c_str(), cit->prefix.c_str(), cit->position );
+				child->SetRotation( childSetItem.rotation );
+				child->SetScaling( childSetItem.scaling );
+				child->SetTranslation( childSetItem.translation );
+				newObj->AddToChildrenList( child );
+			}
+			else if( p->QueryInterface( BlueInterfaceIID<IEveSpaceObjectChild>(), (void**)&effectChild, BEQI_SILENT ) )
+			{
+				effectChild->Setup( &childSetItem.scaling, &childSetItem.rotation, &childSetItem.translation, childSetItem.lowestLodVisible );
+				effectChild->SetInheritProperties( dna->GetColorSet() );
+				effectChild->SetOrigin( IEveSpaceObjectChild::SOF );
+				newObj->AddToEffectChildrenList( effectChild );
+			}
+			else
+			{
+				CCP_LOGERR( "resource file %s is not of correct type!", childSetItem.redFilePath.c_str() );
+				return;
 			}
 		}
 	}
+}
 
+
+// --------------------------------------------------------------------------------
+// Description:
+//   add controllers to the space object
+// --------------------------------------------------------------------------------
+void EveSOF::SetupControllers( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const
+{
 	auto& hullControllers = dna->GetHullControllers();
 	for( auto cit = begin( hullControllers ); cit != end( hullControllers ); ++cit )
 	{
 		if( auto controller = BeResMan->LoadObject<ITr2Controller>( cit->c_str() ) )
 		{
-			obj->AddController( controller );
+			newObj->AddController( controller );
 		}
 		else
 		{
 			CCP_LOGERR( "controller resource file %s is invalid!", cit->c_str() );
+		}
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Description:
+//   add audio children to the space object
+// --------------------------------------------------------------------------------
+void EveSOF::SetupAudio( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const
+{
+	auto& hullEmitters = dna->GetHullSoundEmitters();
+	for( auto cit = begin( hullEmitters ); cit != end( hullEmitters ); ++cit )
+	{
+		TriObserverLocalPtr observer;
+		observer.CreateInstance();
+		observer->m_name = cit->name;
+		observer->SetPosition( cit->position );
+
+		IBluePlacementObserverPtr emitter;
+		BeClasses->CreateInstanceFromName( "AudEmitter", BlueInterfaceIID<IBluePlacementObserver>(), reinterpret_cast<void**>( &emitter.p ) );
+		if( !emitter )
+		{
+			CCP_LOGERR( "EveSOF: failed to create an audio emitter" );
+			continue;
+		}
+		observer->SetObserver( emitter );
+		newObj->AddObserver( observer );
+
+		ITr2AudEmitterPtr theRealEmitter;
+		if( emitter->QueryInterface( BlueInterfaceIID<ITr2AudEmitter>(), reinterpret_cast<void**>( &theRealEmitter.p ), BEQI_SILENT ) && theRealEmitter )
+		{
+			theRealEmitter->Initialize( cit->name.c_str(), cit->prefix.c_str(), cit->position );
 		}
 	}
 }

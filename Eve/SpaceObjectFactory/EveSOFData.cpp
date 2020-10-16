@@ -273,6 +273,7 @@ EveSOFDataHull::EveSOFDataHull( IRoot* lockobj ) :
 	PARENTLOCK( m_locatorTurrets ),
 	PARENTLOCK( m_locatorSets ),
 	PARENTLOCK( m_children ),
+	PARENTLOCK( m_childSets ),
 	PARENTLOCK( m_instancedMeshes ),
 	PARENTLOCK( m_animations ),
 	PARENTLOCK( m_soundEmitters ),
@@ -364,6 +365,40 @@ EveSOFDataTransform::EveSOFDataTransform( IRoot* lockobj ) :
 {
 }
 
+EveSOFDataHullChildSetItem::EveSOFDataHullChildSetItem( IRoot* lockobj ) :
+	m_lowestLodVisible( TR2_LOD_LOW ),
+	m_translation( 0.f, 0.f, 0.f ),
+	m_rotation( 0.f, 0.f, 0.f, 1.f ),
+	m_scaling( 1.f, 1.f, 1.f )
+{
+}
+
+std::string EveSOFDataHullChildSetItem::GetName()
+{
+	auto slash = m_redFilePath.rfind( '/' );
+	if( slash == std::string::npos )
+	{
+		return "";
+	}
+	std::string result = m_redFilePath.substr( slash + 1 );
+	auto dot = result.rfind( '.' );
+	if( dot != std::string::npos )
+	{
+		result = result.substr( 0, dot );
+	}
+	return result;
+}
+
+EveSOFDataHullChildSet::EveSOFDataHullChildSet( IRoot* lockobj ) :
+	PARENTLOCK( m_items ),
+	m_visibilityGroup( "primary" )
+{}
+
+std::string EveSOFDataHullChildSet::GetName()
+{
+	return m_visibilityGroup.c_str();
+}
+
 
 EveSOFDataHullChild::EveSOFDataHullChild( IRoot* lockobj ) :
 	m_lowestLodVisible( TR2_LOD_LOW ),
@@ -371,8 +406,7 @@ EveSOFDataHullChild::EveSOFDataHullChild( IRoot* lockobj ) :
 	m_rotation( 0.f, 0.f, 0.f, 1.f ),
 	m_scaling( 1.f, 1.f, 1.f ),
 	m_id( -1 ),
-	m_groupIndex( -1 ),
-	m_visibilityGroup( "primary" )
+	m_groupIndex( -1 )
 {}
 
 std::string EveSOFDataHullChild::GetName()

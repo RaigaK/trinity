@@ -680,6 +680,17 @@ const std::vector<EveSOFDataMgr::HullChild>& EveSOFDNA::GetHullChildren() const
 	return m_hullDatas[0]->children;
 }
 
+
+// --------------------------------------------------------------------------------
+// Description:
+//   Return an array to all the childSets of this hull
+// --------------------------------------------------------------------------------
+const std::vector<EveSOFDataMgr::HullChildSetData>& EveSOFDNA::GetHullChildSets() const
+{
+	return m_hullDatas[0]->childSets;
+}
+
+
 // --------------------------------------------------------------------------------
 // Description:
 //   Return an array to all the instanced meshes of this hull

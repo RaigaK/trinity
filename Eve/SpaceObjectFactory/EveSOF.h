@@ -90,6 +90,9 @@ private:
 	void SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
 	void SetupBannerSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
 	void SetupChildrenAndAnimations( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;
+	void SetupEffectChildren( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const;
+	void SetupControllers( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const;
+	void SetupAudio( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr dna ) const;
 	void SetupInstancedMeshes( EveSpaceObject2Ptr newObj, EveSOFDNAPtr dna ) const;
 	void SetupDecalSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna, const InheritableTextures& inheritableTextures ) const;
 	void SetupModelCurves( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) const;

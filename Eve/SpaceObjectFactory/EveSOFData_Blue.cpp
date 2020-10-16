@@ -698,6 +698,31 @@ const Be::ClassInfo* EveSOFDataTransform::ExposeToBlue()
 }
 
 
+BLUE_DEFINE( EveSOFDataHullChildSet );
+const Be::ClassInfo* EveSOFDataHullChildSet::ExposeToBlue(){
+	EXPOSURE_BEGIN( EveSOFDataHullChildSet, "" )
+		MAP_INTERFACE( EveSOFDataHullChildSet )
+
+		MAP_PROPERTY_READONLY( "name", GetName, "" )
+		MAP_ATTRIBUTE( "visibilityGroup", m_visibilityGroup, ":jessica-widget: visibilityGroup", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "items", m_items, "", Be::READ | Be::PERSIST )
+	EXPOSURE_END()
+}
+
+BLUE_DEFINE( EveSOFDataHullChildSetItem );
+const Be::ClassInfo* EveSOFDataHullChildSetItem::ExposeToBlue(){
+	EXPOSURE_BEGIN( EveSOFDataHullChildSetItem, "" )
+		MAP_INTERFACE( EveSOFDataHullChildSetItem )
+		MAP_PROPERTY_READONLY( "name", GetName, "" )
+		MAP_ATTRIBUTE( "redFilePath", m_redFilePath, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "lowestLodVisible", m_lowestLodVisible, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "translation", m_translation, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "rotation", m_rotation, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "scaling", m_scaling, "", Be::READWRITE | Be::PERSIST )
+	EXPOSURE_END()
+}
+
+
 BLUE_DEFINE( EveSOFDataHullChild );
 const Be::ClassInfo* EveSOFDataHullChild::ExposeToBlue()
 {
@@ -712,7 +737,6 @@ const Be::ClassInfo* EveSOFDataHullChild::ExposeToBlue()
 		MAP_ATTRIBUTE( "scaling", m_scaling, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "id", m_id, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "groupIndex", m_groupIndex, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "visibilityGroup", m_visibilityGroup, ":jessica-widget: visibilityGroup", Be::READWRITE | Be::PERSIST )
     EXPOSURE_END()
 }
 
@@ -838,6 +862,8 @@ const Be::ClassInfo* EveSOFDataHull::ExposeToBlue()
 		MAP_ATTRIBUTE( "audioPosition", m_audioPosition, "The audio position", Be::READWRITE | Be::PERSIST )
 
 		MAP_ATTRIBUTE( "children", m_children, "List of children", Be::READ | Be::PERSIST )
+
+		MAP_ATTRIBUTE( "childSets", m_childSets, "Set of child effects\n :jessica-group: sof-phase-6\n :jessica-sub-group: WIP", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "soundEmitters", m_soundEmitters, "", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "controllers", m_controllers, "List of controller references", Be::READ | Be::PERSIST )
 		MAP_ATTRIBUTE( "animations", m_animations, "List of animations", Be::READ | Be::PERSIST )
