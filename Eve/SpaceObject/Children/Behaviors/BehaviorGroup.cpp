@@ -549,17 +549,18 @@ void BehaviorGroup::UpdateAgents(const float dt, EveChildBehaviorSystem& system 
 // Description:
 //   Check if each agent is still visible or not and update it's visibility based on that.
 // --------------------------------------------------------------------------------------
-void BehaviorGroup::UpdateVisibility( const TriFrustum & frustum, const Matrix & parentTransform )
+void BehaviorGroup::UpdateVisibility( const TriFrustum & frustum, const Matrix & worldTransform )
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
 	// Check if an agent is visible and calculate the xfade value
 	for ( auto agent = m_agents.begin(); agent != m_agents.end(); ++agent )
 	{
-		if( frustum.IsSphereVisible( agent->position, m_boundingSphereRadius * m_scale ) )
+		auto agentPosInWorld = TransformCoord( agent->position, worldTransform );
+		if( frustum.IsSphereVisible( agentPosInWorld, m_boundingSphereRadius * m_scale ) )
 		{
-			float pixelSize = frustum.GetPixelSizeAccross( agent->position, m_boundingSphereRadius * m_scale );
-			agent->screenSize = pixelSize * m_scale; // Store the screen size for each agent
+			float pixelSize = frustum.GetPixelSizeAccross( agentPosInWorld, m_boundingSphereRadius * m_scale );
+			agent->screenSize = pixelSize; // Store the screen size for each agent
 
 			if( pixelSize >= m_blendScreenSizeMax )
 			{
@@ -585,7 +586,7 @@ void BehaviorGroup::UpdateVisibility( const TriFrustum & frustum, const Matrix &
 	this->UpdateCurrentScreenSize();
 
 	m_frustum = frustum;
-	m_parentTransform = parentTransform;
+	m_parentTransform = worldTransform;
 }
 
 // --------------------------------------------------------------------------------------
@@ -693,12 +694,11 @@ void BehaviorGroup::GetInfoForBuffer( uint8_t* data, const Matrix& parentWorldLo
 			memcpy( data, &zeroMatrix, 12 * sizeof( float ) );
 			data += 12 * sizeof( float );	
 
+			// boosters
+			memcpy( data, &zeroMatrix, 12 * sizeof( float ) );
+			data += 12 * sizeof( float );
 			if( m_booster != nullptr )
 			{ 
-				// boosters
-				memcpy( data, &zeroMatrix, 12 * sizeof( float ) );
-				data += 12 * sizeof( float );
-
 				m_booster->AddFlare( IdentityMatrix(), 0, 0, agentIndex, m_boundingSphereRadius * m_scale );
 			}
 		}

@@ -316,10 +316,6 @@ void EveChildBehaviorSystem::UpdateSyncronous( EveUpdateContext& updateContext, 
 		(*it)->CreateVertexDeclaration();
 	}
 
-	USE_MAIN_THREAD_RENDER_CONTEXT();
-	UpdateBuffer( renderContext );
-
-
 	for( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
 	{
 		( *it )->UpdateSyncronous( updateContext );
@@ -691,6 +687,17 @@ void EveChildBehaviorSystem::ChangeBufferVertexCount()
 
 }
 
+// for validation and objects interacting with the shader attributes
+std::vector<std::pair<int, int>> EveChildBehaviorSystem::GetVertexElementAddedThroughCode() const
+{
+	std::vector<std::pair<int, int>> out;
+	out.emplace_back( std::pair<int, int>( Tr2VertexDefinition::TEXCOORD, 8 ) );
+	out.emplace_back( std::pair<int, int>( Tr2VertexDefinition::TEXCOORD, 9 ) );
+	out.emplace_back( std::pair<int, int>( Tr2VertexDefinition::TEXCOORD, 10 ) );
+	return out;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////
 // IEveSpaceObjectChild
 void EveChildBehaviorSystem::UpdateAsyncronous( EveUpdateContext& updateContext, const EveChildUpdateParams& params )
@@ -737,6 +744,9 @@ void EveChildBehaviorSystem::GetRenderables( std::vector<ITr2Renderable*>& rende
 {
 	renderables.push_back( this );
 
+	USE_MAIN_THREAD_RENDER_CONTEXT();
+	UpdateBuffer( renderContext );
+
 	for( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
 	{
 		( *it )->GetRenderables( renderables );
@@ -751,7 +761,7 @@ void EveChildBehaviorSystem::UpdateVisibility( const TriFrustum& frustum, const 
 {
 	for ( auto it = begin( m_behaviorGroups ); it != end( m_behaviorGroups ); ++it )
 	{
-		(*it)->UpdateVisibility( frustum, parentTransform );
+		( *it )->UpdateVisibility( frustum, m_worldTransform );
 	}
 }
 

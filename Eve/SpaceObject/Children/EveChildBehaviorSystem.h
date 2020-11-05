@@ -100,6 +100,8 @@ public:
 	void Draw( TriBehaviorSystemInstancingBatch*, Tr2RenderContext& renderContext, int count, unsigned int vertexDecl,
 			  int groupIndex, RenderType renderType );
 
+	std::vector<std::pair<int, int>> GetVertexElementAddedThroughCode() const;
+
 private:
 
 	bool OnPrepareResources();
