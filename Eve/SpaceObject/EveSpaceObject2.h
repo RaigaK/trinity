@@ -307,6 +307,7 @@ public:
 	void SetControllerVariable( const char* name, float value );
 	void HandleControllerEvent( const char* name ) override;
 	void StartControllers();
+	bool GetControllerValueByName( const char* name, float& out );
 
 	// For stateful GPU particles
 	ITriVectorFunctionPtr GetPositionFunction();

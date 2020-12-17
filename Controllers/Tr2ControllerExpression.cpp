@@ -60,6 +60,23 @@ namespace
 		}
 	}
 
+	float GetExternalControllerVariable( const char* name, float defaultVal )
+	{
+		ITr2ControllerOwnerPtr owner = BlueCastPtr( s_owner );
+		if( !owner )
+		{
+			return defaultVal;
+		}
+
+		float value = 0.0;
+		if( owner->GetControllerValueByName( name, value ) )
+		{
+			return value;
+		}
+		
+		return defaultVal;
+	}
+
 	float AnimationTime( const char* name )
 	{
 		EveSpaceObject2Ptr spaceObject = BlueCastPtr( s_owner );
@@ -389,6 +406,7 @@ std::string Tr2ControllerExpression::CreateParser( const char* expression, Modif
 	m_expressionParser.DefineFun( "AnimationTime", AnimationTime, false );
 	m_expressionParser.DefineFun( "IsAnimationPlaying", IsAnimationPlaying, false );
 	m_expressionParser.DefineFun( "CurveSetTime", CurveSetTime, false );
+	m_expressionParser.DefineFun( "GetExternalControllerVariable", GetExternalControllerVariable, false );
 	m_expressionParser.DefineFun( "ShipSpeed", ShipSpeed, false );
 	m_expressionParser.DefineFun( "ShipMaxSpeed", ShipMaxSpeed, false );
 	m_expressionParser.DefineFun( "Random", Random, false );
@@ -481,6 +499,7 @@ void Tr2ControllerExpression::GetExpressionTermInfo( std::vector<Tr2ExpressionTe
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "StateTime", "time in seconds the current state is running" ) );
 	info.push_back( Tr2ExpressionTermInfo::StringFunction( "Controller", "AnimationTime", "name", "geometry animation duration (in seconds) for the given name" ) );
 	info.push_back( Tr2ExpressionTermInfo::StringFunction( "Controller", "CurveSetTime", "name", "duration (in seconds) of the curve set with the given name" ) );
+	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "GetExternalControllerVariable", "name", "defaultValue", "Peek into another controller and get the value, if value is not found returns the default value" ) );
 	info.push_back( Tr2ExpressionTermInfo::StringFunction( "Controller", "IsAnimationPlaying", "name", "return 1 if the geometry animation in the given layer is playing; 0 otheriwise" ) );
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "ShipSpeed", "owning ship speed" ) );
 	info.push_back( Tr2ExpressionTermInfo::Function( "Controller", "ShipMaxSpeed", "owning ship maximum speed" ) );

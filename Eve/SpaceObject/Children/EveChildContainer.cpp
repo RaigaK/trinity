@@ -14,6 +14,8 @@
 #include "Tr2LightManager.h"
 #include "Lights/Tr2PointLight.h"
 #include "Controllers/ITr2Controller.h"
+#include "Controllers/Tr2Controller.h"
+#include "Controllers/Tr2ControllerFloatVariable.h"
 #include "ITr2SoundEmitterOwner.h"
 
 
@@ -79,9 +81,9 @@ void EveChildContainer::OnListModified( long event, ssize_t key, ssize_t key2, I
 
 void EveChildContainer::SetShaderOption( const BlueSharedString& name, const BlueSharedString& value )
 {
-	for ( auto it = m_objects.begin(); it != m_objects.end(); ++it )
+	for( auto it = m_objects.begin(); it != m_objects.end(); ++it )
 	{
-		IEveSpaceObjectChild *child = *it;
+		IEveSpaceObjectChild* child = *it;
 		child->SetShaderOption( name, value );
 	}
 }
@@ -105,24 +107,24 @@ bool EveChildContainer::IsRendering() const
 
 	switch( m_displayFilter )
 	{
-		case SHADER_LOW:
-			return settings == TR2SM_3_0_LO;
-			break;
-		case SHADER_LOWMID:
-			return settings <= TR2SM_3_0_HI;
-			break;
-		case SHADER_MED:
-			return settings == TR2SM_3_0_HI;
-			break;
-		case SHADER_HIGHMID:
-			return settings >= TR2SM_3_0_HI;
-			break;
-		case SHADER_HIGH:
-			return settings == TR2SM_3_0_DEPTH;
-			break;
-		case SHADER_ALL:
-			return true;
-			break;
+	case SHADER_LOW:
+		return settings == TR2SM_3_0_LO;
+		break;
+	case SHADER_LOWMID:
+		return settings <= TR2SM_3_0_HI;
+		break;
+	case SHADER_MED:
+		return settings == TR2SM_3_0_HI;
+		break;
+	case SHADER_HIGHMID:
+		return settings >= TR2SM_3_0_HI;
+		break;
+	case SHADER_HIGH:
+		return settings == TR2SM_3_0_DEPTH;
+		break;
+	case SHADER_ALL:
+		return true;
+		break;
 	}
 	return false;
 }
@@ -152,7 +154,7 @@ void EveChildContainer::UpdateVisibility( const TriFrustum& frustum, const Matri
 
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->UpdateVisibility( frustum, parentTransform, parentLod );
+		( *it )->UpdateVisibility( frustum, parentTransform, parentLod );
 	}
 }
 
@@ -169,7 +171,7 @@ void EveChildContainer::GetRenderables( std::vector<ITr2Renderable*>& renderable
 
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->GetRenderables( renderables );
+		( *it )->GetRenderables( renderables );
 	}
 }
 
@@ -184,7 +186,7 @@ bool EveChildContainer::GetBoundingSphere( Vector4& sphere, BoundingSphereQuery 
 	Vector4 bSphere( 0.f, 0.f, 0.f, -1.f );
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		if( (*it)->GetBoundingSphere( bSphere ) )
+		if( ( *it )->GetBoundingSphere( bSphere ) )
 		{
 			BoundingSphereSetOrUpdate( bSphere, sphere, success );
 			success = true;
@@ -197,13 +199,13 @@ void EveChildContainer::RegisterWithQuadRenderer( Tr2QuadRenderer& quadRenderer 
 {
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->RegisterWithQuadRenderer( quadRenderer );
+		( *it )->RegisterWithQuadRenderer( quadRenderer );
 	}
 }
 
 void EveChildContainer::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2QuadRenderer& quadRenderer ) const
 {
-	if (!m_display )
+	if( !m_display )
 	{
 		return;
 	}
@@ -213,7 +215,7 @@ void EveChildContainer::AddQuadsToQuadRenderer( const TriFrustum& frustum, Tr2Qu
 	}
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->AddQuadsToQuadRenderer( frustum, quadRenderer );
+		( *it )->AddQuadsToQuadRenderer( frustum, quadRenderer );
 	}
 }
 
@@ -232,11 +234,11 @@ void EveChildContainer::UpdateSyncronous( EveUpdateContext& updateContext, const
 
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->UpdateSyncronous( updateContext, newParams );
+		( *it )->UpdateSyncronous( updateContext, newParams );
 	}
 	for( auto it = m_observers.begin(); it != m_observers.end(); it++ )
 	{
-		(*it)->Update( m_worldTransform );
+		( *it )->Update( m_worldTransform );
 	}
 	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )
 	{
@@ -264,7 +266,7 @@ void EveChildContainer::UpdateAsyncronous( EveUpdateContext& updateContext, cons
 	UpdateTransform( localToWorldTransform );
 	for( auto it = m_transformModifiers.begin(); it != m_transformModifiers.end(); it++ )
 	{
-		m_worldTransform = (*it)->ApplyTransform( m_worldTransform, params.boneCount, params.bones );
+		m_worldTransform = ( *it )->ApplyTransform( m_worldTransform, params.boneCount, params.bones );
 	}
 
 	EveChildUpdateParams newParams = params;
@@ -273,13 +275,13 @@ void EveChildContainer::UpdateAsyncronous( EveUpdateContext& updateContext, cons
 
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->UpdateAsyncronous( updateContext, newParams );
+		( *it )->UpdateAsyncronous( updateContext, newParams );
 	}
-	
+
 	Be::Time time = updateContext.GetTime();
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		(*it)->Update( time, time );
+		( *it )->Update( time, time );
 	}
 
 	if( params.spaceObjectParent && !params.childParent )
@@ -298,7 +300,7 @@ void EveChildContainer::ChangeLOD( Tr2Lod lod )
 {
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
 	{
-		(*it)->ChangeLOD( lod );
+		( *it )->ChangeLOD( lod );
 	}
 }
 
@@ -313,8 +315,9 @@ void EveChildContainer::GetLights( Tr2LightManager& lightManager ) const
 		return;
 	}
 	XMMATRIX worldTransform = m_worldTransform;
-	float scaling = XMVectorGetX( XMVectorAdd( XMVector3LengthEst( m_worldTransform.GetX() ), 
-		XMVectorAdd( XMVector3LengthEst( m_worldTransform.GetY() ), XMVector3LengthEst( m_worldTransform.GetZ() ) ) ) ) / 3.f;
+	float scaling = XMVectorGetX( XMVectorAdd( XMVector3LengthEst( m_worldTransform.GetX() ),
+											   XMVectorAdd( XMVector3LengthEst( m_worldTransform.GetY() ), XMVector3LengthEst( m_worldTransform.GetZ() ) ) ) ) /
+		3.f;
 	for( auto it = std::begin( m_lights ); it != std::end( m_lights ); ++it )
 	{
 		( *it )->AddLight( lightManager, worldTransform, scaling );
@@ -325,7 +328,7 @@ void EveChildContainer::GetLights( Tr2LightManager& lightManager ) const
 	}
 }
 
-void EveChildContainer::SetOrigin( Origin origin ) 
+void EveChildContainer::SetOrigin( Origin origin )
 {
 	m_origin = origin;
 }
@@ -339,7 +342,7 @@ void EveChildContainer::PlayCurveSet( const std::string& name, const std::string
 
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		if( (*it)->GetName() == name )
+		if( ( *it )->GetName() == name )
 		{
 			if( rangeName.empty() )
 			{
@@ -371,10 +374,10 @@ void EveChildContainer::PlayAllCurveSets()
 			child->PlayAllCurveSets();
 		}
 	}
-	
+
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		(*it)->Play();
+		( *it )->Play();
 	}
 }
 
@@ -387,10 +390,10 @@ void EveChildContainer::StopAllCurveSets()
 			child->StopAllCurveSets();
 		}
 	}
-	
+
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		(*it)->Stop();
+		( *it )->Stop();
 	}
 }
 
@@ -403,9 +406,9 @@ void EveChildContainer::StopCurveSet( const std::string& name )
 
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		if( (*it)->GetName() == name )
+		if( ( *it )->GetName() == name )
 		{
-			(*it)->Stop();
+			( *it )->Stop();
 		}
 	}
 
@@ -422,9 +425,9 @@ void EveChildContainer::UpdateCurveSet( const std::string& name, Be::Time time )
 {
 	for( auto it = m_curveSets.begin(); it != m_curveSets.end(); it++ )
 	{
-		if( (*it)->GetName() == name )
+		if( ( *it )->GetName() == name )
 		{
-			(*it)->Update( time, time );
+			( *it )->Update( time, time );
 		}
 	}
 	for( auto it = m_objects.begin(); it != m_objects.end(); it++ )
@@ -506,7 +509,7 @@ void EveChildContainer::GetDebugOptions( Tr2DebugRendererOptions& options )
 	}
 	options.insert( "Lights" );
 
-	for ( auto it = m_observers.begin(); it != m_observers.end(); ++it )
+	for( auto it = m_observers.begin(); it != m_observers.end(); ++it )
 	{
 		( *it )->GetDebugOptions( options );
 	}
@@ -519,7 +522,7 @@ void EveChildContainer::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 		return;
 	}
 
-	for ( auto it = m_observers.begin(); it != m_observers.end(); ++it )
+	for( auto it = m_observers.begin(); it != m_observers.end(); ++it )
 	{
 		( *it )->RenderDebugInfo( renderer, m_worldTransform );
 	}
@@ -531,8 +534,9 @@ void EveChildContainer::RenderDebugInfo( ITr2DebugRenderer2& renderer )
 			renderable->RenderDebugInfo( renderer );
 		}
 	}
-	
-	if( renderer.HasOption( this, "Lights" ) ) {
+
+	if( renderer.HasOption( this, "Lights" ) )
+	{
 		for( auto it = begin( m_lights ); it != end( m_lights ); ++it )
 		{
 			( *it )->RenderDebugInfo( renderer, m_worldTransform );
@@ -571,10 +575,10 @@ void EveChildContainer::StartControllers()
 	{
 		( *it )->Start();
 	}
-	
+
 	for( auto it = begin( m_objects ); it != end( m_objects ); ++it )
 	{
-		(*it)->StartControllers();
+		( *it )->StartControllers();
 	}
 }
 
@@ -612,7 +616,7 @@ void EveChildContainer::GetWorldVelocity( Vector3& velocity ) const
 
 void EveChildContainer::SetInheritProperties( const Color* colorSet )
 {
-	if ( !m_inheritProperties )
+	if( !m_inheritProperties )
 	{
 		m_inheritProperties.CreateInstance();
 	}
@@ -636,7 +640,7 @@ ITr2AudEmitterPtr EveChildContainer::FindSoundEmitter( const char* name )
 		if( auto owner = dynamic_cast<ITr2SoundEmitterOwner*>( *it ) )
 		{
 			auto emitter = owner->FindSoundEmitter( name );
-			if ( emitter != nullptr )
+			if( emitter != nullptr )
 			{
 				return emitter;
 			}
@@ -648,6 +652,23 @@ ITr2AudEmitterPtr EveChildContainer::FindSoundEmitter( const char* name )
 float EveChildContainer::GetOwnerMaxSpeed() const
 {
 	return m_ownerMaxSpeed;
+}
+
+bool EveChildContainer::GetControllerValueByName( const char* name, float& out )
+{
+	for( auto it = begin( m_controllers ); it != end( m_controllers ); ++it )
+	{
+		if( Tr2ControllerPtr controller = BlueCastPtr( *it ) )
+		{
+			if( auto var = controller->GetVariableByName( name ) )
+			{
+				out = var->GetValue();
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void EveChildContainer::AddTransformModifier( IEveChildTransformModifier* modifier )

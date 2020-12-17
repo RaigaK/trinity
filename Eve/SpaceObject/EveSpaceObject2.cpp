@@ -3197,6 +3197,22 @@ std::map<std::string, float> EveSpaceObject2::GetControllerVariables() const
 	return result;
 }
 
+bool EveSpaceObject2::GetControllerValueByName( const char* name, float& out )
+{
+	for( auto child = begin( m_effectChildren ); child != end( m_effectChildren ); ++child )
+	{
+		if( ITr2ControllerOwnerPtr owner = BlueCastPtr( *child ) )
+		{
+			if( owner->GetControllerValueByName( name, out ) )
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void EveSpaceObject2::SetShaderOption( const BlueSharedString& name, const BlueSharedString& value )
 {
 	if( nullptr != m_mesh )
