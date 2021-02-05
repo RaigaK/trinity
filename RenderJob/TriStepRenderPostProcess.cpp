@@ -104,7 +104,11 @@ void SetDirtyIfNotNull(Tr2PPEffect *effect)
 
 TriStepResult TriStepRenderPostProcess::Execute(Be::Time realTime, Be::Time simTime, Tr2RenderContext& renderContext)
 {
-	m_renderInfo->Setup( renderContext );
+	if( !m_renderInfo->Setup( renderContext ) )
+	{
+		return RS_FAILED;
+	}
+
 	auto sourceBuffer = m_renderInfo->GetSourceBuffer();
 
 	if (!sourceBuffer)

@@ -76,7 +76,7 @@ bool Tr2PostProcessRenderInfo::OnModified( Be::Var* value )
 	return true;
 }
 
-void Tr2PostProcessRenderInfo::Setup( Tr2RenderContext& renderContext )
+bool Tr2PostProcessRenderInfo::Setup( Tr2RenderContext& renderContext )
 {
 	if( !m_black->IsValid() )
 	{
@@ -94,16 +94,20 @@ void Tr2PostProcessRenderInfo::Setup( Tr2RenderContext& renderContext )
 		);
 
 		auto texture = m_black->GetTexture();
-
+		
 		// blackify texture
 		void* data = nullptr;
 		uint32_t pitch = 0;
 
-		if( SUCCEEDED( texture->MapForWriting( Tr2TextureSubresource( 0 ), data, pitch, renderContext ) ) )
+		if( texture != nullptr && SUCCEEDED( texture->MapForWriting( Tr2TextureSubresource( 0 ), data, pitch, renderContext ) ) )
 		{
 			uint32_t* mem = (uint32_t*)data;
 			memset( mem, 0, 4 * pitch ); // blackify!
 			texture->UnmapForWriting( renderContext );
+		}
+		else
+		{
+			return false;
 		}
 	}
 
@@ -121,6 +125,7 @@ void Tr2PostProcessRenderInfo::Setup( Tr2RenderContext& renderContext )
 	{
 		CopySourceTo( m_rt2, 0.5f );
 	}
+	return true;
 }
 
 void Tr2PostProcessRenderInfo::SetSourceBuffer( Tr2RenderTarget* sourceBuffer )
