@@ -24,7 +24,7 @@ public:
 	void CreateTree(std::vector<DroneAgent>& agents, size_t BNbr);
 	void RenderDebugInfo( ITr2DebugRenderer2& renderer, Matrix& parentWorldLocation );
 	const std::vector<std::vector<std::vector<DroneAgent*>>>* FindDronesInRange(
-		std::vector<DroneAgent>& agents, std::vector<float>& ranges, float& BehaviorGroupBoundingSphereRadius);
+		std::vector<DroneAgent> & agents, std::vector<float> & ranges, const float& BehaviorGroupBoundingSphereRadius );
 
 private:
 	enum PlaneType
@@ -95,7 +95,7 @@ private:
 	void ChangeAgentsIntoAgentRefs( std::vector<DroneAgent>& agents );
 	void FindClosestAgentRecursive( const Vector3& pos, AgentRef* currentNode, closestDrone& agent ) const;
 	std::vector<AgentRef>& SortByAxis( std::vector<AgentRef>& agents, int b, int e, PlaneType pt ) const;
-	void SearchThroughTree( std::vector<std::vector<std::vector<DroneAgent*>>>& closeAgents, AgentRef* node, std::vector<DroneAgent>& agents, std::vector<SearchRange>& ranges, int& activeRange ) const;
+	void SearchThroughTree( std::vector<std::vector<std::vector<DroneAgent*>>> & closeAgents, AgentRef * node, std::vector<DroneAgent> & agents, const std::vector<SearchRange> & ranges, int& activeRange ) const;
 	static void AddAgentToSearchLists(std::vector<std::vector<std::vector<DroneAgent*>>>& closeAgents, AgentRef* node, float dist, const std::vector<
 	                                  SearchRange>& ranges, int activeRange, int agentNbr);
 	void SearchThroughTreeHelperFunction(std::vector<std::vector<std::vector<DroneAgent*>>>& closeAgents, AgentRef* node, DroneAgent& agent, const std::vector<

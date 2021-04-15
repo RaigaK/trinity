@@ -390,7 +390,7 @@ void EveKDdroneManagementTree::FindClosestAgentRecursive( const Vector3& pos, Ag
 // After:	vvv is an orginized tri-dementional list where the 1st index is the Behavior's index, 
 //			2nd the agent's index and the 3rd is the list of found agents in range (up to m_maxFoundPerAgent) 
 const std::vector<std::vector<std::vector<DroneAgent*>>>* EveKDdroneManagementTree::FindDronesInRange( std::vector<DroneAgent>& agents,
-																		std::vector<float>& ranges, float& BehaviorGroupBoundingSphereRadius)
+																		std::vector<float>& ranges, const float& BehaviorGroupBoundingSphereRadius)
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
@@ -441,7 +441,7 @@ const std::vector<std::vector<std::vector<DroneAgent*>>>* EveKDdroneManagementTr
 }
 
 void EveKDdroneManagementTree::SearchThroughTree( std::vector<std::vector<std::vector<DroneAgent*>>>& closeAgents, AgentRef* node,
-											std::vector<DroneAgent>& agents, std::vector<SearchRange>& ranges, int& activeRange ) const
+											std::vector<DroneAgent>& agents, const std::vector<SearchRange>& ranges, int& activeRange ) const
 {
 	int c = 0;
 	for ( auto agent = agents.begin(); agent != agents.end(); ++agent, ++c )

@@ -105,7 +105,9 @@ EveChildLineSet::EveChildLineSet( IRoot* lockobj ) :
 	m_scaleSegmentsByCompleteness( false ),
 	m_additiveBatch( false ),
 	m_updateLineSet( true ),
-	m_totalObjectCount( 0 )
+	m_totalObjectCount( 0 ),
+	m_vertexCount( 0 ),
+	m_cachedSVD( 0 )
 {
 	Initialize();
 }
