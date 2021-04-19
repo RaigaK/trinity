@@ -173,6 +173,7 @@ public:
 	struct HullHazeSetItemData
 	{
 		Vector3 position, scaling;
+		int boneIndex;
 		Quaternion rotation;
 		EveSOFDataFactionColorSet::ColorType colorType;
 		float hazeBrightness, hazeFalloff, sourceSize, sourceBrightness;
@@ -184,6 +185,7 @@ public:
 		EveSOFDataHullHazeSet::HazeType hazeType;
 		uint32_t visibilityGroup;
 		std::vector<HullHazeSetItemData> items;
+		bool skinned;
 	};
 
 	struct HullBannerSetItemLightData

@@ -636,6 +636,8 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		std::string visGroupName( hazeSetData->m_visibilityGroup.c_str() );
 		hhsd.visibilityGroup = CcpHashFNV1( visGroupName.c_str(), visGroupName.size() );
 		hhsd.hazeType = hazeSetData->m_hazeType;
+		hhsd.skinned = hazeSetData->m_skinned;
+
 		for( auto hsiit = hazeSetData->m_items.begin(); hsiit != hazeSetData->m_items.end(); ++hsiit )
 		{
 			EveSOFDataHullHazeSetItemPtr hazeSetItemData = ( *hsiit );
@@ -644,6 +646,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hhsid.position = hazeSetItemData->m_position;
 			hhsid.scaling = hazeSetItemData->m_scaling;
 			hhsid.rotation = hazeSetItemData->m_rotation;
+			hhsid.boneIndex = hazeSetItemData->m_boneIndex;
 			hhsid.colorType = hazeSetItemData->m_colorType;
 			hhsid.hazeBrightness = hazeSetItemData->m_hazeBrightness;
 			hhsid.hazeFalloff = hazeSetItemData->m_hazeFalloff;
@@ -652,6 +655,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			hhsid.boosterGainInfluence = hazeSetItemData->m_boosterGainInfluence;
 			hhsd.items.push_back( hhsid );
 		}
+
 		hd.hazeSets.push_back( hhsd );
 	}
 

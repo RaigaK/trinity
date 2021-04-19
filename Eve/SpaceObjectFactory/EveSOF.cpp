@@ -91,6 +91,11 @@ EveSOF::EveSOF( IRoot* lockobj ) :
 	m_hazeSetEffectSpherical->StartUpdate();
 	m_hazeSetEffectSpherical->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/hazespherical.fx" );
 	m_hazeSetEffectSpherical->EndUpdate();
+	
+	m_skinnedHazeSetEffectSpherical.CreateInstance();
+	m_skinnedHazeSetEffectSpherical->StartUpdate();
+	m_skinnedHazeSetEffectSpherical->SetEffectPathName( "res:/graphics/effect/managed/space/spaceobject/fx/skinned_hazespherical.fx" );
+	m_skinnedHazeSetEffectSpherical->EndUpdate();
 
 	m_hazeSetEffectHalfSpherical.CreateInstance();
 	m_hazeSetEffectHalfSpherical->StartUpdate();
@@ -1016,11 +1021,19 @@ void EveSOF::SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) con
 				// create a hazeset for this ship
 				EveHazeSetPtr hazeSet;
 				hazeSet.CreateInstance();
-				// set shader, depends on type
+				// set shader, depends on type and skinning
+				// TODO: Make this better, this is pretty silly
 				switch( hazeSetData->hazeType )
 				{
 				case EveSOFDataHullHazeSet::TYPE_SPHERICAL:
-					hazeSet->Setup( m_hazeSetEffectSpherical );
+					if( hazeSetData->skinned )
+					{
+						hazeSet->Setup( m_skinnedHazeSetEffectSpherical );					
+					}
+					else
+					{
+						hazeSet->Setup( m_hazeSetEffectSpherical );
+					}
 					break;
 				case EveSOFDataHullHazeSet::TYPE_HALFSPHERICAL:
 					hazeSet->Setup( m_hazeSetEffectHalfSpherical );
@@ -1046,7 +1059,7 @@ void EveSOF::SetupHazeSets( EveSpaceObject2Ptr obj, const EveSOFDNAPtr dna ) con
 					hazeSetItem->m_position = itemData->position + hullOffset;
 					hazeSetItem->m_rotation = itemData->rotation;
 					hazeSetItem->m_scaling = itemData->scaling;
-					hazeSetItem->m_boneIndex = -1;
+					hazeSetItem->m_boneIndex = itemData->boneIndex;
 					hazeSetItem->m_hazeData = Vector4( itemData->hazeFalloff, itemData->sourceSize, itemData->sourceBrightness, itemData->boosterGainInfluence ? 1.f : 0.f );
 
 					// put it into hazeset

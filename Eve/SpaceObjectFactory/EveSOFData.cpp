@@ -528,11 +528,13 @@ EveSOFDataHullSpriteLineSetItem::EveSOFDataHullSpriteLineSetItem( IRoot* lockobj
 EveSOFDataHullHazeSet::EveSOFDataHullHazeSet( IRoot* lockobj ) :
 	PARENTLOCK( m_items ),
 	m_visibilityGroup( "primary" ),
+	m_skinned( false ),
 	m_hazeType( EveSOFDataHullHazeSet::TYPE_SPHERICAL )
 {}
 
 EveSOFDataHullHazeSetItem::EveSOFDataHullHazeSetItem( IRoot* lockobj ) :
-	m_position( 0.f, 0.f, 0.f ), m_scaling( 1.f, 1.f, 1.f ),
+	m_position( 0.f, 0.f, 0.f ), m_scaling( 1.f, 1.f, 1.f ), 
+	m_boneIndex( -1 ),
 	m_rotation( 0.f, 0.f, 0.f, 1.f ),
 	m_colorType( EveSOFDataFactionColorSet::TYPE_PRIMARY ),
 	m_hazeBrightness( 1.f ), m_hazeFalloff( 6.f ), m_sourceSize( 0.2f ), m_sourceBrightness( 2.f ),

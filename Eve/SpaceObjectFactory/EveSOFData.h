@@ -583,6 +583,8 @@ public:
 
 	// per-hull data of a haze set
 	Vector3 m_position, m_scaling;
+	int32_t m_boneIndex;
+
 	Quaternion m_rotation;
 	EveSOFDataFactionColorSet::ColorType m_colorType;
 	float m_hazeBrightness, m_hazeFalloff, m_sourceSize, m_sourceBrightness;
@@ -611,6 +613,8 @@ public:
 	std::string m_name;
 	// type
 	HazeType m_hazeType;
+	// skinned?
+	bool m_skinned;
 	// visibility group name
 	BlueSharedString m_visibilityGroup;
 	// items

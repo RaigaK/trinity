@@ -117,7 +117,7 @@ private:
 	PEveSOFDataMgr m_dataMgr;
 
 	// shared
-	Tr2EffectPtr m_hazeSetEffectSpherical, m_hazeSetEffectHalfSpherical;
+	Tr2EffectPtr m_hazeSetEffectSpherical, m_skinnedHazeSetEffectSpherical, m_hazeSetEffectHalfSpherical;
 	Tr2EffectPtr m_spriteSetEffect;
 	Tr2EffectPtr m_shadowEffect, m_shadowEffectSkinned;
 	BlueSharedString m_depthOnlyEffectName, m_decalsEffectName[EveSOFDataHullDecalSetItem::USAGE_MAX];

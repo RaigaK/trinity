@@ -13,6 +13,7 @@
 #include "Tr2PickingHelperBatch.h"
 #include "Tr2DebugRenderer.h"
 #include "Tr2Renderer.h"
+#include "Utilities/MatrixUtils.h"
 
 
 // vertex layout struct
@@ -310,15 +311,28 @@ void EveHazeSet::GetDebugOptions( Tr2DebugRendererOptions& options )
 }
 
 // --------------------------------------------------------------------------------
-void EveHazeSet::RenderDebugInfo( ITr2DebugRenderer2& renderer, const Matrix& parentTransform, const granny_matrix_3x4*, size_t )
+void EveHazeSet::RenderDebugInfo( ITr2DebugRenderer2& renderer, const Matrix& parentTransform, const granny_matrix_3x4* bones, size_t boneCount )
 {
 	if( renderer.HasOption( GetRawRoot(), "Haze Sets" ) )
 	{
 		for( auto it = m_hazes.begin(); it != m_hazes.end(); ++it )
 		{
-			Matrix t( XMMatrixTransformation( Vector3( 0, 0, 0 ), Quaternion( 0, 0, 0, 1 ), ( *it )->m_scaling, Vector3( 0, 0, 0 ), ( *it )->m_rotation, ( *it )->m_position ) );
-			renderer.DrawBox( *it, t * parentTransform, Vector3( -0.5f, -0.5f, -0.5f ), Vector3( 0.5f, 0.5f, 0.5f ), Tr2DebugRenderer::Wireframe, Tr2DebugColor( 0xff00ffff, 0x2200ffff ) );
-			renderer.DrawBox( *it, t * parentTransform, Vector3( -0.5f, -0.5f, -0.5f ), Vector3( 0.5f, 0.5f, 0.5f ), Tr2DebugRenderer::Solid, 0 );
+			auto haze = *it;
+			int32_t boneIndex = haze->m_boneIndex;
+			Quaternion rotation( haze->m_rotation );
+			Vector3 position( haze->m_position );
+			
+			if( boneIndex > -1 && boneIndex < int( boneCount ) )
+			{
+				Matrix boneTF = IdentityMatrix();
+				TriMatrixCopyFrom3x4( &boneTF, &bones[boneIndex] );
+				position = XMVector3TransformCoord( position, boneTF );
+
+				rotation = XMQuaternionMultiply( rotation, XMQuaternionRotationMatrix( boneTF ) );
+			}
+			Matrix t( XMMatrixTransformation( Vector3( 0, 0, 0 ), Quaternion( 0, 0, 0, 1 ), ( haze )->m_scaling, Vector3( 0, 0, 0 ), rotation, position ) );
+			renderer.DrawBox( haze, t * parentTransform, Vector3( -0.5f, -0.5f, -0.5f ), Vector3( 0.5f, 0.5f, 0.5f ), Tr2DebugRenderer::Wireframe, Tr2DebugColor( 0xff00ffff, 0x2200ffff ) );
+			renderer.DrawBox( haze, t * parentTransform, Vector3( -0.5f, -0.5f, -0.5f ), Vector3( 0.5f, 0.5f, 0.5f ), Tr2DebugRenderer::Solid, 0 );
 		}
 	}
 }
