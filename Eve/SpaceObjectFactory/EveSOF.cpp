@@ -1722,7 +1722,16 @@ void EveSOF::SetupInstancedMeshes( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr
 {
 	const std::vector<EveSOFDataMgr::HullInstancedMesh>& hullInstanced = dna->GetHullInstancedMeshes();
 	
+	if( hullInstanced.empty() )
+	{
+		// No need to do anything!
+		return;
+	}
 	// Create a child container named "Instanced Meshes" and place the instances there
+
+	EveChildContainerPtr meshContainer;
+	meshContainer.CreateInstance();
+	meshContainer->SetName( "Instanced Meshes" );
 
 	for( auto instIt = hullInstanced.begin(); instIt != hullInstanced.end(); ++instIt )
 	{
@@ -1807,8 +1816,9 @@ void EveSOF::SetupInstancedMeshes( EveSpaceObject2Ptr newObj, const EveSOFDNAPtr
 		childMesh.CreateInstance();
 		childMesh->SetMesh( mesh );
 		childMesh->Setup( nullptr, nullptr, nullptr, him->lowestLodVisible );
-		newObj->AddToEffectChildrenList( static_cast<IEveSpaceObjectChild*>(childMesh) );
+		meshContainer->AddToEffectChildrenList( childMesh );
 	}
+	newObj->AddToEffectChildrenList( static_cast<IEveSpaceObjectChild*>( meshContainer) );
 }
 
 // --------------------------------------------------------------------------------
