@@ -368,6 +368,14 @@ const Be::ClassInfo* EveSpaceScene::ExposeToBlue()
             Be::READWRITE | Be::PERSIST | Be::NOTIFY,
             TriTextureChooser 
         )
+		MAP_ATTRIBUTE_WITH_CHOOSER(
+			"mediumQualityReflectionMapResPath",
+			m_mediumQualityReflectionMapResPath,
+			"Resource path for the scene's medium quality reflection map.\n"
+			":jessica-group: Lighting",
+			Be::READWRITE | Be::PERSIST | Be::NOTIFY,
+			TriTextureChooser 
+		)		
 		MAP_ATTRIBUTE_WITH_CHOOSER
         ( 
             "envMap1ResPath", 

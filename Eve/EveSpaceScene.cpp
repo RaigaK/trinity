@@ -2246,7 +2246,7 @@ void EveSpaceScene::FinalizeBatches( BatchMap& batches )
 	}
 }
 
-void EveSpaceScene::UpdateVariableStore()
+void EveSpaceScene::UpdateVariableStore ()
 {
 	m_envMap1Var = m_envMap1;
 	m_envMap2Var = m_envMap2;
@@ -2254,8 +2254,13 @@ void EveSpaceScene::UpdateVariableStore()
 	m_reflectionMaskMapVar = m_envMap2;
 	m_nebulaBrightnessOverrideVar = m_nebulaBrightnessOverride <= 0.0f ? 1.0f : m_nebulaBrightnessOverride;
 
+	auto envMapTextureRes = m_envMapTextureRes;
+	if( Tr2Renderer::GetShaderModel() < TR2SHADERMODEL::TR2SM_3_0_DEPTH && m_mediumQualityReflectionMap != nullptr )
+	{
+		envMapTextureRes = m_mediumQualityReflectionMap;
+	}
 	// the environment cubemap (aka nebula) is passed theough the global variable store
-	m_envMapHandle->SetValue( m_envMapTextureRes );
+	m_envMapHandle->SetValue( envMapTextureRes );
 }
 
 void EveSpaceScene::ClearVariableStore()
@@ -2412,6 +2417,10 @@ bool EveSpaceScene::Initialize()
 	{
 		BeResMan->GetResource( m_envMap3ResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_envMap3 );
 	}
+	if( !m_mediumQualityReflectionMapResPath.empty() )
+	{
+		BeResMan->GetResource( m_mediumQualityReflectionMapResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_mediumQualityReflectionMap );
+	}	
 
 	if( m_shLightingManager )
 	{
@@ -2473,6 +2482,14 @@ bool EveSpaceScene::OnModified( Be::Var* value )
 		if( !m_envMap3ResPath.empty() )
 		{
 			BeResMan->GetResource( m_envMap3ResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_envMap3 );
+		}
+	}
+	if( IsMatch( value, m_mediumQualityReflectionMapResPath ) )
+	{
+		m_mediumQualityReflectionMap.Unlock();
+		if( !m_mediumQualityReflectionMapResPath.empty() )
+		{
+			BeResMan->GetResource( m_mediumQualityReflectionMapResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_mediumQualityReflectionMap );
 		}
 	}
 
