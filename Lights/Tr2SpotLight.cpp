@@ -23,7 +23,7 @@ void Tr2SpotLight::RenderDebugInfo( ITr2DebugRenderer2& renderer, const Matrix& 
 	baseColor.a = 0.1;
 	auto selectedColor = baseColor + Color( 0.0, 0.0, 0.0, 0.1 );
 	
-	Matrix boneMatrix = IdentityMatrix();
+	Matrix boneMatrix = m_boneTransform;
 	if( m_lightData.boneIndex >= 0 && m_lightData.boneIndex < boneCount ) {
 		TriMatrixCopyFrom3x4( &boneMatrix, &bones[m_lightData.boneIndex] );
 	}

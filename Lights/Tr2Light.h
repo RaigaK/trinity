@@ -58,6 +58,8 @@ public:
 	virtual void Update();
 	virtual void RenderDebugInfo( ITr2DebugRenderer2& renderer, const Matrix& worldMatrix, const granny_matrix_3x4* bones = nullptr, size_t boneCount = 0 );
 	virtual void SetLightData( LightData& baseData );
+	
+	void SetBoneMatrix( const granny_matrix_3x4* bones, size_t boneCount );
 	void SetBrightnessMultiplier( float multi );
 
 	// INotify
@@ -71,6 +73,7 @@ protected:
 	Be::Time m_startTime;
 	bool m_isDynamic;
 	float m_brightnessMultiplier;
+	Matrix m_boneTransform; // used for lights that have boneIndices
 };
 
 TYPEDEF_BLUECLASS( Tr2Light );

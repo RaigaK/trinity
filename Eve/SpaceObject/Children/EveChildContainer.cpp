@@ -291,6 +291,11 @@ void EveChildContainer::UpdateAsyncronous( EveUpdateContext& updateContext, cons
 		( *it )->UpdateAsyncronous( updateContext, newParams );
 	}
 
+	for( auto it = m_lights.begin(); it != m_lights.end(); ++it)
+	{
+		( *it )->SetBoneMatrix( params.bones, params.boneCount );
+	}
+
 	if( params.spaceObjectParent && !params.childParent )
 	{
 		params.spaceObjectParent->GetWorldVelocity( m_worldVelocity );

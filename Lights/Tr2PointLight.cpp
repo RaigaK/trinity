@@ -20,7 +20,7 @@ void Tr2PointLight::RenderDebugInfo( ITr2DebugRenderer2& renderer, const Matrix&
 	baseColor.a = 0.1;
 	auto selectedColor = baseColor + Color( 0.0, 0.0, 0.0, 0.2 );
 
-	Matrix lightMatrix = IdentityMatrix();
+	Matrix lightMatrix = m_boneTransform;
 	if( m_lightData.boneIndex >= 0 && m_lightData.boneIndex < boneCount ) {
 		TriMatrixCopyFrom3x4( &lightMatrix, &bones[m_lightData.boneIndex] );
 	}

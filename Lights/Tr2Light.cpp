@@ -30,7 +30,8 @@ Tr2Light::Tr2Light( IRoot* lockobj ) :
 	m_isDynamic( false ),
 	m_type( UNDEFINED_LIGHT ),
 	m_name( "" ),
-	m_brightnessMultiplier( 1.f )
+	m_brightnessMultiplier( 1.f ),
+	m_boneTransform( IdentityMatrix() )
 {
 	m_startTime = BeOS->GetCurrentFrameTime();
 	m_lightData = LightData();
@@ -40,6 +41,17 @@ void Tr2Light::SetLightData( LightData& baseData )
 {
 	m_lightData = baseData;
 }
+
+void Tr2Light::SetBoneMatrix( const granny_matrix_3x4* bones, size_t boneCount ) 
+{
+	if( m_lightData.boneIndex >= 0 && m_lightData.boneIndex < boneCount )
+	{
+		Matrix m = IdentityMatrix();
+		TriMatrixCopyFrom3x4( &m, &bones[m_lightData.boneIndex] );
+		m_boneTransform = m;
+	}
+}
+
 
 void Tr2Light::SetBrightnessMultiplier( float multi )
 {
@@ -57,14 +69,10 @@ void Tr2Light::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, flo
 	{
 		this->Update();
 	}
-	XMMATRIX lightTransform = transform;
 
-	if( m_lightData.boneIndex >= 0 && m_lightData.boneIndex < boneCount ) {		
-		Matrix m = IdentityMatrix();
-		TriMatrixCopyFrom3x4( &m, &bones[m_lightData.boneIndex] );
-		lightTransform = XMMatrixMultiply( m, transform );
-	}
-	
+	SetBoneMatrix( bones, boneCount );
+	XMMATRIX lightTransform = XMMatrixMultiply( m_boneTransform, transform );
+
 	Tr2LightManager::PerLightData data;
 
 	float brightness = m_lightData.brightness * m_brightnessMultiplier;
