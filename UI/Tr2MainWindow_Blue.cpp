@@ -190,6 +190,13 @@ const Be::ClassInfo* Tr2MainWindow::ExposeToBlue()
 			":param windowMode: window mode (see trinity.Tr2WindowMode)"
 		)
 
+        MAP_METHOD_AND_WRAP(
+            "StoreStateSettings",
+            StoreStateSettings,
+            "Store settings for the given mode. They may be used when a window switches to this mode using\n"
+            "means other than Python (enter full screen menu on macOS for example).\n"
+            ":param state: window state to store"
+        )
 
 		MAP_PROPERTY_READONLY( "width", GetBackBufferWidth, "Current window back buffer width" )
 		MAP_PROPERTY_READONLY( "height", GetBackBufferHeight, "Current window back buffer height" )

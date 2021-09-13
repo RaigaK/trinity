@@ -586,6 +586,14 @@ Tr2MainWindowStatePtr Tr2MainWindow::GetDefaultState( Tr2WindowMode::Type mode )
 	return ret;
 }
 
+void Tr2MainWindow::StoreStateSettings( const Tr2MainWindowState* state )
+{
+    if( state )
+    {
+        m_storedStates[state->m_state.windowMode] = state->m_state;
+    }
+}
+
 #ifdef __APPLE__
 id Tr2MainWindow::GetWindowID() const
 {

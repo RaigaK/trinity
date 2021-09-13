@@ -21,6 +21,8 @@ namespace Tr2WindowMode
 		FULL_SCREEN = 0,
 		WINDOWED = 1,
 		FIXED_WINDOW = 2,
+        
+        _COUNT,
 	};
 }
 
@@ -145,6 +147,8 @@ private:
 	void SanitizeFullScreenResolution( Tr2MainWindowState::State& state ) const;
 	void SanitizeWindowedResolution( Tr2MainWindowState::State& state ) const;
 	void SanitizeWindowPosition( Tr2MainWindowState::State& state ) const;
+    
+    void StoreStateSettings( const Tr2MainWindowState* state );
 private:
 	struct Size
 	{
@@ -174,6 +178,8 @@ private:
 	Tr2WindowHandle GetOutputWindow() const;
 
 	Tr2MainWindowState::State m_state;
+    
+    Tr2MainWindowState::State m_storedStates[Tr2WindowMode::_COUNT];
 
 	std::wstring m_title;
 	Tr2MouseCursorPtr m_cursor;

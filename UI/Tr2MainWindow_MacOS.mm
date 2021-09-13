@@ -1640,17 +1640,33 @@ void Tr2MainWindow::OnWindowFullscreenChanged_MacOS( bool fullscreen )
         newState.adapter = GetScreenAdapter( screen );
         if( fullscreen )
         {
-            newState.width = uint32_t( screen.frame.size.width * screen.backingScaleFactor );
-            newState.height = uint32_t( screen.frame.size.height * screen.backingScaleFactor );
-            newState.left = 0;
-            newState.top = 0;
+            const auto& stored = m_storedStates[Tr2WindowMode::FULL_SCREEN];
+            if( stored.width > 0 && stored.adapter == newState.adapter )
+            {
+                newState = stored;
+            }
+            else
+            {
+                newState.width = uint32_t( screen.frame.size.width * screen.backingScaleFactor );
+                newState.height = uint32_t( screen.frame.size.height * screen.backingScaleFactor );
+                newState.left = 0;
+                newState.top = 0;
+            }
         }
         else
         {
-            newState.width = uint32_t( [window contentView].frame.size.width * screen.backingScaleFactor );
-            newState.height = uint32_t( [window contentView].frame.size.height * screen.backingScaleFactor );
-            newState.left = int32_t( [window frame].origin.x );
-            newState.top = int32_t( [window frame].origin.y );
+            const auto& stored = m_storedStates[Tr2WindowMode::WINDOWED];
+            if( stored.width > 0 && stored.adapter == newState.adapter )
+            {
+                newState = stored;
+            }
+            else
+            {
+                newState.width = uint32_t( [window contentView].frame.size.width * screen.backingScaleFactor );
+                newState.height = uint32_t( [window contentView].frame.size.height * screen.backingScaleFactor );
+                newState.left = int32_t( [window frame].origin.x );
+                newState.top = int32_t( [window frame].origin.y );
+            }
         }
 		auto newStyle = GetWindowStyleMask( newState.windowMode );
 		if( fullscreen )
