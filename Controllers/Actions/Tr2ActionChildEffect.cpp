@@ -82,13 +82,13 @@ void Tr2ActionChildEffect::Start( Tr2Controller& controller )
                 }
 			} else if (EveStretch3Ptr stretch3 = BlueCastPtr( controller.GetOwner() ))
             {
-                if ( m_targetAnotherOwner == BlueSharedString("sourceSpaceObject") )
+                if ( m_targetAnotherOwner == BlueSharedString("SourceSpaceObject") )
                 {
                     IEveSpaceObject2Ptr source = stretch3->GetSourceSpaceObject();
                     owner = BlueCastPtr( source );
                 }
 
-                if ( m_targetAnotherOwner == BlueSharedString("destSpaceObject") )
+                if ( m_targetAnotherOwner == BlueSharedString("DestSpaceObject") )
                 {
                     IEveSpaceObject2Ptr dest = stretch3->GetDestSpaceObject();
                     owner = BlueCastPtr( dest );
@@ -168,13 +168,13 @@ void Tr2ActionChildEffect::Stop( Tr2Controller& controller )
             {
                 IEveEffectChildrenOwnerPtr cast;
 
-                if ( m_targetAnotherOwner == BlueSharedString("sourceSpaceObject") )
+                if ( m_targetAnotherOwner == BlueSharedString("SourceSpaceObject") )
                 {
                     IEveSpaceObject2Ptr source = stretch3->GetSourceSpaceObject();
                     cast = BlueCastPtr( source );
                 }
 
-                if ( m_targetAnotherOwner == BlueSharedString("destSpaceObject") )
+                if ( m_targetAnotherOwner == BlueSharedString("DestSpaceObject") )
                 {
                     IEveSpaceObject2Ptr dest = stretch3->GetDestSpaceObject();
                     cast = BlueCastPtr( dest );

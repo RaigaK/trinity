@@ -37,11 +37,11 @@ void Tr2ActionOverlay::Start( Tr2Controller& controller )
             } else if ( EveStretch3Ptr stretch3 = BlueCastPtr( controller.GetOwner() ) ) {
                 IEveSpaceObject2Ptr obj;
 
-                if (m_targetAnotherOwner == BlueSharedString("sourceSpaceObject" ) ) {
+                if (m_targetAnotherOwner == BlueSharedString("SourceSpaceObject" ) ) {
                     obj = stretch3->GetSourceSpaceObject();
                 }
 
-                if ( m_targetAnotherOwner == BlueSharedString("destSpaceObject" ) ) {
+                if ( m_targetAnotherOwner == BlueSharedString("DestSpaceObject" ) ) {
                     obj = stretch3->GetDestSpaceObject();
                 }
 
@@ -113,10 +113,10 @@ void Tr2ActionOverlay::Stop( Tr2Controller& controller )
 
             IEveSpaceObject2Ptr obj;
 
-            if (m_targetAnotherOwner == BlueSharedString("sourceSpaceObject")) {
+            if (m_targetAnotherOwner == BlueSharedString("SourceSpaceObject")) {
                 obj = stretch3->GetSourceSpaceObject();
             }
-            if (m_targetAnotherOwner == BlueSharedString("destSpaceObject")) {
+            if (m_targetAnotherOwner == BlueSharedString("DestSpaceObject")) {
                 obj = stretch3->GetDestSpaceObject();
             }
 
