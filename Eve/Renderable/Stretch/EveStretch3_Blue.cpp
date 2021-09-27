@@ -142,7 +142,7 @@ const Be::ClassInfo* EveStretch3::ExposeToBlue()
 			"moveProgression",
 			m_moveProgression,
 			"A value between 0 and 1 to determine the position of the move object between source and dest",
-			Be::READWRITE
+			Be::READWRITE | Be::PERSIST
 		)
 
 		MAP_ATTRIBUTE
