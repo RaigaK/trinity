@@ -360,6 +360,7 @@ const KeyDesc s_keyCodes[] = {
     { VK_OEM_5, kVK_ANSI_Backslash, "\\" },
     { VK_OEM_6, kVK_ANSI_RightBracket, "]" },
     { VK_OEM_7, kVK_ANSI_Quote, "\'" },
+    { VK_OEM_102, 10, "\xa7" },
 };
 
 bool s_keysDown[256] = { false };

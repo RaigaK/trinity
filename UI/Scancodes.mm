@@ -162,7 +162,8 @@ const CGKeyCode s_ansiKeys[] = {
 	kVK_ANSI_Keypad6,
 	kVK_ANSI_Keypad7,
 	kVK_ANSI_Keypad8,
-	kVK_ANSI_Keypad9
+    kVK_ANSI_Keypad9,
+    10 // OEM 102
 };
 
 CGKeyCode s_physicalToVirtual[0xff];
