@@ -145,24 +145,7 @@ const CGKeyCode s_ansiKeys[] = {
 	kVK_ANSI_M,
 	kVK_ANSI_Period,
 	kVK_ANSI_Grave,
-	kVK_ANSI_KeypadDecimal,
-	kVK_ANSI_KeypadMultiply,
-	kVK_ANSI_KeypadPlus,
-	kVK_ANSI_KeypadClear,
-	kVK_ANSI_KeypadDivide,
-	kVK_ANSI_KeypadEnter,
-	kVK_ANSI_KeypadMinus,
-	kVK_ANSI_KeypadEquals,
-	kVK_ANSI_Keypad0,
-	kVK_ANSI_Keypad1,
-	kVK_ANSI_Keypad2,
-	kVK_ANSI_Keypad3,
-	kVK_ANSI_Keypad4,
-	kVK_ANSI_Keypad5,
-	kVK_ANSI_Keypad6,
-	kVK_ANSI_Keypad7,
-	kVK_ANSI_Keypad8,
-    kVK_ANSI_Keypad9,
+
     10 // OEM 102
 };
 
