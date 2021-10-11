@@ -97,6 +97,8 @@ private:
 	bool m_firstSpawnAtRandomPlaces;
 	Vector3 FindSpawnPoint();
 
+	EveSpaceObject2* m_parent;
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	// locator sets
 	const LocatorStructureList* GetLocatorsForSet( const BlueSharedString& setName ) const;

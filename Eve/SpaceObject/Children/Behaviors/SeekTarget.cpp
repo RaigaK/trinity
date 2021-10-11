@@ -21,6 +21,7 @@ SeekTarget::SeekTarget( IRoot* lockobj ) :
 	m_fxBehavior( nullptr ),
 	m_locatorSetName( "damage" ),
 	m_startTimer( false ),
+	m_parent( nullptr ),
 	m_priority( LEAST_PRIORITY )
 
 {
@@ -51,6 +52,11 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 {
 	CCP_STATS_ZONE( __FUNCTION__ );
 
+	if( m_parent == nullptr )
+	{
+		m_parent = group.GetParent();
+	}
+
 	if( m_behaviorWeight <= 0 )
 	{
 		return m_todo;
@@ -78,7 +84,7 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 		if( !data->hasSpawned && m_firstSpawnAtRandomPlaces )
 		{
 			Vector3 spawnPos;
-			spawnPos = FindSpawnPoint();
+			spawnPos = FindSpawnPoint( );
 			group.m_spawnPosition = spawnPos;
 			agent->position = spawnPos;
 			data->hasSpawned = true;
@@ -120,13 +126,15 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 			if( m_sortedLocators )
 			{
 				int locatorIndex = m_locatorBucketIndices[data->bucketId][data->locatorIndex];
-				m_target->GetLocatorPosition( &data->position, locatorIndex, true, m_locatorSetName );
-				m_target->GetLocatorDirection( &data->direction, locatorIndex, true, m_locatorSetName );
+				// get locator pos and dir
+				m_target->GetLocatorPosition( &data->position, locatorIndex, false, m_locatorSetName );
+				m_target->GetLocatorDirection( &data->direction, locatorIndex, false, m_locatorSetName );
 			}
 			else
 			{
-				m_target->GetLocatorPosition( &data->position, data->locatorIndex, true, m_locatorSetName );
-				m_target->GetLocatorDirection( &data->direction, data->locatorIndex, true, m_locatorSetName );
+				// get locator pos and dir
+				m_target->GetLocatorPosition( &data->position, data->locatorIndex, false, m_locatorSetName );
+				m_target->GetLocatorDirection( &data->direction, data->locatorIndex, false, m_locatorSetName );
 			}
 		}
 		// Get local locators
@@ -134,7 +142,7 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 		{
 			if( data->arrived && agent->target == Vector3( 0, 0, 0 ) )
 			{
-				//Get count of locators under the "seek" locatorSet
+				//Get count of locators
 				auto seekLocators = GetLocatorsForSet( m_locatorSetName );
 				if( seekLocators != NULL && seekLocators[0].size() > 0 )
 				{
@@ -142,12 +150,17 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 					data->position = seekLocators[0][rand].position;
 					data->direction = (Vector3)XMVector3Rotate( Vector3( 0.f, 1.f, 0.f ), seekLocators[0][rand].direction );
 				}
+				else if( m_parent != nullptr )
+				{
+					int locatorCount = m_parent->GetLocatorCount( m_locatorSetName );
+					int rand = TriRandInt( 0, locatorCount );
+					data->position = m_parent->GetLocatorPositionFromSet( rand, false, m_locatorSetName );
+					m_parent->GetLocatorDirection( &data->direction, rand, false, m_locatorSetName );
+				}
 				data->arrived = false;
 			}
 		}
 
-		// TODO: check out world pos!!!!!!
-		Matrix worldTransform = system.GetWorldTransform();
 		agent->target = data->position;
 
 		// If the direction is (0,0,0) it's pointing up but then the slowDown radius won't work
@@ -165,21 +178,19 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 			Vector3 center;
 			Vector3 radius;
 			m_target->GetShapeEllipsoid( center, radius );
-			fakePoint *= radius * 1.2;
+			fakePoint *= radius * 1.2f;
 		}
 		else
 		{
 			fakePoint *= m_distFromOrigin;
 		}
 
-		fakePoint += data->position;
+		fakePoint += agent->target;
 
 		// For debugging
 		m_arrivalPoint = fakePoint;
 
-		Vector3 agentPositionWS = XMVector3TransformCoord( agent->position, worldTransform );
-
-		Vector3 desiredVelocity = fakePoint - agentPositionWS;
+		Vector3 desiredVelocity = fakePoint - agent->position;
 		float distance = Length( desiredVelocity );
 		desiredVelocity = Normalize( desiredVelocity );
 		static const Vector3 zAxis( 0.f, 0.f, 1.f );
@@ -202,7 +213,7 @@ std::vector<Vector3> SeekTarget::CalculateBehavior( std::vector<DroneAgent>& age
 
 			// Set the rotation of the drone
 			Quaternion newRotation;
-			auto invDir = Normalize( data->position - agentPositionWS );
+			auto invDir = Normalize( data->position - agent->position );
 			TriQuaternionRotationArc( &newRotation, &zAxis, &invDir );
 			agent->rotation = newRotation;
 			data->timePassed = 0.f;
@@ -311,7 +322,7 @@ void SeekTarget::SetupShipRepair()
 	m_repair = true;
 }
 
-Vector3 SeekTarget::FindSpawnPoint()
+Vector3 SeekTarget::FindSpawnPoint( )
 {
 	auto seekLocators = GetLocatorsForSet( m_locatorSetName );
 	if( seekLocators != NULL && seekLocators[0].size() > 0 )
@@ -319,6 +330,12 @@ Vector3 SeekTarget::FindSpawnPoint()
 		int rand = TriRandInt( 0, (int)seekLocators->size() );
 		Vector3 pos = seekLocators[0][rand].position;
 		return pos;
+	}
+	else if( m_parent != nullptr )
+	{
+		int locatorCount = m_parent->GetLocatorCount( m_locatorSetName );
+		int rand = TriRandInt( 0, locatorCount );
+		return m_parent->GetLocatorPositionFromSet( rand, false, m_locatorSetName );
 	}
 
 	return Vector3( 0, 0, 0 );

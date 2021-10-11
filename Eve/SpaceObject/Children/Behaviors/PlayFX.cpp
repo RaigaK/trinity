@@ -96,20 +96,22 @@ std::vector<Vector3> PlayFX::CalculateBehavior( std::vector<DroneAgent>& agents,
 			data->effectPlaying = true;
 		}
 
-		// Set the agent's position to world space because if the parent object had an offset the effect would also offset
 		Matrix worldTransform = system.GetWorldTransform();
-		Vector3 agentPositionWS = XMVector3TransformCoord( agent->position, worldTransform );
-		Vector3 offsetEffect = agentPositionWS + Normalize( agent->targetDirection ) * group.GetBoundingSphereRadius();
+		Vector3 offsetEffect = agent->position + Normalize( agent->targetDirection ) * group.GetBoundingSphereRadius();
+
+		// Set the effect]s pos to world space
+		Vector3 offsetEffectWS = TransformCoord( offsetEffect, worldTransform );
 
 		// Without this the drone will start shooting at the new target because of the cooldown of the effect
 		if( data->oldTarget != Vector3( 0, 0, 0 ) )
 		{
-			( *firingEffect )->SetFiringTransform( offsetEffect, data->oldTarget );
+			( *firingEffect )->SetFiringTransform( offsetEffectWS, data->oldTarget );
 		}
 
 		if( data->effectPlaying )
 		{
-			( *firingEffect )->SetFiringTransform( offsetEffect, agent->target );
+			Vector3 agentTargetWS = TransformCoord( agent->target, worldTransform );
+			( *firingEffect )->SetFiringTransform( offsetEffectWS, agentTargetWS );
 
 			Be::Time diff = BeOS->GetActualTime() - agent->fxStartTime;
 			auto duration = m_sec * 10000000;
@@ -118,7 +120,7 @@ std::vector<Vector3> PlayFX::CalculateBehavior( std::vector<DroneAgent>& agents,
 			{
 				( *firingEffect )->StopFiring();
 				data->effectPlaying = agent->playFX = false;
-				data->oldTarget = agent->target;
+				data->oldTarget = agentTargetWS;
 				agent->target = Vector3( 0, 0, 0 );
 			}
 		}
