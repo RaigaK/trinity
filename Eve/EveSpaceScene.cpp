@@ -1677,7 +1677,9 @@ void EveSpaceScene::RenderReflectionPass( Tr2RenderContext& renderContext )
 	m_reflectionProbe->InitRenderPass( renderContext );
 	for( unsigned i = m_reflectionProbe->GetStartFace(); i < m_reflectionProbe->GetEndFace(); i++ )
 	{
-		GPU_REGION( renderContext, "Reflection Face" );
+		std::string contextName = "Reflection Face " + std::to_string( i );
+
+		GPU_REGION( renderContext, contextName.c_str() );
 		m_reflectionProbe->StartRenderFace( i, renderContext );
 
 		PopulatePerFramePSData( m_perFramePS, renderContext );
@@ -1712,7 +1714,7 @@ void EveSpaceScene::RenderReflectionPass( Tr2RenderContext& renderContext )
 			}
 		}
 
-		if( m_dynamicObjectReflectionEnabled )
+		if( m_dynamicObjectReflectionEnabled && m_reflectionProbe->ReadyForDynamicObjectReflections() )
 		{
 			auto& reflectionRenderables = m_componentRegistry->GetReflectionRenderables();
 

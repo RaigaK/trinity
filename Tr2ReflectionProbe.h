@@ -53,6 +53,7 @@ public:
 	bool OnModified( Be::Var* value );
 
 	bool IsHollyWoodModeOn() const;
+	bool ReadyForDynamicObjectReflections() const;
 
 	uint8_t GetStartFace() const;
 	uint8_t GetEndFace() const;

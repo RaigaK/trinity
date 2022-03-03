@@ -342,7 +342,14 @@ void Tr2ReflectionProbe::RunFilter()
 	OnPrepareResources();
 	Filter( renderContext );
 }
+
 bool Tr2ReflectionProbe::IsHollyWoodModeOn() const
 {
 	return m_hollywoodMode;
+}
+
+bool Tr2ReflectionProbe::ReadyForDynamicObjectReflections() const
+{
+    // We need to have initialized the cubemap, before we start using it for rendering reflections (otherwise we just get garbage!)
+    return m_onePassDone;
 }
