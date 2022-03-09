@@ -398,9 +398,6 @@ protected:
 	TriVariable* m_envMapHandle;
 	ITr2TextureProviderPtr m_envMapTextureRes;
 
-	std::string m_mediumQualityReflectionMapResPath;
-	ITr2TextureProviderPtr m_mediumQualityReflectionMap;
-
 	std::string m_envMap1ResPath;
 	ITr2TextureProviderPtr m_envMap1;
 

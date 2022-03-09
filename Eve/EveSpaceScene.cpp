@@ -1674,6 +1674,15 @@ void EveSpaceScene::RenderReflectionPass( Tr2RenderContext& renderContext )
 	// set the current reflection
 	GPU_REGION( renderContext, "Reflection" );
 
+	// lower the reflection intensity for the objects rendered into the reflection
+	// (so the reflections in the reflections don't get brighter and brighter)
+	// we cap it at 0.8 for no good reason, just felt like a good number to cap the reflection intensity in the reflections
+	auto tmp = m_reflectionIntensity;
+	if( m_reflectionIntensity != 0.0f )
+	{
+		m_reflectionIntensity = min( 0.8f, 1.0f / ( m_reflectionIntensity * m_reflectionIntensity ) );
+	}
+
 	m_reflectionProbe->InitRenderPass( renderContext );
 	for( unsigned i = m_reflectionProbe->GetStartFace(); i < m_reflectionProbe->GetEndFace(); i++ )
 	{
@@ -1760,6 +1769,10 @@ void EveSpaceScene::RenderReflectionPass( Tr2RenderContext& renderContext )
 	}
 
 	m_reflectionProbe->EndRenderPass( renderContext );
+
+	// reset the reflection intensity
+	m_reflectionIntensity = tmp;
+
 	PopulatePerFramePSData( m_perFramePS, renderContext );
 	PopulatePerFrameVSData( m_perFrameVS, renderContext );
 	ApplyPerFrameData( renderContext );
@@ -2347,14 +2360,8 @@ void EveSpaceScene::UpdateVariableStore ()
 	m_reflectionMapVar = m_envMap1;
 	m_reflectionMaskMapVar = m_envMap2;
 	m_nebulaIntensityVar = m_nebulaIntensity;
-
-	auto envMapTextureRes = m_envMapTextureRes;
-	if( Tr2Renderer::GetShaderModel() < TR2SHADERMODEL::TR2SM_3_0_DEPTH && m_mediumQualityReflectionMap != nullptr )
-	{
-		envMapTextureRes = m_mediumQualityReflectionMap;
-	}
 	// the environment cubemap (aka nebula) is passed theough the global variable store
-	m_envMapHandle->SetValue( envMapTextureRes );
+	m_envMapHandle->SetValue( m_envMapTextureRes );
 }
 
 void EveSpaceScene::ClearVariableStore()
@@ -2507,10 +2514,6 @@ bool EveSpaceScene::Initialize()
 	{
 		BeResMan->GetResource( m_envMap3ResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_envMap3 );
 	}
-	if( !m_mediumQualityReflectionMapResPath.empty() )
-	{
-		BeResMan->GetResource( m_mediumQualityReflectionMapResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_mediumQualityReflectionMap );
-	}	
 
 	if( m_shLightingManager )
 	{
@@ -2576,14 +2579,6 @@ bool EveSpaceScene::OnModified( Be::Var* value )
 		if( !m_envMap3ResPath.empty() )
 		{
 			BeResMan->GetResource( m_envMap3ResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_envMap3 );
-		}
-	}
-	if( IsMatch( value, m_mediumQualityReflectionMapResPath ) )
-	{
-		m_mediumQualityReflectionMap.Unlock();
-		if( !m_mediumQualityReflectionMapResPath.empty() )
-		{
-			BeResMan->GetResource( m_mediumQualityReflectionMapResPath.c_str(), "", BlueInterfaceIID<ITr2TextureProvider>(), (void**)&m_mediumQualityReflectionMap );
 		}
 	}
 
