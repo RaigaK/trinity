@@ -15,13 +15,9 @@
 
 #include <stdint.h>
 
-#undef WINVER
-#define WINVER 0x0600
-#define _WIN32_WINNT 0x0600
-#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
-
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #define NOMINMAX //don't want that evil microsoft macro
 #include <windows.h> 
 
