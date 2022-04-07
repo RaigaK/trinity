@@ -30,6 +30,8 @@ struct LightData {
 	// Textured light specifics
 	std::wstring texturePath;
 	int32_t boneIndex;
+
+	uint16_t flags;
 };
 
 /*
@@ -79,3 +81,5 @@ protected:
 };
 
 TYPEDEF_BLUECLASS( Tr2Light );
+
+extern const Be::VarChooser Tr2LightFlagChooser[];

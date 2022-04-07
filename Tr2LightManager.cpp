@@ -148,8 +148,12 @@ void Tr2LightManager::SetFrustum( const TriFrustum& frustum )
 	m_frustum = frustum;
 }
 
-void Tr2LightManager::AddPointLight( const Vector3& position, float radius, const Color& color, float innerRadius )
+void Tr2LightManager::AddPointLight( const Vector3& position, float radius, const Color& color, Float_16 innerRadius, uint16_t flags )
 {
+	if( !AreLightFlagsValid( flags ) )
+	{
+		return;
+	}
 	PerLightData data;
 	data.position = position;
 	data.radius = radius;
@@ -173,6 +177,7 @@ void Tr2LightManager::AddPointLight( const Vector3& position, float radius, cons
 		data.color.y *= radius * dimming;
 		data.color.z *= radius * dimming;
 		data.innerRadius = innerRadius;
+		data.flags = flags;
 		data.direction = Vector3( 0.f, 0.f, 0.f );
 		data.innerAngle = 0.f;
 		m_lightData.Add( data, "Tr2LightManager::m_lightData" );
@@ -181,6 +186,10 @@ void Tr2LightManager::AddPointLight( const Vector3& position, float radius, cons
 
 void Tr2LightManager::AddLight( PerLightData& data )
 {
+	if( !AreLightFlagsValid( data.flags ) )
+	{
+		return;
+	}
 	float brightness = std::max( std::max( data.color.x, data.color.y), data.color.z );
 	if( brightness <= 0 || data.radius <= 0 || ( LengthSq(data.direction) != 0.0 && data.innerAngle == 0.0f ) )
 	{
@@ -318,4 +327,9 @@ bool Tr2LightManager::OnPrepareResources()
 	m_effect->SetParameter( BlueSharedString( "LightIndexCount" ), m_indexBufferCounter );
 
 	return true;
+}
+
+bool Tr2LightManager::AreLightFlagsValid( uint16_t flags )
+{
+	return ( flags & ( FLAG_AFFECTS_SURFACES | FLAG_AFFECTS_PARTICLES ) ) != 0;
 }

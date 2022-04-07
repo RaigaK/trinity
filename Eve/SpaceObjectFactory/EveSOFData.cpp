@@ -837,6 +837,7 @@ EveSOFDataHullLightSetItem::EveSOFDataHullLightSetItem( IRoot* lockobj ) :
 	m_data.rotation = Quaternion( 0.f, 0.f, 0.f, 1.f );
 	m_data.texturePath = L"";
 	m_data.boneIndex = -1;
+	m_data.flags = Tr2LightManager::FLAG_DEFAULT;
 	m_data.type = POINT_LIGHT;
 }
 

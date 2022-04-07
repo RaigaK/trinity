@@ -44,14 +44,20 @@ public:
 		Vector3 position;
 		float radius;
 		Vector3 color;
-		float innerRadius;
+		Float_16 innerRadius;
+		uint16_t flags;
 		Vector3 direction;
 		float innerAngle;
 	};
 
+	static const uint16_t FLAG_AFFECTS_SURFACES = 1;
+	static const uint16_t FLAG_AFFECTS_PARTICLES = 1 << 1;
+
+	static const uint16_t FLAG_DEFAULT = FLAG_AFFECTS_SURFACES | FLAG_AFFECTS_PARTICLES;
+
 	void Clear( Tr2RenderContext& renderContext );
 	void SetFrustum( const TriFrustum& frustum );
-	void AddPointLight( const Vector3& position, float radius, const Color& color, float innerRadius=0.0f);
+	void AddPointLight( const Vector3& position, float radius, const Color& color, Float_16 innerRadius = Float_16( 0.f ), uint16_t flags = FLAG_DEFAULT );
 	void AddLight( PerLightData& data );
 	ALResult UpdateLists( uint32_t msaaType, Tr2RenderContext& renderContext );
 	void SetVariableStore();
@@ -62,6 +68,9 @@ public:
 	static Tr2LightManager* GetOrCreateInstance( const char* effectPath );
 	static Tr2LightManager* GetInstance();
 	static void DeleteInstance();
+
+	static bool AreLightFlagsValid( uint16_t flags );
+
 private:
 	Tr2LightManager( const Tr2LightManager& );
 	Tr2LightManager& operator=( const Tr2LightManager& );

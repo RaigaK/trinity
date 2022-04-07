@@ -2103,6 +2103,7 @@ void EveSOF::SetupLights( EveSpaceObject2Ptr spaceObject, const EveSOFDNAPtr dna
 				data.position = lightSetItem.position;
 				data.radius = lightSetItem.radius;
 				data.innerRadius = lightSetItem.innerRadius;
+				data.flags = lightSetItem.flags;
 				data.color = dna->GetColorSet()[lightSetItem.lightColor];
 				data.brightness = lightSetItem.brightness;
 				data.noiseAmplitude = lightSetItem.noiseAmplitude;

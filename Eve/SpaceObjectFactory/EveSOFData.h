@@ -1159,6 +1159,7 @@ public:
 		float innerAngle;
 		float outerAngle;
 		int boneIndex;
+		uint16_t flags;
 		LIGHT_TYPE type;
 	} m_data;
 

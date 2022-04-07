@@ -21,7 +21,8 @@ LightData::LightData() :
 	innerAngle( 0.0f ),
 	outerAngle( 0.0f ),
 	texturePath( L"" ),
-	boneIndex( -1 )
+	boneIndex( -1 ),
+	flags( Tr2LightManager::FLAG_DEFAULT )
 {
 }
 
@@ -70,6 +71,11 @@ void Tr2Light::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, flo
 		this->Update();
 	}
 
+	if( !Tr2LightManager::AreLightFlagsValid( m_lightData.flags ) )
+	{
+		return;
+	}
+
 	SetBoneMatrix( bones, boneCount );
 	XMMATRIX lightTransform = XMMatrixMultiply( m_boneTransform, transform );
 
@@ -83,7 +89,8 @@ void Tr2Light::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, flo
 	}
 	data.color = ( Vector4( m_lightData.color ) * brightness ).GetXYZ();
 	data.radius = m_lightData.radius * scale;
-	data.innerRadius = m_lightData.innerRadius * scale;
+	data.innerRadius = Float_16( m_lightData.innerRadius * scale );
+	data.flags = m_lightData.flags;
 	data.position = Vector3( XMVector3TransformCoord( m_lightData.position, lightTransform ) );
 	float outerAngle = 2.0f + cos(TRI_2PI * m_lightData.outerAngle / 360.0f); // we do this so we always have a direction, if we have a spotlight
 

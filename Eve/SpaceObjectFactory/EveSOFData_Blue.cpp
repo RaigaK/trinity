@@ -5,6 +5,7 @@
 //
 #include "StdAfx.h"
 #include "EveSOFData.h"
+#include "Lights/Tr2Light.h"
 
 
 namespace SOFDataFactionColorChooser
@@ -1051,6 +1052,7 @@ const Be::ClassInfo* EveSOFDataHullLightSetItem::ExposeToBlue()
 	EXPOSURE_BEGIN( EveSOFDataHullLightSetItem, "" )
 		MAP_INTERFACE( EveSOFDataHullLightSetItem )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "flags", m_data.flags, "Various light options", Be::READWRITE | Be::PERSIST, Tr2LightFlagChooser )
 		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "boneIndex", m_data.boneIndex, ":jessica-widget: boneindex", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE_WITH_CHOOSER( "lightColor", m_data.lightColor, "", Be::READWRITE | Be::PERSIST | Be::ENUM, SOFDataFactionColorChooser::EveSOFDataFactionColorSetTypeChooser )
@@ -1072,6 +1074,7 @@ const Be::ClassInfo* EveSOFDataHullLightSetTexturedPointLight::ExposeToBlue()
 		MAP_INTERFACE( EveSOFDataHullLightSetTexturedPointLight )
 		MAP_INTERFACE( EveSOFDataHullLightSetItem )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "flags", m_data.flags, "Various light options", Be::READWRITE | Be::PERSIST, Tr2LightFlagChooser )
 		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "boneIndex", m_data.boneIndex, ":jessica-widget: boneindex", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "radius", m_data.radius, "", Be::READWRITE | Be::PERSIST )
@@ -1092,6 +1095,7 @@ const Be::ClassInfo* EveSOFDataHullLightSetSpotLight::ExposeToBlue()
 		MAP_INTERFACE( EveSOFDataHullLightSetSpotLight )
 		MAP_INTERFACE( EveSOFDataHullLightSetItem )
 		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE_WITH_CHOOSER( "flags", m_data.flags, "Various light options", Be::READWRITE | Be::PERSIST, Tr2LightFlagChooser )
 		MAP_ATTRIBUTE( "position", m_data.position, "", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "boneIndex", m_data.boneIndex, ":jessica-widget: boneindex", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "rotation", m_data.rotation, "", Be::READWRITE | Be::PERSIST )
