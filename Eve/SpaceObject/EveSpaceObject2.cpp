@@ -1429,7 +1429,7 @@ void EveSpaceObject2::UpdateVisibility( const TriFrustum& frustum, const Matrix&
 
 	if( m_mesh )
 	{
-		auto size = frustum.GetPixelSizeAccrossEst( m_boundingSphereWorldCenter, m_boundingSphereRadius );
+		auto size = frustum.GetPixelSizeAccrossEst( m_boundingSphereWorldCenter, m_boundingSphereWorldRadius );
 		m_mesh->UseWithScreenSize( size );
 }
 }
