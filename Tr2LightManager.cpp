@@ -10,6 +10,7 @@
 #include "Shader/Tr2Effect.h"
 #include "Tr2GpuBuffer.h"
 #include "Tr2GpuStructuredBuffer.h"
+#include "Tr2TextureArray.h"
 
 CCP_STATS_DECLARE( lightsGathered, "Trinity/Tr2LightManager/lightsGathered", true, CST_COUNTER_LOW, "How many lights were pushed to GPU" );
 
@@ -89,6 +90,7 @@ Tr2LightManager::Tr2LightManager( const char* effectPath )
 
 	m_lightBufferVariable.Register( "LightBuffer", m_lightBuffer );
 	m_indexBufferVariable.Register( "LightIndexBuffer", m_indexBuffer );
+	GlobalStore().RegisterVariable( "LightProfileArray", &GetLightProfileArray() );
 
 	PrepareResources();
 }
@@ -178,8 +180,9 @@ void Tr2LightManager::AddPointLight( const Vector3& position, float radius, cons
 		data.color.z *= radius * dimming;
 		data.innerRadius = innerRadius;
 		data.flags = flags;
-		data.direction = Vector3( 0.f, 0.f, 0.f );
-		data.innerAngle = 0.f;
+		data.direction = Vector3_16( Vector3( 1.f, 0.f, 0.f ) );
+		data.outerAngle = Float_16( 0.f );
+		data.innerAngle = Float_16( 0.f );
 		m_lightData.Add( data, "Tr2LightManager::m_lightData" );
 	}
 }
@@ -191,7 +194,7 @@ void Tr2LightManager::AddLight( PerLightData& data )
 		return;
 	}
 	float brightness = std::max( std::max( data.color.x, data.color.y), data.color.z );
-	if( brightness <= 0 || data.radius <= 0 || ( LengthSq(data.direction) != 0.0 && data.innerAngle == 0.0f ) )
+	if( brightness <= 0 || data.radius <= 0 )
 	{
 		return;
 	}
@@ -332,4 +335,10 @@ bool Tr2LightManager::OnPrepareResources()
 bool Tr2LightManager::AreLightFlagsValid( uint16_t flags )
 {
 	return ( flags & ( FLAG_AFFECTS_SURFACES | FLAG_AFFECTS_PARTICLES ) ) != 0;
+}
+
+Tr2TextureArray& Tr2LightManager::GetLightProfileArray()
+{
+	static CTr2TextureArray lightProfiles;
+	return lightProfiles;
 }

@@ -6,8 +6,7 @@
 BLUE_DECLARE( TriTextureRes );
 
 BLUE_CLASS( Tr2TexturedPointLight ): 
-	public Tr2PointLight,
-	public IInitialize
+	public Tr2PointLight
 {
 public:
 	Tr2TexturedPointLight( IRoot* lockobj = nullptr );

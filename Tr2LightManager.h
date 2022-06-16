@@ -17,6 +17,8 @@ BLUE_DECLARE( Tr2Effect );
 BLUE_DECLARE( Tr2GpuBuffer );
 BLUE_DECLARE( Tr2GpuStructuredBuffer );
 
+class Tr2TextureArray;
+
 
 // --------------------------------------------------------------------------------------
 // Description:
@@ -43,11 +45,19 @@ public:
 	{
 		Vector3 position;
 		float radius;
+
 		Vector3 color;
 		Float_16 innerRadius;
 		uint16_t flags;
-		Vector3 direction;
-		float innerAngle;
+
+		Vector3_16 direction;
+		uint16_t padding0;
+
+		Float_16 outerAngle;
+		Float_16 innerAngle;
+
+		uint16_t padding1;
+		uint16_t padding2;
 	};
 
 	static const uint16_t FLAG_AFFECTS_SURFACES = 1;
@@ -70,6 +80,8 @@ public:
 	static void DeleteInstance();
 
 	static bool AreLightFlagsValid( uint16_t flags );
+
+	static Tr2TextureArray& GetLightProfileArray();
 
 private:
 	Tr2LightManager( const Tr2LightManager& );

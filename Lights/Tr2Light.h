@@ -9,6 +9,8 @@
 #include "Tr2DebugRenderer.h"
 #include "Utilities/MatrixUtils.h"
 
+BLUE_DECLARE( Tr2LightProfileRes );
+
 struct LightData {
 	LightData();
 
@@ -40,6 +42,7 @@ struct LightData {
 	Another reason is because the information in this ends up as PerLightData which needs to contain everything regardless of light type
 */
 BLUE_CLASS( Tr2Light ):
+	public IInitialize,
 	public INotify
 {
 public:
@@ -64,6 +67,8 @@ public:
 	void SetBoneMatrix( const granny_matrix_3x4* bones, size_t boneCount );
 	void SetBrightnessMultiplier( float multi );
 
+	bool Initialize() override;
+
 	// INotify
 	virtual bool OnModified( Be::Var* value );
 
@@ -78,6 +83,9 @@ protected:
 	bool m_isDynamic;
 	float m_brightnessMultiplier;
 	Matrix m_boneTransform; // used for lights that have boneIndices
+
+	Tr2LightProfileResPtr m_lightProfile;
+	std::wstring m_lightProfilePath;
 };
 
 TYPEDEF_BLUECLASS( Tr2Light );

@@ -14,7 +14,7 @@ Tr2FactionLight::Tr2FactionLight( IRoot* lockobj ):
 bool Tr2FactionLight::OnModified( Be::Var* value )
 {
     SetLightColorFromFactionColor();
-    return true;
+	return Tr2Light::OnModified( value );
 }
 
 void Tr2FactionLight::SetLightColorFromFactionColor()

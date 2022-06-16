@@ -16,7 +16,7 @@ bool Tr2TexturedPointLight::Initialize()
 	{
 		BeResMan->GetResource( m_lightData.texturePath, L"", m_texture );
 	}
-	return true;
+	return Tr2PointLight::Initialize();
 }
 
 void Tr2TexturedPointLight::SetLightData( LightData& data )

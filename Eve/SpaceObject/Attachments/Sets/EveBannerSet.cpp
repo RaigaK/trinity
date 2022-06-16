@@ -293,7 +293,7 @@ void EveBannerSet::SetKey( int32_t key )
 
 void EveBannerSet::AddLight( Tr2Light* light )
 {
-	m_lights.Append( light );
+	m_lights.Append( light->GetRawRoot() );
 }
 
 void EveBannerSet::SetPrimaryTextureParameter( TriTextureParameter* primaryTextureParameter )

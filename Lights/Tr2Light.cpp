@@ -7,6 +7,8 @@
 #include "StdAfx.h"
 #include "Tr2Light.h"
 #include "Include/TriMath.h"
+#include "Resources/Tr2LightProfileRes.h"
+
 
 LightData::LightData() :
 	position( 0, 0, 0 ),
@@ -90,22 +92,27 @@ void Tr2Light::AddLight( Tr2LightManager& lightManager, CXMMATRIX transform, flo
 	data.color = ( Vector4( m_lightData.color ) * brightness ).GetXYZ();
 	data.radius = m_lightData.radius * scale;
 	data.innerRadius = Float_16( m_lightData.innerRadius * scale );
-	data.flags = m_lightData.flags;
+	int16_t profile = 0;
+	if( m_lightProfile )
+	{
+		profile = m_lightProfile->GetTextureIndex() + 1;
+	}
+	data.flags = m_lightData.flags | ( profile << 4 );
 	data.position = Vector3( XMVector3TransformCoord( m_lightData.position, lightTransform ) );
-	float outerAngle = 2.0f + cos(TRI_2PI * m_lightData.outerAngle / 360.0f); // we do this so we always have a direction, if we have a spotlight
 
 	Matrix lightRotation;
+	lightRotation = RotationMatrix( Normalize( m_lightData.rotation * RotationQuaternion( lightTransform ) ) );
+	data.direction = Vector3_16( Transform( Vector4( 0.0, 0.0, -1, 0.0 ), lightRotation ).GetXYZ() );
 	switch( m_type )
 	{
 	case SPOT_LIGHT:
 		// rotate the direction
-		lightRotation = RotationMatrix( Normalize( m_lightData.rotation * RotationQuaternion( lightTransform ) ) );
-		data.direction = Transform( Vector4( 0.0, 0.0, -outerAngle, 0.0 ), lightRotation ).GetXYZ();
-		data.innerAngle = cos(TRI_2PI * m_lightData.innerAngle / 360.0f);
+		data.outerAngle = Float_16( cos( TRI_2PI * m_lightData.outerAngle / 360.0f ) );
+		data.innerAngle = Float_16( cos(TRI_2PI * m_lightData.innerAngle / 360.0f) );
 		break;
 	default:
-		data.direction = Vector3( 0.f, 0.f, 0.f );
-		data.innerAngle = 0.0f;
+		data.outerAngle = Float_16( 0.0f );
+		data.innerAngle = Float_16( 0.0f );
 		break;
 	}
 
@@ -126,10 +133,29 @@ void Tr2Light::GetLight( Vector3& position, float& radius, Color& color )
 	color = m_lightData.color * brightness;
 }
 
+bool Tr2Light::Initialize()
+{
+	Tr2LightProfileResPtr profile;
+	if( !m_lightProfilePath.empty() )
+	{
+		BeResMan->GetResource( m_lightProfilePath, L"lp", profile );
+	}
+	m_lightProfile = profile;
+	return true;
+}
 
 // INotify
 bool Tr2Light::OnModified( Be::Var* value )
 {
+	if( IsMatch( value, m_lightProfilePath ) )
+	{
+		Tr2LightProfileResPtr profile;
+		if( !m_lightProfilePath.empty() )
+		{
+			BeResMan->GetResource( m_lightProfilePath, L"lp", profile );
+		}
+		m_lightProfile = profile;
+	}
 	return true;
 }
 
