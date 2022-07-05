@@ -454,7 +454,7 @@ void SeekTarget::RenderDebugInfo( ITr2DebugRenderer2& renderer, std::vector<Dron
 {
 	if( renderer.HasOption( this, "SeekTarget" ) )
 	{
-		for( int i = 0; i <= m_arrivalPoints.size(); i++ )
+		for( int i = 0; i < m_arrivalPoints.size(); i++ )
 		{
 			renderer.DrawSphere( this, m_arrivalPoints[i], m_arrivedRadius, 8, Tr2DebugRenderer::Wireframe, 0xffffffff );
 			renderer.DrawSphere( this, m_arrivalPoints[i], 5, 8, Tr2DebugRenderer::Wireframe, 0xff0000ff );
