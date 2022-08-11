@@ -10,6 +10,7 @@
 #include "Resources/TriGeometryRes.h"
 #include "TriFrustumOrtho.h"
 
+#include "Audio/ITr2AudEmitter.h"
 #include "Eve/EveTransform.h"
 #include "EveSpaceObject2.h"
 #include "Eve/EveSpaceScene.h"
@@ -1396,6 +1397,15 @@ void EveSpaceObject2::UpdateVisibility( const TriFrustum& frustum, const Matrix&
 		{
 			m_lodLevelWithChildren = TR2_LOD_LOW;
 			m_impostorMode = m_allowLodSelection;
+		}
+	}
+
+	for ( auto it = m_observers.begin(); it != m_observers.end(); ++it )
+	{
+		IBluePlacementObserver* obs = ( *it )->GetObserver();
+		if ( auto emitter = dynamic_cast<ITr2AudEmitter*>( obs ) )
+		{
+			emitter->SetVisibility( m_isVisible );
 		}
 	}
 
