@@ -5,10 +5,13 @@
 SpawnDrones::SpawnDrones( IRoot* lockobj ) :
 	m_enabled( true ),
 	m_addByCount( false ),
+	m_addOnGrid( false ),
+	m_initializeGridAdd( true ),
 	m_seconds( -1 ),
 	m_time( 0.f ),
 	m_count( 1 ),
-	m_spawnPosition( 0, 0, 0 )
+	m_spawnPosition( 0, 0, 0 ),
+	m_gridInfo( 1, 1, 1, 10 )
 {
 }
 
@@ -22,6 +25,38 @@ std::vector<Vector3> SpawnDrones::CalculateBehavior( std::vector<DroneAgent>& ag
 	std::vector<Vector3> noNeedToReturnForces;
 	if( !m_enabled )
 	{
+		return noNeedToReturnForces;
+	}
+
+	if( m_addOnGrid && m_initializeGridAdd )
+	{
+		// for behaviors to work we always have to add one decoy drone, delete that one so he doesn't mess up the cube
+		group.RemoveAgent();
+		Vector3 startPos = group.m_spawnPosition;
+		int xCount = m_gridInfo.x;
+		int yCount = m_gridInfo.y;
+		int zCount = m_gridInfo.z;
+		float distBetween = m_gridInfo.w;
+
+
+		for( int i = 0; i < zCount; ++i )
+		{
+			for( int j = 0; j < yCount; ++j )
+			{
+				for( int k = 0; k < xCount; ++k )
+				{
+					// render object in x direction
+					group.AddAgent();
+					group.m_spawnPosition.x += distBetween;
+				}
+				group.m_spawnPosition.y += distBetween;
+				group.m_spawnPosition.x = startPos.x;
+			}
+			group.m_spawnPosition.z += distBetween;
+			group.m_spawnPosition.y = startPos.y;
+		}
+		m_initializeGridAdd = false;
+
 		return noNeedToReturnForces;
 	}
 
@@ -73,4 +108,9 @@ std::vector<Vector3> SpawnDrones::CalculateBehavior( std::vector<DroneAgent>& ag
 
 
 	return noNeedToReturnForces;
+}
+
+void SpawnDrones::GridToggleReset()
+{
+	m_initializeGridAdd = true;
 }

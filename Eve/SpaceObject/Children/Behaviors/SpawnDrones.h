@@ -15,13 +15,18 @@ public:
 	virtual std::vector<Vector3> CalculateBehavior( std::vector<DroneAgent>& agents, void* scratchData, const float deltaTime,
 		BehaviorGroup& group, EveChildBehaviorSystem& system, const std::vector<std::vector<DroneAgent*>>& dronesInSearchRadius );
 
+	void GridToggleReset();
+
 private:
 	bool m_enabled;
 	bool m_addByCount;
+	bool m_addOnGrid;
+	bool m_initializeGridAdd;
 	float m_seconds;
 	float m_time;
 	int m_count;
 	Vector3 m_spawnPosition;
+	Vector4 m_gridInfo; // x = x count, y = y count, z = z count, w = distance between
 };
 
 TYPEDEF_BLUECLASS( SpawnDrones );

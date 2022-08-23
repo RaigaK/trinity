@@ -15,7 +15,10 @@ const Be::ClassInfo* SpawnDrones::ExposeToBlue()
 		MAP_ATTRIBUTE( "seconds", m_seconds, "How many seconds until the next one spawns, set to -1 if you don't want any drones added", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "count", m_count, "How many drones should spawn", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "time", m_time, "Time left until next agent spawns", Be::READ | Be::PERSIST )
+		MAP_ATTRIBUTE( "add on grid", m_addOnGrid, "If enabled behavior will spawn count of drones (xCount, yCount, zCount, distance) to a grid", Be::READWRITE | Be::PERSIST )
+		MAP_ATTRIBUTE( "gridInfo", m_gridInfo, "x = count of drones in x row, y = count of drones in y row, z = count of drones in z row, w = distance between models", Be::READWRITE | Be::PERSIST )
 
-
-	EXPOSURE_END()
+		MAP_METHOD_AND_WRAP( "gridToggleReset", GridToggleReset, "toggle to 'reset' grid spawning \n:jessica-placement: TOOLBAR\n:jessica-icon: far-bomb\n" )
+	
+		EXPOSURE_END()
 }
