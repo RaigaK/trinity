@@ -37,6 +37,7 @@ public:
 
 	const std::string& GetName() const;
 	const Tr2StateMachine* GetStateMachine() const;
+	void UpdateVariableMask() const;
 private:
 	Tr2StateMachineState* GetNextState() const;
 	IRoot* GetStateMachinePtr() const;
@@ -47,7 +48,7 @@ private:
 	ITr2StateMachineStateFinalizerPtr m_finalizer;
 
 	const Tr2StateMachine* m_stateMachine;
-	uint64_t m_transitionVariableMask;
+	mutable uint64_t m_transitionVariableMask;
 	bool m_isActive;
 	bool m_isFinalizing;
 	bool m_hasBeenVetoed;

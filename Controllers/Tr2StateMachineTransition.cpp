@@ -28,6 +28,10 @@ bool Tr2StateMachineTransition::OnModified( Be::Var* value )
 	if( IsMatch( value, m_condition ) )
 	{
 		m_evaluator.SetExpr( m_condition.c_str(), *m_source->GetStateMachine() );
+		if( m_source )
+		{
+			m_source->UpdateVariableMask();
+		}
 	}
 	else if( IsMatch( value, m_destinationName ) )
 	{

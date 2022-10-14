@@ -86,6 +86,7 @@ void Tr2StateMachineState::OnListModified( long event, ssize_t key, ssize_t key2
 				if( Tr2StateMachineTransitionPtr transition = BlueCastPtr( value ) )
 				{
 					transition->Link( *this );
+					UpdateVariableMask();
 				}
 			}
 			break;
@@ -93,6 +94,7 @@ void Tr2StateMachineState::OnListModified( long event, ssize_t key, ssize_t key2
 			if( Tr2StateMachineTransitionPtr transition = BlueCastPtr( value ) )
 			{
 				transition->Unlink();
+				UpdateVariableMask();
 			}
 			break;
 		default:
@@ -133,6 +135,28 @@ void Tr2StateMachineState::Link( const Tr2StateMachine& stateMachine )
 	if( m_finalizer )
 	{
 		m_finalizer->Link( *stateMachine.GetController() );
+	}
+}
+
+void Tr2StateMachineState::UpdateVariableMask() const
+{
+	m_transitionVariableMask = 0;
+	bool hasMask = true;
+	for( auto it = begin( m_transitions ); it != end( m_transitions ); ++it )
+	{
+		auto mask = ( *it )->GetVariableMask();
+		if( mask == 0 )
+		{
+			hasMask = false;
+		}
+		else
+		{
+			m_transitionVariableMask |= mask;
+		}
+	}
+	if( !hasMask )
+	{
+		m_transitionVariableMask = 0;
 	}
 }
 
