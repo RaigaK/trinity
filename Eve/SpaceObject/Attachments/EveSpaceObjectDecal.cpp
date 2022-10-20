@@ -15,6 +15,7 @@
 CCP_STATS_DECLARED_ELSEWHERE( primitiveCount );
 CCP_STATS_DECLARE( decalDPCount, "Trinity/EveSpaceObject2/DecalDPCount", true, CST_COUNTER_LOW, "Number of decals rendered" );
 
+extern float g_eveSpaceSceneLODFactor;
 
 using namespace Tr2RenderContextEnum;
 
@@ -153,13 +154,14 @@ void EveSpaceObjectDecal::UpdateVisibility( const TriFrustum& frustum, const IEv
 
 		auto pixelSize = frustum.GetPixelSizeAccrossEst( sphereCenter, sphereRadius );
 			
-		if( pixelSize < m_minScreenSize )
+		float modifiedMinScreen = m_minScreenSize * g_eveSpaceSceneLODFactor;
+		if( pixelSize < modifiedMinScreen )
 		{
 			m_isVisible = 0;
 			return;
 		}
 		
-		m_isVisible = std::min( ( pixelSize - m_minScreenSize ) / ( m_minScreenSize * 0.5f ), 1.f );
+		m_isVisible = std::min( ( pixelSize - modifiedMinScreen ) / ( modifiedMinScreen * 0.5f ), 1.f );
 	}
 	else
 	{
@@ -813,7 +815,7 @@ void EveSpaceObjectDecal::CreateStaticIndexBuffers()
 	for( auto& buffer : m_indexBuffers )
 	{
 		buffer.m_startIndex = total;
-		buffer.m_primitiveCount = buffer.m_indices.size() / 3;
+		buffer.m_primitiveCount = uint32_t( buffer.m_indices.size() / 3 );
 		total += uint32_t( buffer.m_indices.size() );
 	}
 

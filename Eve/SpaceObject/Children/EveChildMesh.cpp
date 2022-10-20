@@ -629,3 +629,8 @@ void EveChildMesh::ClearLights()
 {
 	m_lights.Clear();
 }
+
+void EveChildMesh::SetReflectionMode( EntityComponents::ReflectionMode mode )
+{
+	m_reflectionMode = mode;
+}

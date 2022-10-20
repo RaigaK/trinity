@@ -115,6 +115,7 @@ public:
 	// access
 	void SetMesh( Tr2MeshBase* mesh );
 	void SetOrigin( Origin origin );
+	void SetReflectionMode( EntityComponents::ReflectionMode reflectionMode );
 
 	Tr2GrannyAnimation* GetAnimationController() const override;
 	void SetAnimationController( Tr2GrannyAnimation* animation );

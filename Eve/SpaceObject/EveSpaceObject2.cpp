@@ -3409,7 +3409,6 @@ void EveSpaceObject2::ResetClipSphereCenterToPos( Vector3 center )
 void EveSpaceObject2::SetReflectionMode( EntityComponents::ReflectionMode mode )
 {
 	m_reflectionMode = mode;
-	ReRegister();
 }
 
 int EveSpaceObject2::GetLastUsedMeshLod() const

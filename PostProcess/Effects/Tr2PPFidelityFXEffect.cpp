@@ -24,11 +24,11 @@ namespace FidelityFX
 Tr2PPFidelityFXEffect::Tr2PPFidelityFXEffect( IRoot* lockobj ) :
 	m_intensity( 0.5f ),
 	m_useRcas( true ),
-	m_fsrEnabled( true),
+	m_fsrEnabled( false ),
 	m_slowFSR( false ),
-	m_mipLodBias( 1.0f ),
+	m_mipLodBias( 0.0f ),
 	m_debug( false ),
-	m_upsampling( 1.5f ),
+	m_upsampling( 1.0f ),
 	m_sharpness( 0.2f )
 {
 }

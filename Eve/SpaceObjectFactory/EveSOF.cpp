@@ -3140,6 +3140,8 @@ EveChildContainerPtr EveSOF::CreatePlacement( EveSpaceObject2Ptr parent, EveSOFD
 				child.CreateInstance();
 				auto mesh = CreateMesh( extensionDna );
 				child->SetMesh( mesh );
+				child->SetReflectionMode( extensionDna->GetReflectionMode() );
+
 				if( extensionDna->IsHullAnimated() )
 				{ 
 					Tr2GrannyAnimationPtr animationPtr;
@@ -3194,6 +3196,9 @@ EveChildContainerPtr EveSOF::CreatePlacement( EveSpaceObject2Ptr parent, EveSOFD
 		child.CreateInstance();
 		child->SetMesh( instancedMesh );
 		child->SetName( "Instanced Hull" );
+
+		// Set the reflectionMode based on the category
+		child->SetReflectionMode( extensionDna->GetReflectionMode() );
 
 		SetupDecalSets( BlueCastPtr( child->GetRawRoot() ), extensionDna );
 		// do this last so it sets all the needed shaders as instanced
