@@ -30,7 +30,6 @@ Tr2SSAO::SSAOResources::SSAOResources()
 	ssaoWorkerTargetB.CreateInstance();
 	importanceTargetA.CreateInstance();
 	importanceTargetB.CreateInstance();
-	outputTarget.CreateInstance();
 }
 
 void Tr2SSAO::SSAOResources::ReleaseResources()
@@ -41,7 +40,6 @@ void Tr2SSAO::SSAOResources::ReleaseResources()
 	ssaoWorkerTextureB = {};
 	importanceTargetA->Destroy();
 	importanceTargetB->Destroy();
-	outputTarget->Destroy();
 }
 
 void Tr2SSAO::Layer::ReleaseResources()
@@ -64,16 +62,6 @@ Tr2SSAO::Tr2SSAO( IRoot* lockobj )
 	m_detail.settings.detailShadowStrength = 5;
 	m_detail.effect.CreateInstance();
 
-	m_large.settings = FFX_CACAO_PRESETS[0].settings;
-	m_large.settings.radius = 2.5f;
-	m_large.settings.shadowMultiplier = 1.0f;
-	m_large.settings.shadowPower = 2.6f;
-	m_large.settings.shadowClamp = 0.98f;
-	m_large.settings.sharpness = 0.5f;
-	m_large.settings.detailShadowStrength = 5;
-	m_large.effect.CreateInstance();
-	m_large.effect->SetOption( BlueSharedString( "SSAO_APPLICATION" ), BlueSharedString( "SSAO_APPLY_MIX" ) );
-
 	m_loadCounterBuffer.CreateInstance();
 	m_blankOutputTexture.CreateInstance();
 	m_outputTarget.CreateInstance();
@@ -95,7 +83,6 @@ void Tr2SSAO::ReleaseResources( TriStorage s )
 {
 	m_initialized = false;
 	m_detail.ReleaseResources();
-	m_large.ReleaseResources();
 
 	m_outputTarget->Detach();
 	m_outputTarget->Destroy();
@@ -114,7 +101,6 @@ void Tr2SSAO::SetInputBuffers( Tr2DepthStencilPtr depthBuffer, Tr2RenderTargetPt
 	if( m_inputDepthBuffer )
 	{
 		m_detail.effect->SetOption( BlueSharedString( "SSAO_INPUT_2D_TEXTURE_TYPE" ), BlueSharedString( m_inputDepthBuffer->GetMsaaSamples() > 1 ? "TEXTURE_2DMS" : "TEXTURE_2D" ) );
-		m_large.effect->SetOption( BlueSharedString( "SSAO_INPUT_2D_TEXTURE_TYPE" ), BlueSharedString( m_inputDepthBuffer->GetMsaaSamples() > 1 ? "TEXTURE_2DMS" : "TEXTURE_2D" ) );
 	}
 }
 
@@ -265,7 +251,7 @@ bool Tr2SSAO::OnPrepareResources()
 
 	// Check if the smallest map is still large enough
 	FFX_CACAO_BufferSizeInfo size{};
-	FFX_CACAO_UpdateBufferSizeInfo( m_inputDepthBuffer->GetWidth(), m_inputDepthBuffer->GetHeight(), m_detail.downsampled || m_large.downsampled, &size );
+	FFX_CACAO_UpdateBufferSizeInfo( m_inputDepthBuffer->GetWidth(), m_inputDepthBuffer->GetHeight(), m_detail.downsampled, &size );
 	if( !size.importanceMapWidth || !size.importanceMapHeight )
 	{
 		return false;
@@ -282,9 +268,8 @@ bool Tr2SSAO::OnPrepareResources()
 	}
 
 	PrepareSsaoResources( m_detail, nullptr, renderContext );
-	PrepareSsaoResources( m_large, &m_detail, renderContext );
 
-	if( m_detail.quality == SSAOQuality::HIGHEST || m_large.quality == SSAOQuality::HIGHEST )
+	if( m_detail.quality == SSAOQuality::HIGHEST )
 	{
 		if( !m_loadCounterBuffer->IsValid() )
 		{
@@ -301,7 +286,6 @@ bool Tr2SSAO::OnPrepareResources()
 	if( !m_initialized )
 	{
 		UpdateEffect( m_detail );
-		UpdateEffect( m_large );
 		m_initialized = true;
 	}
 
@@ -348,14 +332,11 @@ void Tr2SSAO::UpdateEffect( Layer& layer )
 	layer.effect->SetParameter( BlueSharedString( "g_BilateralUpscaleInput" ), settings.blurPassCount ? layer.resources.ssaoWorkerTargetA : layer.resources.ssaoWorkerTargetB );
 	layer.effect->SetParameter( BlueSharedString( "g_BilateralUpscaleDepth" ), m_inputDepthBuffer );
 	layer.effect->SetParameter( BlueSharedString( "g_BilateralUpscaleDownscaledDepth" ), layer.resources.deinterleavedDepthTarget );
-	layer.effect->SetParameter( BlueSharedString( "g_BilateralUpscaleOutput" ), layer.resources.outputTarget->IsValid() ? layer.resources.outputTarget : m_outputTarget );
-
-	auto& otherLayer = &layer == &m_detail ? m_large : m_detail;
-	layer.effect->SetParameter( BlueSharedString( "g_PrevLayerSSAO" ), otherLayer.resources.outputTarget );
+	layer.effect->SetParameter( BlueSharedString( "g_BilateralUpscaleOutput" ), m_outputTarget );
 
 	// Apply pass
 	layer.effect->SetParameter( BlueSharedString( "g_ApplyFinalSSAO" ), settings.blurPassCount ? layer.resources.ssaoWorkerTargetA : layer.resources.ssaoWorkerTargetB );
-	layer.effect->SetParameter( BlueSharedString( "g_ApplyOutput" ), layer.resources.outputTarget->IsValid() ? layer.resources.outputTarget : m_outputTarget );
+	layer.effect->SetParameter( BlueSharedString( "g_ApplyOutput" ), m_outputTarget );
 }
 
 bool Tr2SSAO::OnModified( Be::Var* value )

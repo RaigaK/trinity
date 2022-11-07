@@ -76,8 +76,6 @@ private:
 		// Importance
 		Tr2RenderTargetPtr importanceTargetA;
 		Tr2RenderTargetPtr importanceTargetB;
-
-		Tr2RenderTargetPtr outputTarget;
 	};
 
 	struct Layer
@@ -100,7 +98,6 @@ private:
 	bool PrepareSsaoResources( Layer& layer, const Layer* prevLayer, Tr2PrimaryRenderContext& renderContext );
 
 	Layer m_detail = { true, SSAOQuality::HIGHEST, false, 5.f };
-	Layer m_large = { true, SSAOQuality::LOW, false, 1300.f };
 
 	bool m_initialized = false;
 
