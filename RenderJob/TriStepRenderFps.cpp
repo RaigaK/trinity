@@ -146,8 +146,13 @@ TriStepResult TriStepRenderFps::Execute( Be::Time realTime, Be::Time simTime, Tr
 		textColor = 0xffff0000;
 	}
 
+// accommodate for release builds, which use `-DCCP_BUILD_FLAVOR=`, e.g. macro without a value
+#if ~(~CCP_BUILD_FLAVOR + 0) == 0 && ~(~CCP_BUILD_FLAVOR + 1) == 1
+	std::string flavor{ "release" };
+#else
 	std::string flavor{ CCP_STRINGIZE( CCP_BUILD_FLAVOR ) };
-	flavor = flavor.empty() ? "release" : flavor.substr( 1 );
+	flavor = flavor.substr( 1 );
+#endif
 
 	auto bitcount = "x" + std::to_string( CcpGetProcessBitCount() );
 	int dpCount = m_dpCount ? int( m_dpCount->GetValue() ) : 0;
@@ -222,4 +227,3 @@ TriStepResult TriStepRenderFps::Execute( Be::Time realTime, Be::Time simTime, Tr
 	
 	return RS_OK;
 }
-
