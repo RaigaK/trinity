@@ -12,8 +12,8 @@
 // Description:
 //   Initialize data members
 // --------------------------------------------------------------------------------
-EveSOFDataMgr::EveSOFDataMgr( IRoot* lockobj )
-	:m_genericData()
+EveSOFDataMgr::EveSOFDataMgr( IRoot* lockobj ) :
+	m_genericData()
 {
 }
 
@@ -23,18 +23,17 @@ EveSOFDataMgr::EveSOFDataMgr( IRoot* lockobj )
 // --------------------------------------------------------------------------------
 EveSOFDataMgr::~EveSOFDataMgr()
 {
-
 }
 
 
 // --------------------------------------------------------------------------------
 // Description:
-//   Generate a hash for the visibility group, keeping this here to reduce 
+//   Generate a hash for the visibility group, keeping this here to reduce
 //   code duplication
 // --------------------------------------------------------------------------------
 uint32_t EveSOFDataMgr::GetVisibilityGroupHash( const BlueSharedString visibilityGroup ) const
 {
-	return CcpHashFNV1( visibilityGroup.c_str(), std::string(visibilityGroup.c_str()).length() );
+	return CcpHashFNV1( visibilityGroup.c_str(), std::string( visibilityGroup.c_str() ).length() );
 }
 
 // --------------------------------------------------------------------------------
@@ -194,7 +193,7 @@ const std::vector<const EveSOFDataMgr::LayoutData*> EveSOFDataMgr::GetLayoutData
 		auto data = GetLayoutData( names[i].c_str() );
 		if( data != nullptr )
 		{
-			layouts.push_back(data);
+			layouts.push_back( data );
 		}
 	}
 
@@ -219,7 +218,7 @@ bool EveSOFDataMgr::UpdateHull( const char* hullName, EveSOFDataHull* hullData )
 {
 	if( !HasHullData( hullName ) )
 	{
-		CCP_LOGWARN( "Hull '%s' does not exist, by doing this you will not add it to the sof data just to this instance of EveSOFDataMgr", hullName);
+		CCP_LOGWARN( "Hull '%s' does not exist, by doing this you will not add it to the sof data just to this instance of EveSOFDataMgr", hullName );
 	}
 
 	// fill the non-trinity struct with the provided data
@@ -227,7 +226,7 @@ bool EveSOFDataMgr::UpdateHull( const char* hullName, EveSOFDataHull* hullData )
 	GenerateHullData( hd, hullData );
 
 	// set it to the main map
-	m_hullData[ hullName ] = hd;
+	m_hullData[hullName] = hd;
 
 	return true;
 }
@@ -248,7 +247,7 @@ bool EveSOFDataMgr::UpdateFaction( const char* factionName, EveSOFDataFaction* f
 	GenerateFactionData( fd, factionData );
 
 	// set it to the main map
-	m_factionData[ factionName ] = fd;
+	m_factionData[factionName] = fd;
 
 	return true;
 }
@@ -269,7 +268,7 @@ bool EveSOFDataMgr::UpdateRace( const char* raceName, EveSOFDataRace* raceData )
 	GenerateRaceData( rd, raceData );
 
 	// set it to the main map
-	m_raceData[ raceName ] = rd;
+	m_raceData[raceName] = rd;
 
 	return true;
 }
@@ -290,7 +289,7 @@ bool EveSOFDataMgr::UpdateMaterial( const char* materialName, EveSOFDataMaterial
 	GenerateMaterialData( md, materialData );
 
 	// set it to the main map
-	m_materialData[ materialName ] = md;
+	m_materialData[materialName] = md;
 
 	return true;
 }
@@ -325,7 +324,7 @@ bool EveSOFDataMgr::UpdatePattern( const char* patternName, EveSOFDataPattern* p
 // Description:
 //   Update an individual layout, identified by it's name
 // --------------------------------------------------------------------------------
-bool EveSOFDataMgr::UpdateLayout( const char* layoutName, EveSOFDataLayout* layoutData)
+bool EveSOFDataMgr::UpdateLayout( const char* layoutName, EveSOFDataLayout* layoutData )
 {
 	if( !layoutData )
 	{
@@ -339,7 +338,7 @@ bool EveSOFDataMgr::UpdateLayout( const char* layoutName, EveSOFDataLayout* layo
 
 	// fill the non-trinity struct with the provided data
 	LayoutData ld;
-	GenerateLayoutData( ld, layoutData);
+	GenerateLayoutData( ld, layoutData );
 
 	// set it to the main map
 	m_layoutData[layoutName] = ld;
@@ -369,7 +368,7 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 	if( !dbData )
 	{
 		CCP_LOGERR( "No data passed to EveSOFDataMgr::SetData" );
-		return false; 
+		return false;
 	}
 
 	// clear existing data
@@ -379,15 +378,15 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 	m_materialData.clear();
 
 	// load hull data
-	if(!LoadHullData( dbData ) )
+	if( !LoadHullData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading hull data!" );
-		return false; 
+		return false;
 	}
 	CCP_LOGNOTICE( "SOF: loaded %d hulls", m_hullData.size() );
 
 	// load faction data
-	if(!LoadFactionData( dbData ) )
+	if( !LoadFactionData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading faction data!" );
 		return false;
@@ -395,7 +394,7 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 	CCP_LOGNOTICE( "SOF: loaded %d factions", m_factionData.size() );
 
 	// load race data
-	if(!LoadRaceData( dbData ) )
+	if( !LoadRaceData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading race data!" );
 		return false;
@@ -403,7 +402,7 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 	CCP_LOGNOTICE( "SOF: loaded %d races", m_raceData.size() );
 
 	// load material data
-	if(!LoadMaterialData( dbData ) )
+	if( !LoadMaterialData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading material data!" );
 		return false;
@@ -417,7 +416,7 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 		return false;
 	}
 	CCP_LOGNOTICE( "SOF: loaded %d patterns", m_patternData.size() );
-	
+
 	// load layoutdata
 	if( !LoadLayoutData( dbData ) )
 	{
@@ -425,9 +424,9 @@ bool EveSOFDataMgr::SetData( EveSOFData* dbData )
 		return false;
 	}
 	CCP_LOGNOTICE( "SOF: loaded %d layouts", m_layoutData.size() );
-	
+
 	// load generic data
-	if(!LoadGenericData( dbData ) )
+	if( !LoadGenericData( dbData ) )
 	{
 		CCP_LOGERR( "Error loading generic data!" );
 		return false;
@@ -477,7 +476,7 @@ EveSOFDataMgr::HullAreas EveSOFDataMgr::LoadHullAreaData( const EveSOFDataHullAr
 	ha.areaType = areaData->m_areaType;
 	for( auto matit = areaData->m_textures.begin(); matit != areaData->m_textures.end(); ++matit )
 	{
-		EveSOFDataTexturePtr textureData = (*matit);
+		EveSOFDataTexturePtr textureData = ( *matit );
 
 		TextureData td;
 		td.resFilePath = textureData->m_resFilePath;
@@ -500,7 +499,7 @@ bool EveSOFDataMgr::LoadHullData( EveSOFDataPtr srcData )
 	// store that data from that object internally
 	for( EveSOFDataHullVector::const_iterator it = srcData->m_hull.begin(); it != srcData->m_hull.end(); ++it )
 	{
-		EveSOFDataHullPtr hullData = (*it);
+		EveSOFDataHullPtr hullData = ( *it );
 
 		// if this hull is already there, we have a problem!
 		if( m_hullData.find( hullData->m_name ) != m_hullData.end() )
@@ -514,7 +513,7 @@ bool EveSOFDataMgr::LoadHullData( EveSOFDataPtr srcData )
 		GenerateHullData( hd, hullData );
 
 		// put it into the main map
-		m_hullData[(*it)->m_name] = hd;
+		m_hullData[( *it )->m_name] = hd;
 	}
 	return true;
 }
@@ -536,8 +535,8 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.castShadow = srcData->m_castShadow;
 	hd.audioPosition = srcData->m_audioPosition;
 	hd.impactEffectType = srcData->m_impactEffectType;
-	
-	hd.category = std::string(srcData->m_category.c_str());
+
+	hd.category = std::string( srcData->m_category.c_str() );
 
 	// boosters
 	if( srcData->m_booster )
@@ -551,7 +550,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		// booster items
 		for( auto biit = boosterData->m_items.begin(); biit != boosterData->m_items.end(); ++biit )
 		{
-			EveSOFDataHullBoosterItemPtr boosterItemData = (*biit);
+			EveSOFDataHullBoosterItemPtr boosterItemData = ( *biit );
 
 			HullBoosterItemData hbid;
 			hbid.transform = boosterItemData->m_transform;
@@ -571,14 +570,14 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.spriteSets.clear();
 	for( auto ssit = srcData->m_spriteSets.begin(); ssit != srcData->m_spriteSets.end(); ++ssit )
 	{
-		EveSOFDataHullSpriteSetPtr spriteSetData = (*ssit);
+		EveSOFDataHullSpriteSetPtr spriteSetData = ( *ssit );
 
 		HullSpriteSetData hssd;
 		hssd.skinned = spriteSetData->m_skinned;
 		hssd.visibilityGroup = GetVisibilityGroupHash( spriteSetData->m_visibilityGroup );
 		for( auto ssiit = spriteSetData->m_items.begin(); ssiit != spriteSetData->m_items.end(); ++ssiit )
 		{
-			EveSOFDataHullSpriteSetItemPtr spriteSetItemData = (*ssiit);
+			EveSOFDataHullSpriteSetItemPtr spriteSetItemData = ( *ssiit );
 
 			HullSpriteSetItemData hssid;
 			hssid.blinkPhase = spriteSetItemData->m_blinkPhase;
@@ -599,7 +598,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.spotlightSets.clear();
 	for( auto ssit = srcData->m_spotlightSets.begin(); ssit != srcData->m_spotlightSets.end(); ++ssit )
 	{
-		EveSOFDataHullSpotlightSetPtr spotlightSetData = (*ssit);
+		EveSOFDataHullSpotlightSetPtr spotlightSetData = ( *ssit );
 
 		HullSpotlightSetData hssd;
 		hssd.skinned = spotlightSetData->m_skinned;
@@ -608,7 +607,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		hssd.glowTextureResPath = spotlightSetData->m_glowTextureResPath;
 		for( auto ssiit = spotlightSetData->m_items.begin(); ssiit != spotlightSetData->m_items.end(); ++ssiit )
 		{
-			EveSOFDataHullSpotlightSetItemPtr spotlightSetItemData = (*ssiit);
+			EveSOFDataHullSpotlightSetItemPtr spotlightSetItemData = ( *ssiit );
 
 			HullSpotlightSetItemData hssid;
 			hssid.boneIndex = spotlightSetItemData->m_boneIndex;
@@ -628,7 +627,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.planeSets.clear();
 	for( auto psit = srcData->m_planeSets.begin(); psit != srcData->m_planeSets.end(); ++psit )
 	{
-		EveSOFDataHullPlaneSetPtr planeSetData = (*psit);
+		EveSOFDataHullPlaneSetPtr planeSetData = ( *psit );
 
 		HullPlaneSetData hpsd;
 		hpsd.layer1MapResPath = planeSetData->m_layer1MapResPath;
@@ -637,10 +636,10 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		hpsd.atlasSize = planeSetData->m_atlasSize;
 		hpsd.skinned = planeSetData->m_skinned;
 		hpsd.usage = planeSetData->m_usage;
-				
+
 		for( auto psiit = planeSetData->m_items.begin(); psiit != planeSetData->m_items.end(); ++psiit )
 		{
-			EveSOFDataHullPlaneSetItemPtr planeSetItemData = (*psiit);
+			EveSOFDataHullPlaneSetItemPtr planeSetItemData = ( *psiit );
 
 			HullPlaneSetItemData pssid;
 			pssid.boneIndex = planeSetItemData->m_boneIndex;
@@ -795,7 +794,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			auto bannerEntry = set.bannerTypes.find( bannerItem->m_usage );
 			if( bannerEntry == set.bannerTypes.end() )
 			{
-				set.bannerTypes.insert( std::pair < EveSOFDataHullBannerSetItem::Usage, std::vector<HullBannerSetItemData> >(bannerItem->m_usage, std::vector<HullBannerSetItemData>() ) );
+				set.bannerTypes.insert( std::pair<EveSOFDataHullBannerSetItem::Usage, std::vector<HullBannerSetItemData>>( bannerItem->m_usage, std::vector<HullBannerSetItemData>() ) );
 			}
 
 			HullBannerSetItemData data;
@@ -824,12 +823,12 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	EveSOFDataPatternPerHullPtr defaultPattern = srcData->m_defaultPattern;
 	// only one layer for the default hull one (yet...)
 	EveSOFUtils::GeneratePatternProjectionData( &hd.defaultPattern, defaultPattern ? defaultPattern->m_transformLayer1 : nullptr );
-	
+
 	// hull decal sets
 	hd.hullDecalSets.clear();
 	for( auto hds = srcData->m_decalSets.begin(); hds != srcData->m_decalSets.end(); ++hds )
 	{
-		EveSOFDataHullDecalSetPtr hullDecalSet = (*hds);
+		EveSOFDataHullDecalSetPtr hullDecalSet = ( *hds );
 		HullDecalSetData decalSetData;
 		decalSetData.visibilityGroup = GetVisibilityGroupHash( hullDecalSet->m_visibilityGroup );
 		decalSetData.items.clear();
@@ -845,7 +844,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			itemData.scaling = itemPtr->m_scaling;
 			itemData.usage = itemPtr->m_usage;
 			itemData.logoType = itemPtr->m_logoType;
-			
+
 			for( const auto buffer : itemPtr->m_indexBuffers )
 			{
 				itemData.indexBuffers.push_back( buffer->m_indexBuffer );
@@ -853,7 +852,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 
 			for( auto hdtit = itemPtr->m_textures.begin(); hdtit != itemPtr->m_textures.end(); ++hdtit )
 			{
-				EveSOFDataTexturePtr textureData = (*hdtit);
+				EveSOFDataTexturePtr textureData = ( *hdtit );
 
 				TextureData td;
 				td.resFilePath = textureData->m_resFilePath;
@@ -861,7 +860,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			}
 			for( auto hdpit = itemPtr->m_parameters.begin(); hdpit != itemPtr->m_parameters.end(); ++hdpit )
 			{
-				EveSOFDataParameterPtr parameterData = (*hdpit);
+				EveSOFDataParameterPtr parameterData = ( *hdpit );
 
 				itemData.parameters[parameterData->m_name] = parameterData->m_value;
 			}
@@ -890,31 +889,31 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.opaqueAreas.clear();
 	for( auto mait = srcData->m_opaqueAreas.begin(); mait != srcData->m_opaqueAreas.end(); ++mait )
 	{
-		EveSOFDataHullAreaPtr areaData = (*mait);
+		EveSOFDataHullAreaPtr areaData = ( *mait );
 		hd.opaqueAreas.push_back( LoadHullAreaData( areaData ) );
 	}
 	hd.decalAreas.clear();
 	for( auto mait = srcData->m_decalAreas.begin(); mait != srcData->m_decalAreas.end(); ++mait )
 	{
-		EveSOFDataHullAreaPtr areaData = (*mait);
+		EveSOFDataHullAreaPtr areaData = ( *mait );
 		hd.decalAreas.push_back( LoadHullAreaData( areaData ) );
 	}
 	hd.transparentAreas.clear();
 	for( auto mait = srcData->m_transparentAreas.begin(); mait != srcData->m_transparentAreas.end(); ++mait )
 	{
-		EveSOFDataHullAreaPtr areaData = (*mait);
+		EveSOFDataHullAreaPtr areaData = ( *mait );
 		hd.transparentAreas.push_back( LoadHullAreaData( areaData ) );
 	}
 	hd.additiveAreas.clear();
 	for( auto mait = srcData->m_additiveAreas.begin(); mait != srcData->m_additiveAreas.end(); ++mait )
 	{
-		EveSOFDataHullAreaPtr areaData = (*mait);
+		EveSOFDataHullAreaPtr areaData = ( *mait );
 		hd.additiveAreas.push_back( LoadHullAreaData( areaData ) );
 	}
 	hd.distortionAreas.clear();
 	for( auto mait = srcData->m_distortionAreas.begin(); mait != srcData->m_distortionAreas.end(); ++mait )
 	{
-		EveSOFDataHullAreaPtr areaData = (*mait);
+		EveSOFDataHullAreaPtr areaData = ( *mait );
 		hd.distortionAreas.push_back( LoadHullAreaData( areaData ) );
 	}
 
@@ -929,7 +928,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.locatorTurrets.clear();
 	for( auto tlit = srcData->m_locatorTurrets.begin(); tlit != srcData->m_locatorTurrets.end(); ++tlit )
 	{
-		EveSOFDataHullLocatorPtr locatorData = (*tlit);
+		EveSOFDataHullLocatorPtr locatorData = ( *tlit );
 
 		LocatorData ld;
 		ld.name = locatorData->m_name;
@@ -942,11 +941,11 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.locatorSets.clear();
 	for( auto lsit = srcData->m_locatorSets.begin(); lsit != srcData->m_locatorSets.end(); ++lsit )
 	{
-		EveSOFDataHullLocatorSetPtr locatorSet = (*lsit);
+		EveSOFDataHullLocatorSetPtr locatorSet = ( *lsit );
 
 		for( auto lit = locatorSet->m_locators.begin(); lit != locatorSet->m_locators.end(); ++lit )
 		{
-			EveSOFDataTransformPtr locatorData = (*lit);
+			EveSOFDataTransformPtr locatorData = ( *lit );
 
 			LocatorDirectionData ldd;
 			ldd.position = locatorData->m_position;
@@ -961,7 +960,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.children.clear();
 	for( auto chit = srcData->m_children.begin(); chit != srcData->m_children.end(); ++chit )
 	{
-		EveSOFDataHullChildPtr child = (*chit);
+		EveSOFDataHullChildPtr child = ( *chit );
 		HullChild hc;
 		hc.redFilePath = child->m_redFilePath;
 		hc.lowestLodVisible = child->m_lowestLodVisible;
@@ -979,7 +978,8 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	for( auto csit = srcData->m_childSets.begin(); csit != srcData->m_childSets.end(); ++csit )
 	{
 		EveSOFDataHullChildSetPtr childSet = ( *csit );
-		HullChildSetData hcsd;;
+		HullChildSetData hcsd;
+		;
 		hcsd.visibilityGroup = GetVisibilityGroupHash( childSet->m_visibilityGroup );
 		for( auto cit = childSet->m_items.begin(); cit != childSet->m_items.end(); ++cit )
 		{
@@ -1001,7 +1001,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.instancedMeshes.clear();
 	for( auto imit = srcData->m_instancedMeshes.begin(); imit != srcData->m_instancedMeshes.end(); ++imit )
 	{
-		EveSOFDataInstancedMeshPtr instMesh = (*imit);
+		EveSOFDataInstancedMeshPtr instMesh = ( *imit );
 		HullInstancedMesh him;
 		him.name = instMesh->m_name;
 		him.lowestLodVisible = instMesh->m_lowestLodVisible;
@@ -1018,14 +1018,14 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 			instance.boneIndex = iit->boneIndex;
 			him.instances.push_back( instance );
 
-			CcpMath::AxisAlignedBox instanceBox(-iit->scaling, iit->scaling);
+			CcpMath::AxisAlignedBox instanceBox( -iit->scaling, iit->scaling );
 			instanceBox.Transform( transform );
 			boundingBox.Include( instanceBox );
 		}
 		him.shader = instMesh->m_shader;
 		for( auto tit = instMesh->m_textures.begin(); tit != instMesh->m_textures.end(); ++tit )
 		{
-			EveSOFDataTexturePtr textureData = (*tit);
+			EveSOFDataTexturePtr textureData = ( *tit );
 			TextureData td;
 			td.resFilePath = textureData->m_resFilePath;
 			him.textures[textureData->m_name] = td;
@@ -1039,7 +1039,7 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 	hd.animations.clear();
 	for( auto chit = srcData->m_animations.begin(); chit != srcData->m_animations.end(); ++chit )
 	{
-		EveSOFDataHullAnimationPtr anim = (*chit);
+		EveSOFDataHullAnimationPtr anim = ( *chit );
 		HullAnimation ha;
 
 		ha.name = anim->m_name;
@@ -1048,12 +1048,12 @@ void EveSOFDataMgr::GenerateHullData( HullData& hd, EveSOFDataHullPtr srcData ) 
 		ha.endRotationTime = anim->m_endRotationTime;
 		ha.startRotationValue = anim->m_startRotationValue;
 		ha.endRotationValue = anim->m_endRotationValue;
-		
+
 		ha.startTranslationTime = anim->m_startTranslationTime;
 		ha.endTranslationTime = anim->m_endTranslationTime;
 		ha.startTranslationValue = anim->m_startTranslationValue;
 		ha.endTranslationValue = anim->m_endTranslationValue;
-		
+
 		ha.startRate = anim->m_startRate;
 		ha.endRate = anim->m_endRate;
 		ha.id = anim->m_id;
@@ -1092,7 +1092,7 @@ bool EveSOFDataMgr::LoadFactionData( EveSOFDataPtr srcData )
 	// store that data from that object internally
 	for( EveSOFDataFactionVector::const_iterator it = srcData->m_faction.begin(); it != srcData->m_faction.end(); ++it )
 	{
-		EveSOFDataFactionPtr factionData = (*it);
+		EveSOFDataFactionPtr factionData = ( *it );
 
 		// if this hull is already there, we have a problem!
 		if( m_factionData.find( factionData->m_name ) != m_factionData.end() )
@@ -1106,7 +1106,7 @@ bool EveSOFDataMgr::LoadFactionData( EveSOFDataPtr srcData )
 		GenerateFactionData( fd, factionData );
 
 		// put it into the main map
-		m_factionData[(*it)->m_name] = fd;
+		m_factionData[( *it )->m_name] = fd;
 	}
 
 	return true;
@@ -1150,12 +1150,12 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 
 			if( srcLogo )
 			{
-				LogoData destLogo = LogoData(); 
+				LogoData destLogo = LogoData();
 				destLogo.textures.clear();
 
 				for( auto srcTexture = srcLogo->m_textures.begin(); srcTexture != srcLogo->m_textures.end(); ++srcTexture )
 				{
-					auto tex = (*srcTexture);
+					auto tex = ( *srcTexture );
 					TextureData td;
 					td.resFilePath = tex->m_resFilePath;
 					destLogo.textures[tex->m_name] = td;
@@ -1181,7 +1181,7 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 	fd.spotlightSetsColors.clear();
 	for( auto spotcit = srcData->m_spotlightSets.begin(); spotcit != srcData->m_spotlightSets.end(); ++spotcit )
 	{
-		EveSOFDataFactionSpotlightSetPtr spotlightSetData = (*spotcit);
+		EveSOFDataFactionSpotlightSetPtr spotlightSetData = ( *spotcit );
 
 		FactionSpotlightSetColorData spotcd;
 		spotcd.coneColor = spotlightSetData->m_coneColor;
@@ -1195,7 +1195,7 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 	fd.planeSetsColors.clear();
 	for( auto plcit = srcData->m_planeSets.begin(); plcit != srcData->m_planeSets.end(); ++plcit )
 	{
-		EveSOFDataFactionPlaneSetPtr planeSetData = (*plcit);
+		EveSOFDataFactionPlaneSetPtr planeSetData = ( *plcit );
 
 		FactionPlaneSetColorData plscd;
 		plscd.color = planeSetData->m_color;
@@ -1240,7 +1240,7 @@ void EveSOFDataMgr::GenerateFactionData( FactionData& fd, EveSOFDataFactionPtr s
 	}
 
 	// pattern data
-	EveSOFUtils::GeneratePatternLayerData( &fd.defaultPatternInfo, srcData->m_defaultPattern, nullptr);
+	EveSOFUtils::GeneratePatternLayerData( &fd.defaultPatternInfo, srcData->m_defaultPattern, nullptr );
 	fd.defaultPatternLayer1MaterialName = srcData->m_defaultPatternLayer1MaterialName;
 	fd.defaultPatternLayer2MaterialName = srcData->m_defaultPatternLayer2MaterialName;
 	fd.defaultPatternName = srcData->m_defaultPatternName;
@@ -1255,7 +1255,7 @@ bool EveSOFDataMgr::LoadRaceData( EveSOFDataPtr srcData )
 	// store that data from that object internally
 	for( EveSOFDataRaceVector::const_iterator it = srcData->m_race.begin(); it != srcData->m_race.end(); ++it )
 	{
-		EveSOFDataRacePtr raceData = (*it);
+		EveSOFDataRacePtr raceData = ( *it );
 
 		// if this hull is already there, we have a problem!
 		if( m_raceData.find( raceData->m_name ) != m_raceData.end() )
@@ -1269,7 +1269,7 @@ bool EveSOFDataMgr::LoadRaceData( EveSOFDataPtr srcData )
 		GenerateRaceData( rd, raceData );
 
 		// put it into the main map
-		m_raceData[(*it)->m_name] = rd;
+		m_raceData[( *it )->m_name] = rd;
 	}
 
 	return true;
@@ -1297,8 +1297,7 @@ void EveSOFDataMgr::GenerateRaceData( RaceData& rd, EveSOFDataRacePtr srcData ) 
 		rd.boosters.warpHaloColor = srcData->m_booster->m_warpHaloColor;
 		rd.boosters.trailSize = srcData->m_booster->m_trailSize;
 
-		auto copyShape = [=]( RaceBoosterDataShape& dest, EveSOFDataBoosterShape* src )
-		{
+		auto copyShape = [=]( RaceBoosterDataShape& dest, EveSOFDataBoosterShape* src ) {
 			dest.noiseFunction = src->m_noiseFunction;
 			dest.noiseSpeed = src->m_noiseSpeed;
 			dest.noiseAmplitureStart = src->m_noiseAmplitureStart;
@@ -1379,7 +1378,7 @@ bool EveSOFDataMgr::LoadMaterialData( EveSOFDataPtr srcData )
 	// store that data from that object internally
 	for( EveSOFDataMaterialVector::const_iterator it = srcData->m_material.begin(); it != srcData->m_material.end(); ++it )
 	{
-		EveSOFDataMaterialPtr materialData = (*it);
+		EveSOFDataMaterialPtr materialData = ( *it );
 
 		// if this material is already there, we have a problem!
 		if( m_materialData.find( materialData->m_name ) != m_materialData.end() )
@@ -1393,7 +1392,7 @@ bool EveSOFDataMgr::LoadMaterialData( EveSOFDataPtr srcData )
 		GenerateMaterialData( md, materialData );
 
 		// put it into the main map
-		m_materialData[(*it)->m_name] = md;
+		m_materialData[( *it )->m_name] = md;
 	}
 
 	return true;
@@ -1416,16 +1415,16 @@ void EveSOFDataMgr::GeneratePatternData( PatternData& pd, EveSOFDataPatternPtr s
 	// generate layer data, even if we don't have the layer (we still need the data that it isn't there)
 	EveSOFUtils::GeneratePatternLayerData( &pld1, srcData->m_layer1, nullptr );
 	EveSOFUtils::GeneratePatternLayerData( &pld2, srcData->m_layer2, nullptr );
-		
+
 	// pattern projections, TODO remove after PHASE-6
 	for( auto ppit = srcData->m_projections.begin(); ppit != srcData->m_projections.end(); ++ppit )
 	{
 		EveSOFDataPatternPerHullPtr hullData = ( *ppit );
 
 		auto hullApplicationData = PatternApplicationData();
-		
-		PatternProjectionData ppd1, ppd2;		
-		EveSOFUtils::GeneratePatternProjectionData( &ppd1, hullData->m_transformLayer1 );		
+
+		PatternProjectionData ppd1, ppd2;
+		EveSOFUtils::GeneratePatternProjectionData( &ppd1, hullData->m_transformLayer1 );
 		EveSOFUtils::GeneratePatternProjectionData( &ppd2, hullData->m_transformLayer2 );
 
 		hullApplicationData.layerAndProjection.push_back( std::make_pair( pld1, ppd1 ) );
@@ -1433,18 +1432,18 @@ void EveSOFDataMgr::GeneratePatternData( PatternData& pd, EveSOFDataPatternPtr s
 
 		pd.old_applicationData[hullData->m_name] = hullApplicationData;
 	}
-	
+
 
 	for( auto groupIt = srcData->m_applicationGroups.begin(); groupIt != srcData->m_applicationGroups.end(); ++groupIt )
 	{
 		auto group = *groupIt;
-		
+
 		// create layer1 and layer2
 		PatternLayerData layer1, layer2;
 
 		EveSOFUtils::GeneratePatternLayerData( &layer1, srcData->m_layer1, group->m_layer1Properties );
 		EveSOFUtils::GeneratePatternLayerData( &layer2, srcData->m_layer2, group->m_layer2Properties );
-		
+
 		// go over all the hulls in the group and generate the pattern application list
 		for( auto hullIt = group->m_projections.begin(); hullIt != group->m_projections.end(); ++hullIt )
 		{
@@ -1477,23 +1476,23 @@ void EveSOFDataMgr::GeneratePatternData( PatternData& pd, EveSOFDataPatternPtr s
 // --------------------------------------------------------------------------------
 void EveSOFDataMgr::GenerateLayoutData( LayoutData& ld, EveSOFDataLayoutPtr srcData ) const
 {
-	ld.name = BlueSharedString(srcData->m_name);
+	ld.name = BlueSharedString( srcData->m_name );
 
 	for( auto placement : srcData->m_placements )
 	{
 		if( placement->m_descriptor == nullptr )
 		{
-			CCP_LOGERR( "Layout (%s) placement (%s) has no dna descriptor", srcData->m_name.c_str(), placement->m_name.c_str());
+			CCP_LOGERR( "Layout (%s) placement (%s) has no dna descriptor", srcData->m_name.c_str(), placement->m_name.c_str() );
 			continue;
 		}
 		if( placement->m_descriptor->m_hull.empty() )
 		{
-			CCP_LOGERR( "Layout (%s) placement (%s) has no hull", srcData->m_name.c_str(), placement->m_name.c_str());
+			CCP_LOGERR( "Layout (%s) placement (%s) has no hull", srcData->m_name.c_str(), placement->m_name.c_str() );
 			continue;
 		}
-		
+
 		auto descriptor = DNADescriptorData();
-		
+
 		descriptor.hull = BlueSharedString( placement->m_descriptor->m_hull );
 		descriptor.faction = BlueSharedString( placement->m_descriptor->m_faction );
 		descriptor.race = BlueSharedString( placement->m_descriptor->m_race );
@@ -1505,16 +1504,16 @@ void EveSOFDataMgr::GenerateLayoutData( LayoutData& ld, EveSOFDataLayoutPtr srcD
 		descriptor.layout = BlueSharedString( placement->m_descriptor->m_layout );
 
 		auto placementData = ExtensionPlacementData();
-		placementData.name = BlueSharedString(placement->m_name);
+		placementData.name = BlueSharedString( placement->m_name );
 		placementData.offset = placement->m_offset;
-		placementData.locatorSetName = BlueSharedString(placement->m_locatorSetName);
+		placementData.locatorSetName = BlueSharedString( placement->m_locatorSetName );
 		placementData.descriptor = descriptor;
 		placementData.isInstanced = placement->m_isInstanced;
 
 		placementData.hasDistribution = placement->m_distribution != nullptr;
-		if( placementData.hasDistribution)
+		if( placementData.hasDistribution )
 		{
-			placementData.distribution = generateDistributionData(placement->m_distribution);
+			placementData.distribution = generateDistributionData( placement->m_distribution );
 		}
 
 		for( auto placementCondition : placement->m_distributionConditions )
@@ -1522,7 +1521,7 @@ void EveSOFDataMgr::GenerateLayoutData( LayoutData& ld, EveSOFDataLayoutPtr srcD
 			placementData.placementConditions.push_back( generateDistributionConditionData( placementCondition ) );
 		}
 
-		ld.placements.push_back(placementData);
+		ld.placements.push_back( placementData );
 	}
 }
 
@@ -1582,18 +1581,23 @@ EveSOFDataMgr::ExtensionPlacementDistributionCondition EveSOFDataMgr::generateDi
 	{
 		placementCondition.distributionType = DEPLETION_COUNTER;
 
-		for ( auto counter : DepletionCounterDistribution->m_depletionCounters)
+		for( auto counter : DepletionCounterDistribution->m_depletionCounters )
 		{
-			auto counterStruct =  ExtensionPlacementDepletionCounter();
+			auto counterStruct = ExtensionPlacementDepletionCounter();
 			counterStruct.counterName = BlueSharedString( counter->m_name );
 			counterStruct.counterValue = counter->m_value;
-			placementCondition.depletionCounters.push_back(counterStruct);
+			placementCondition.depletionCounters.push_back( counterStruct );
 		}
 	}
 	else if( EveSOFDataHullExtensionPlacementDistributionRandomChancePtr randomChanceCondition = BlueCastPtr( distributionObj ) )
 	{
 		placementCondition.distributionType = RANDOM_INCLUCION;
 		placementCondition.triggerChance = randomChanceCondition->m_chanceOfUsage;
+	}
+	else if( EveSOFDataHullExtensionPlacementDistributionMapGraphicSettingsPtr displayFilterCondition = BlueCastPtr( distributionObj ) )
+	{
+		placementCondition.distributionType = GRAPHIC_SETTING_MAP;
+		placementCondition.displayModifier = displayFilterCondition->m_displayFilter;
 	}
 
 	return placementCondition;
@@ -1648,7 +1652,7 @@ bool EveSOFDataMgr::LoadLayoutData( EveSOFDataPtr srcData )
 
 		// fill the non-trinity struct with the provided data
 		LayoutData ld;
-		GenerateLayoutData( ld, layoutData);
+		GenerateLayoutData( ld, layoutData );
 
 		// put it into the main map
 		m_layoutData[( *it )->m_name] = ld;
@@ -1670,7 +1674,7 @@ void EveSOFDataMgr::GenerateMaterialData( MaterialData& rd, EveSOFDataMaterialPt
 	rd.parameters.clear();
 	for( auto mpit = srcData->m_parameters.begin(); mpit != srcData->m_parameters.end(); ++mpit )
 	{
-		EveSOFDataParameterPtr parameterData = (*mpit);
+		EveSOFDataParameterPtr parameterData = ( *mpit );
 
 		rd.parameters[parameterData->m_name] = parameterData->m_value;
 	}
@@ -1759,7 +1763,7 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		gd.hullDamage.hullParticleDrag = srcData->m_hullDamage->m_hullParticleDrag;
 		gd.hullDamage.hullParticleTurbulenceAmplitude = srcData->m_hullDamage->m_hullParticleTurbulenceAmplitude;
 		gd.hullDamage.hullParticleTurbulenceFrequency = srcData->m_hullDamage->m_hullParticleTurbulenceFrequency;
-		gd.hullDamage.hullParticleColorMidpoint = srcData->m_hullDamage->m_hullParticleColorMidpoint ;
+		gd.hullDamage.hullParticleColorMidpoint = srcData->m_hullDamage->m_hullParticleColorMidpoint;
 	}
 
 	// swarm
@@ -1793,7 +1797,7 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 	gd.materialPrefixes.clear();
 	for( auto mpit = srcData->m_materialPrefixes.begin(); mpit != srcData->m_materialPrefixes.end(); ++mpit )
 	{
-		EveSOFDataGenericStringPtr str = (*mpit);
+		EveSOFDataGenericStringPtr str = ( *mpit );
 
 		gd.materialPrefixes.push_back( str->m_str );
 	}
@@ -1811,44 +1815,44 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 	gd.areaShaderData.clear();
 	for( auto asit = srcData->m_areaShaders.begin(); asit != srcData->m_areaShaders.end(); ++asit )
 	{
-		EveSOFDataGenericShaderPtr shaderData = (*asit);
+		EveSOFDataGenericShaderPtr shaderData = ( *asit );
 
 		GenericShaderData gsd;
 		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
 		{
-			EveSOFDataTexturePtr textureData = (*tdit);
-			gsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+			EveSOFDataTexturePtr textureData = ( *tdit );
+			gsd.defaultTextures[textureData->m_name].resFilePath = textureData->m_resFilePath;
 		}
 
 		for( auto pdit = shaderData->m_defaultParameters.begin(); pdit != shaderData->m_defaultParameters.end(); ++pdit )
 		{
 			EveSOFDataParameterPtr paramData = ( *pdit );
-			gsd.defaultParameters[ paramData->m_name ] = paramData->m_value;
+			gsd.defaultParameters[paramData->m_name] = paramData->m_value;
 		}
 
 		for( auto spit = shaderData->m_parameters.begin(); spit != shaderData->m_parameters.end(); ++spit )
 		{
-			EveSOFDataGenericStringPtr paramData = (*spit);
+			EveSOFDataGenericStringPtr paramData = ( *spit );
 			gsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
 		gsd.transparencyTextureName = shaderData->m_transparencyTextureName;
 		gsd.doGenerateDepthArea = shaderData->m_doGenerateDepthArea;
 
-		gd.areaShaderData[ shaderData->m_shader ] = gsd;
+		gd.areaShaderData[shaderData->m_shader] = gsd;
 	}
 
 	// decal shader-specific data
 	gd.decalShaderData.clear();
 	for( auto dsit = srcData->m_decalShaders.begin(); dsit != srcData->m_decalShaders.end(); ++dsit )
 	{
-		EveSOFDataGenericDecalShaderPtr shaderData = (*dsit);
+		EveSOFDataGenericDecalShaderPtr shaderData = ( *dsit );
 
 		GenericDecalShaderData gdsd;
 		for( auto tdit = shaderData->m_defaultTextures.begin(); tdit != shaderData->m_defaultTextures.end(); ++tdit )
 		{
-			EveSOFDataTexturePtr textureData = (*tdit);
-			gdsd.defaultTextures[ textureData->m_name ].resFilePath = textureData->m_resFilePath;
+			EveSOFDataTexturePtr textureData = ( *tdit );
+			gdsd.defaultTextures[textureData->m_name].resFilePath = textureData->m_resFilePath;
 		}
 
 		for( auto tpit = shaderData->m_parentTextures.begin(); tpit != shaderData->m_parentTextures.end(); ++tpit )
@@ -1859,11 +1863,11 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 
 		for( auto spit = shaderData->m_parameters.begin(); spit != shaderData->m_parameters.end(); ++spit )
 		{
-			EveSOFDataGenericStringPtr paramData = (*spit);
+			EveSOFDataGenericStringPtr paramData = ( *spit );
 			gdsd.parameters.push_back( BlueSharedString( paramData->m_str ) );
 		}
 
-		gd.decalShaderData[ shaderData->m_shader ] = gdsd;
+		gd.decalShaderData[shaderData->m_shader] = gdsd;
 	}
 
 	// generic wreck material
@@ -1893,4 +1897,3 @@ void EveSOFDataMgr::GenerateGenericData( GenericData& gd, EveSOFDataGenericPtr s
 		}
 	}
 }
-

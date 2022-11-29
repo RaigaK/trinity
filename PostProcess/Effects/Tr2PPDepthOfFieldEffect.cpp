@@ -6,7 +6,10 @@
 
 #include "StdAfx.h"
 #include "Tr2PPDepthOfFieldEffect.h"
+#include "TriSettingsRegistrar.h"
 
+bool g_postprocessDofEnabled= false;
+TRI_REGISTER_SETTING( "postprocessDofEnabled", g_postprocessDofEnabled );
 
 Tr2PPDepthOfFieldEffect::Tr2PPDepthOfFieldEffect( IRoot* lockobj ) :
 	m_focalDistance( 0.0f ),
@@ -25,11 +28,7 @@ Tr2PPDepthOfFieldEffect::~Tr2PPDepthOfFieldEffect()
 
 bool Tr2PPDepthOfFieldEffect::IsActive()
 {
-#if TRINITY_PLATFORM == TRINITY_METAL
-	return false;
-#else
-	return Tr2PPEffect::IsActive() && m_scale > 0.0f;
-#endif
+	return g_postprocessDofEnabled && Tr2PPEffect::IsActive() && m_scale > 0.0f;
 }
 
 BlueSharedString Tr2PPDepthOfFieldEffect::GetBokehShapeString() const

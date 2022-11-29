@@ -300,7 +300,6 @@ TriStepResult TriStepRenderPostProcess::Execute( Be::Time realTime, Be::Time sim
 			filmGrain = postProcess->GetFilmGrain();
 			fog = postProcess->GetFog();
 			dynamicExposure = postProcess->GetDynamicExposure();
-			dof = postProcess->GetDepthOfField();
 		case MEDIUM:
 			bloom = postProcess->GetBloom();
 			desaturate = postProcess->GetDesaturate();
@@ -316,6 +315,11 @@ TriStepResult TriStepRenderPostProcess::Execute( Be::Time realTime, Be::Time sim
 		if( Tr2Renderer::GetShaderModel() == TR2SM_3_0_DEPTH )
 		{
 			taa = postProcess->GetTaa();
+		}
+
+		if( g_postprocessDofEnabled )
+		{
+			dof = postProcess->GetDepthOfField();
 		}
 	}
 

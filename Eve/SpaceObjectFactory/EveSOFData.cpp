@@ -988,6 +988,11 @@ EveSOFDataHullExtensionPlacementDistributionRandomChance::EveSOFDataHullExtensio
 {
 }
 
+EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings( IRoot* ) :
+	m_displayFilter( SHADER_ALL )
+{
+}
+
 EveSOFDataHullExtensionPlacementDistributionPlacement::EveSOFDataHullExtensionPlacementDistributionPlacement( IRoot* ) :
 	m_name( "" ),
 	m_completeness( 1.f ),

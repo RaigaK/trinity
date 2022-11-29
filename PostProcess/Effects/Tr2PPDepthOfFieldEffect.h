@@ -17,6 +17,8 @@ namespace Tr2Bokeh
 	};
 }
 
+extern bool g_postprocessDofEnabled;
+
 BLUE_CLASS( Tr2PPDepthOfFieldEffect ) :
 	public Tr2PPEffect
 {

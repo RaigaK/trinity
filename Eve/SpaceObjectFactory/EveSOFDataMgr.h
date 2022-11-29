@@ -121,6 +121,7 @@ public:
 		RANDOM_INCLUCION = 0,
 		PARENT_MATCH = 1,
 		DEPLETION_COUNTER = 2,
+		GRAPHIC_SETTING_MAP = 3,
 	};
 
 	struct ExtensionPlacementDistribution
@@ -167,6 +168,9 @@ public:
 
 		// Random
 		float triggerChance;
+
+		// GraphicMap
+		int displayModifier;
 	};
 
 	struct ExtensionPlacementData

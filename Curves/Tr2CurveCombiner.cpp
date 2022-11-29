@@ -16,7 +16,7 @@ void Tr2CurveCombiner::UpdateValue( double time )
 	for( auto it = begin( m_curves ); it != end( m_curves ); ++it )
 	{
 		Vector3 temp(0.f, 0.f, 0.f );
-		(*it)->Update( &temp, TimeAsDouble( time ) );
+		(*it)->Update( &temp, time );
 		out += temp;
 	}
 	m_currentValue = out;

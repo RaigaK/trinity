@@ -2897,6 +2897,7 @@ bool EveSOF::ProcessLayoutDistributionConditions( EveSOFDataMgr::ExtensionPlacem
 		{
 		case EveSOFDataMgr::RANDOM_INCLUCION: {
 			distributionSuccessful = distributionSuccessful && condition.triggerChance > TriRand();
+			break;
 		}
 		case EveSOFDataMgr::PARENT_MATCH: {
 			bool hull = condition.parentMatchMap.matchHull ? condition.spaceObjectParentDescriptor.hull == placement.descriptor.hull : true;
@@ -2909,9 +2910,41 @@ bool EveSOF::ProcessLayoutDistributionConditions( EveSOFDataMgr::ExtensionPlacem
 			bool material4 = condition.parentMatchMap.matchMaterial4 ? condition.spaceObjectParentDescriptor.material4 == placement.descriptor.material4 : true;
 			bool layout = condition.parentMatchMap.matchLayout ? condition.spaceObjectParentDescriptor.layout == placement.descriptor.layout : true;
 			distributionSuccessful = distributionSuccessful && hull && faction && race && pattern && material1 && material2 && material3 && material4 && layout;
+			break;
 		}
 		case EveSOFDataMgr::DEPLETION_COUNTER: {
-			// TODO
+			break;
+		}
+		case EveSOFDataMgr::GRAPHIC_SETTING_MAP: {
+			TR2SHADERMODEL settings = Tr2Renderer::GetShaderModel();
+
+			switch( condition.displayModifier )
+			{
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_LOW:
+				distributionSuccessful = distributionSuccessful && settings == TR2SM_3_0_LO;
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_LOWMID:
+				distributionSuccessful = distributionSuccessful && settings <= TR2SM_3_0_HI;
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_MED:
+				distributionSuccessful = distributionSuccessful && settings == TR2SM_3_0_HI;
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_HIGHMID:
+				distributionSuccessful = distributionSuccessful && settings >= TR2SM_3_0_HI;
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_HIGH:
+				distributionSuccessful = distributionSuccessful && settings == TR2SM_3_0_DEPTH;
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::SHADER_ALL:
+				break;
+			case EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings::ONLY_REFLECTIONS:
+				distributionSuccessful = false;
+				break;
+			default:
+				distributionSuccessful = false;
+				break;
+			}
+			break;
 		}
 		default:
 			break;

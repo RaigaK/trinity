@@ -10,6 +10,7 @@
 #include "Eve/SpaceObject/EveSwarm.h"
 //#include "Eve/SpaceObjectFactory/EveSOFDataMgr.h"
 
+
 // --------------------------------------------------------------------------------
 // All data storage classes for gerenal purposes
 // --------------------------------------------------------------------------------
@@ -1749,6 +1750,31 @@ public:
 	float m_chanceOfUsage;
 };
 TYPEDEF_BLUECLASS( EveSOFDataHullExtensionPlacementDistributionRandomChance );
+
+BLUE_CLASS( EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings ) :
+	public IEveSOFDataHullExtensionPlacementDistribution
+{
+public:
+	EXPOSE_TO_BLUE();
+	EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings( IRoot* lockobj = NULL );
+	~EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings()
+	{
+	}
+	// shader quality settings map
+	enum DisplayQualityModifier
+	{
+		ONLY_REFLECTIONS = 6,
+		SHADER_ALL = 5,
+		SHADER_HIGHMID = 3,
+		SHADER_LOWMID = 1,
+		SHADER_HIGH = 4,
+		SHADER_MED = 2,
+		SHADER_LOW = 0,
+	};
+	
+	DisplayQualityModifier m_displayFilter;
+};
+TYPEDEF_BLUECLASS( EveSOFDataHullExtensionPlacementDistributionMapGraphicSettings );
 
 
 BLUE_CLASS( EveSOFDataHullExtensionPlacementDistributionPlacement ) :

@@ -667,7 +667,6 @@ const Be::ClassInfo* EveSOFDataHullBooster::ExposeToBlue()
 }
 
 
-
 BLUE_DEFINE( EveSOFDataHullBoosterItem );
 const Be::ClassInfo* EveSOFDataHullBoosterItem::ExposeToBlue()
 {
@@ -684,7 +683,6 @@ const Be::ClassInfo* EveSOFDataHullBoosterItem::ExposeToBlue()
 }
 
 
-
 BLUE_DEFINE( EveSOFDataTexture );
 const Be::ClassInfo* EveSOFDataTexture::ExposeToBlue()
 {
@@ -693,34 +691,6 @@ const Be::ClassInfo* EveSOFDataTexture::ExposeToBlue()
 
 		MAP_ATTRIBUTE( "resFilePath", m_resFilePath, "Resource path.", Be::READWRITE | Be::PERSIST )
 		MAP_ATTRIBUTE( "name", m_name, "Parameter name of this texture", Be::READWRITE | Be::PERSIST )
-    EXPOSURE_END()
-}
-
-
-Be::VarChooser DisplayModifierChooser[] = {
-	{ "None_", BeCast( EveSOFDataInstancedMesh::SHADER_ALL ), "Visible to users with all shader settings" },
-	{ "Medium_and_High", BeCast( EveSOFDataInstancedMesh::SHADER_HIGHMID ), "Visible for users with shader settings on Medium or High" },
-	{ "Low_and_Medium", BeCast( EveSOFDataInstancedMesh::SHADER_LOWMID ), "Visible for users with shader settings on Low or Medium" },
-	{ "High", BeCast( EveSOFDataInstancedMesh::SHADER_HIGH ), "Only visible for users with shader settings on High" },
-	{ "Medium", BeCast( EveSOFDataInstancedMesh::SHADER_MED ), "Only visible for users with shader settings on Medium" },
-	{ "Low", BeCast( EveSOFDataInstancedMesh::SHADER_LOW ), "Only visible for users with shader settings on Low" },
-	{ 0 }
-};
-BLUE_REGISTER_ENUM_EX( "DisplayModifierChooser", EveSOFDataInstancedMesh::DisplayQualityModifier, DisplayModifierChooser, ENUM_REG_ENUM_OBJECT_ON_MODULE );
-
-BLUE_DEFINE( EveSOFDataInstancedMesh );
-const Be::ClassInfo* EveSOFDataInstancedMesh::ExposeToBlue()
-{
-    EXPOSURE_BEGIN( EveSOFDataInstancedMesh, "" )
-        MAP_INTERFACE( EveSOFDataInstancedMesh )
-
-		MAP_ATTRIBUTE( "name", m_name, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "lowestLodVisible", m_lowestLodVisible, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE_WITH_CHOOSER( "displayModifier", m_displayModifier, "Selects when this instance is shown based on shader quality", Be::READWRITE | Be::PERSIST |Be::ENUM, DisplayModifierChooser )
-		MAP_ATTRIBUTE( "geometryResPath", m_geometryResPath, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "instances", m_instances, "", Be::READ | Be::PERSIST )
-		MAP_ATTRIBUTE( "shader", m_shader, "", Be::READWRITE | Be::PERSIST )
-		MAP_ATTRIBUTE( "textures", m_textures, "", Be::READ | Be::PERSIST )
     EXPOSURE_END()
 }
 
