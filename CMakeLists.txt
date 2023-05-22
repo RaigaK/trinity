@@ -1689,7 +1689,7 @@ elseif(APPLE)
             TRINITYNAME=_trinity_metal
     )
     set_shared_trinity_properties(trinity_metal)
-    find_package(trinity_metal REQUIRED NO_CMAKE_PATH)
+    find_package(TrinityAL_metal REQUIRED NO_CMAKE_PATH)
     target_link_libraries(trinity_metal
         PRIVATE
             TrinityAL_metal
