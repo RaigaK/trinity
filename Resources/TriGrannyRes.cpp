@@ -1079,7 +1079,7 @@ GrannyMaterialWrapper::GrannyMaterialWrapper(granny_material * gmat, unsigned in
 					sprintf_s(tmpbuf,"%s_%s", materialMap->Usage, defs->Name);
 					
 					// set the actual value of this dict entry to the file path.
-					PyObject * matString = PyString_FromString(targetString);
+					PyObject * matString = PyUnicode_FromString(targetString);
 					// set into the dict.
 					PyDict_SetItemString(m_dictionary, tmpbuf, matString);
 					
@@ -1236,4 +1236,3 @@ Be::Result<std::string> TriGrannyRes::BakeBlendshapeFromScript( unsigned int mes
 
 	return success ? Be::Result<std::string>() : Be::Result<std::string>( " TriGrannyRes::BakeBlendshape encountered problems. ");
 }
-
