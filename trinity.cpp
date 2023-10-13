@@ -101,6 +101,12 @@ PyObject* InitializeForPython()
         AddScancodesToDict(uiDict);
         AddUIChoosersToDict(uiDict);
 
+        PyObject* sys_modules = PyImport_GetModuleDict();
+        if( PyDict_SetItemString( sys_modules, triuiDef.m_name, uiModule ) != 0 )
+        {
+            return nullptr;
+        }
+
         BLUE_REGISTER_THUNKER(ITriScalarFunction_Thunk::Defs(), ITriScalarFunction_Thunk::IID());
         BLUE_REGISTER_THUNKER(ITriVectorFunction_Thunk::Defs(), ITriVectorFunction_Thunk::IID());
         BLUE_REGISTER_THUNKER(ITriQuaternionFunction_Thunk::Defs(), ITriQuaternionFunction_Thunk::IID());
