@@ -351,6 +351,8 @@ namespace TrinityALImpl
         MTLVertexDescriptor* GetCachedVertexDescriptor( Tr2VertexLayoutAL* layout, size_t inputHash, uint8_t& streamMask, bool& needsDummyStream ) const;
         void CacheVertexDescriptor( Tr2VertexLayoutAL* layout, size_t inputHash, MTLVertexDescriptor* descriptor, uint8_t streamMask, bool needsDummyStream );
         void FlushCachedVertexDescriptors();
+        
+        uint64_t GetCurrentEncoderIndex() const;
 	private:
 		void CreateClearFunctions();
 		void ResetWorkQueue();
@@ -399,6 +401,8 @@ namespace TrinityALImpl
 		MTLRenderPassDescriptor     *m_currentRenderPassDescriptor;
 
 		id<MTLCaptureScope>          m_captureScopeFullFrame;
+        
+        uint64_t m_encoderIndex;
 
 		uint32_t m_numRenderAttachments;
 		uint32_t m_dirtyRenderEncoderState;
